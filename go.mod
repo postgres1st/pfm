@@ -50,7 +50,7 @@ require (
 	github.com/minio/minio-go/v7 v7.2.0
 	github.com/percona/exporter_shared v0.7.5
 	github.com/percona/go-mysql v0.0.0-20251202083530-b3e1c16efc74
-	github.com/percona/percona-toolkit v0.0.0-20251217124347-6b3e5ed485dd
+	github.com/percona/percona-toolkit v3.2.1+incompatible
 	github.com/percona/platform v0.0.0-20260424191126-0d2cfd8ceb51
 	github.com/percona/promconfig v0.3.0
 	github.com/pganalyze/pg_query_go/v6 v6.2.2
