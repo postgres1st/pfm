@@ -6,6 +6,11 @@ ARG BUILD_DATE
 ENV LANG=en_US.utf8
 ENV GF_PLUGIN_DIR=/srv/grafana/plugins
 ENV PERCONA_TELEMETRY_DISABLE=1
+# Zero-egress defaults: disable PMM telemetry (also disables Advisors) and the
+# update check. Both become runtime-immutable when set via env (the settings API
+# refuses to re-enable). Override at launch with -e PMM_ENABLE_TELEMETRY=true if desired.
+ENV PMM_ENABLE_TELEMETRY=false
+ENV PMM_ENABLE_UPDATES=false
 ENV PS1="[\u@\h \W] # "
 
 WORKDIR /opt
