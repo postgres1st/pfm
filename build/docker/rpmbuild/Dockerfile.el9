@@ -3,7 +3,7 @@ ARG GO_VERSION
 
 FROM golang:$GO_VERSION AS golang
 
-FROM oraclelinux:9-slim
+FROM rockylinux/rockylinux:9-minimal
 
 RUN microdnf install -y dnf
 # enable nodesource repo for nodejs

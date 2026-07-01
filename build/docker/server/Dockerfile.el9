@@ -1,4 +1,4 @@
-FROM oraclelinux:9-slim
+FROM rockylinux/rockylinux:9-minimal
 
 ARG VERSION
 ARG BUILD_DATE

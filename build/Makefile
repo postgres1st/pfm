@@ -1,7 +1,7 @@
 export PACKER_CACHE_DIR := .cache
-export PACKER_VERSION := 1.9.4
-# check available versions at https://vagrantcloud.com/api/v2/vagrant/bento/oraclelinux-9
-export BOX_VERSION := 202502.21.0
+export PACKER_VERSION := 1.15.4
+# check available versions at https://vagrantcloud.com/api/v2/vagrant/bento/rockylinux-9
+export BOX_VERSION := 202510.26.0
 export PMM_SERVER_IMAGE ?= docker.io/perconalab/pmm-server:3-dev-latest
 export WATCHTOWER_IMAGE ?= docker.io/perconalab/watchtower:dev-latest
 # --- Go-related variables ----------------------------------------------------------------
@@ -16,10 +16,10 @@ fetch:
 
 	# Add the box using Vagrant
 	test -f ${PACKER_CACHE_DIR}/box/box.ovf \
-		|| VAGRANT_HOME=${PACKER_CACHE_DIR}/box vagrant box add bento/oraclelinux-9 --box-version ${BOX_VERSION} --provider virtualbox
+		|| VAGRANT_HOME=${PACKER_CACHE_DIR}/box vagrant box add bento/rockylinux-9 --box-version ${BOX_VERSION} --provider virtualbox
 
 	test -f ${PACKER_CACHE_DIR}/box/box.ovf \
-		|| cp -rp ${PACKER_CACHE_DIR}/box/boxes/bento-VAGRANTSLASH-oraclelinux-9/${BOX_VERSION}/amd64/virtualbox/* ${PACKER_CACHE_DIR}/box
+		|| cp -rp ${PACKER_CACHE_DIR}/box/boxes/bento-VAGRANTSLASH-rockylinux-9/${BOX_VERSION}/amd64/virtualbox/* ${PACKER_CACHE_DIR}/box
 
 deps:
 	mkdir -p ${PACKER_CACHE_DIR} ~/bin || :
@@ -46,7 +46,7 @@ pmm-ami:
 ## ----------------- PACKER ------------------
 
 ## RPM Build Images
-rpmbuild-el9: ## Build rpmbuild Docker image for EL9 (Oracle Linux 9)
+rpmbuild-el9: ## Build rpmbuild Docker image for EL9 (Rocky Linux 9)
 	cd docker/rpmbuild && docker build -t perconalab/rpmbuild:3 -f Dockerfile.el9 .
 
 rpmbuild-hetzner-el9: ## Build rpmbuild Docker image for Hetzner (Rocky Linux 9)
