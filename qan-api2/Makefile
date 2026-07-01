@@ -48,7 +48,6 @@ _start-clickhouse:
 	fi
 	@echo "-> Starting Clickhouse container $(TEST_CONTAINER_NAME)"
 	@docker run -d \
-		--platform=linux/amd64 \
 		--name  $(TEST_CONTAINER_NAME) \
 		-p 19000:9000 \
 		-p 18123:8123 \

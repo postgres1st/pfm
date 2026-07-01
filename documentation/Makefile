@@ -15,7 +15,7 @@ doc-build:          ## Build documentation (used in CI)
 	mkdocs build -f $(DIR)/mkdocs.yml
 
 doc-build-pdf:      ## Build documentation in PDF format
-	docker run --rm --platform=linux/amd64 -v $(DIR):/docs -w /build perconalab/pmm-doc-md:latest \
+	docker run --rm -v $(DIR):/docs -w /build perconalab/pmm-doc-md:latest \
 		bash -c " \
 			cp -r /docs/* /build/ && \
 			git init && \
@@ -27,10 +27,10 @@ doc-build-pdf:      ## Build documentation in PDF format
 		"
 
 doc-build-image:    ## Build perconalab/pmm-doc-md:latest image
-	# @docker buildx build --platform=linux/amd64 --progress=plain -t perconalab/pmm-doc-md:latest -f documentation/resources/Dockerfile.build .
+	# @docker buildx build --progress=plain -t perconalab/pmm-doc-md:latest -f documentation/resources/Dockerfile.build .
 
 doc-build-preview:  ## Build documentation and preview at http://localhost:8000
-	docker run --rm --platform=linux/amd64 -p 8000:8000 -v $(DIR):/docs -w /build perconalab/pmm-doc-md:latest \
+	docker run --rm -p 8000:8000 -v $(DIR):/docs -w /build perconalab/pmm-doc-md:latest \
 	  bash -c " \
 			cp -r /docs/* /build/ && \
 			git init && \

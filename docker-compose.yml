@@ -21,7 +21,6 @@ services:
     profiles:
       - pmm
     image: ${PMM_SERVER_IMAGE:-percona/pmm-server:3}
-    platform: linux/amd64
     container_name: pmm-server
     hostname: pmm-server
     restart: always
@@ -142,7 +141,6 @@ services:
     profiles:
       - pmm
     image: perconalab/sysbench
-    platform: linux/amd64
     container_name: sysbench-ps
     depends_on:
       ps-init:

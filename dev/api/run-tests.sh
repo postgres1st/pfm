@@ -1,6 +1,6 @@
 #!/bin/bash -e
-# This script is a self-sufficient way to run PMM API tests. 
-# It will launch a PMM Server instance, build the test image, and execute the tests against the server. 
+# This script is a self-sufficient way to run PMM API tests.
+# It will launch a PMM Server instance, build the test image, and execute the tests against the server.
 # The test results will be copied to the host machine for review.
 
 pmm-api() {
@@ -21,7 +21,6 @@ pmm-api() {
 
   # Launch PMM Server
   docker run -d \
-    --platform linux/amd64 \
     --name pmm-server \
     --hostname pmm-server \
     -p 443:8443 \
@@ -33,7 +32,7 @@ pmm-api() {
     "${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-latest}"
 
   # Build the test image
-  docker buildx build --platform=linux/amd64 --progress=plain -t percona/pmm-api-tests .
+  docker buildx build --progress=plain -t percona/pmm-api-tests .
 
   until curl -skf https://127.0.0.1/v1/server/readyz &>/dev/null; do echo "Waiting for pmm-server to come up..." && sleep 2; done
 
@@ -44,7 +43,6 @@ pmm-api() {
 
   # Run API tests in race mode
   docker run \
-    --platform linux/amd64 \
     --name pmm-api-tests \
     -e PMM_SERVER_URl=https://admin:admin@127.0.0.1 \
     -e PMM_RUN_UPDATE_TEST=0 \

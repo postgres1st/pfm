@@ -3,7 +3,6 @@ services:
   pmm-server:
     container_name: pmm-server
     # Temporary till we have arm builds
-    platform: linux/amd64
     image: ${PMM_SERVER_IMAGE:-perconalab/pmm-server:3-dev-container}
     ports:
       - 80:9080
@@ -56,7 +55,6 @@ services:
 
   mysql:
     image: percona:5.7.30
-    platform: linux/amd64
     container_name: pmm-agent_mysql
     command: >
       --sql-mode="ANSI_QUOTES"
@@ -74,7 +72,6 @@ services:
 
   watchtower:
     container_name: watchtower
-    platform: linux/amd64
     image: perconalab/watchtower
     hostname: watchtower
     volumes:

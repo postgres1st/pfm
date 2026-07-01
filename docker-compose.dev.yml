@@ -4,7 +4,6 @@ services:
     profiles:
       - pmm
     image: "${PMM_SERVER_IMAGE:?Fatal: .env file is not provided}"
-    platform: linux/amd64
     container_name: pmm-server
     hostname: pmm-server
     env_file:

@@ -17,7 +17,6 @@ services:
   test_db:
     image: aleksi/test_db:1.1.0
     container_name: pmm-agent_test_db
-    platform: linux/amd64
     volumes:
       - test_db_mysql:/test_db/mysql/world:ro
       - test_db_postgres:/test_db/postgresql/world:ro
@@ -73,7 +72,6 @@ services:
 
   pmm-client-mysql:
     image: percona/pmm-client:3
-    platform: "linux/amd64"
     container_name: pmm-client-mysql
     depends_on:
       pmm-server:
