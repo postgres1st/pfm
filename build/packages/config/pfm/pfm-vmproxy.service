@@ -1,0 +1,33 @@
+# pfm-vmproxy — per-tenant metrics proxy (was pmm-managed-generated
+# [program:vmproxy], priority=9). Runtime value via EnvironmentFile
+# (/run/pfm/vmproxy.env, written by pmm-managed — T3b):
+#   VMPROXY_TARGET_URL   the VM URL (internal vs external VM)
+# T3b/T7 seeds the internal default so it starts before pmm-managed's render.
+[Unit]
+Description=pfm vmproxy (metrics proxy)
+After=pfm-init.service pfm-victoriametrics.service
+Requires=pfm-init.service
+PartOf=pfm.target
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+EnvironmentFile=-/run/pfm/vmproxy.env
+ExecStart=/usr/sbin/vmproxy \
+    --target-url=${VMPROXY_TARGET_URL} \
+    --listen-port=8430 \
+    --listen-address=127.0.0.1 \
+    --header-name=X-Proxy-Filter
+KillSignal=SIGINT
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target

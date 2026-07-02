@@ -1,0 +1,31 @@
+# pfm-qan-api2 — Query Analytics API (was pmm-managed-generated
+# [program:qan-api2], priority=13). Runtime values via EnvironmentFile
+# (/run/pfm/qan-api2.env, written by pmm-managed — T3b):
+#   QANAPI_DATA_RETENTION                         retention days (from settings)
+#   PMM_CLICKHOUSE_ADDR/DATABASE/USER/PASSWORD    CH connection (already pure env)
+# The PMM_CLICKHOUSE_* vars are read directly by qan-api2 (unchanged from the
+# supervisord environment= block); T3b/T7 seeds defaults for first boot.
+[Unit]
+Description=pfm qan-api2 (Query Analytics API)
+After=pfm-init.service pfm-clickhouse.service
+Requires=pfm-init.service
+PartOf=pfm.target
+# Match supervisord startretries=1000 -> effectively unbounded; keep restarting.
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+EnvironmentFile=-/run/pfm/qan-api2.env
+ExecStart=/usr/sbin/percona-qan-api2 \
+    --data-retention=${QANAPI_DATA_RETENTION}
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target

@@ -1,0 +1,40 @@
+# pfm-vmalert — alerting rules evaluator (was pmm-managed-generated
+# [program:vmalert], priority=7). Runtime values via EnvironmentFile
+# (/run/pfm/vmalert.env, written by pmm-managed — T3b):
+#   VMALERT_DATASOURCE_URL   the VM URL (internal vs external VM)
+#   VMALERT_EXTRA_FLAGS      the variable VMAlertFlags list (unbraced $ so
+#                            systemd word-splits it into separate args)
+# vmalert has no envflag support, so these are expanded directly into ExecStart.
+# The datasource URL is essential; T3b/T7 seeds the internal default so vmalert
+# comes up before pmm-managed's first render.
+[Unit]
+Description=pfm vmalert (alert rule evaluation)
+After=pfm-init.service pfm-victoriametrics.service
+Requires=pfm-init.service
+PartOf=pfm.target
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+EnvironmentFile=-/run/pfm/vmalert.env
+ExecStart=/usr/sbin/vmalert \
+    --external.url=${VMALERT_DATASOURCE_URL} \
+    --datasource.url=${VMALERT_DATASOURCE_URL} \
+    --remoteRead.url=${VMALERT_DATASOURCE_URL} \
+    --remoteWrite.url=${VMALERT_DATASOURCE_URL} \
+    --rule=/srv/prometheus/rules/*.yml \
+    --httpListenAddr=127.0.0.1:8880 \
+    $VMALERT_EXTRA_FLAGS
+KillSignal=SIGINT
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target
