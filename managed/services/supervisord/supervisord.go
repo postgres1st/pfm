@@ -210,6 +210,16 @@ func (s *Service) UpdateConfiguration(settings *models.Settings) error {
 			continue
 		}
 
+		if s.pm == pmSystemd {
+			// Native units read regenerated config from /run/pfm/<name>.env
+			// instead of supervisord .ini files (T3b).
+			if e := s.updateEnvConfig(tmpl.Name(), settings); e != nil {
+				s.l.Errorf("Failed to update %s env config: %s.", tmpl.Name(), e)
+				err = e
+			}
+			continue
+		}
+
 		if tmpl.Name() == "victoriametrics" && s.vmParams.ExternalVM() {
 			e := os.Remove(filepath.Join(s.configDir, tmpl.Name()+".ini"))
 			if e != nil && !errors.Is(e, fs.ErrNotExist) {
@@ -483,8 +493,9 @@ func (s *Service) reload(name string) error {
 	return err
 }
 
-// marshalConfig marshals supervisord program configuration.
-func (s *Service) marshalConfig(tmpl *template.Template, settings *models.Settings) ([]byte, error) {
+// configParams computes the shared template parameters for a settings state,
+// consumed by both the supervisord (.ini) and systemd (.env) renderers.
+func (s *Service) configParams(settings *models.Settings) (map[string]any, error) {
 	clickhouseDatabase := envvars.GetEnv("PMM_CLICKHOUSE_DATABASE", defaultClickhouseDatabase)
 	clickhouseAddr := envvars.GetEnv("PMM_CLICKHOUSE_ADDR", defaultClickhouseAddr)
 	clickhouseAddrPair := strings.SplitN(clickhouseAddr, ":", 2) //nolint:mnd
@@ -541,13 +552,20 @@ func (s *Service) marshalConfig(tmpl *template.Template, settings *models.Settin
 		templateParams["PMMServerHost"] = publicURL.Host
 	}
 
-	var buf bytes.Buffer
-	err := tmpl.Execute(&buf, templateParams)
+	return templateParams, nil
+}
+
+// marshalConfig renders a supervisord program configuration.
+func (s *Service) marshalConfig(tmpl *template.Template, settings *models.Settings) ([]byte, error) {
+	templateParams, err := s.configParams(settings)
 	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, templateParams); err != nil {
 		return nil, fmt.Errorf("failed to render template %q: %w", tmpl.Name(), err)
 	}
-	b := append([]byte("; Managed by pmm-managed. DO NOT EDIT.\n"), buf.Bytes()...)
-	return b, nil
+	return append([]byte("; Managed by pmm-managed. DO NOT EDIT.\n"), buf.Bytes()...), nil
 }
 
 // addPostgresParams adds pmm-server postgres database params to template config for grafana.

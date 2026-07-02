@@ -17,8 +17,12 @@ package supervisord
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/percona/pmm/managed/models"
 )
 
 func TestSystemdUnitName(t *testing.T) {
@@ -57,6 +61,61 @@ func TestSelectProcessManager(t *testing.T) {
 			assert.Equal(t, tc.want, selectProcessManager(tc.env, tc.hasSupervisorctl, tc.hasSystemctl, tc.hasPfmUnits))
 		})
 	}
+}
+
+func TestMarshalEnvConfig(t *testing.T) {
+	t.Parallel()
+
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err)
+	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "db_username", DBPassword: "db_password", SSLMode: "disable"}
+	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour, PMMPublicAddress: "192.168.0.42:8443"}
+	settings.VictoriaMetrics.CacheEnabled = new(false)
+
+	render := func(t *testing.T, name string) string {
+		t.Helper()
+		b, err := s.marshalEnvConfig(name, settings)
+		require.NoError(t, err)
+		out := string(b)
+		assert.Contains(t, out, "# Managed by pmm-managed. DO NOT EDIT.")
+		return out
+	}
+
+	t.Run("victoriametrics", func(t *testing.T) {
+		t.Parallel()
+		env := render(t, "victoriametrics")
+		assert.Contains(t, env, "VM_retentionPeriod=30d")
+		assert.Contains(t, env, "VM_search_disableCache=true") // cache disabled -> disableCache true
+	})
+	t.Run("vmalert", func(t *testing.T) {
+		t.Parallel()
+		env := render(t, "vmalert")
+		assert.Contains(t, env, "VMALERT_DATASOURCE_URL="+vmParams.URL())
+		assert.Contains(t, env, "VMALERT_EXTRA_FLAGS=")
+	})
+	t.Run("vmproxy", func(t *testing.T) {
+		t.Parallel()
+		assert.Contains(t, render(t, "vmproxy"), "VMPROXY_TARGET_URL="+vmParams.URL())
+	})
+	t.Run("qan-api2", func(t *testing.T) {
+		t.Parallel()
+		env := render(t, "qan-api2")
+		assert.Contains(t, env, "QANAPI_DATA_RETENTION=30")
+		assert.Contains(t, env, "PMM_CLICKHOUSE_ADDR=127.0.0.1:9000")
+		assert.Contains(t, env, "PMM_CLICKHOUSE_DATABASE=pmm")
+	})
+	t.Run("grafana", func(t *testing.T) {
+		t.Parallel()
+		env := render(t, "grafana")
+		assert.Contains(t, env, "PMM_POSTGRES_ADDR=127.0.0.1:5432")
+		assert.Contains(t, env, "GF_SERVER_DOMAIN=192.168.0.42:8443")
+	})
+	t.Run("unknown service errors", func(t *testing.T) {
+		t.Parallel()
+		_, err := s.marshalEnvConfig("does-not-exist", settings)
+		assert.Error(t, err)
+	})
 }
 
 func TestProcessControlAvailable(t *testing.T) {

@@ -16,16 +16,26 @@
 package supervisord
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+	"text/template"
 
 	"golang.org/x/sys/unix"
 
+	"github.com/percona/pmm/managed/models"
 	"github.com/percona/pmm/utils/pdeathsig"
 )
+
+// pfmEnvDir holds the per-service EnvironmentFiles pmm-managed renders for the
+// systemd units. It is a pfm-owned tmpfs dir (created by tmpfiles.d), so the
+// non-root pfm process can write it without touching root-owned systemd paths.
+const pfmEnvDir = "/run/pfm"
 
 // pfmUnitPaths are the locations the RPM installs pfm.target; their presence is
 // the positive signal that the native systemd stack is actually deployed.
@@ -82,6 +92,70 @@ func systemdUnitName(name string) string {
 	return "pfm-" + name + ".service"
 }
 
+// envTemplates renders the systemd EnvironmentFile (KEY=value) for each dynamic
+// service, using the same params as the supervisord templates. Only the
+// settings-driven values live here; stable defaults are static args in the unit
+// (see build/packages/config/pfm/*.service). The pfm-* units read these from
+// /run/pfm/<name>.env. Keep the KEY names in lockstep with those units.
+var envTemplates = template.Must(template.New("").Option("missingkey=error").Parse(`
+{{define "victoriametrics"}}VM_retentionPeriod={{ .DataRetentionDays }}d
+VM_search_disableCache={{ .VMSearchDisableCache }}
+{{end}}
+
+{{define "vmalert"}}VMALERT_DATASOURCE_URL={{ .VMURL }}
+VMALERT_EXTRA_FLAGS={{ range .VMAlertFlags }}{{ . }} {{ end }}
+{{end}}
+
+{{define "vmproxy"}}VMPROXY_TARGET_URL={{ .VMURL }}
+{{end}}
+
+{{define "qan-api2"}}QANAPI_DATA_RETENTION={{ .DataRetentionDays }}
+PMM_CLICKHOUSE_ADDR={{ .ClickhouseAddr }}
+PMM_CLICKHOUSE_DATABASE={{ .ClickhouseDatabase }}
+PMM_CLICKHOUSE_USER={{ .ClickhouseUser }}
+PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword }}
+{{end}}
+
+{{define "grafana"}}{{ if .PMMServerHost }}GF_SERVER_DOMAIN={{ .PMMServerHost }}
+{{ end }}PMM_POSTGRES_ADDR={{ .PostgresAddr }}
+PMM_POSTGRES_DBNAME={{ .PostgresDBName }}
+PMM_POSTGRES_USERNAME={{ .PostgresDBUsername }}
+PMM_POSTGRES_DBPASSWORD={{ .PostgresDBPassword }}
+PMM_POSTGRES_SSL_MODE={{ .PostgresSSLMode }}
+PMM_POSTGRES_SSL_CA_PATH={{ .PostgresSSLCAPath }}
+PMM_POSTGRES_SSL_KEY_PATH={{ .PostgresSSLKeyPath }}
+PMM_POSTGRES_SSL_CERT_PATH={{ .PostgresSSLCertPath }}
+PMM_CLICKHOUSE_HOST={{ .ClickhouseHost }}
+PMM_CLICKHOUSE_PORT={{ .ClickhousePort }}
+PMM_CLICKHOUSE_USER={{ .ClickhouseUser }}
+PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword }}
+{{- if .HAEnabled }}
+GF_UNIFIED_ALERTING_HA_LISTEN_ADDRESS=0.0.0.0:{{ .GrafanaGossipPort }}
+GF_UNIFIED_ALERTING_HA_ADVERTISE_ADDRESS={{ .HAAdvertiseAddress }}:{{ .GrafanaGossipPort }}
+GF_UNIFIED_ALERTING_HA_PEERS={{ .HANodes }}
+{{- end }}
+{{end}}
+`))
+
+// marshalEnvConfig renders the systemd EnvironmentFile for a dynamic service,
+// reusing the shared config params. The pfm-<name>.service unit reads the
+// result from /run/pfm/<name>.env.
+func (s *Service) marshalEnvConfig(name string, settings *models.Settings) ([]byte, error) {
+	tmpl := envTemplates.Lookup(name)
+	if tmpl == nil {
+		return nil, fmt.Errorf("no systemd env template for service %q", name)
+	}
+	params, err := s.configParams(settings)
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, params); err != nil {
+		return nil, fmt.Errorf("failed to render env template %q: %w", name, err)
+	}
+	return append([]byte("# Managed by pmm-managed. DO NOT EDIT.\n"), buf.Bytes()...), nil
+}
+
 // processControlAvailable reports whether the active backend can control
 // services — the systemd analogue of the old `supervisorctlPath == ""` guard,
 // used to degrade gracefully when the backend binary is absent.
@@ -114,6 +188,63 @@ func (s *Service) systemctl(args ...string) ([]byte, error) {
 		return b, fmt.Errorf("%s failed: %w", cmdLine, err)
 	}
 	return b, nil
+}
+
+// updateEnvConfig regenerates one dynamic service's EnvironmentFile under the
+// systemd backend, mirroring the per-service special cases of UpdateConfiguration.
+func (s *Service) updateEnvConfig(name string, settings *models.Settings) error {
+	switch {
+	case name == "nomad-server":
+		// No pfm-nomad-server unit exists yet; nothing to render.
+		return nil
+	case name == "victoriametrics" && s.vmParams.ExternalVM():
+		// External VM: the embedded VM must not run.
+		return s.disableDynamicService(name)
+	}
+
+	cfg, err := s.marshalEnvConfig(name, settings)
+	if err != nil {
+		return err
+	}
+	_, err = s.saveEnvAndReload(name, cfg)
+	return err
+}
+
+// disableDynamicService stops a unit and removes its EnvironmentFile (e.g. when
+// an embedded service is replaced by an external one). Stop is best-effort.
+func (s *Service) disableDynamicService(name string) error {
+	if _, err := s.systemctl("stop", systemdUnitName(name)); err != nil {
+		s.l.Warnf("Failed to stop %s: %s.", systemdUnitName(name), err)
+	}
+	if err := os.Remove(filepath.Join(pfmEnvDir, name+".env")); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	return nil
+}
+
+// saveEnvAndReload writes a dynamic service's EnvironmentFile and, if it
+// changed, asks systemd to re-apply it. Returns true if the file changed.
+func (s *Service) saveEnvAndReload(name string, cfg []byte) (bool, error) {
+	path := filepath.Join(pfmEnvDir, name+".env")
+	oldCfg, err := os.ReadFile(path) //nolint:gosec
+	if errors.Is(err, fs.ErrNotExist) {
+		err = nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if bytes.Equal(cfg, oldCfg) {
+		s.l.Infof("%s.env not changed, doing nothing.", name)
+		return false, nil
+	}
+	if err := os.WriteFile(path, cfg, 0o644); err != nil { //nolint:gosec,mnd
+		return false, err
+	}
+	if err := s.reload(name); err != nil {
+		return false, err
+	}
+	s.l.Infof("%s.env updated and reloaded.", name)
+	return true, nil
 }
 
 // reloadViaSystemd re-applies a regenerated config for a dynamic service.
