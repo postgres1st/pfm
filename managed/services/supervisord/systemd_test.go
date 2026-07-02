@@ -29,6 +29,44 @@ func TestSystemdUnitName(t *testing.T) {
 	assert.Equal(t, "pfm-victoriametrics.service", systemdUnitName("victoriametrics"))
 }
 
+func TestSelectProcessManager(t *testing.T) {
+	t.Parallel()
+
+	for _, tc := range []struct {
+		name             string
+		env              string
+		hasSupervisorctl bool
+		hasSystemctl     bool
+		want             processManagerKind
+	}{
+		// explicit env wins over detection
+		{"env forces systemd", "systemd", true, false, pmSystemd},
+		{"env forces supervisord", "supervisord", false, true, pmSupervisord},
+		// unknown env value falls through to auto-detect
+		{"garbage env -> auto", "wat", false, true, pmSystemd},
+		// auto-detect: systemd only when supervisorctl absent and systemctl present
+		{"auto systemd", "", false, true, pmSystemd},
+		{"auto supervisord (both present)", "", true, true, pmSupervisord},
+		{"auto default (neither)", "", false, false, pmSupervisord},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			assert.Equal(t, tc.want, selectProcessManager(tc.env, tc.hasSupervisorctl, tc.hasSystemctl))
+		})
+	}
+}
+
+func TestProcessControlAvailable(t *testing.T) {
+	t.Parallel()
+
+	// Guards graceful degradation: each backend reports available only when its
+	// own binary was found.
+	assert.True(t, (&Service{pm: pmSystemd, systemctlPath: "/usr/bin/systemctl"}).processControlAvailable())
+	assert.False(t, (&Service{pm: pmSystemd, systemctlPath: ""}).processControlAvailable())
+	assert.True(t, (&Service{pm: pmSupervisord, supervisorctlPath: "/usr/bin/supervisorctl"}).processControlAvailable())
+	assert.False(t, (&Service{pm: pmSupervisord, supervisorctlPath: ""}).processControlAvailable())
+}
+
 func TestParseIsActive(t *testing.T) {
 	t.Parallel()
 

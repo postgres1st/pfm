@@ -62,6 +62,8 @@ const (
 type Service struct {
 	configDir         string
 	supervisorctlPath string
+	systemctlPath     string
+	pm                processManagerKind
 	l                 *logrus.Entry
 
 	eventsM    sync.Mutex
@@ -88,9 +90,12 @@ const (
 // New creates new service.
 func New(configDir string, params *models.Params) *Service {
 	path, _ := exec.LookPath("supervisorctl")
+	systemctlPath, _ := exec.LookPath("systemctl")
 	return &Service{
 		configDir:         configDir,
 		supervisorctlPath: path,
+		systemctlPath:     systemctlPath,
+		pm:                selectProcessManager(os.Getenv(processManagerEnv), path != "", systemctlPath != ""),
 		l:                 logrus.WithField("component", "supervisord"),
 		subs:              make(map[chan *event]sub),
 		lastEvents:        make(map[string]eventType),
@@ -102,6 +107,12 @@ func New(configDir string, params *models.Params) *Service {
 
 // Run reads supervisord's log (maintail) and sends events to subscribers.
 func (s *Service) Run(ctx context.Context) { //nolint:gocognit
+	if s.pm == pmSystemd {
+		// The maintail event stream is supervisord-specific; the journald
+		// equivalent (`journalctl -f -u pfm-*`) is a separate workstream (T4).
+		s.l.Info("Running under systemd; supervisord maintail event stream disabled.")
+		return
+	}
 	if s.supervisorctlPath == "" {
 		s.l.Errorf("supervisorctl not found, updates are disabled.")
 		return
@@ -176,8 +187,8 @@ func (s *Service) Run(ctx context.Context) { //nolint:gocognit
 
 // UpdateConfiguration updates VictoriaMetrics, Grafana and qan-api2 configurations, restarting them if needed.
 func (s *Service) UpdateConfiguration(settings *models.Settings) error {
-	if s.supervisorctlPath == "" {
-		s.l.Errorf("supervisorctl not found, configuration updates are disabled.")
+	if !s.processControlAvailable() {
+		s.l.Errorf("%s not found, configuration updates are disabled.", s.pm)
 		return nil
 	}
 
@@ -230,12 +241,20 @@ func (s *Service) UpdateConfiguration(settings *models.Settings) error {
 
 // StartSupervisedService starts given service.
 func (s *Service) StartSupervisedService(serviceName string) error {
+	if s.pm == pmSystemd {
+		_, err := s.systemctl("start", systemdUnitName(serviceName))
+		return err
+	}
 	_, err := s.supervisorctl("start", serviceName)
 	return err
 }
 
 // StopSupervisedService stops given service.
 func (s *Service) StopSupervisedService(serviceName string) error {
+	if s.pm == pmSystemd {
+		_, err := s.systemctl("stop", systemdUnitName(serviceName))
+		return err
+	}
 	_, err := s.supervisorctl("stop", serviceName)
 	return err
 }
@@ -439,8 +458,12 @@ func parseStatus(status string) *bool {
 	return nil
 }
 
-// reload asks supervisord to reload configuration.
+// reload asks the active backend to re-apply a service's regenerated config.
 func (s *Service) reload(name string) error {
+	if s.pm == pmSystemd {
+		return s.reloadViaSystemd(name)
+	}
+
 	_, err := s.supervisorctl("reread")
 	if err != nil {
 		s.l.Warn(err)
