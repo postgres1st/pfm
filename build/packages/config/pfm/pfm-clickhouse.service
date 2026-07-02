@@ -1,0 +1,25 @@
+# pfm-clickhouse — QAN storage (was supervisord [program:clickhouse],
+# priority=2). config.xml currently logs to console; under systemd that maps
+# cleanly to journald via StandardOutput=journal. If ClickHouse is configured
+# to open /dev/stdout as a file it will fail here -- switching its log config
+# to <console>1</console> / journald is a T5 (logging-redirect) item, not T0.
+[Unit]
+Description=pfm ClickHouse (QAN storage)
+After=pfm-init.service
+Requires=pfm-init.service
+PartOf=pfm.target
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+ExecStart=/usr/bin/clickhouse-server --config-file=/etc/clickhouse-server/config.xml
+KillSignal=SIGTERM
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target
