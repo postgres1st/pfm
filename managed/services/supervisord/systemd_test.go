@@ -37,21 +37,24 @@ func TestSelectProcessManager(t *testing.T) {
 		env              string
 		hasSupervisorctl bool
 		hasSystemctl     bool
+		hasPfmUnits      bool
 		want             processManagerKind
 	}{
-		// explicit env wins over detection
-		{"env forces systemd", "systemd", true, false, pmSystemd},
-		{"env forces supervisord", "supervisord", false, true, pmSupervisord},
+		// explicit env wins over detection (operator asserts intent)
+		{"env forces systemd", "systemd", true, false, false, pmSystemd},
+		{"env forces supervisord", "supervisord", false, true, true, pmSupervisord},
 		// unknown env value falls through to auto-detect
-		{"garbage env -> auto", "wat", false, true, pmSystemd},
-		// auto-detect: systemd only when supervisorctl absent and systemctl present
-		{"auto systemd", "", false, true, pmSystemd},
-		{"auto supervisord (both present)", "", true, true, pmSupervisord},
-		{"auto default (neither)", "", false, false, pmSupervisord},
+		{"garbage env -> auto", "wat", false, true, true, pmSystemd},
+		// auto-detect needs POSITIVE evidence: supervisorctl absent, systemctl
+		// present, AND the pfm unit set actually installed.
+		{"auto systemd (units present)", "", false, true, true, pmSystemd},
+		{"auto declines without pfm units", "", false, true, false, pmSupervisord},
+		{"auto supervisord (both present)", "", true, true, true, pmSupervisord},
+		{"auto default (neither)", "", false, false, false, pmSupervisord},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			assert.Equal(t, tc.want, selectProcessManager(tc.env, tc.hasSupervisorctl, tc.hasSystemctl))
+			assert.Equal(t, tc.want, selectProcessManager(tc.env, tc.hasSupervisorctl, tc.hasSystemctl, tc.hasPfmUnits))
 		})
 	}
 }

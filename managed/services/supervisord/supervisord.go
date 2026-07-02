@@ -91,12 +91,15 @@ const (
 func New(configDir string, params *models.Params) *Service {
 	path, _ := exec.LookPath("supervisorctl")
 	systemctlPath, _ := exec.LookPath("systemctl")
+	l := logrus.WithField("component", "supervisord")
+	pm := selectProcessManager(os.Getenv(processManagerEnv), path != "", systemctlPath != "", pfmUnitsInstalled())
+	l.Infof("Process control backend: %s.", pm)
 	return &Service{
 		configDir:         configDir,
 		supervisorctlPath: path,
 		systemctlPath:     systemctlPath,
-		pm:                selectProcessManager(os.Getenv(processManagerEnv), path != "", systemctlPath != ""),
-		l:                 logrus.WithField("component", "supervisord"),
+		pm:                pm,
+		l:                 l,
 		subs:              make(map[chan *event]sub),
 		lastEvents:        make(map[string]eventType),
 		vmParams:          params.VMParams,
@@ -188,7 +191,7 @@ func (s *Service) Run(ctx context.Context) { //nolint:gocognit
 // UpdateConfiguration updates VictoriaMetrics, Grafana and qan-api2 configurations, restarting them if needed.
 func (s *Service) UpdateConfiguration(settings *models.Settings) error {
 	if !s.processControlAvailable() {
-		s.l.Errorf("%s not found, configuration updates are disabled.", s.pm)
+		s.l.Errorf("%s backend selected but its control binary is unavailable; configuration updates are disabled.", s.pm)
 		return nil
 	}
 

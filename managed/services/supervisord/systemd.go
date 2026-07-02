@@ -18,6 +18,7 @@ package supervisord
 import (
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -25,6 +26,13 @@ import (
 
 	"github.com/percona/pmm/utils/pdeathsig"
 )
+
+// pfmUnitPaths are the locations the RPM installs pfm.target; their presence is
+// the positive signal that the native systemd stack is actually deployed.
+var pfmUnitPaths = []string{
+	"/usr/lib/systemd/system/pfm.target",
+	"/etc/systemd/system/pfm.target",
+}
 
 // processManagerKind selects which backend launches/controls the service set.
 type processManagerKind string
@@ -38,20 +46,34 @@ const (
 	processManagerEnv = "PMM_PROCESS_MANAGER"
 )
 
-// selectProcessManager decides the backend: an explicit, valid env value wins;
-// otherwise auto-detect systemd only when supervisorctl is absent and systemctl
-// is present (the shipped-RPM shape), defaulting to supervisord everywhere else.
-func selectProcessManager(env string, hasSupervisorctl, hasSystemctl bool) processManagerKind {
+// selectProcessManager decides the backend: an explicit, valid env value wins
+// (the operator asserts intent). Otherwise auto-detect requires POSITIVE
+// evidence that the native stack is deployed — supervisorctl absent, systemctl
+// present, AND the pfm unit set installed. Gating auto on the mere absence of
+// supervisorctl would misfire on any dev/CI box or half-provisioned host,
+// silently selecting a backend that can't control most services.
+func selectProcessManager(env string, hasSupervisorctl, hasSystemctl, hasPfmUnits bool) processManagerKind {
 	switch processManagerKind(env) {
 	case pmSystemd:
 		return pmSystemd
 	case pmSupervisord:
 		return pmSupervisord
 	}
-	if !hasSupervisorctl && hasSystemctl {
+	if !hasSupervisorctl && hasSystemctl && hasPfmUnits {
 		return pmSystemd
 	}
 	return pmSupervisord
+}
+
+// pfmUnitsInstalled reports whether pfm.target is present on disk — the
+// positive signal used to gate auto-detection of the systemd backend.
+func pfmUnitsInstalled() bool {
+	for _, p := range pfmUnitPaths {
+		if _, err := os.Stat(p); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 // systemdUnitName maps a supervisord program name (e.g. "pmm-agent",
@@ -63,6 +85,13 @@ func systemdUnitName(name string) string {
 // processControlAvailable reports whether the active backend can control
 // services — the systemd analogue of the old `supervisorctlPath == ""` guard,
 // used to degrade gracefully when the backend binary is absent.
+//
+// Privilege model (committed target): pmm-managed stays non-root (User=pfm);
+// authorization to run `systemctl` against pfm-*.service is granted by a
+// shipped polkit rule, implemented alongside the SELinux policy (T6). Until
+// then this only proves the binary exists, not that the caller is authorized —
+// TODO(T6): replace with a real authorization probe (a benign systemctl/D-Bus
+// call) so an unauthorized process degrades instead of erroring per call.
 func (s *Service) processControlAvailable() bool {
 	if s.pm == pmSystemd {
 		return s.systemctlPath != ""
