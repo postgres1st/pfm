@@ -8,6 +8,9 @@ Description=pfm ClickHouse (QAN storage)
 After=pfm-init.service
 Requires=pfm-init.service
 PartOf=pfm.target
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
 
 [Service]
 Type=exec

@@ -79,14 +79,30 @@ prepare_runtime() {
     log "creating nginx temp directories ..."
     mkdir -p "${SRV}"/nginx/tmp/{client,proxy,fastcgi,uwsgi,scgi}
 
-    log "generating self-signed nginx certificate ..."
-    bash /var/lib/cloud/scripts/per-boot/generate-ssl-certificate >/dev/null 2>&1
+    # The cert generator is baked into the container image; on a native RPM host
+    # a pfm-shipped equivalent must provide it (T7). Guard so a missing script
+    # gives a clear message instead of a raw bash error under `set -e`.
+    local cert_script=/var/lib/cloud/scripts/per-boot/generate-ssl-certificate
+    if [ -x "${cert_script}" ]; then
+        log "generating self-signed nginx certificate ..."
+        bash "${cert_script}" >/dev/null 2>&1
+    else
+        log "WARNING: cert generator ${cert_script} not present; nginx TLS certs must be provisioned by the RPM (T7)."
+    fi
 
     log "validating nginx configuration ..."
     nginx -t
 }
 
 main() {
+    # /srv must be owned/writable by the pfm user (the RPM %post chowns it, T7).
+    # Fail loud with guidance rather than dying on the first mkdir's EACCES.
+    if [ ! -w "${SRV}" ]; then
+        log "FATAL: ${SRV} is not writable by the pfm user (uid $(id -u)/gid $(id -g))." >&2
+        log "The RPM %post must run 'chown -R pfm:pfm ${SRV}' before pfm-init starts." >&2
+        exit 1
+    fi
+
     if pfm_srv_initialized; then
         log "/srv already initialized — skipping one-time provisioning."
     else
