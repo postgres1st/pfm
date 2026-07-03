@@ -237,7 +237,18 @@ func (s *Service) saveEnvAndReload(name string, cfg []byte) (bool, error) {
 		s.l.Infof("%s.env not changed, doing nothing.", name)
 		return false, nil
 	}
-	if err := os.WriteFile(path, cfg, 0o644); err != nil { //nolint:gosec,mnd
+	// These files carry DB/ClickHouse passwords. Write via a fresh temp file at
+	// 0600 then atomically rename, so the secret content is never visible at a
+	// looser mode (WriteFile would not tighten an existing file) and readers
+	// never see a partial file. systemd's manager reads EnvironmentFile as root
+	// before dropping to User=pfm, so owner-only (pfm) is sufficient.
+	tmp := path + ".tmp"
+	_ = os.Remove(tmp)                                    // clear any stale temp so the create below starts at 0600
+	if err := os.WriteFile(tmp, cfg, 0o600); err != nil { //nolint:mnd
+		return false, err
+	}
+	if err := os.Rename(tmp, path); err != nil {
+		_ = os.Remove(tmp)
 		return false, err
 	}
 	if err := s.reload(name); err != nil {
