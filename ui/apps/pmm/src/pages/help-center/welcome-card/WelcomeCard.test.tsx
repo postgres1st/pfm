@@ -36,6 +36,12 @@ vi.mock('api/services', () => ({
   listServices: () => mocks.listServices(),
 }));
 
+// The tour is flag-disabled in the shipped app; force it on here to cover the enabled path.
+vi.mock('lib/constants', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('lib/constants')>();
+  return { ...actual, TOUR_ENABLED: true };
+});
+
 const renderWelcomeCard = (user?: User) =>
   render(
     wrapWithQueryProvider(

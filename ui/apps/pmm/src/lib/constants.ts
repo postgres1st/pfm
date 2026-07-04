@@ -2,6 +2,10 @@ import { AdvisorFamily, AdvisorInterval } from 'types/advisors.types';
 import { ServiceType } from 'types/services.types';
 
 export const PMM_TITLE = 'Postgres1st Monitoring and Management';
+
+// Feature flags — flip to true to re-enable.
+export const TOUR_ENABLED = false;
+export const UPDATES_ENABLED = false;
 // todo: remove completely in a follow up to reduce current scope
 export const PMM_NEW_NAV_PATH = '';
 export const GRAFANA_SUB_PATH = '/graph';

@@ -8,7 +8,7 @@ import { NotFoundPage } from 'pages/not-found';
 import { HelpCenter } from 'pages/help-center';
 import { RealtimeSelection } from 'pages/rta/selection';
 import Providers from 'Providers';
-import { PMM_NEW_NAV_PATH } from 'lib/constants';
+import { PMM_NEW_NAV_PATH, UPDATES_ENABLED } from 'lib/constants';
 import { RealtimeSessionsPage } from 'pages/rta/sessions';
 import { Redirect, SettingsRedirect } from 'components/redirect';
 import RealtimeOverviewPage from 'pages/rta/overview/RealtimeOverview';
@@ -28,14 +28,18 @@ const router = createBrowserRouter(
               path: '',
               element: <Navigate to="graph" />,
             },
-            {
-              path: 'updates',
-              element: <Updates />,
-            },
-            {
-              path: 'updates/clients',
-              element: <UpdateClients />,
-            },
+            ...(UPDATES_ENABLED
+              ? [
+                  {
+                    path: 'updates',
+                    element: <Updates />,
+                  },
+                  {
+                    path: 'updates/clients',
+                    element: <UpdateClients />,
+                  },
+                ]
+              : []),
             {
               path: 'help',
               element: <HelpCenter />,

@@ -23,6 +23,7 @@ import { useTour } from 'contexts/tour';
 import { useUpdateUserInfo } from 'hooks/api/useUser';
 import { useServices } from 'hooks/api/useServices';
 import { shouldShowAddService } from './WelcomeCard.utils';
+import { TOUR_ENABLED } from 'lib/constants';
 
 const WelcomeCard: FC = () => {
   const { user } = useUser();
@@ -99,22 +100,28 @@ const WelcomeCard: FC = () => {
             </ListItem>
           ))}
         </List>
-        <Typography variant="h6" mb={1}>
-          {Messages.ready}
-        </Typography>
-        <Typography>
-          {user?.isPMMAdmin ? Messages.tour : Messages.tourNonAdmin}
-        </Typography>
+        {TOUR_ENABLED && (
+          <>
+            <Typography variant="h6" mb={1}>
+              {Messages.ready}
+            </Typography>
+            <Typography>
+              {user?.isPMMAdmin ? Messages.tour : Messages.tourNonAdmin}
+            </Typography>
+          </>
+        )}
       </CardContent>
       <CardActions sx={{ p: 2, pt: 1 }}>
-        <Button
-          startIcon={<MapOutlinedIcon />}
-          variant="contained"
-          data-testid="welcome-card-start-tour"
-          onClick={() => startTour('product')}
-        >
-          {Messages.startTour}
-        </Button>
+        {TOUR_ENABLED && (
+          <Button
+            startIcon={<MapOutlinedIcon />}
+            variant="contained"
+            data-testid="welcome-card-start-tour"
+            onClick={() => startTour('product')}
+          >
+            {Messages.startTour}
+          </Button>
+        )}
         {user?.isPMMAdmin && showAddService && (
           <Button
             startIcon={<AddIcon />}
