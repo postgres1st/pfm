@@ -16,6 +16,9 @@
 
 %global commit      0000000000000000000000000000000000000000
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
+# Built from the monorepo tarball, which the build script archives with prefix
+# "<repo>-<commit>/" where repo_name=pmm — must match the %setup -n below.
+%global repo        pmm
 
 # the line below is sed'ed by the build script to set a correct version
 %define full_pfm_version 3.0.0
@@ -27,7 +30,7 @@ Summary:        Native systemd assembly of the pfm (PMM-derived) monitoring stac
 
 License:        AGPLv3
 URL:            https://github.com/postgres1st/pfm
-Source0:        https://github.com/postgres1st/pfm/archive/%{commit}/pfm-%{shortcommit}.tar.gz
+Source0:        %{repo}-%{shortcommit}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  systemd-rpm-macros
@@ -42,14 +45,18 @@ Requires(postun): systemd
 # install against the actual built RPMs + the dep-availability grid.
 Requires:       pmm-managed
 Requires:       pmm-client
-Requires:       victoriametrics
+Requires:       percona-victoriametrics
 Requires:       vmproxy
 Requires:       percona-qan-api2
 Requires:       percona-dashboards
-Requires:       pmm-grafana
+Requires:       percona-grafana
 
 # Third-party data/proxy tier (Percona ppg / ClickHouse / distro repos).
+# postgresql14: -server has initdb/pg_ctl; -contrib has pg_stat_statements
+# (postgres won't start without it); the base package has psql (pfm-init.sh).
 Requires:       percona-postgresql14-server
+Requires:       percona-postgresql14-contrib
+Requires:       percona-postgresql14
 Requires:       clickhouse-server
 Requires:       nginx
 Requires:       openssl
@@ -63,7 +70,7 @@ provisioning, zero-egress defaults, and a non-root pfm service account —
 without a container.
 
 %prep
-%setup -q -n pfm-%{commit}
+%setup -q -n %{repo}-%{commit}
 
 %build
 # Nothing to compile; this package only ships config, units and scripts.
@@ -111,6 +118,11 @@ if [ $1 -eq 1 ]; then
     install -d -m 0770 -o pfm -g pfm /srv || :
     systemd-tmpfiles --create %{_tmpfilesdir}/pfm.conf >/dev/null 2>&1 || :
     systemctl enable pfm.target >/dev/null 2>&1 || :
+    # pmm-client's %post starts its own pmm-agent.service (different unit + user);
+    # pfm uses pfm-agent.service, driven by pmm-managed. Stop and mask the client
+    # unit so the two agents don't compete.
+    systemctl disable --now pmm-agent.service >/dev/null 2>&1 || :
+    systemctl mask pmm-agent.service >/dev/null 2>&1 || :
     echo "pfm-server installed. Start it with: systemctl start pfm.target"
 fi
 
@@ -135,6 +147,7 @@ fi
 %{_unitdir}/pfm-agent.service
 %{_tmpfilesdir}/pfm.conf
 %{_sysusersdir}/pfm.conf
+%dir %{_datadir}/pfm
 %attr(0755, root, root) %{_datadir}/pfm/pfm-init.sh
 %dir %{_prefix}/lib/pfm
 %dir %{_prefix}/lib/pfm/defaults
