@@ -785,7 +785,7 @@ export const NAV_OTHER_DASHBOARDS_TEMPLATE: Partial<NavItem> = {
 export const NAV_HIGH_AVAILABILITY: NavItem = {
   id: 'high-availability',
   icon: 'cluster',
-  text: 'PMM HA',
+  text: 'PFMM HA',
   url: `${PMM_NEW_NAV_GRAFANA_PATH}/high-availability`,
 };
 

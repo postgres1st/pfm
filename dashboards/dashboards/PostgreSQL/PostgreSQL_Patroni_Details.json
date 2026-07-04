@@ -12,7 +12,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",

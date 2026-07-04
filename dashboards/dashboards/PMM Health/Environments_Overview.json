@@ -46,7 +46,7 @@
                     "showLineNumbers": false,
                     "showMiniMap": false
                 },
-                "content": "<br>\n<div class=\"text-center dashboard-header\">\n<img src=\"/graph/public/plugins/pmm-app/img/pmm-logo.svg\" height=\"60px\" width=\"60px\">\n  <span>Percona Monitoring and Management</span>\n</div>",
+                "content": "<br>\n<div class=\"text-center dashboard-header\">\n<img src=\"/graph/public/plugins/pmm-app/img/pmm-logo.svg\" height=\"60px\" width=\"60px\">\n  <span>Postgres1st Monitoring and Management</span>\n</div>",
                 "mode": "html"
             },
             "pluginVersion": "11.1.8",
@@ -85,7 +85,7 @@
                             "showLineNumbers": false,
                             "showMiniMap": false
                         },
-                        "content": "### Disclaimer \n\nThis Experimental Dashboard is not a part of the official Percona Monitoring and Management (PMM) deployment and might be updated. \nWe ship this Dashboard to obtain feedback from our users. \n\nOnce we officially release this Dashboard, it will be moved to the appropriate folder. \n\n### About Dashboard\n\nThe Dashboard provides the user with a high-level view of all the environments.\n\nTo provide feedback on the Dashboard, visit [our forum](https://forums.percona.com/c/percona-monitoring-and-management-pmm/pmm-unofficial-dashboards-and-plugins/67). \n",
+                        "content": "### Disclaimer \n\nThis Experimental Dashboard is not a part of the official Postgres1st Monitoring and Management (PFMM) deployment and might be updated. \nWe ship this Dashboard to obtain feedback from our users. \n\nOnce we officially release this Dashboard, it will be moved to the appropriate folder. \n\n### About Dashboard\n\nThe Dashboard provides the user with a high-level view of all the environments.\n\nTo provide feedback on the Dashboard, visit [our forum](https://forums.postgresfirst.com/c/percona-monitoring-and-management-pmm/pmm-unofficial-dashboards-and-plugins/67). \n",
                         "mode": "markdown"
                     },
                     "pluginVersion": "9.2.18",
@@ -130,7 +130,7 @@
                             "showLineNumbers": false,
                             "showMiniMap": false
                         },
-                        "content": "**Overview**  \n[Percona Monitoring and Management (PMM)](https://www.percona.com/pmm) is a free and open-source platform for managing and monitoring MySQL, MongoDB, and PostgreSQL performance and provides time-based analysis to ensure that your data works as efficiently as possible. \n\n",
+                        "content": "**Overview**  \n[Postgres1st Monitoring and Management (PFMM)](https://www.postgresfirst.com/pmm) is a free and open-source platform for managing and monitoring MySQL, MongoDB, and PostgreSQL performance and provides time-based analysis to ensure that your data works as efficiently as possible. \n\n",
                         "mode": "markdown"
                     },
                     "pluginVersion": "9.2.18",
@@ -147,10 +147,10 @@
                     },
                     "id": 1396,
                     "options": {
-                        "feedUrl": "/percona-blog/feed",
+                        "feedUrl": "/postgresfirst-blog/feed",
                         "showImage": true
                     },
-                    "title": "Percona News",
+                    "title": "Postgres1st News",
                     "type": "news"
                 }
             ],
@@ -776,7 +776,7 @@
                 "y": 10
             },
             "id": 1975,
-            "title": "PMM Upgrade",
+            "title": "PFMM Upgrade",
             "type": "pmm-update-panel"
         },
         {
@@ -2126,7 +2126,7 @@
         "type": "timepicker"
     },
     "timezone": "",
-    "title": "Environments Overview (Designed for PMM)",
+    "title": "Environments Overview (Designed for PFMM)",
     "uid": "environments-overview",
     "version": 1,
     "weekStart": ""

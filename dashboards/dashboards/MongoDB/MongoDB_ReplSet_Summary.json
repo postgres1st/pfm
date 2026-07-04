@@ -12,7 +12,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -595,7 +595,7 @@
             "type": "row"
         },
         {
-            "description": "Read more about [Replica Set Member States](https://per.co.na/mongo-repstate).",
+            "description": "Read more about [Replica Set Member States](https://docs.postgresfirst.com/mongo-repstate).",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -5034,7 +5034,7 @@
     "schemaVersion": 41,
     "tags": [
         "MongoDB_HA",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [

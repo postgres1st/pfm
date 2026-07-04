@@ -26,13 +26,13 @@ export const Messages = {
     username: 'The database user who started this operation.',
     clientAddress:
       'The IP address and port of the application sending this query.',
-    service: 'The PMM service name for this database instance.',
+    service: 'The PFMM service name for this database instance.',
     clientAppName:
       'The name of the application or driver that started this operation.',
     operationStartTime:
       'The exact timestamp when the database started executing this operation.',
     dataCaptureTime:
-      'When PMM took this snapshot. Compare with Operation start time to calculate how long the operation has been running so far.',
+      'When PFMM took this snapshot. Compare with Operation start time to calculate how long the operation has been running so far.',
     dbInstanceAddress:
       'The server hostname and port where this operation is running.',
   },

@@ -15,7 +15,7 @@
             }
         ]
     },
-    "description": "High-level health overview of PMM-HA components: PostgreSQL/Patroni, ClickHouse, VictoriaMetrics, HAProxy",
+    "description": "High-level health overview of PFMM-HA components: PostgreSQL/Patroni, ClickHouse, VictoriaMetrics, HAProxy",
     "editable": false,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
@@ -37,7 +37,7 @@
         },
         {
             "datasource": "Metrics",
-            "description": "Click row below to see PMM pod details",
+            "description": "Click row below to see PFMM pod details",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -111,12 +111,12 @@
                     "datasource": "Metrics",
                     "editorMode": "code",
                     "expr": "(\n  count(max by(exported_pod) (kube_pod_status_phase{phase=\"Running\", exported_namespace=\"$namespace\", exported_pod=~\"${release}-${pmm_suffix_regex}\"}) == 1)\n  ==\n  count(max by(exported_pod) (kube_pod_info{exported_namespace=\"$namespace\", exported_pod=~\"${release}-${pmm_suffix_regex}\"}))\n  and\n  count(max by(exported_pod) (kube_pod_info{exported_namespace=\"$namespace\", exported_pod=~\"${release}-${pmm_suffix_regex}\"})) > 0\n) * 0 + 1 or vector(0)",
-                    "legendFormat": "PMM",
+                    "legendFormat": "PFMM",
                     "range": true,
                     "refId": "A"
                 }
             ],
-            "title": "🧭 PMM",
+            "title": "🧭 PFMM",
             "type": "stat"
         },
         {
@@ -457,7 +457,7 @@
         },
         {
             "datasource": "Metrics",
-            "description": "Overall health percentage of all PMM HA pods",
+            "description": "Overall health percentage of all PFMM HA pods",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1273,7 +1273,7 @@
                     "datasource": "Metrics",
                     "editorMode": "code",
                     "expr": "(\n  count(kube_pod_status_phase{phase=\"Running\", exported_namespace=\"$namespace\", exported_pod=~\"${release}-${pmm_suffix_regex}\", exported_pod!~\".*($health_exclude_regex).*\"} == 1)\n  /\n  count(kube_pod_info{exported_namespace=\"$namespace\", exported_pod=~\"${release}-${pmm_suffix_regex}\", exported_pod!~\".*($health_exclude_regex).*\"})\n) * 100",
-                    "legendFormat": "🧭 PMM",
+                    "legendFormat": "🧭 PFMM",
                     "range": true,
                     "refId": "PMM"
                 },
@@ -1325,7 +1325,7 @@
             "panels": [
                 {
                     "datasource": "Metrics",
-                    "description": "Status of each PMM server pod (Running = UP).",
+                    "description": "Status of each PFMM server pod (Running = UP).",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -1427,7 +1427,7 @@
                             "refId": "Status"
                         }
                     ],
-                    "title": "PMM Pods",
+                    "title": "PFMM Pods",
                     "transformations": [
                         {
                             "id": "organize",
@@ -1450,7 +1450,7 @@
                     "type": "table"
                 }
             ],
-            "title": "🧭 PMM Pod's Status",
+            "title": "🧭 PFMM Pod's Status",
             "type": "row"
         },
         {
@@ -2318,8 +2318,8 @@
     "refresh": false,
     "schemaVersion": 41,
     "tags": [
-        "PMM",
-        "PMM-HA",
+        "PFMM",
+        "PFMM-HA",
         "Health",
         "Overview"
     ],
@@ -2488,7 +2488,7 @@
     },
     "timepicker": {},
     "timezone": "",
-    "title": "PMM HA Health Overview",
+    "title": "PFMM HA Health Overview",
     "uid": "pmm-ha-health-overview",
     "version": 3
 }

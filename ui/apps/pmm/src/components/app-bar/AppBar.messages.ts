@@ -1,4 +1,4 @@
 export const Messages = {
-  title: 'PMM',
+  title: 'PFMM',
   support: 'Support',
 };

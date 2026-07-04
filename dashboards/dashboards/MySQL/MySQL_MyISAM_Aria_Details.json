@@ -9,7 +9,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -668,7 +668,7 @@
                 {
                     "targetBlank": true,
                     "title": "Optimize Aria: MariaDB Documentation",
-                    "url": "https://per.co.na/aria-storage-engine"
+                    "url": "https://docs.postgresfirst.com/aria-storage-engine"
                 }
             ],
             "options": {
@@ -720,7 +720,7 @@
                 {
                     "targetBlank": true,
                     "title": "Aria System Variables: MariaDB Documentation",
-                    "url": "https://per.co.na/aria-system-variables"
+                    "url": "https://docs.postgresfirst.com/aria-system-variables"
                 }
             ],
             "nullPointMode": "null",
@@ -3404,7 +3404,7 @@
     "schemaVersion": 34,
     "style": "dark",
     "tags": [
-        "Percona",
+        "Postgres1st",
         "MySQL"
     ],
     "templating": {

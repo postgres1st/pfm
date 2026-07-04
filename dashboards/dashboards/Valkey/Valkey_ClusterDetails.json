@@ -2355,7 +2355,7 @@
     "tags": [
         "Valkey",
         "Redis",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [

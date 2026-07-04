@@ -1,26 +1,26 @@
 {
   "type": "app",
-  "name": "PMM",
+  "name": "PFMM",
   "id": "pmm-app",
   "info": {
-    "description": "Percona Management and Monitoring dashboards",
+    "description": "Postgres1st Monitoring and Management dashboards",
     "author": {
-      "name": "Percona"
+      "name": "Postgres1st"
     },
     "keywords": [
-      "percona",
+      "postgres first",
       "query analytics",
-      "pmm",
+      "pfmm",
       "qan"
     ],
     "links": [
       {
         "name": "Project site",
-        "url": "https://github.com/percona/pmm"
+        "url": "https://github.com/postgres1st/pfm"
       },
       {
         "name": "AGPL-3 License",
-        "url": "https://github.com/percona/pmm/blob/main/LICENSE"
+        "url": "https://github.com/postgres1st/pfm/blob/main/LICENSE"
       }
     ],
     "logos": {
@@ -295,12 +295,12 @@
     },
     {
       "type": "dashboard",
-      "name": "PMM Health",
+      "name": "PFMM Health",
       "path": "dashboards/PMM Health/PMM_Health.json"
     },
     {
       "type": "dashboard",
-      "name": "PMM HA Health Overview",
+      "name": "PFMM HA Health Overview",
       "path": "dashboards/PMM Health/PMM_HA_Health_Overview.json"
     },
     {

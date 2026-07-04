@@ -59,7 +59,7 @@
                     "showLineNumbers": false,
                     "showMiniMap": false
                 },
-                "content": "**New to Valkey monitoring?**\n\nFind the help you need: [Explore our documentation](https://docs.percona.com/valkey/index.html \"https://docs.percona.com/valkey/index.html\") | [Read blog articles](https://www.percona.com/blog/category/valkey/ \"https://www.percona.com/blog/category/valkey/\") | [Join the community forum](https://forums.percona.com/c/valkey/ \"https://forums.percona.com/c/valkey/\") | [Contact sales](https://www.percona.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=Valkey%26PMM \"https://www.percona.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=Valkey%26PMM\")",
+                "content": "**New to Valkey monitoring?**\n\nFind the help you need: [Explore our documentation](https://docs.postgresfirst.com/valkey/index.html \"https://docs.postgresfirst.com/valkey/index.html\") | [Read blog articles](https://www.postgresfirst.com/blog/category/valkey/ \"https://www.postgresfirst.com/blog/category/valkey/\") | [Join the community forum](https://forums.postgresfirst.com/c/valkey/ \"https://forums.postgresfirst.com/c/valkey/\") | [Contact sales](https://www.postgresfirst.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=Valkey%26PMM \"https://www.postgresfirst.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=Valkey%26PMM\")",
                 "mode": "markdown"
             },
             "pluginVersion": "11.6.4",
@@ -750,7 +750,7 @@
     "schemaVersion": 41,
     "tags": [
         "Valkey",
-        "Percona",
+        "Postgres1st",
         "Redis",
         "Services"
     ],

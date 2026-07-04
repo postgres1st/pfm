@@ -12,7 +12,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -133,7 +133,7 @@
                 {
                     "targetBlank": true,
                     "title": "Tuning the InnoDB Buffer Pool Size",
-                    "url": "https://www.percona.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
+                    "url": "https://www.postgresfirst.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
                 }
             ],
             "maxDataPoints": 100,
@@ -224,7 +224,7 @@
                 {
                     "targetBlank": true,
                     "title": "Tuning the InnoDB Buffer Pool Size",
-                    "url": "https://www.percona.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
+                    "url": "https://www.postgresfirst.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
                 }
             ],
             "maxDataPoints": 100,
@@ -6322,7 +6322,7 @@
                         {
                             "targetBlank": true,
                             "title": "Tuning the InnoDB Buffer Pool Size",
-                            "url": "https://www.percona.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
+                            "url": "https://www.postgresfirst.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
                         }
                     ],
                     "maxDataPoints": 100,
@@ -6412,7 +6412,7 @@
                         {
                             "targetBlank": true,
                             "title": "Tuning the InnoDB Buffer Pool Size",
-                            "url": "https://www.percona.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
+                            "url": "https://www.postgresfirst.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
                         }
                     ],
                     "maxDataPoints": 100,
@@ -13156,12 +13156,12 @@
                 {
                     "targetBlank": true,
                     "title": "How to calculate a good InnoDB log file size",
-                    "url": "https://www.percona.com/blog/2008/11/21/how-to-calculate-a-good-innodb-log-file-size/"
+                    "url": "https://www.postgresfirst.com/blog/2008/11/21/how-to-calculate-a-good-innodb-log-file-size/"
                 },
                 {
                     "targetBlank": true,
                     "title": "System Variables (innodb_log_file_size)",
-                    "url": "https://per.co.na/innodb_log_file_size"
+                    "url": "https://docs.postgresfirst.com/innodb_log_file_size"
                 }
             ],
             "nullPointMode": "null",
@@ -21588,7 +21588,7 @@
                         {
                             "targetBlank": true,
                             "title": "ICP counters and how to interpret them",
-                            "url": "https://www.percona.com/blog/2017/05/09/mariadb-handler_icp_-counters-what-they-are-and-how-to-use-them/"
+                            "url": "https://www.postgresfirst.com/blog/2017/05/09/mariadb-handler_icp_-counters-what-they-are-and-how-to-use-them/"
                         }
                     ],
                     "nullPointMode": "null",
@@ -24701,7 +24701,7 @@
     "style": "dark",
     "tags": [
         "MySQL",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [
