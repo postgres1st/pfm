@@ -22,38 +22,23 @@ readonly PG_BIN=/usr/pgsql-14/bin
 
 log() { echo "pfm-init: $*"; }
 
-# ---------------------------------------------------------------------------
-# DECISION POINT (yours to implement) — see request in the chat.
-#
-# pfm_srv_initialized: return 0 (true) if /srv is already provisioned and the
-# heavy one-time steps (dir tree, PG initdb, pg_stat_statements) should be
-# SKIPPED; return 1 (false) to run them.
-#
-# The container uses a single top-level sentinel: the mere existence of
-# ${DIST_FILE}. That is simple but blind to a half-finished init (e.g. power
-# loss between initdb and marking done -> sentinel present, PG data dir
-# corrupt/absent). The alternative is per-artifact guards (check the data dir,
-# the password file, etc.) which recover from partial failure but are wordier.
-#
-# Trade-off to weigh: crash-recovery robustness vs simplicity, and the blast
-# radius of a wrong answer (re-running initdb over a live data dir must never
-# happen — a false "needs init" is far more dangerous than a false "done").
-# ---------------------------------------------------------------------------
-pfm_srv_initialized() {
-    # Key the decision off the one artifact we must never overwrite: the PG
-    # data dir's PG_VERSION file, which initdb writes last-ish and which marks
-    # a real cluster. Non-empty PG_VERSION => cluster exists => skip init.
-    # This directly protects the dangerous op (a separate sentinel can desync
-    # from the data dir; PG_VERSION cannot).
-    [[ -s "${POSTGRES_DATA_DIR}/PG_VERSION" ]]
-}
+# Two-phase guard. PG_VERSION (written by initdb) protects the DANGEROUS,
+# never-repeat op — we must never re-initdb over a real cluster. DIST_FILE is the
+# "provisioning complete" sentinel, written LAST, and gates the RECOVERABLE,
+# idempotent post-init steps (grafana DB, extension, markers). A crash between
+# initdb and DIST_FILE is thus repaired on the next boot rather than skipped
+# forever (the earlier single PG_VERSION guard extended "done" to these
+# recoverable steps and left Grafana's DB uncreated permanently).
+pg_cluster_exists() { [[ -s "${POSTGRES_DATA_DIR}/PG_VERSION" ]]; }
+srv_provisioned()   { [[ -f "${DIST_FILE}" ]]; }
 
-init_srv() {
-    log "initializing ${SRV} ..."
+ensure_srv_dirs() {
     mkdir -p "${SRV}"/{backup,clickhouse,grafana/plugins,logs,nginx,prometheus/rules,victoriametrics}
     log "copying grafana plugins ..."
     cp -r /usr/share/percona-dashboards/panels/* "${SRV}/grafana/plugins/"
+}
 
+init_postgres() {
     log "initializing PostgreSQL ..."
     install -d -m 750 "${POSTGRES_DATA_DIR}"
     local pgpw
@@ -63,13 +48,19 @@ init_srv() {
     "${PG_BIN}/initdb" -D "${POSTGRES_DATA_DIR}" \
         --auth-host=scram-sha-256 --auth-local=trust \
         --username=postgres --pwfile="${POSTGRES_PASSWORD_FILE}"
+}
 
-    # Bring PostgreSQL up briefly (as the pg_ctl-owned instance, before the real
-    # pfm-postgresql.service) to do the one-time DB provisioning. pmm-managed
-    # self-creates its own DB/role on startup (initWithRoot, via
-    # /srv/.postgres_password), so only Grafana's DB is created here.
+# provision_databases brings PostgreSQL up briefly (the pg_ctl-owned instance,
+# before pfm-postgresql.service) for the idempotent one-time DB setup. A RETURN
+# trap stops PG even if a step fails under errexit, so a mid-window failure never
+# leaves a stray postmaster for systemd to SIGKILL (unclean shutdown).
+# pmm-managed self-creates its own DB/role on startup, so only Grafana's is here.
+provision_databases() {
+    local pgpw
+    pgpw=$(cat "${POSTGRES_PASSWORD_FILE}")
     log "starting PostgreSQL for first-boot provisioning ..."
     "${PG_BIN}/pg_ctl" start -D "${POSTGRES_DATA_DIR}" -o "-c logging_collector=off"
+    trap 'unset PGPASSWORD; "${PG_BIN}/pg_ctl" stop -D "${POSTGRES_DATA_DIR}" -m fast >/dev/null 2>&1 || true' RETURN
 
     export PGPASSWORD="${pgpw}"
     local psql=(/usr/bin/psql -U postgres -h /run/postgresql -d postgres)
@@ -85,18 +76,28 @@ init_srv() {
         "${psql[@]}" -c "CREATE USER grafana LOGIN PASSWORD 'grafana'"
     fi
     "${psql[@]}" -c 'GRANT ALL PRIVILEGES ON DATABASE grafana TO grafana'
+}
 
-    unset PGPASSWORD
-    "${PG_BIN}/pg_ctl" stop -D "${POSTGRES_DATA_DIR}"
+# provision_srv runs the one-time /srv provisioning, guarded so it recovers from
+# a partial previous run (see the two-phase guard note above).
+provision_srv() {
+    if srv_provisioned; then
+        log "/srv already provisioned — skipping one-time setup."
+        return
+    fi
+    log "provisioning ${SRV} ..."
+    ensure_srv_dirs
+    pg_cluster_exists || init_postgres
+    provision_databases
 
-    # Dashboards version marker (plugins are copied above); mirrors the ansible
+    # Dashboards version marker (plugins copied above); mirrors the ansible
     # dashboards role so upgrade detection has a baseline.
     if [ -f /usr/share/percona-dashboards/VERSION ]; then
         cp /usr/share/percona-dashboards/VERSION "${SRV}/grafana/PERCONA_DASHBOARDS_VERSION"
     fi
 
-    printf '%s' "native" > "${DIST_FILE}"
-    log "/srv initialization complete."
+    printf '%s' "native" > "${DIST_FILE}"   # written LAST — the "done" sentinel
+    log "/srv provisioning complete."
 }
 
 # generate_nginx_cert provisions the TLS material nginx.conf references
@@ -124,11 +125,16 @@ generate_nginx_cert() {
 
     if [ ! -f "${ssl_dst}/certificate.key" ] || [ ! -f "${ssl_dst}/certificate.crt" ]; then
         log "generating self-signed nginx certificate ..."
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -extensions v3_req \
-            -keyout "${ssl_dst}/certificate.key" \
-            -out "${ssl_dst}/certificate.crt" \
-            -config "${ssl_dst}/certificate.conf"
+        # umask in a subshell so the private key is created 0600 from the first
+        # syscall (no world-readable window before the chmod).
+        (
+            umask 077
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -extensions v3_req \
+                -keyout "${ssl_dst}/certificate.key" \
+                -out "${ssl_dst}/certificate.crt" \
+                -config "${ssl_dst}/certificate.conf"
+        )
         chmod 600 "${ssl_dst}/certificate.key"
     fi
 }
@@ -171,11 +177,7 @@ main() {
         exit 1
     fi
 
-    if pfm_srv_initialized; then
-        log "/srv already initialized — skipping one-time provisioning."
-    else
-        init_srv
-    fi
+    provision_srv
     prepare_runtime
     log "done."
 }
