@@ -2,12 +2,13 @@ import Box from '@mui/material/Box';
 import { Page } from 'components/page';
 import { FC, useMemo } from 'react';
 import { Messages } from './HelpCenter.messages';
-import { getCardData } from './HelpCenter.constants';
+import { CARD_IDS, getCardData } from './HelpCenter.constants';
 import { useUser } from 'contexts/user';
 import { HelpCenterCard } from './help-center-card/HelpCenterCard';
 import WelcomeCard from './welcome-card/WelcomeCard';
 import { cardClasses } from '@mui/material/Card';
 import { useTour } from 'contexts/tour';
+import { TOUR_ENABLED } from 'lib/constants';
 
 export const HelpCenter: FC = () => {
   const { user } = useUser();
@@ -16,7 +17,9 @@ export const HelpCenter: FC = () => {
     () =>
       getCardData({
         startProductTour: () => startTour('product'),
-      }).filter((card) => user?.isPMMAdmin || !card.adminOnly),
+      })
+        .filter((card) => user?.isPMMAdmin || !card.adminOnly)
+        .filter((card) => TOUR_ENABLED || card.id !== CARD_IDS.tips),
     [user, startTour]
   );
 

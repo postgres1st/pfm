@@ -7,7 +7,7 @@ import { GrafanaPage } from 'pages/grafana';
 import { useGrafana } from 'contexts/grafana';
 import { UpdateModal } from 'components/main/update-modal';
 import { DelayedRender } from 'components/delayed-render';
-import { SHOW_UPDATE_INFO_DELAY_MS } from 'lib/constants';
+import { SHOW_UPDATE_INFO_DELAY_MS, UPDATES_ENABLED } from 'lib/constants';
 import { isRenderingServer } from '@pmm/shared';
 import Header from './header/Header';
 
@@ -45,9 +45,11 @@ export const MainWithNav = () => {
         <Outlet />
         <GrafanaPage />
       </Stack>
-      <DelayedRender delay={SHOW_UPDATE_INFO_DELAY_MS}>
-        <UpdateModal />
-      </DelayedRender>
+      {UPDATES_ENABLED && (
+        <DelayedRender delay={SHOW_UPDATE_INFO_DELAY_MS}>
+          <UpdateModal />
+        </DelayedRender>
+      )}
     </Stack>
   );
 };

@@ -3,7 +3,7 @@ import { ServiceType } from 'types/services.types';
 import { User, UserPreferences } from 'types/user.types';
 import { Advisor } from 'types/advisors.types';
 import { groupAdvisorsIntoCategories } from 'utils/advisors.utils';
-import { PMM_NEW_NAV_GRAFANA_PATH } from 'lib/constants';
+import { PMM_NEW_NAV_GRAFANA_PATH, UPDATES_ENABLED } from 'lib/constants';
 import { ColorMode } from '@pmm/shared';
 import {
   NAV_ACCOUNT,
@@ -221,6 +221,13 @@ export const addConfiguration = (
   status: UpdateStatus,
   versionInfo?: GetUpdatesResponse
 ): NavItem => {
+  if (!UPDATES_ENABLED) {
+    return {
+      ...NAV_CONFIGURATION,
+      children: NAV_CONFIGURATION.children?.filter((c) => c.id !== 'updates'),
+    };
+  }
+
   const updates = NAV_CONFIGURATION.children?.find((c) => c.id === 'updates');
   const { updateAvailable, installed, latest } = versionInfo || {};
 
