@@ -64,11 +64,36 @@ init_srv() {
         --auth-host=scram-sha-256 --auth-local=trust \
         --username=postgres --pwfile="${POSTGRES_PASSWORD_FILE}"
 
-    log "enabling pg_stat_statements ..."
+    # Bring PostgreSQL up briefly (as the pg_ctl-owned instance, before the real
+    # pfm-postgresql.service) to do the one-time DB provisioning. pmm-managed
+    # self-creates its own DB/role on startup (initWithRoot, via
+    # /srv/.postgres_password), so only Grafana's DB is created here.
+    log "starting PostgreSQL for first-boot provisioning ..."
     "${PG_BIN}/pg_ctl" start -D "${POSTGRES_DATA_DIR}" -o "-c logging_collector=off"
-    PGPASSWORD="${pgpw}" /usr/bin/psql -U postgres -h /run/postgresql -d postgres \
-        -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public'
+
+    export PGPASSWORD="${pgpw}"
+    local psql=(/usr/bin/psql -U postgres -h /run/postgresql -d postgres)
+
+    log "enabling pg_stat_statements ..."
+    "${psql[@]}" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public'
+
+    log "creating grafana database and user ..."
+    if [ "$("${psql[@]}" -tAc "SELECT 1 FROM pg_database WHERE datname='grafana'")" != "1" ]; then
+        "${psql[@]}" -c 'CREATE DATABASE grafana'
+    fi
+    if [ "$("${psql[@]}" -tAc "SELECT 1 FROM pg_roles WHERE rolname='grafana'")" != "1" ]; then
+        "${psql[@]}" -c "CREATE USER grafana LOGIN PASSWORD 'grafana'"
+    fi
+    "${psql[@]}" -c 'GRANT ALL PRIVILEGES ON DATABASE grafana TO grafana'
+
+    unset PGPASSWORD
     "${PG_BIN}/pg_ctl" stop -D "${POSTGRES_DATA_DIR}"
+
+    # Dashboards version marker (plugins are copied above); mirrors the ansible
+    # dashboards role so upgrade detection has a baseline.
+    if [ -f /usr/share/percona-dashboards/VERSION ]; then
+        cp /usr/share/percona-dashboards/VERSION "${SRV}/grafana/PERCONA_DASHBOARDS_VERSION"
+    fi
 
     printf '%s' "native" > "${DIST_FILE}"
     log "/srv initialization complete."
@@ -92,6 +117,24 @@ prepare_runtime() {
 
     log "validating nginx configuration ..."
     nginx -t
+
+    # Create the pmm-agent config (idempotent) so pfm-agent.service can start.
+    # Native keeps it under /srv (pfm-writable, persistent) rather than the
+    # container's root-owned /usr/local/percona/pmm/config; pfm-agent.service's
+    # --config-file points here to match.
+    install -d -m 770 /srv/pmm-agent/config /srv/pmm-agent/tmp /srv/nomad/data
+    local agent_cfg=/srv/pmm-agent/config/pmm-agent.yaml
+    if [ ! -f "${agent_cfg}" ]; then
+        log "creating pmm-agent configuration ..."
+        /usr/sbin/pmm-agent setup \
+            --config-file="${agent_cfg}" \
+            --skip-registration \
+            --id=pmm-server \
+            --paths-tempdir=/srv/pmm-agent/tmp \
+            --paths-nomad-data-dir=/srv/nomad/data \
+            --server-address=127.0.0.1:8443 \
+            --server-insecure-tls
+    fi
 }
 
 main() {

@@ -5,8 +5,9 @@
 # autostart=false. Hence no [Install] section; PartOf=pfm.target still ties its
 # stop/restart to the stack lifecycle.
 #
-# NOTE: its config file must be created first by pfm-init.sh's `pmm-agent setup`
-# step (follow-on); PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
+# Its config is created by pfm-init.sh's `pmm-agent setup` step, under /srv
+# (pfm-writable) rather than the container's root-owned /usr/local/percona path.
+# PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
 [Unit]
 Description=pfm self-monitoring agent (pmm-agent)
 After=pfm-init.service pfm-managed.service
@@ -20,7 +21,7 @@ User=pfm
 Group=pfm
 Environment=PERCONA_TELEMETRY_DISABLE=1
 ExecStart=/usr/sbin/pmm-agent \
-    --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml \
+    --config-file=/srv/pmm-agent/config/pmm-agent.yaml \
     --paths-tempdir=/srv/pmm-agent/tmp
 KillSignal=SIGTERM
 TimeoutStopSec=10
