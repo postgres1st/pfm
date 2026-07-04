@@ -1,0 +1,14 @@
+# pfm — native systemd stack (path B). Groups the per-service units so the
+# whole server starts/stops as one: `systemctl start pfm.target`.
+# T0 authors the static daemons; T3 adds the dynamic services (victoriametrics,
+# vmalert, vmproxy, qan-api2). The control plane (pmm-managed, pmm-agent) is
+# added later and will append itself to Wants= below.
+[Unit]
+Description=pfm monitoring server
+Requires=pfm-init.service
+After=pfm-init.service
+Wants=pfm-postgresql.service pfm-clickhouse.service pfm-nginx.service pfm-grafana.service
+Wants=pfm-victoriametrics.service pfm-vmalert.service pfm-vmproxy.service pfm-qan-api2.service
+
+[Install]
+WantedBy=multi-user.target

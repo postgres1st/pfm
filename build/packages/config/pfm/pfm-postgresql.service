@@ -1,0 +1,37 @@
+# pfm-postgresql — embedded PG14 (was supervisord [program:postgresql],
+# priority=1). ExecStart transcribed verbatim from pmm.ini. stopsignal=INT
+# (PG "fast shutdown") -> KillSignal=SIGINT; stopwaitsecs=300 -> TimeoutStopSec.
+# Type=exec (not notify): the Percona PG14 build isn't guaranteed to sd_notify,
+# and supervisord's priority ordering never gated on readiness either -- so we
+# match it with retry-until-up (Restart=on-failure). A readiness gate
+# (ExecStartPost=pg_isready) is a later hardening step, not T0.
+[Unit]
+Description=pfm PostgreSQL 14 (embedded)
+After=pfm-init.service
+Requires=pfm-init.service
+PartOf=pfm.target
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+ExecStart=/usr/pgsql-14/bin/postgres \
+    -D /srv/postgres14 \
+    -c shared_preload_libraries=pg_stat_statements \
+    -c pg_stat_statements.max=10000 \
+    -c pg_stat_statements.track=all \
+    -c pg_stat_statements.save=off \
+    -c logging_collector=off \
+    -c max_connections=2000
+KillSignal=SIGINT
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target

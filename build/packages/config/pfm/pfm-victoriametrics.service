@@ -1,0 +1,50 @@
+# pfm-victoriametrics — metrics TSDB (was pmm-managed-generated
+# [program:victoriametrics], priority=7). "Dynamic": pmm-managed regenerates its
+# runtime config when settings change. In the native model the settings-driven
+# values arrive via EnvironmentFile (/run/pfm/victoriametrics.env, written by
+# pmm-managed — T3b) and are consumed through VM's own --envflag.enable:
+#   VM_retentionPeriod        -> -retentionPeriod        (from DataRetention)
+#   VM_search_disableCache    -> -search.disableCache    (from cache setting)
+# All other flags keep their current defaults as static args. If the env file is
+# absent (first boot before pmm-managed renders), VM falls back to its built-in
+# defaults — T3b/T7 seeds sane defaults so this window is benign.
+[Unit]
+Description=pfm VictoriaMetrics (metrics storage)
+After=pfm-init.service pfm-postgresql.service
+Requires=pfm-init.service
+PartOf=pfm.target
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+# Non-optional: the RPM tmpfiles seeds this at boot. Fail closed if it is
+# missing rather than let ${PMM_BIND_ADDRESS} expand empty and bind 0.0.0.0.
+EnvironmentFile=/run/pfm/victoriametrics.env
+ExecStart=/usr/sbin/victoriametrics \
+    --promscrape.config=/etc/victoriametrics-promscrape.yml \
+    --storageDataPath=/srv/victoriametrics/data \
+    --httpListenAddr=${PMM_BIND_ADDRESS}:9090 \
+    --search.maxQueryLen=1MB \
+    --search.latencyOffset=5s \
+    --search.maxUniqueTimeseries=100000000 \
+    --search.maxSamplesPerQuery=1500000000 \
+    --search.maxQueueDuration=30s \
+    --search.logSlowQueryDuration=30s \
+    --search.maxQueryDuration=90s \
+    --promscrape.streamParse=true \
+    --http.pathPrefix=/prometheus \
+    --envflag.enable \
+    --envflag.prefix=VM_
+KillSignal=SIGINT
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target

@@ -1,0 +1,24 @@
+# pfm-init — first-boot provisioning (was supervisord [program:pmm-init],
+# priority=-1). Type=oneshot + RemainAfterExit so the daemons order After= it
+# and it stays "active (exited)" once done. Idempotent: safe to re-run every
+# boot. Runs as the pfm service account (single-UID model, T1) because initdb
+# and pg_stat_statements setup must NOT run as root.
+[Unit]
+Description=pfm first-boot provisioning (idempotent)
+After=network.target
+Before=pfm-postgresql.service pfm-clickhouse.service pfm-nginx.service pfm-grafana.service
+RequiresMountsFor=/srv
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=pfm
+Group=pfm
+ExecStart=/usr/share/pfm/pfm-init.sh
+# /dev/stdout is not openable under a systemd unit; send everything to journald.
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=600
+
+[Install]
+WantedBy=pfm.target
