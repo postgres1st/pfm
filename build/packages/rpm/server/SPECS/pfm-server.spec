@@ -95,7 +95,7 @@ install -p -m 0644 pfm-tmpfiles.conf  %{buildroot}%{_tmpfilesdir}/pfm.conf
 install -p -m 0644 pfm-sysusers.conf  %{buildroot}%{_sysusersdir}/pfm.conf
 install -p -m 0755 pfm-init.sh        %{buildroot}%{_datadir}/pfm/pfm-init.sh
 
-for e in victoriametrics vmalert vmproxy qan-api2; do
+for e in victoriametrics vmalert vmproxy qan-api2 grafana; do
     install -p -m 0644 defaults/${e}.env %{buildroot}%{_prefix}/lib/pfm/defaults/${e}.env
 done
 
