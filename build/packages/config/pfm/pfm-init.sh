@@ -99,21 +99,46 @@ init_srv() {
     log "/srv initialization complete."
 }
 
+# generate_nginx_cert provisions the TLS material nginx.conf references
+# (certificate.crt/key, ca-certs.pem, dhparam.pem under /srv/nginx). This is the
+# native port of the container's generate-ssl-certificate: same logic, minus the
+# cloud-init /var/lib/cloud/scripts location. The supporting files ship in the
+# RPM at /etc/nginx/ssl; the leaf cert is self-signed here (localhost SAN via
+# certificate.conf). Operators can bring their own by dropping certificate.crt/
+# key into /srv/nginx — present files are never overwritten.
+generate_nginx_cert() {
+    local ssl_src=/etc/nginx/ssl
+    local ssl_dst="${SRV}/nginx"
+    mkdir -p "${ssl_dst}"
+
+    local f
+    for f in dhparam.pem ca-certs.pem certificate.conf; do
+        if [ ! -f "${ssl_dst}/${f}" ]; then
+            if [ ! -f "${ssl_src}/${f}" ]; then
+                log "FATAL: ${ssl_src}/${f} missing; the pfm-server RPM must ship the nginx SSL sources." >&2
+                exit 1
+            fi
+            cp "${ssl_src}/${f}" "${ssl_dst}/${f}"
+        fi
+    done
+
+    if [ ! -f "${ssl_dst}/certificate.key" ] || [ ! -f "${ssl_dst}/certificate.crt" ]; then
+        log "generating self-signed nginx certificate ..."
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -extensions v3_req \
+            -keyout "${ssl_dst}/certificate.key" \
+            -out "${ssl_dst}/certificate.crt" \
+            -config "${ssl_dst}/certificate.conf"
+        chmod 600 "${ssl_dst}/certificate.key"
+    fi
+}
+
 # Steps that are cheap and must run every boot regardless of init state.
 prepare_runtime() {
     log "creating nginx temp directories ..."
     mkdir -p "${SRV}"/nginx/tmp/{client,proxy,fastcgi,uwsgi,scgi}
 
-    # The cert generator is baked into the container image; on a native RPM host
-    # a pfm-shipped equivalent must provide it (T7). Guard so a missing script
-    # gives a clear message instead of a raw bash error under `set -e`.
-    local cert_script=/var/lib/cloud/scripts/per-boot/generate-ssl-certificate
-    if [ -x "${cert_script}" ]; then
-        log "generating self-signed nginx certificate ..."
-        bash "${cert_script}" >/dev/null 2>&1
-    else
-        log "WARNING: cert generator ${cert_script} not present; nginx TLS certs must be provisioned by the RPM (T7)."
-    fi
+    generate_nginx_cert
 
     log "validating nginx configuration ..."
     nginx -t
