@@ -1,0 +1,44 @@
+# pfm-managed — the pfm control plane (was supervisord [program:pmm-managed],
+# priority=14). Serves the API, regenerates the dynamic services' config
+# (/run/pfm/*.env), and drives them via systemctl.
+#
+# ZERO-EGRESS ENFORCEMENT POINT. The telemetry/update locks are baked as image
+# ENV in the container build, but systemd units do NOT inherit image ENV, so
+# they must be re-declared here. pmm-managed treats them as runtime-immutable
+# (the API refuses to re-enable). Grafana's own phone-homes are disabled in
+# grafana.ini, applied via pfm-grafana.service.
+#
+# NOTE: pmm-managed needs its Postgres database + Grafana DB provisioned before
+# it can start cleanly (the init.yml port in pfm-init.sh — follow-on). Until
+# that lands it will fail to connect and retry (StartLimitIntervalSec=0).
+[Unit]
+Description=pfm control plane (pmm-managed)
+After=pfm-init.service pfm-postgresql.service pfm-clickhouse.service pfm-victoriametrics.service pfm-nginx.service
+Requires=pfm-init.service pfm-postgresql.service
+PartOf=pfm.target
+# startretries=1000 -> retry indefinitely until dependencies/provisioning ready.
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+Environment=PERCONA_TELEMETRY_DISABLE=1
+Environment=PMM_ENABLE_TELEMETRY=false
+Environment=PMM_ENABLE_UPDATES=false
+ExecStart=/usr/sbin/pmm-managed \
+    --victoriametrics-config=/etc/victoriametrics-promscrape.yml \
+    --victoriametrics-url=http://127.0.0.1:9090/prometheus \
+    --postgres-name=pmm-managed \
+    --postgres-username=pmm-managed \
+    --postgres-password=pmm-managed \
+    --supervisord-config-dir=/etc/supervisord.d
+KillSignal=SIGTERM
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target

@@ -1,0 +1,30 @@
+# pfm-agent — pfm's self-monitoring agent (was supervisord [program:pmm-agent],
+# priority=15, autostart=false). Started ON DEMAND by pmm-managed once the
+# control plane is ready (the code calls `systemctl start pfm-agent.service`,
+# see systemdUnitName), NOT auto-started by pfm.target — mirroring upstream's
+# autostart=false. Hence no [Install] section; PartOf=pfm.target still ties its
+# stop/restart to the stack lifecycle.
+#
+# NOTE: its config file must be created first by pfm-init.sh's `pmm-agent setup`
+# step (follow-on); PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
+[Unit]
+Description=pfm self-monitoring agent (pmm-agent)
+After=pfm-init.service pfm-managed.service
+Requires=pfm-init.service
+PartOf=pfm.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+Environment=PERCONA_TELEMETRY_DISABLE=1
+ExecStart=/usr/sbin/pmm-agent \
+    --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml \
+    --paths-tempdir=/srv/pmm-agent/tmp
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
