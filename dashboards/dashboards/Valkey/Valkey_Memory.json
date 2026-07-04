@@ -786,7 +786,7 @@
     "tags": [
         "Redis",
         "Valkey",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [

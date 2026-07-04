@@ -1,7 +1,7 @@
 import { AdvisorFamily, AdvisorInterval } from 'types/advisors.types';
 import { ServiceType } from 'types/services.types';
 
-export const PMM_TITLE = 'Percona Monitoring and Management';
+export const PMM_TITLE = 'Postgres1st Monitoring and Management';
 // todo: remove completely in a follow up to reduce current scope
 export const PMM_NEW_NAV_PATH = '';
 export const GRAFANA_SUB_PATH = '/graph';
@@ -11,9 +11,9 @@ export const PMM_HOME_URL = `${GRAFANA_SUB_PATH}/d/pmm-home`;
 export const PMM_LOGIN_URL = `${GRAFANA_SUB_PATH}/login`;
 export const PMM_SETTINGS_URL = `${PMM_BASE_PATH}/settings`;
 export const PMM_NEW_NAV_UPDATES_PATH = `${PMM_NEW_NAV_PATH}/updates`;
-export const PMM_SUPPORT_URL = 'https://per.co.na/pmm_documentation';
-export const PMM_DOCS_UPDATES_URL = 'https://per.co.na/pmm-upgrade';
-export const PMM_DOCS_UPDATE_CLIENT_URL = 'https://per.co.na/pmm-upgrade-agent';
+export const PMM_SUPPORT_URL = 'https://docs.postgresfirst.com/pmm_documentation';
+export const PMM_DOCS_UPDATES_URL = 'https://docs.postgresfirst.com/pmm-upgrade';
+export const PMM_DOCS_UPDATE_CLIENT_URL = 'https://docs.postgresfirst.com/pmm-upgrade-agent';
 export const PMM_NEW_NAV_HOME_URL = `${PMM_NEW_NAV_PATH}/graph/d/pmm-home`;
 
 export const INTERVALS_MS = {
@@ -51,8 +51,8 @@ export const SHOW_UPDATE_INFO_DELAY_MS = 5000;
 export const SHOW_UPDATE_MODAL_AFTER_MS = 60 * 60 * 1000;
 
 export const DOCS_URLS = {
-  qan: 'https://per.co.na/QAN',
-  forums: 'https://per.co.na/PMM3_forums',
+  qan: 'https://docs.postgresfirst.com/QAN',
+  forums: 'https://docs.postgresfirst.com/PMM3_forums',
 };
 
 export const TIME_FORMAT = 'yyyy-MM-dd HH:mm:ss';

@@ -23,14 +23,14 @@ export const getCardData = ({
 }): HelpCard[] => [
   {
     id: CARD_IDS.pmmDocs,
-    title: 'PMM documentation',
+    title: 'PFMM documentation',
     description:
-      'From setup to troubleshooting, you’ll find step-by-step instructions, tips, and best practices to get the most out of PMM.',
+      'From setup to troubleshooting, you’ll find step-by-step instructions, tips, and best practices to get the most out of PFMM.',
     buttons: [
       {
         text: 'View docs',
         target: '_blank',
-        url: 'https://per.co.na/pmm_documentation',
+        url: 'https://docs.postgresfirst.com/pmm_documentation',
       },
     ],
     adminOnly: false,
@@ -38,14 +38,14 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.support,
-    title: 'Percona support',
+    title: 'Postgres1st support',
     description:
-      'From 24/7 technical support to fully managed services, Percona’s trusted experts are ready to help you optimize, troubleshoot, and scale.',
+      'From 24/7 technical support to fully managed services, Postgres1st’s trusted experts are ready to help you optimize, troubleshoot, and scale.',
     buttons: [
       {
         text: 'Contact support',
         target: '_blank',
-        url: 'https://www.percona.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=PMM-Support',
+        url: 'https://www.postgresfirst.com/about/contact?utm_campaign=7075599-Product%20Documentation%20Contact%20Us%20Clicks&utm_source=PFMM-Support',
       },
     ],
     adminOnly: false,
@@ -53,14 +53,14 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.forum,
-    title: 'Percona forum',
+    title: 'Postgres1st forum',
     description:
-      'A friendly space to connect with other users, share insights, and get answers from the community and from the Percona experts.',
+      'A friendly space to connect with other users, share insights, and get answers from the community and from the Postgres1st experts.',
     buttons: [
       {
         text: 'View forum',
         target: '_blank',
-        url: 'https://per.co.na/PMM3_forum',
+        url: 'https://docs.postgresfirst.com/PMM3_forum',
       },
     ],
     adminOnly: false,
@@ -68,9 +68,9 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.pmmDump,
-    title: 'PMM dump',
+    title: 'PFMM dump',
     description:
-      'Generate datasets to securely share your data with Percona Support. This helps our experts quickly diagnose and replicate issues.',
+      'Generate datasets to securely share your data with Postgres1st Support. This helps our experts quickly diagnose and replicate issues.',
     buttons: [
       {
         text: 'Manage datasets',
@@ -82,9 +82,9 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.pmmLogs,
-    title: 'PMM logs',
+    title: 'PFMM logs',
     description:
-      'Download your PMM logs as a ZIP file for easy sharing and faster issue diagnosis.',
+      'Download your PFMM logs as a ZIP file for easy sharing and faster issue diagnosis.',
     buttons: [
       {
         text: 'Export logs',
@@ -103,7 +103,7 @@ export const getCardData = ({
     adminOnly: false,
     buttons: [
       {
-        text: 'Start PMM tour',
+        text: 'Start PFMM tour',
         startIconName: START_ICON.map,
         dataTestId: 'tips-card-start-product-tour-button',
         onClick: startProductTour,
@@ -112,15 +112,15 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.nextChapter,
-    title: "Help shape PMM's next chapter",
+    title: "Help shape PFMM's next chapter",
     description:
-      "We'd love your thoughts on PMM 3 to guide its future development. This is a short survey with 4 questions (Google Form) that will help us drive the next wave of improvements.",
+      "We'd love your thoughts on PFMM 3 to guide its future development. This is a short survey with 4 questions (Google Form) that will help us drive the next wave of improvements.",
     adminOnly: false,
     buttons: [
       {
         text: 'Share your thoughts',
         target: '_blank',
-        url: 'https://per.co.na/pmm3_feedback',
+        url: 'https://docs.postgresfirst.com/pmm3_feedback',
       },
     ],
   },

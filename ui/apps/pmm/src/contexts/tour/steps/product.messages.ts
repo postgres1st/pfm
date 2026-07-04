@@ -1,8 +1,8 @@
 export const Messages = {
   perconaDashboards: {
-    title: 'Percona Dashboards',
+    title: 'Postgres1st Dashboards',
     collection:
-      "Here you'll find a collection of expertly designed dashboards, powered by Percona's deep database expertise, to monitor your databases seamlessly across on-premises, cloud, or hybrid environments.",
+      "Here you'll find a collection of expertly designed dashboards, powered by Postgres1st's deep database expertise, to monitor your databases seamlessly across on-premises, cloud, or hybrid environments.",
     customization:
       'Built on Grafana, these dashboards can be customized, expanded, or integrated with existing ones to fit your unique monitoring needs.',
   },
@@ -19,7 +19,7 @@ export const Messages = {
       'Use it when you want to explore your graph and table data but do not want to create a dashboard. This way you can focus only on the query.',
   },
   alerts: {
-    title: 'Alerts & Percona Templates',
+    title: 'Alerts & Postgres1st Templates',
     builtin:
       "Grafana's built-in alerting is ready to use right out-of-the-box. Simply set metrics, define thresholds, and configure your communication channels to start receiving alerts.",
     templates:
@@ -41,10 +41,10 @@ export const Messages = {
   configurations: {
     title: 'Configurations',
     settings:
-      "Manage PMM's advanced settings to customize metrics collection and control feature availability, including features in Technical Preview.",
+      "Manage PFMM's advanced settings to customize metrics collection and control feature availability, including features in Technical Preview.",
     access:
       'Control team access and permissions through Users and access, or modify your personal preferences and password in your profile settings.',
-    readMore: "Learn more about PMM's configurations",
+    readMore: "Learn more about PFMM's configurations",
   },
   account: {
     title: 'Account',
@@ -54,8 +54,8 @@ export const Messages = {
   helpCenter: {
     title: 'Help Center',
     resource:
-      "Your one-stop resource for everything PMM. Whether you need documentation, community support, troubleshooting tools like datasets and logs, or useful tips to enhance your experience, it's all just a click away.",
+      "Your one-stop resource for everything PFMM. Whether you need documentation, community support, troubleshooting tools like datasets and logs, or useful tips to enhance your experience, it's all just a click away.",
     revisit:
-      'This PMM tour has finished but you can revisit it anytime from the Help Center too!',
+      'This PFMM tour has finished but you can revisit it anytime from the Help Center too!',
   },
 };

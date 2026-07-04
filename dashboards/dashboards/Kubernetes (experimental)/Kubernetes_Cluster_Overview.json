@@ -1286,19 +1286,19 @@
                                 "value": [
                                     {
                                         "options": {
-                                            "PerconaPGCluster": {
+                                            "Postgres1stPGCluster": {
                                                 "index": 1,
                                                 "text": "percona-postgresql-operator"
                                             },
-                                            "PerconaServerMongoDB": {
+                                            "Postgres1stServerMongoDB": {
                                                 "index": 2,
                                                 "text": "percona-server-mongodb-operator"
                                             },
-                                            "PerconaServerMySQL": {
+                                            "Postgres1stServerMySQL": {
                                                 "index": 3,
                                                 "text": "percona-server-mysql-operator"
                                             },
-                                            "PerconaXtraDBCluster": {
+                                            "Postgres1stXtraDBCluster": {
                                                 "index": 0,
                                                 "text": "percona-xtradb-cluster-operator"
                                             }
@@ -2279,7 +2279,7 @@
     "tags": [
         "Kubernetes",
         "Operators",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [

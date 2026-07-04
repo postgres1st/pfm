@@ -10,7 +10,7 @@ import {
 import { MemoryRouter } from 'react-router-dom';
 
 describe('HomeLink', () => {
-  it('navigates to PMM Home if client update is not pending', () => {
+  it('navigates to PFMM Home if client update is not pending', () => {
     render(
       wrapWithUpdatesProvider(
         <MemoryRouter initialEntries={[{ pathname: '/updates/clients' }]}>
@@ -28,7 +28,7 @@ describe('HomeLink', () => {
     );
   });
 
-  it('navigates to PMM Home if client update is not pending on new UI', () => {
+  it('navigates to PFMM Home if client update is not pending on new UI', () => {
     render(
       wrapWithUpdatesProvider(
         <MemoryRouter

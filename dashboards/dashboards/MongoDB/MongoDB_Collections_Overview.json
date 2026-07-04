@@ -26,7 +26,7 @@
                 },
                 "enable": true,
                 "iconColor": "orange",
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "target": {
                     "limit": 100,
                     "matchAny": false,
@@ -1638,7 +1638,7 @@
     "refresh": false,
     "schemaVersion": 39,
     "tags": [
-        "Percona",
+        "Postgres1st",
         "MongoDB"
     ],
     "templating": {

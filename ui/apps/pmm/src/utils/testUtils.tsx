@@ -35,7 +35,7 @@ export const wrapWithUpdatesProvider = (
           releaseNotesUrl: '',
         },
         updateAvailable: false,
-        latestNewsUrl: 'https://per.co.na/pmm/3.0.0',
+        latestNewsUrl: 'https://docs.postgresfirst.com/pmm/3.0.0',
         lastCheck: '2024-07-30T10:34:05.886739003Z',
       },
       areClientsUpToDate: true,

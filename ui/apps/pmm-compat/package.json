@@ -14,7 +14,7 @@
     "sign": "npx --yes @grafana/sign-plugin@latest",
     "clean": "rm -rf dist"
   },
-  "author": "Percona LLC",
+  "author": "Postgres1st",
   "license": "AGPL-3.0-only",
   "devDependencies": {
     "@grafana/eslint-config": "^8.0.0",

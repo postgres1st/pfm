@@ -378,7 +378,7 @@
             "type": "row"
         },
         {
-            "description": "Status of PBM agents registered with PMM server",
+            "description": "Status of PBM agents registered with PFMM server",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1116,7 +1116,7 @@
     "refresh": false,
     "schemaVersion": 41,
     "tags": [
-        "Percona",
+        "Postgres1st",
         "MongoDB"
     ],
     "templating": {

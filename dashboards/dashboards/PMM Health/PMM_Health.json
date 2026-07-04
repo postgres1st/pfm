@@ -12,7 +12,7 @@
         "iconColor": "#e0752d",
         "limit": 100,
         "matchAny": true,
-        "name": "PMM Annotations",
+        "name": "PFMM Annotations",
         "showIn": 0,
         "tags": [
           "pmm_annotation",
@@ -72,7 +72,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core component up and running?",
+      "description": "Is the PFMM Core component up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -318,7 +318,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core element up and running?",
+      "description": "Is the PFMM Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -564,7 +564,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core element up and running?",
+      "description": "Is the PFMM Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2179,7 +2179,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core element up and running?",
+      "description": "Is the PFMM Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2934,12 +2934,12 @@
       },
       "id": 1056,
       "panels": [],
-      "title": "PMM ManageD",
+      "title": "PFMM ManageD",
       "type": "row"
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core element up and running?",
+      "description": "Is the PFMM Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3021,7 +3021,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Number of Advisors checks loaded in PMM ",
+      "description": "Number of Advisors checks loaded in PFMM ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3148,7 +3148,7 @@
           "refId": "A"
         }
       ],
-      "title": "Connected PMM Agents",
+      "title": "Connected PFMM Agents",
       "type": "stat"
     },
     {
@@ -5499,7 +5499,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PMM Core element up and running?",
+      "description": "Is the PFMM Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -6408,7 +6408,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Reports whether PMM Server can connect to the PostgreSQL instance.",
+      "description": "Reports whether PFMM Server can connect to the PostgreSQL instance.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -7789,7 +7789,7 @@
   "refresh": false,
   "schemaVersion": 42,
   "tags": [
-    "Percona"
+    "Postgres1st"
   ],
   "templating": {
     "list": [
@@ -7921,7 +7921,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "PMM Health",
+  "title": "PFMM Health",
   "uid": "pmm-health",
   "version": 1,
   "weekStart": ""

@@ -8,7 +8,7 @@
                 "hide": true,
                 "iconColor": "#e0752d",
                 "limit": 100,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -58,7 +58,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "PMM Query Analytics",
+            "title": "PFMM Query Analytics",
             "transparent": true,
             "type": "pmm-qan-app-panel"
         }
@@ -68,7 +68,7 @@
     "style": "dark",
     "tags": [
         "Query Analytics",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [
@@ -429,7 +429,7 @@
         ]
     },
     "timezone": "",
-    "title": "PMM Query Analytics",
+    "title": "PFMM Query Analytics",
     "uid": "pmm-qan",
     "version": 2
 }

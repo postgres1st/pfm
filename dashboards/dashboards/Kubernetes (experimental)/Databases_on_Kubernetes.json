@@ -21,7 +21,7 @@
             }
         ]
     },
-    "description": "Dashboard for DB Clusters managed with Percona Kubernetes Operators",
+    "description": "Dashboard for DB Clusters managed with Postgres1st Kubernetes Operators",
     "editable": false,
     "fiscalYearStartMonth": 0,
     "gnetId": 15760,
@@ -38,7 +38,7 @@
             "title": "Documentation",
             "tooltip": "",
             "type": "link",
-            "url": "https://docs.percona.com"
+            "url": "https://docs.postgresfirst.com"
         },
         {
             "asDropdown": false,
@@ -50,7 +50,7 @@
             "title": "Get help",
             "tooltip": "",
             "type": "link",
-            "url": "https://www.percona.com/about/contact"
+            "url": "https://www.postgresfirst.com/about/contact"
         }
     ],
     "liveNow": false,
@@ -2641,7 +2641,7 @@
     "schemaVersion": 37,
     "style": "dark",
     "tags": [
-        "Percona",
+        "Postgres1st",
         "Operators",
         "Kubernetes"
     ],

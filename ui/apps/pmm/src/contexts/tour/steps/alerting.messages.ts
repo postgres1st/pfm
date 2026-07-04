@@ -9,7 +9,7 @@ export const Messages = {
     title: 'Alert templates',
     effortlessly: 'Templates help you create complex alert rules effortlessly.',
     offers:
-      'Percona offers a set of default templates for common events and expressions, but you can also create custom templates to fit your unique requirements.',
+      'Postgres1st offers a set of default templates for common events and expressions, but you can also create custom templates to fit your unique requirements.',
   },
   alertRules: {
     title: 'Alert rules',
@@ -42,7 +42,7 @@ export const Messages = {
     title: 'Alert groups',
     alert: 'Alert groups show grouped alerts.',
     grouping:
-      "Group common alerts into a single alert group to ensure that PMM doesn't fire duplicate alerts.",
+      "Group common alerts into a single alert group to ensure that PFMM doesn't fire duplicate alerts.",
   },
   settings: {
     title: 'Alert settings',

@@ -54,7 +54,7 @@ export const getProductTourSteps = (user?: User): StepType[] => {
           <Typography>
             <Link
               color="inherit"
-              href="https://per.co.na/alert_templates"
+              href="https://docs.postgresfirst.com/alert_templates"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -72,7 +72,7 @@ export const getProductTourSteps = (user?: User): StepType[] => {
           <Typography>
             <Link
               color="inherit"
-              href="https://per.co.na/advisors"
+              href="https://docs.postgresfirst.com/advisors"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -97,7 +97,7 @@ export const getProductTourSteps = (user?: User): StepType[] => {
           <Typography>
             <Link
               color="inherit"
-              href="https://per.co.na/backup_management"
+              href="https://docs.postgresfirst.com/backup_management"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -121,7 +121,7 @@ export const getProductTourSteps = (user?: User): StepType[] => {
           <Typography>
             <Link
               color="inherit"
-              href="https://per.co.na/configure"
+              href="https://docs.postgresfirst.com/configure"
               target="_blank"
               rel="noopener noreferrer"
             >

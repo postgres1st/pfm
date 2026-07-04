@@ -12,7 +12,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -697,7 +697,7 @@
             "type": "row"
         },
         {
-            "description": "mongod servers registered with PMM server",
+            "description": "mongod servers registered with PFMM server",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1108,7 +1108,7 @@
             "type": "grafana-polystat-panel"
         },
         {
-            "description": "Mongos Routers registered with PMM Server",
+            "description": "Mongos Routers registered with PFMM Server",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -5156,7 +5156,7 @@
     "schemaVersion": 41,
     "tags": [
         "MongoDB",
-        "Percona",
+        "Postgres1st",
         "Services"
     ],
     "templating": {
