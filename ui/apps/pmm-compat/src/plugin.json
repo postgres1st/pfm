@@ -15,8 +15,8 @@
       "name": "Postgres1st"
     },
     "logos": {
-      "small": "img/pmm-logo.svg",
-      "large": "img/pmm-logo.svg"
+      "small": "img/pfmm-logo.svg",
+      "large": "img/pfmm-logo.svg"
     },
     "screenshots": [],
     "version": "%VERSION%",

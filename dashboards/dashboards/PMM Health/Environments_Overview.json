@@ -46,7 +46,7 @@
                     "showLineNumbers": false,
                     "showMiniMap": false
                 },
-                "content": "<br>\n<div class=\"text-center dashboard-header\">\n<img src=\"/graph/public/plugins/pmm-app/img/pmm-logo.svg\" height=\"60px\" width=\"60px\">\n  <span>Postgres1st Monitoring and Management</span>\n</div>",
+                "content": "<br>\n<div class=\"text-center dashboard-header\">\n<img src=\"/graph/public/plugins/pmm-app/img/pfmm-logo.svg\" height=\"60px\" width=\"60px\">\n  <span>Postgres1st Monitoring and Management</span>\n</div>",
                 "mode": "html"
             },
             "pluginVersion": "11.1.8",
