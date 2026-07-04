@@ -6,10 +6,10 @@ import router from './router';
 import { SnackbarProvider, CustomContentProps } from 'notistack';
 import {
   ThemeContextProvider,
-  pmmThemeOptions,
   NotistackMuiSnackbar,
 } from '@percona/percona-ui';
 import { ThemeClass } from 'components/theme-class';
+import { postgres1stThemeOptions } from 'lib/theme';
 import { useEffect } from 'react';
 import type { ComponentType } from 'react';
 import { addApiErrorInterceptor, removeApiErrorInterceptor } from 'api/api';
@@ -35,7 +35,7 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeContextProvider themeOptions={pmmThemeOptions}>
+    <ThemeContextProvider themeOptions={postgres1stThemeOptions}>
       <ThemeClass />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <SnackbarProvider

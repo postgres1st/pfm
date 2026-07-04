@@ -5,7 +5,8 @@ import { NavItemProps } from './SidebarNavItem.types';
 import { NavItem as NavTreeItem } from 'types/navigation.types';
 import { collapseClasses } from '@mui/material/Collapse';
 import { MemoryRouterProps } from 'react-router-dom';
-import { ThemeContextProvider, pmmThemeOptions } from '@percona/percona-ui';
+import { ThemeContextProvider } from '@percona/percona-ui';
+import { postgres1stThemeOptions } from 'lib/theme';
 
 const TEST_NAV_TREE: NavTreeItem = {
   id: 'level-0',
@@ -45,7 +46,7 @@ const renderNavItem = ({
   activeItem?: NavTreeItem;
 } = {}) =>
   render(
-    <ThemeContextProvider themeOptions={pmmThemeOptions}>
+    <ThemeContextProvider themeOptions={postgres1stThemeOptions}>
       {wrapWithRouter(
         <SidebarNavItem
           activeItem={activeItem}
