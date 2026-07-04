@@ -8,16 +8,16 @@ const secondary = (mode: 'light' | 'dark') =>
   postgres1stThemeOptions(mode).palette?.secondary as { main: string };
 
 describe('postgres1stThemeOptions', () => {
-  it('applies the Postgres1st purple primary (light)', () => {
-    expect(primary('light').main).toBe('#6B2FB3');
+  it('applies the Postgres1st periwinkle primary (light)', () => {
+    expect(primary('light').main).toBe('#653DF4');
   });
 
-  it('applies a lighter purple primary in dark mode', () => {
+  it('applies a lighter periwinkle primary in dark mode', () => {
     expect(primary('dark').main).toBe('#B6B2FF');
   });
 
-  it('applies the magenta secondary', () => {
-    expect(secondary('light').main).toBe('#D6338A');
+  it('applies the amber secondary', () => {
+    expect(secondary('light').main).toBe('#F5A623');
   });
 
   it('preserves design-system semantic colors (error) from the base theme', () => {
