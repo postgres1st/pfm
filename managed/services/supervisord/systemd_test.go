@@ -16,6 +16,7 @@
 package supervisord
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -118,6 +119,12 @@ func TestMarshalEnvConfig(t *testing.T) {
 		env := render(t, "grafana")
 		assert.Contains(t, env, "PMM_POSTGRES_ADDR=127.0.0.1:5432")
 		assert.Contains(t, env, "GF_SERVER_DOMAIN=192.168.0.42:8443")
+		// zero-egress: grafana phone-homes disabled via env (holds regardless
+		// of the on-disk grafana.ini).
+		assert.Contains(t, env, "GF_ANALYTICS_REPORTING_ENABLED=false")
+		assert.Contains(t, env, "GF_ANALYTICS_CHECK_FOR_UPDATES=false")
+		assert.Contains(t, env, "GF_SNAPSHOTS_EXTERNAL_ENABLED=false")
+		assert.Contains(t, env, "GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false")
 	})
 	t.Run("unknown service errors", func(t *testing.T) {
 		t.Parallel()
@@ -164,6 +171,130 @@ func TestSaveEnvAndReloadRollback(t *testing.T) {
 		_, statErr := os.Stat(filepath.Join(dir, "vmproxy.env"))
 		assert.True(t, os.IsNotExist(statErr)) // removed -> next render will retry
 	})
+}
+
+func TestMarshalEnvConfigGrafanaHA(t *testing.T) {
+	t.Parallel()
+
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err)
+	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u", DBPassword: "p", SSLMode: "disable"}
+	haParams := &models.HAParams{Enabled: true, GrafanaGossipPort: 9095, AdvertiseAddress: "10.0.0.5", Nodes: []string{"n1", "n2"}}
+	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: haParams})
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
+
+	env, err := s.marshalEnvConfig("grafana", settings)
+	require.NoError(t, err)
+	out := string(env)
+	assert.Contains(t, out, "GF_UNIFIED_ALERTING_HA_LISTEN_ADDRESS=0.0.0.0:9095")
+	assert.Contains(t, out, "GF_UNIFIED_ALERTING_HA_ADVERTISE_ADDRESS=10.0.0.5:9095")
+	assert.Contains(t, out, "GF_UNIFIED_ALERTING_HA_PEERS=n1:9095,n2:9095")
+}
+
+func TestSanitizeEnvValues(t *testing.T) {
+	t.Parallel()
+
+	params := map[string]any{
+		"S": "a\nPMM_BIND_ADDRESS=0.0.0.0",
+		"L": []string{"--flag=x\r\ninjected", "--ok"},
+		"I": 42,
+	}
+	sanitizeEnvValues(params)
+	assert.Equal(t, "aPMM_BIND_ADDRESS=0.0.0.0", params["S"])
+	assert.Equal(t, []string{"--flag=xinjected", "--ok"}, params["L"])
+	assert.Equal(t, 42, params["I"]) // non-string values untouched
+}
+
+// fakeSystemctl writes a stub systemctl that appends its args to a log file and
+// exits with exitCode. Returns the binary path and the log path.
+func fakeSystemctl(t *testing.T, exitCode int) (bin, logPath string) {
+	t.Helper()
+	dir := t.TempDir()
+	logPath = filepath.Join(dir, "calls.log")
+	bin = filepath.Join(dir, "systemctl")
+	script := fmt.Sprintf("#!/bin/sh\necho \"$@\" >> %q\nexit %d\n", logPath, exitCode)
+	require.NoError(t, os.WriteFile(bin, []byte(script), 0o755))
+	return bin, logPath
+}
+
+func newSystemdService(bin, envDir string) *Service {
+	return &Service{pm: pmSystemd, systemctlPath: bin, envDir: envDir, l: logrus.WithField("component", "test")}
+}
+
+func TestReloadViaSystemd(t *testing.T) {
+	t.Parallel()
+	bin, logPath := fakeSystemctl(t, 0)
+	s := newSystemdService(bin, t.TempDir())
+
+	require.NoError(t, s.reloadViaSystemd("victoriametrics"))
+	calls, err := os.ReadFile(logPath)
+	require.NoError(t, err)
+	// reset-failed must precede reload-or-restart, and use the mapped unit name.
+	assert.Contains(t, string(calls), "reset-failed pfm-victoriametrics.service")
+	assert.Contains(t, string(calls), "reload-or-restart pfm-victoriametrics.service")
+}
+
+func TestDisableDynamicService(t *testing.T) {
+	t.Parallel()
+
+	t.Run("stop fails -> error, env kept", func(t *testing.T) {
+		t.Parallel()
+		bin, _ := fakeSystemctl(t, 1) // stop fails
+		dir := t.TempDir()
+		path := filepath.Join(dir, "victoriametrics.env")
+		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
+		s := newSystemdService(bin, dir)
+		require.Error(t, s.disableDynamicService("victoriametrics"))
+		_, statErr := os.Stat(path)
+		assert.NoError(t, statErr) // not deleted when stop failed
+	})
+
+	t.Run("stop ok -> env removed", func(t *testing.T) {
+		t.Parallel()
+		bin, _ := fakeSystemctl(t, 0)
+		dir := t.TempDir()
+		path := filepath.Join(dir, "victoriametrics.env")
+		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
+		s := newSystemdService(bin, dir)
+		require.NoError(t, s.disableDynamicService("victoriametrics"))
+		_, statErr := os.Stat(path)
+		assert.True(t, os.IsNotExist(statErr))
+	})
+}
+
+func TestSaveEnvAndReloadUnchanged(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "vmproxy.env")
+	require.NoError(t, os.WriteFile(path, []byte("SAME=1\n"), 0o600))
+	// bogus systemctl path: if reload were attempted it would error.
+	s := newSystemdService(filepath.Join(dir, "nonexistent-systemctl"), dir)
+
+	changed, err := s.saveEnvAndReload("vmproxy", []byte("SAME=1\n"))
+	require.NoError(t, err) // no reload attempted on the unchanged fast-path
+	assert.False(t, changed)
+}
+
+func TestWriteEnvFileMode(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "x.env")
+	require.NoError(t, (&Service{}).writeEnvFile(path, []byte("K=v\n")))
+	fi, err := os.Stat(path)
+	require.NoError(t, err)
+	assert.Equal(t, os.FileMode(0o600), fi.Mode().Perm())
+}
+
+func TestPfmUnitsInstalled(t *testing.T) {
+	// not parallel: mutates the package-level pfmUnitPaths.
+	saved := pfmUnitPaths
+	t.Cleanup(func() { pfmUnitPaths = saved })
+
+	target := filepath.Join(t.TempDir(), "pfm.target")
+	pfmUnitPaths = []string{target}
+	assert.False(t, pfmUnitsInstalled())
+	require.NoError(t, os.WriteFile(target, []byte("x"), 0o644))
+	assert.True(t, pfmUnitsInstalled())
 }
 
 func TestProcessControlAvailable(t *testing.T) {

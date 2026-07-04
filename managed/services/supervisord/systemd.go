@@ -121,7 +121,13 @@ PMM_CLICKHOUSE_USER={{ .ClickhouseUser }}
 PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword }}
 {{end}}
 
-{{define "grafana"}}{{ if .PMMServerHost }}GF_SERVER_DOMAIN={{ .PMMServerHost }}
+{{define "grafana"}}GF_ANALYTICS_REPORTING_ENABLED=false
+GF_ANALYTICS_CHECK_FOR_UPDATES=false
+GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+GF_NEWS_NEWS_FEED_ENABLED=false
+GF_SNAPSHOTS_EXTERNAL_ENABLED=false
+GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false
+{{ if .PMMServerHost }}GF_SERVER_DOMAIN={{ .PMMServerHost }}
 {{ end }}PMM_POSTGRES_ADDR={{ .PostgresAddr }}
 PMM_POSTGRES_DBNAME={{ .PostgresDBName }}
 PMM_POSTGRES_USERNAME={{ .PostgresDBUsername }}
@@ -154,11 +160,35 @@ func (s *Service) marshalEnvConfig(name string, settings *models.Settings) ([]by
 	if err != nil {
 		return nil, err
 	}
+	// EnvironmentFile is line-oriented (KEY=value), so a newline in a rendered
+	// value would inject an extra line (e.g. overriding PMM_BIND_ADDRESS). Strip
+	// CR/LF from values before rendering. Safe to mutate: configParams returns a
+	// fresh map per call.
+	sanitizeEnvValues(params)
+
 	var buf bytes.Buffer
 	if err := tmpl.Execute(&buf, params); err != nil {
 		return nil, fmt.Errorf("failed to render env template %q: %w", name, err)
 	}
 	return append([]byte("# Managed by pmm-managed. DO NOT EDIT.\n"), buf.Bytes()...), nil
+}
+
+// sanitizeEnvValues strips CR/LF from string and []string params so a rendered
+// value cannot break out of its KEY=value line in an EnvironmentFile.
+func sanitizeEnvValues(params map[string]any) {
+	r := strings.NewReplacer("\n", "", "\r", "")
+	for k, v := range params {
+		switch val := v.(type) {
+		case string:
+			params[k] = r.Replace(val)
+		case []string:
+			out := make([]string, len(val))
+			for i, s := range val {
+				out[i] = r.Replace(s)
+			}
+			params[k] = out
+		}
+	}
 }
 
 // processControlAvailable reports whether the active backend can control
@@ -200,7 +230,11 @@ func (s *Service) systemctl(args ...string) ([]byte, error) {
 func (s *Service) updateEnvConfig(name string, settings *models.Settings) error {
 	switch {
 	case name == "nomad-server":
-		// No pfm-nomad-server unit exists yet; nothing to render.
+		// No pfm-nomad-server unit exists under the systemd backend yet. Surface
+		// the gap rather than silently ignoring an enabled setting.
+		if settings.IsNomadEnabled() {
+			s.l.Warnf("Nomad is enabled but has no native systemd unit; it will not run under the systemd backend.")
+		}
 		return nil
 	case name == "victoriametrics" && s.vmParams.ExternalVM():
 		// External VM: the embedded VM must not run.
