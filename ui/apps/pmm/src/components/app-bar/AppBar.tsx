@@ -24,7 +24,7 @@ export const AppBar = () => (
         data-testid="appbar-pmm-link"
       >
         <Stack gap={1} direction="row" alignItems="center">
-          <Icon name="pmm-rounded" sx={{ height: '40px', width: 'auto' }} />
+          <Icon name="pfmm-rounded" sx={{ height: '40px', width: 'auto' }} />
           <Typography>{Messages.title}</Typography>
         </Stack>
       </HomeLink>
