@@ -59,6 +59,9 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
 
   return deepmerge(base, {
     palette: {
+      // Light-mode muted text is only ~3.5:1 (fails AA); darken to ~5:1 (AA)
+      // while staying visibly secondary. Dark mode is already AA/AAA.
+      ...(isLight ? { text: { secondary: 'rgba(40, 39, 39, 0.7)' } } : {}),
       primary: isLight
         ? { main: primaryMain, light: '#9B81F8', dark: '#472BAB', contrastText: '#FFFFFF' }
         : { main: primaryMain, light: '#CCC9FF', dark: '#8986BF', contrastText: '#000000' },
