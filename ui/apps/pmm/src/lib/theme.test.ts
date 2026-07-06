@@ -17,7 +17,7 @@ describe('postgres1stThemeOptions', () => {
   });
 
   it('applies the amber secondary', () => {
-    expect(secondary('light').main).toBe('#F5A623');
+    expect(secondary('light').main).toBe('#F5B94D');
   });
 
   it('preserves design-system semantic colors (error) from the base theme', () => {
