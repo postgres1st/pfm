@@ -94,7 +94,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
       // shade on dark) — matching the status chips.
       MuiAlert: {
         styleOverrides: {
-          root: ({ theme, ownerState }: any) => {
+          root: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
@@ -110,7 +111,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
               border: `1px solid ${alpha(pal.main, light ? 0.28 : 0.42)}`,
             };
           },
-          icon: ({ theme, ownerState }: any) => {
+          icon: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
@@ -123,7 +125,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
           // The base `message` slot colors text with palette[severity].contrastText,
           // which for dark warning is a dark brown (#493408) — unreadable on the
           // soft tint. Use the same readable same-hue shade as root/icon.
-          message: ({ theme, ownerState }: any) => {
+          message: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
