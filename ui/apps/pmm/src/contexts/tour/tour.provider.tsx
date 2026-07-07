@@ -73,7 +73,7 @@ export const TourProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [tourName, updateUserInfoAsync]);
 
   useEffect(() => {
-    if (isOpen || !user?.info) {
+    if (!TOUR_ENABLED || isOpen || !user?.info) {
       return;
     }
 

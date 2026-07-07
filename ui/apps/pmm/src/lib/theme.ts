@@ -96,7 +96,7 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
         styleOverrides: {
           root: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
-            const pal = theme.palette[sev];
+            const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
             const text = light ? pal.dark : pal.light;
             return {
@@ -112,7 +112,7 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
           },
           icon: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
-            const pal = theme.palette[sev];
+            const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
             return {
               color: `${light ? pal.dark : pal.light} !important`,
@@ -125,13 +125,17 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
           // soft tint. Use the same readable same-hue shade as root/icon.
           message: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
-            const pal = theme.palette[sev];
+            const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
             const text = light ? pal.dark : pal.light;
             return {
               color: text,
               padding: '7px 0',
-              '& .MuiLink-root': { color: 'inherit', textDecorationColor: 'inherit' },
+              '& .MuiLink-root': {
+                color: 'inherit',
+                textDecorationColor: 'inherit',
+                '&:focus-visible': { outlineColor: 'currentColor' },
+              },
             };
           },
         },
