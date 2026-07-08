@@ -228,15 +228,25 @@ export const addConfiguration = (
     };
   }
 
-  const updates = NAV_CONFIGURATION.children?.find((c) => c.id === 'updates');
-  const { updateAvailable, installed, latest } = versionInfo || {};
+  const updatesIndex = NAV_CONFIGURATION.children?.findIndex(
+    (c) => c.id === 'updates'
+  );
 
-  if (!updates) {
+  if (updatesIndex === undefined || updatesIndex < 0) {
     return NAV_CONFIGURATION;
   }
 
+  // Clone the array and the updates item before writing dynamic state onto it —
+  // NAV_CONFIGURATION is a shared module constant, so mutating it in place would
+  // alias across renders (and leak between callers).
+  const children = [...(NAV_CONFIGURATION.children || [])];
+  const updates = { ...children[updatesIndex] };
+  children[updatesIndex] = updates;
+
+  const { updateAvailable, installed, latest } = versionInfo || {};
+
   if (updateAvailable) {
-    updates.secondaryText = `Update from v${installed?.version?.slice(0, 5)} to v${latest?.version}`;
+    updates.secondaryText = `Update from v${installed?.version} to v${latest?.version}`;
   } else if (installed?.version) {
     updates.secondaryText = `Current: v${installed?.version} (up to date)`;
   }
@@ -252,7 +262,7 @@ export const addConfiguration = (
     updates.badge = undefined;
   }
 
-  return NAV_CONFIGURATION;
+  return { ...NAV_CONFIGURATION, children };
 };
 
 export const addHighAvailability = ({ health, leader }: HAInfo): NavItem => {
