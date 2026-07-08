@@ -48,16 +48,21 @@ describe('addConfiguration (UPDATES_ENABLED=true)', () => {
   });
 
   it('renders multi-digit version components without truncation', () => {
+    // A version with a 2-digit component — the case the old slice(0, 5) broke.
+    const installedVersion = '3.10.2';
     const result = addConfiguration(UpdateStatus.Pending, {
       ...VERSION_INFO,
-      installed: { version: '3.10.2', fullVersion: '3.10.2', timestamp: null },
-      latest: { ...VERSION_INFO.latest, version: '3.11.0' },
+      installed: {
+        version: installedVersion,
+        fullVersion: installedVersion,
+        timestamp: null,
+      },
     });
 
-    // Guards against the old installed.version.slice(0, 5), which produced
-    // "Update from v3.10. to v3.11.0".
+    // Guards against the old installed.version.slice(0, 5), which truncated
+    // "3.10.2" to "3.10.".
     expect(getUpdatesChild(result)?.secondaryText).toBe(
-      'Update from v3.10.2 to v3.11.0'
+      `Update from v${installedVersion} to v${VERSION_INFO.latest?.version}`
     );
   });
 });
