@@ -19,7 +19,11 @@ Stood up the real stack natively on arm64 and drove it with headless chromium (l
 
 **Login page = out of this repo (confirmed).** "Percona Monitoring and Management" / "Your single pane of glass" / Grafana-diamond logo / "proudly powered by" footer are **Grafana's own login**, hardcoded in the **percona/grafana fork** `public/app/core/components/Branding/Branding.tsx` (`@PERCONA`-marked `AppTitle`, `LoginTitle`, `GetLoginSubTitle`, `LoginLogo`→`img/icons/mono/pmm-logo.svg`, `MenuLogo`→`img/percona-logo.svg`). The fork is NOT checked out here (`utils/grafana` is an unrelated Go pkg). Real fix = edit those symbols + swap the 2 logo SVGs in the fork, rebuild the Grafana frontend, rebake the pmm-server image (separate workstream; also the login "Log in" button is Grafana-blue, not azure). Demonstrated live via a throwaway bundle-sed + logo-swap PoC in the running container (proves it's trivial at source; not committable).
 
-**Not verified:** light mode in-app (harness couldn't force it off Grafana prefs — app stayed dark); dashboards (#4) still render Grafana's stock panels.
+**Also verified live (2026-07-08, second pass):**
+- **Light mode** — toggled in-app via Account → "Switch to light mode" (a real mouse-coordinate click; `evaluate().click()` on the `<li>` doesn't fire MUI's ButtonBase). `body` class flips to `pmm-light-theme` and persists across reload. Renders on-brand: un-clipped logo, amber card accents (deeper gold on white), azure links/buttons, readable dark-on-light text, raised white cards.
+- **#4 dashboards** — `docker cp`'d the repo's built `dashboards/pmm-app/dist/dashboards/.` into the container's provisioning path `/usr/share/percona-dashboards/panels/pmm-app/dist/dashboards/` (NOT the plugin dir `/srv/grafana/plugins/pmm-app` — that's the frontend bundle; dashboards are provisioned separately, `updateIntervalSeconds:60`) and restarted grafana. The home dashboard then rendered **"PFMM Upgrade"** and **"PFMM Annotations"** — the rebranded JSONs provision and render correctly.
+
+**#2 status components — done.** The one real offender was HighAvailabilityBadge (self-styled via `sx`, escaping the theme's AA soft variants); routed it through the `color` prop so the AA-verified `MuiChip` variants apply, emphasis via font weight. The other four (SeverityChip, NavItemBadge, StateCell, ServiceTags) already use semantic `color` props / neutral tags and were already covered.
 
 ## How to verify anything (no host Node — use the Node 22 container)
 ```bash
@@ -40,8 +44,8 @@ Everything so far is verified by build + unit tests + a *component preview* + co
 - **Verify in the running app:** the elephant logo in the real sidebar/app-bar; the azure theme on real pages; Tour/Updates actually gone (nav item, `/updates` route, no update-check network calls in devtools); soft chips/alerts as the app actually renders them (see #2); rebranded dashboards in Grafana (see #4).
 - This closes #2 and #4 too.
 
-### 2. [HIGH] Theme fixes are PARTIAL — custom status components not covered
-> **Progress (2026-07-08):** the Help Center card yellow accent (a base-palette `chart2` leak, not a MUI status component) is fixed → brand amber. The five custom status components below are still uncovered.
+### 2. [HIGH] Theme fixes are PARTIAL — custom status components not covered — ✅ DONE (2026-07-08)
+> **Resolved (2026-07-08):** Help Center card yellow accent → brand amber. Of the five custom status components, only HighAvailabilityBadge escaped the theme (self-styled via `sx`); routed through the `color` prop so the AA soft variants apply. The other four already use semantic `color` props / neutral tags. See second-pass results above.
 
 The `MuiChip`/`MuiAlert` overrides in `ui/apps/pmm/src/lib/theme.ts` only match MUI components with `color/severity` ∈ success/warning/info/error. The app also has **custom status components** that may use `color="default"`, dynamic colors, or their own styling and therefore **won't get the soft-badge/contrast treatment**:
   - `src/pages/update-clients/severity-chip/SeverityChip.tsx`
@@ -56,7 +60,7 @@ The `MuiChip`/`MuiAlert` overrides in `ui/apps/pmm/src/lib/theme.ts` only match 
 All doc/support/forum/blog links now point to non-existent `postgresfirst.com` paths (domain swapped, paths preserved). Full list + file:line in `docs/scratch/260704-ui-rebranding-urls.md`.
 - **Do:** replace with real Postgres1st destinations once they exist, OR route them through a single constant so they're changed in one place, OR hide the links until infra is live. Decide with product.
 
-### 4. [MED] Dashboards never rendered in Grafana
+### 4. [MED] Dashboards never rendered in Grafana — ✅ VERIFIED (2026-07-08, see second-pass results above)
 74 JSONs validate + data tokens preserved, but not visually checked. The K8s CR-kind mapping (now reverted) shows data-layer subtleties hide behind valid JSON.
 - **Do:** load the pmm-app plugin in a running Grafana and eyeball the rebranded dashboards — titles, markdown panels, legends, value mappings, links. Watch for strings that were semantically load-bearing, not just display.
 
