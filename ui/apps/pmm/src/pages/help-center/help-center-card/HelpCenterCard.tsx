@@ -7,20 +7,18 @@ import NorthEast from '@mui/icons-material/NorthEast';
 import SaveAlt from '@mui/icons-material/SaveAlt';
 import MapOutlined from '@mui/icons-material/MapOutlined';
 import { FC, ReactNode, useCallback } from 'react';
-import { semanticTokensLight, semanticTokensDark } from '@percona/percona-ui';
 import { CARD_IDS, START_ICON } from '../HelpCenter.constants';
 import { HelpCenterCardProps } from './HelpCenterCard.types';
 import { Link } from 'react-router-dom';
 import { Icon } from 'components/icon';
 
 export const HelpCenterCard: FC<HelpCenterCardProps> = ({ card }) => {
-  const { id, title, borderColorKey, description, buttons } = card;
+  const { id, title, accented, description, buttons } = card;
   const theme = useTheme();
-  const chartTokens =
-    theme.palette.mode === 'light'
-      ? semanticTokensLight.charts
-      : semanticTokensDark.charts;
-  const borderColor = borderColorKey ? chartTokens[borderColorKey] : undefined;
+  // Accented cards get a brand amber (secondary) top-border. Previously this was
+  // keyed off the base design-system chart palette (`chart2`), a harsh yellow
+  // that clashed with the azure/amber brand.
+  const borderColor = accented ? theme.palette.secondary.main : undefined;
 
   const getIcon = useCallback((cardId: string): ReactNode => {
     switch (cardId) {
