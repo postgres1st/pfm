@@ -8,6 +8,19 @@ Picks up after the initial rebrand + theme work. **Read the memory first**: `ui-
 - Done: full UI rebrand (text/URLs/plugins/74 dashboards/assets+renames), disable Tour+Updates behind flags, azure+amber accessible theme (soft chips/alerts, raised Papers, AA text), aggressive review + fixes, CI lint green.
 - **Pre-push gate**: pushing requires an aggressive-review attestation for the exact HEAD in `.git/pgf-review-ui-rebranding.md` (any new commit invalidates it — re-run review, re-write note with new HEAD sha, then push).
 
+## Run-app verification results (2026-07-08) — #1 executed
+Stood up the real stack natively on arm64 and drove it with headless chromium (login admin/admin). How: override `PMM_SERVER_IMAGE=pmm-server-pg-arm64:3.8.1` (upstream `perconalab/pmm-server:3-dev-container` is amd64-only, no qemu here), run as the image's default UID 1000 (arbitrary-UID/NSS-wrapper image — running as root breaks `nginx: getpwnam("nginx")`), **drop** the `pmm-compat` bind mount (it forces `/srv/grafana/plugins` root-owned and breaks first-boot `/srv` init — `docker cp` it after boot instead), keep only the `pmm-dev.conf` proxy mount, skip mysql/watchtower. Vite runs in a `node:22-alpine --network host` container; pmm-server reaches it via `extra_hosts: host.docker.internal:host-gateway`. Standalone compose: `ui/dev-standalone.arm64.yml` (untracked).
+
+**Verified working in the running app:** rebrand text/content (Welcome to PFMM, PFMM docs/dump, Postgres1st support/forum), azure primary on app pages (Settings, Help), and Tour/Updates removal *conclusively* — no Updates nav item, `/pmm-ui/updates` → Not found, and **zero `/v1/server/updates` XHR** from Help/Settings/RTA. The only update-check comes from Grafana's bundled **"PMM Upgrade" dashboard panel** (out-of-repo chrome; that stock dashboard is also un-rebranded because #4's JSON wasn't mounted).
+
+**Bugs found & FIXED (in repo, verified live + lint/tsc/tests green):**
+- **Sidebar logo was invisible/clipped** — `icons/pfmm-titled.svg` wrapped the elephant in a nested `<svg viewBox="46 42 180 174">`; through `svg?react`+MUI `SvgIcon` the nested viewBox got clobbered to the outer `0 0 141 48`, drawing the elephant almost entirely outside the box (only a sliver showed, then `overflow:hidden`). Fixed by flattening the nested `<svg>` to `<g transform="translate(47,1.2835) scale(0.261111) translate(-46,-42)">` (single coord space, nothing to corrupt). NB `pfmm-titled` has no wordmark ("wordmark cropped out") — it's an off-center elephant in a 141-wide canvas; positioning can be tightened (used only in `NavigationHeading`).
+- **Help Center card top-borders were harsh yellow** — `HelpCenterCard.tsx` sourced `chartTokens['chart2']` from `@percona/percona-ui`. Now uses brand amber `theme.palette.secondary.main` (#F5B94D). Removed the now-unused `semanticTokens*` import.
+
+**Login page = out of this repo (confirmed).** "Percona Monitoring and Management" / "Your single pane of glass" / Grafana-diamond logo / "proudly powered by" footer are **Grafana's own login**, hardcoded in the **percona/grafana fork** `public/app/core/components/Branding/Branding.tsx` (`@PERCONA`-marked `AppTitle`, `LoginTitle`, `GetLoginSubTitle`, `LoginLogo`→`img/icons/mono/pmm-logo.svg`, `MenuLogo`→`img/percona-logo.svg`). The fork is NOT checked out here (`utils/grafana` is an unrelated Go pkg). Real fix = edit those symbols + swap the 2 logo SVGs in the fork, rebuild the Grafana frontend, rebake the pmm-server image (separate workstream; also the login "Log in" button is Grafana-blue, not azure). Demonstrated live via a throwaway bundle-sed + logo-swap PoC in the running container (proves it's trivial at source; not committable).
+
+**Not verified:** light mode in-app (harness couldn't force it off Grafana prefs — app stayed dark); dashboards (#4) still render Grafana's stock panels.
+
 ## How to verify anything (no host Node — use the Node 22 container)
 ```bash
 cd .worktree/ui-rebranding
@@ -21,13 +34,15 @@ Host runs Node 24 which breaks install (@grafana/plugin-e2e caps at ≤22). Alwa
 
 ## Follow-ups (priority order)
 
-### 1. [HIGH] Real running-app verification — the one that matters most
+### 1. [HIGH] Real running-app verification — the one that matters most — ✅ EXECUTED (2026-07-08, see "Run-app verification results" above)
 Everything so far is verified by build + unit tests + a *component preview* + code review + lint. The app was **never run end-to-end**. The K8s CR-kind bug (caught only by manual review) proves subtle issues survive all automated checks.
 - **Do:** stand up the real stack. `ui/docker-compose.yml` runs `perconalab/pmm-server:3-dev-container` + serves the UI (nginx `pmm-dev.conf` proxies to a vite dev server; mounts `apps/pmm-compat/dist`). Needs the plugins built and PMM admin login. Alternatively check with the team how they run it locally.
 - **Verify in the running app:** the elephant logo in the real sidebar/app-bar; the azure theme on real pages; Tour/Updates actually gone (nav item, `/updates` route, no update-check network calls in devtools); soft chips/alerts as the app actually renders them (see #2); rebranded dashboards in Grafana (see #4).
 - This closes #2 and #4 too.
 
 ### 2. [HIGH] Theme fixes are PARTIAL — custom status components not covered
+> **Progress (2026-07-08):** the Help Center card yellow accent (a base-palette `chart2` leak, not a MUI status component) is fixed → brand amber. The five custom status components below are still uncovered.
+
 The `MuiChip`/`MuiAlert` overrides in `ui/apps/pmm/src/lib/theme.ts` only match MUI components with `color/severity` ∈ success/warning/info/error. The app also has **custom status components** that may use `color="default"`, dynamic colors, or their own styling and therefore **won't get the soft-badge/contrast treatment**:
   - `src/pages/update-clients/severity-chip/SeverityChip.tsx`
   - `src/components/sidebar/nav-item/nav-item-badge/NavItemBadge.tsx`
@@ -53,8 +68,8 @@ All doc/support/forum/blog links now point to non-existent `postgresfirst.com` p
 `WelcomeCard.test`/`HelpCenter.test` mock `TOUR_ENABLED=true` to keep testing the enabled path; nothing asserts the shipped (disabled) behavior.
 - **Do:** add tests for flags=false — nav has no "Updates" item, `/updates` route 404s, UpdateModal not mounted, tour buttons/tips-card absent, no update-check query fires. Guards against silent regression.
 
-### 7. [LOW] Latent shared-const mutation (dormant, pre-existing)
-`src/contexts/navigation/navigation.utils.tsx` `addConfiguration` mutates shared `NAV_CONFIGURATION` children (`updates.secondaryText`/`.badge`). Dead while `UPDATES_ENABLED=false` (early-return clones), but a real cross-render aliasing bug if the flag is flipped on. Clone before mutating when re-enabling Updates.
+### 7. [LOW] Latent shared-const mutation (dormant, pre-existing) — ✅ FIXED (2026-07-08)
+`src/contexts/navigation/navigation.utils.tsx` `addConfiguration` mutated shared `NAV_CONFIGURATION` children (`updates.secondaryText`/`.badge`). Fixed: clone the children array + the updates item before writing, return `{ ...NAV_CONFIGURATION, children }`. Added `navigation.utils.test.tsx` (mocks `UPDATES_ENABLED=true`) asserting the shared constant stays pristine — red→green verified.
 
 ### Scope ceilings (awareness, not necessarily "fixable")
 - Base look/fonts/many colors still come from `@percona/percona-ui` (npm dep, name unchanged) — brand override is accents only, no fork.
