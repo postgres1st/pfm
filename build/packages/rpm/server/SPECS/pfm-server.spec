@@ -96,7 +96,10 @@ install -p -m 0644 pfm-sysusers.conf  %{buildroot}%{_sysusersdir}/pfm.conf
 install -p -m 0755 pfm-init.sh        %{buildroot}%{_datadir}/pfm/pfm-init.sh
 
 for e in victoriametrics vmalert vmproxy qan-api2 grafana; do
-    install -p -m 0644 defaults/${e}.env %{buildroot}%{_prefix}/lib/pfm/defaults/${e}.env
+    # 0640 root:pfm — these seeds carry default DB/ClickHouse credentials; only
+    # systemd-tmpfiles (root) needs to read them to seed the 0600 /run copies, so
+    # they must not be world-readable. (Ownership is enforced by %attr in %files.)
+    install -p -m 0640 defaults/${e}.env %{buildroot}%{_prefix}/lib/pfm/defaults/${e}.env
 done
 
 %pre
@@ -105,7 +108,7 @@ done
 # and for EL versions without a sysusers file trigger).
 getent group pfm >/dev/null || groupadd -r pfm
 getent passwd pfm >/dev/null || \
-    useradd -r -g pfm -d /srv -s /sbin/nologin -c "pfm monitoring service" pfm
+    useradd -r -g pfm -d /srv -s /usr/sbin/nologin -c "pfm monitoring service" pfm
 exit 0
 
 %post
@@ -131,6 +134,12 @@ fi
 
 %postun
 %systemd_postun pfm.target
+if [ $1 -eq 0 ]; then
+    # Full removal (not upgrade, where $1 >= 1): undo the mask %post applied to
+    # pmm-client's pmm-agent.service, otherwise it stays masked forever and
+    # pmm-client can never run its own agent again.
+    systemctl unmask pmm-agent.service >/dev/null 2>&1 || :
+fi
 
 %files
 %{_unitdir}/pfm.target
@@ -151,7 +160,8 @@ fi
 %attr(0755, root, root) %{_datadir}/pfm/pfm-init.sh
 %dir %{_prefix}/lib/pfm
 %dir %{_prefix}/lib/pfm/defaults
-%{_prefix}/lib/pfm/defaults/*.env
+# Secret-bearing credential seeds: root-owned, group pfm, not world-readable.
+%attr(0640, root, pfm) %{_prefix}/lib/pfm/defaults/*.env
 
 %changelog
 * Sat Jul 04 2026 Postgre First <asheshvashi@gmail.com> - 3.0.0-1
