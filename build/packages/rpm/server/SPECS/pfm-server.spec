@@ -102,6 +102,21 @@ for e in victoriametrics vmalert vmproxy qan-api2 grafana; do
     install -p -m 0640 defaults/${e}.env %{buildroot}%{_prefix}/lib/pfm/defaults/${e}.env
 done
 
+# Native nginx config + TLS sources. pfm-nginx.service reads /etc/nginx/nginx.conf
+# and pfm-init.sh's generate_nginx_cert requires the SSL sources at /etc/nginx/ssl.
+# These are the pfm-adapted copies (non-root pfm user, native paths, zero egress) —
+# NOT the container image's versions.
+install -d -p %{buildroot}%{_sysconfdir}/nginx/conf.d
+install -d -p %{buildroot}%{_sysconfdir}/nginx/ssl
+# Ships as pfm.conf (the base nginx package owns nginx.conf); selected via `nginx -c`.
+install -p -m 0644 nginx/nginx.conf      %{buildroot}%{_sysconfdir}/nginx/pfm.conf
+install -p -m 0644 nginx/local-rss.xml   %{buildroot}%{_sysconfdir}/nginx/local-rss.xml
+install -p -m 0644 nginx/conf.d/pmm.conf     %{buildroot}%{_sysconfdir}/nginx/conf.d/pmm.conf
+install -p -m 0644 nginx/conf.d/pmm-ssl.conf %{buildroot}%{_sysconfdir}/nginx/conf.d/pmm-ssl.conf
+install -p -m 0644 nginx/ssl/dhparam.pem      %{buildroot}%{_sysconfdir}/nginx/ssl/dhparam.pem
+install -p -m 0644 nginx/ssl/ca-certs.pem     %{buildroot}%{_sysconfdir}/nginx/ssl/ca-certs.pem
+install -p -m 0644 nginx/ssl/certificate.conf %{buildroot}%{_sysconfdir}/nginx/ssl/certificate.conf
+
 %pre
 # Create the pfm system account before files are laid down (mirrors the
 # declarative pfm-sysusers.conf; kept here so %attr ownership resolves at unpack
@@ -162,6 +177,17 @@ fi
 %dir %{_prefix}/lib/pfm/defaults
 # Secret-bearing credential seeds: root-owned, group pfm, not world-readable.
 %attr(0640, root, pfm) %{_prefix}/lib/pfm/defaults/*.env
+# Native nginx config (/etc/nginx and conf.d are owned by the base nginx package,
+# so they are not %dir'd here; only the ssl subdir is ours). Operator-editable
+# config is %config(noreplace).
+%config(noreplace) %{_sysconfdir}/nginx/pfm.conf
+%config(noreplace) %{_sysconfdir}/nginx/conf.d/pmm.conf
+%config(noreplace) %{_sysconfdir}/nginx/conf.d/pmm-ssl.conf
+%{_sysconfdir}/nginx/local-rss.xml
+%dir %{_sysconfdir}/nginx/ssl
+%{_sysconfdir}/nginx/ssl/dhparam.pem
+%{_sysconfdir}/nginx/ssl/ca-certs.pem
+%{_sysconfdir}/nginx/ssl/certificate.conf
 
 %changelog
 * Sat Jul 04 2026 Postgre First <asheshvashi@gmail.com> - 3.0.0-1

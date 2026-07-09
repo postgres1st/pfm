@@ -1,8 +1,12 @@
 # pfm-nginx — TLS/reverse proxy (was supervisord [program:nginx], priority=4).
-# supervisord required a foreground process, so the image's nginx.conf sets
+# supervisord required a foreground process, so the native nginx.conf sets
 # `daemon off;`. We force it here with `-g 'daemon off;'` so the unit is correct
 # regardless of the conf, and use Type=exec. stopwaitsecs=10 -> TimeoutStopSec.
-# The image's `error_log /dev/stdout` / pid path fixes are a T5 item.
+# The native nginx.conf (build/packages/config/pfm/nginx/) already fixes the pid
+# path and error_log for the non-root pfm user; `-e /dev/stderr` additionally
+# routes nginx's *startup* error log (opened before the conf's error_log takes
+# effect) to the journal, so a non-root master doesn't fail opening the compiled-in
+# /var/log/nginx/error.log.
 [Unit]
 Description=pfm nginx (TLS reverse proxy)
 After=pfm-init.service
@@ -16,8 +20,10 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
-ExecStart=/usr/sbin/nginx -g 'daemon off;'
-ExecReload=/usr/sbin/nginx -s reload
+# -c /etc/nginx/pfm.conf: the base nginx package owns /etc/nginx/nginx.conf, so the
+# pfm config ships beside it as pfm.conf and is selected explicitly here.
+ExecStart=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -g 'daemon off;'
+ExecReload=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -s reload
 KillSignal=SIGTERM
 TimeoutStopSec=10
 Restart=on-failure
