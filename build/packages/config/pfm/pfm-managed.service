@@ -23,9 +23,32 @@ StartLimitIntervalSec=0
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+# pmm-managed is the orchestrator: it renders /run/pfm/*.env, writes across /srv,
+# and rewrites the VM scrape config in /etc. Broad-but-scoped RW; still no caps,
+# no egress beyond loopback.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv /run/pfm /etc/victoriametrics-promscrape.yml
+IPAddressDeny=any
+IPAddressAllow=localhost
 Environment=PERCONA_TELEMETRY_DISABLE=1
 Environment=PMM_ENABLE_TELEMETRY=false
 Environment=PMM_ENABLE_UPDATES=false
+# Assert the native backend rather than relying on auto-detection: the pfm package
+# ships no supervisord, but forcing this makes pmm-managed render /run/pfm/*.env
+# (systemd path) instead of ever falling back to writing /etc/supervisord.d.
+Environment=PMM_PROCESS_MANAGER=systemd
 ExecStart=/usr/sbin/pmm-managed \
     --victoriametrics-config=/etc/victoriametrics-promscrape.yml \
     --victoriametrics-url=http://127.0.0.1:9090/prometheus \

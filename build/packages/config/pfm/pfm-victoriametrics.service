@@ -21,6 +21,22 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/victoriametrics /srv/logs
+IPAddressDeny=any
+IPAddressAllow=localhost
 # Non-optional: the RPM tmpfiles seeds this at boot. Fail closed if it is
 # missing rather than let ${PMM_BIND_ADDRESS} expand empty and bind 0.0.0.0.
 EnvironmentFile=/run/pfm/victoriametrics.env

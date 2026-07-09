@@ -20,6 +20,22 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/prometheus /srv/victoriametrics /srv/logs
+IPAddressDeny=any
+IPAddressAllow=localhost
 # Non-optional: the RPM tmpfiles seeds this at boot, so vmalert never launches
 # with an empty datasource URL (which would crash-loop into a failed state).
 EnvironmentFile=/run/pfm/vmalert.env

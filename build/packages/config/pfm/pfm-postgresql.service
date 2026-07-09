@@ -18,6 +18,22 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/postgres14 /run/postgresql
+IPAddressDeny=any
+IPAddressAllow=localhost
 ExecStart=/usr/pgsql-14/bin/postgres \
     -D /srv/postgres14 \
     -c shared_preload_libraries=pg_stat_statements \

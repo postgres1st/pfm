@@ -20,6 +20,21 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox (NO egress block: nginx is the TLS ingress and must
+# accept connections from any client) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/nginx /run/nginx
 # -c /etc/nginx/pfm.conf: the base nginx package owns /etc/nginx/nginx.conf, so the
 # pfm config ships beside it as pfm.conf and is selected explicitly here.
 ExecStart=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -g 'daemon off;'

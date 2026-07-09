@@ -19,6 +19,21 @@ StartLimitIntervalSec=0
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox (NO egress block: pfm-agent connects to remote
+# monitored databases, so IPAddressDeny would break monitoring) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/pmm-agent /srv/nomad /srv/logs
 Environment=PERCONA_TELEMETRY_DISABLE=1
 ExecStart=/usr/sbin/pmm-agent \
     --config-file=/srv/pmm-agent/config/pmm-agent.yaml \

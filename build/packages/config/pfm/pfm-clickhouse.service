@@ -16,6 +16,22 @@ StartLimitBurst=10
 Type=exec
 User=pfm
 Group=pfm
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/clickhouse /srv/logs /run/clickhouse-server
+IPAddressDeny=any
+IPAddressAllow=localhost
 ExecStart=/usr/bin/clickhouse-server --config-file=/etc/clickhouse-server/config.xml
 KillSignal=SIGTERM
 TimeoutStopSec=300
