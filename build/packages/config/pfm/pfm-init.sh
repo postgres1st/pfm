@@ -153,8 +153,12 @@ prepare_runtime() {
 
     generate_nginx_cert
 
+    # Validate the config pfm-nginx.service actually runs (/etc/nginx/pfm.conf via
+    # `nginx -c`), NOT the base nginx package's default /etc/nginx/nginx.conf — and
+    # route the startup error log to stderr so the check does not fail trying to open
+    # the root-only /var/log/nginx/error.log as the pfm user.
     log "validating nginx configuration ..."
-    nginx -t
+    nginx -t -c /etc/nginx/pfm.conf -e stderr
 
     # Create the pmm-agent config (idempotent) so pfm-agent.service can start.
     # Native keeps it under /srv (pfm-writable, persistent) rather than the
