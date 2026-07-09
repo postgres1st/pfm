@@ -35,7 +35,10 @@ srv_provisioned()   { [[ -f "${DIST_FILE}" ]]; }
 ensure_srv_dirs() {
     mkdir -p "${SRV}"/{backup,clickhouse,grafana/plugins,logs,nginx,prometheus/rules,victoriametrics}
     log "copying grafana plugins ..."
-    cp -r /usr/share/percona-dashboards/panels/* "${SRV}/grafana/plugins/"
+    # Copy the directory contents (trailing /.) rather than a glob: an empty
+    # panels dir leaves `*` unexpanded, and under `set -e` the resulting cp error
+    # aborts the entire first-boot provision.
+    cp -r /usr/share/percona-dashboards/panels/. "${SRV}/grafana/plugins/"
 }
 
 init_postgres() {
@@ -45,8 +48,12 @@ init_postgres() {
     pgpw=$(openssl rand -hex 16)
     printf '%s' "${pgpw}" > "${POSTGRES_PASSWORD_FILE}"
     chmod 600 "${POSTGRES_PASSWORD_FILE}"
+    # scram for local too, not trust: on a native multi-user host `trust` lets any
+    # local OS user authenticate as any PG role (incl. superuser) over the socket.
+    # First-boot provisioning is the only local-socket client and it authenticates
+    # with PGPASSWORD (see provision_databases), so scram keeps it working.
     "${PG_BIN}/initdb" -D "${POSTGRES_DATA_DIR}" \
-        --auth-host=scram-sha-256 --auth-local=trust \
+        --auth-host=scram-sha-256 --auth-local=scram-sha-256 \
         --username=postgres --pwfile="${POSTGRES_PASSWORD_FILE}"
 }
 
