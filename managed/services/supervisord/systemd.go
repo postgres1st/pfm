@@ -94,12 +94,36 @@ func systemdUnitName(name string) string {
 	return "pfm-" + strings.TrimPrefix(name, "pmm-") + ".service"
 }
 
+// envQuote renders v as a systemd EnvironmentFile value that survives the
+// line-oriented parser verbatim: the value is wrapped in double quotes with
+// backslash and double-quote escaped, and CR/LF stripped. Without this, a value
+// ending in `\` is read as a line continuation and swallows the following
+// KEY=value line (e.g. a password ending in `\` silently drops the SSL_* lines
+// rendered after it), and a value beginning with a quote is truncated at the
+// unbalanced quote. systemd strips the wrapping quotes, so the consumer receives
+// the exact original bytes. Verified against systemd's EnvironmentFile parser.
+// Apply only to free-form, settings-derived values that occupy a whole line;
+// never to values interpolated mid-line (an address with a `:port` suffix, a
+// numeric retention with a `d` suffix), where a wrapping quote would break the
+// surrounding syntax.
+func envQuote(v string) string {
+	v = strings.NewReplacer("\r", "", "\n", "").Replace(v)
+	v = strings.ReplaceAll(v, `\`, `\\`)
+	v = strings.ReplaceAll(v, `"`, `\"`)
+	return `"` + v + `"`
+}
+
 // envTemplates renders the systemd EnvironmentFile (KEY=value) for each dynamic
 // service, using the same params as the supervisord templates. Only the
 // settings-driven values live here; stable defaults are static args in the unit
 // (see build/packages/config/pfm/*.service). The pfm-* units read these from
 // /run/pfm/<name>.env. Keep the KEY names in lockstep with those units.
-var envTemplates = template.Must(template.New("").Option("missingkey=error").Parse(`
+//
+// Free-form settings values on their own line (passwords, names, SSL paths,
+// server host) go through `envq` so a hostile value cannot break out of its
+// line; see envQuote. Structured values (addresses, ports, retention, HA
+// advertise) are left bare because they are interpolated mid-line.
+var envTemplates = template.Must(template.New("").Funcs(template.FuncMap{"envq": envQuote}).Option("missingkey=error").Parse(`
 {{define "victoriametrics"}}VM_retentionPeriod={{ .DataRetentionDays }}d
 VM_search_disableCache={{ .VMSearchDisableCache }}
 PMM_BIND_ADDRESS={{ .InterfaceToBind }}
@@ -116,9 +140,9 @@ PMM_BIND_ADDRESS={{ .InterfaceToBind }}
 
 {{define "qan-api2"}}QANAPI_DATA_RETENTION={{ .DataRetentionDays }}
 PMM_CLICKHOUSE_ADDR={{ .ClickhouseAddr }}
-PMM_CLICKHOUSE_DATABASE={{ .ClickhouseDatabase }}
-PMM_CLICKHOUSE_USER={{ .ClickhouseUser }}
-PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword }}
+PMM_CLICKHOUSE_DATABASE={{ .ClickhouseDatabase | envq }}
+PMM_CLICKHOUSE_USER={{ .ClickhouseUser | envq }}
+PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword | envq }}
 {{end}}
 
 {{define "grafana"}}GF_ANALYTICS_REPORTING_ENABLED=false
@@ -127,19 +151,19 @@ GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
 GF_NEWS_NEWS_FEED_ENABLED=false
 GF_SNAPSHOTS_EXTERNAL_ENABLED=false
 GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false
-{{ if .PMMServerHost }}GF_SERVER_DOMAIN={{ .PMMServerHost }}
+{{ if .PMMServerHost }}GF_SERVER_DOMAIN={{ .PMMServerHost | envq }}
 {{ end }}PMM_POSTGRES_ADDR={{ .PostgresAddr }}
-PMM_POSTGRES_DBNAME={{ .PostgresDBName }}
-PMM_POSTGRES_USERNAME={{ .PostgresDBUsername }}
-PMM_POSTGRES_DBPASSWORD={{ .PostgresDBPassword }}
+PMM_POSTGRES_DBNAME={{ .PostgresDBName | envq }}
+PMM_POSTGRES_USERNAME={{ .PostgresDBUsername | envq }}
+PMM_POSTGRES_DBPASSWORD={{ .PostgresDBPassword | envq }}
 PMM_POSTGRES_SSL_MODE={{ .PostgresSSLMode }}
-PMM_POSTGRES_SSL_CA_PATH={{ .PostgresSSLCAPath }}
-PMM_POSTGRES_SSL_KEY_PATH={{ .PostgresSSLKeyPath }}
-PMM_POSTGRES_SSL_CERT_PATH={{ .PostgresSSLCertPath }}
+PMM_POSTGRES_SSL_CA_PATH={{ .PostgresSSLCAPath | envq }}
+PMM_POSTGRES_SSL_KEY_PATH={{ .PostgresSSLKeyPath | envq }}
+PMM_POSTGRES_SSL_CERT_PATH={{ .PostgresSSLCertPath | envq }}
 PMM_CLICKHOUSE_HOST={{ .ClickhouseHost }}
 PMM_CLICKHOUSE_PORT={{ .ClickhousePort }}
-PMM_CLICKHOUSE_USER={{ .ClickhouseUser }}
-PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword }}
+PMM_CLICKHOUSE_USER={{ .ClickhouseUser | envq }}
+PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword | envq }}
 {{- if .HAEnabled }}
 GF_UNIFIED_ALERTING_HA_LISTEN_ADDRESS=0.0.0.0:{{ .GrafanaGossipPort }}
 GF_UNIFIED_ALERTING_HA_ADVERTISE_ADDRESS={{ .HAAdvertiseAddress }}:{{ .GrafanaGossipPort }}
@@ -220,6 +244,14 @@ func (s *Service) systemctl(args ...string) ([]byte, error) {
 	pdeathsig.Set(cmd, unix.SIGKILL)
 	b, err := cmd.Output()
 	if err != nil {
+		// systemd writes the actual reason (e.g. polkit "Access denied", "Unit
+		// not loaded") to stderr, which Output() captures into ExitError.Stderr
+		// but the default error string drops. Surface it — pre-polkit (T6)
+		// authorization failures are otherwise undiagnosable.
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) && len(exitErr.Stderr) > 0 {
+			return b, fmt.Errorf("%s failed: %w: %s", cmdLine, err, bytes.TrimSpace(exitErr.Stderr))
+		}
 		return b, fmt.Errorf("%s failed: %w", cmdLine, err)
 	}
 	return b, nil
@@ -236,9 +268,17 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 			s.l.Warnf("Nomad is enabled but has no native systemd unit; it will not run under the systemd backend.")
 		}
 		return nil
-	case name == "victoriametrics" && s.vmParams.ExternalVM():
-		// External VM: the embedded VM must not run.
-		return s.disableDynamicService(name)
+	case name == "victoriametrics":
+		if s.vmParams.ExternalVM() {
+			// External VM: the embedded VM must not run.
+			return s.disableDynamicService(name)
+		}
+		// Embedded VM selected: clear any mask a previous external-VM config
+		// left behind, otherwise the reload-or-restart below fails on a masked
+		// unit. No-op (exit 0) when the unit was never masked.
+		if _, err := s.systemctl("unmask", systemdUnitName(name)); err != nil {
+			return fmt.Errorf("failed to unmask %s: %w", systemdUnitName(name), err)
+		}
 	}
 
 	cfg, err := s.marshalEnvConfig(name, settings)
@@ -249,13 +289,18 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 	return err
 }
 
-// disableDynamicService stops a unit and removes its EnvironmentFile (e.g. when
-// an embedded service is replaced by an external one). If the stop fails (e.g.
-// not yet authorized pre-polkit), surface it rather than silently deleting the
-// env file while the unit keeps running — that divergence must not read as success.
+// disableDynamicService masks-and-stops a unit and removes its EnvironmentFile
+// (e.g. when an embedded service is replaced by an external one). A plain `stop`
+// is not durable: the unit stays in pfm.target's static Wants= and pfm-tmpfiles
+// re-seeds its EnvironmentFile on every boot, so a stopped-only unit restarts on
+// reboot (embedded VM resurrected alongside the external one). `mask --now`
+// stops it and blocks any subsequent start — via the target dependency or
+// manually — until updateEnvConfig unmasks it. If the mask fails (e.g. not yet
+// authorized pre-polkit), surface it rather than silently deleting the env file
+// while the unit keeps running — that divergence must not read as success.
 func (s *Service) disableDynamicService(name string) error {
-	if _, err := s.systemctl("stop", systemdUnitName(name)); err != nil {
-		return fmt.Errorf("failed to stop %s: %w", systemdUnitName(name), err)
+	if _, err := s.systemctl("mask", "--now", systemdUnitName(name)); err != nil {
+		return fmt.Errorf("failed to mask %s: %w", systemdUnitName(name), err)
 	}
 	if err := os.Remove(filepath.Join(s.envDir, name+".env")); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err

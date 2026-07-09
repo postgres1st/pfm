@@ -111,14 +111,14 @@ func TestMarshalEnvConfig(t *testing.T) {
 		t.Parallel()
 		env := render(t, "qan-api2")
 		assert.Contains(t, env, "QANAPI_DATA_RETENTION=30")
-		assert.Contains(t, env, "PMM_CLICKHOUSE_ADDR=127.0.0.1:9000")
-		assert.Contains(t, env, "PMM_CLICKHOUSE_DATABASE=pmm")
+		assert.Contains(t, env, "PMM_CLICKHOUSE_ADDR=127.0.0.1:9000") // address: bare (mid-line style)
+		assert.Contains(t, env, `PMM_CLICKHOUSE_DATABASE="pmm"`)      // free-form value: envq-quoted
 	})
 	t.Run("grafana", func(t *testing.T) {
 		t.Parallel()
 		env := render(t, "grafana")
-		assert.Contains(t, env, "PMM_POSTGRES_ADDR=127.0.0.1:5432")
-		assert.Contains(t, env, "GF_SERVER_DOMAIN=192.168.0.42:8443")
+		assert.Contains(t, env, "PMM_POSTGRES_ADDR=127.0.0.1:5432") // address: bare
+		assert.Contains(t, env, `GF_SERVER_DOMAIN="192.168.0.42:8443"`)
 		// zero-egress: grafana phone-homes disabled via env (holds regardless
 		// of the on-disk grafana.ini).
 		assert.Contains(t, env, "GF_ANALYTICS_REPORTING_ENABLED=false")
@@ -237,29 +237,95 @@ func TestReloadViaSystemd(t *testing.T) {
 func TestDisableDynamicService(t *testing.T) {
 	t.Parallel()
 
-	t.Run("stop fails -> error, env kept", func(t *testing.T) {
+	t.Run("mask fails -> error, env kept", func(t *testing.T) {
 		t.Parallel()
-		bin, _ := fakeSystemctl(t, 1) // stop fails
+		bin, _ := fakeSystemctl(t, 1) // mask fails
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
 		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
 		s := newSystemdService(bin, dir)
 		require.Error(t, s.disableDynamicService("victoriametrics"))
 		_, statErr := os.Stat(path)
-		assert.NoError(t, statErr) // not deleted when stop failed
+		assert.NoError(t, statErr) // not deleted when mask failed
 	})
 
-	t.Run("stop ok -> env removed", func(t *testing.T) {
+	t.Run("mask ok -> masked and env removed", func(t *testing.T) {
 		t.Parallel()
-		bin, _ := fakeSystemctl(t, 0)
+		bin, logPath := fakeSystemctl(t, 0)
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
 		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
 		s := newSystemdService(bin, dir)
 		require.NoError(t, s.disableDynamicService("victoriametrics"))
+		// Must mask --now, not just stop: the unit is in pfm.target's static
+		// Wants= and tmpfiles re-seeds its env every boot, so stop alone lets it
+		// resurrect on reboot.
+		calls, err := os.ReadFile(logPath)
+		require.NoError(t, err)
+		assert.Contains(t, string(calls), "mask --now pfm-victoriametrics.service")
 		_, statErr := os.Stat(path)
 		assert.True(t, os.IsNotExist(statErr))
 	})
+}
+
+func TestEnvQuote(t *testing.T) {
+	t.Parallel()
+
+	// A rendered EnvironmentFile value must survive systemd's line-oriented
+	// parser: a trailing backslash would otherwise continue onto (swallow) the
+	// next KEY=value line, and a leading quote would truncate the value.
+	for _, tc := range []struct {
+		in, want string
+	}{
+		{"plain", `"plain"`},
+		{`secret\`, `"secret\\"`},      // trailing backslash -> escaped, no line continuation
+		{`pa"ss`, `"pa\"ss"`},          // embedded double quote -> escaped
+		{`"lead`, `"\"lead"`},          // leading quote -> escaped, not a quote-span opener
+		{"a\nb\r\nc", `"abc"`},         // CR/LF stripped (cannot appear inside a single line)
+		{`c:\path\to\x`, `"c:\\path\\to\\x"`},
+	} {
+		assert.Equal(t, tc.want, envQuote(tc.in), "%q", tc.in)
+	}
+}
+
+func TestMarshalEnvConfigHostilePassword(t *testing.T) {
+	t.Parallel()
+
+	// A password ending in a backslash (or containing a quote) must not break
+	// out of its line and swallow the security-relevant SSL_* lines rendered
+	// after it in the grafana template.
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err)
+	pgParams := &models.PGParams{
+		Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u",
+		DBPassword: `p\`, SSLMode: "require", // trailing backslash
+	}
+	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
+
+	env, err := s.marshalEnvConfig("grafana", settings)
+	require.NoError(t, err)
+	out := string(env)
+	// Password rendered as a self-contained, escaped, quoted value.
+	assert.Contains(t, out, `PMM_POSTGRES_DBPASSWORD="p\\"`)
+	// The line that follows it in the template is still present on its own line,
+	// i.e. not consumed by a line continuation.
+	assert.Contains(t, out, "\nPMM_POSTGRES_SSL_MODE=require\n")
+}
+
+func TestSystemctlSurfacesStderr(t *testing.T) {
+	t.Parallel()
+
+	// systemd's real failure reason goes to stderr; the error must include it.
+	dir := t.TempDir()
+	bin := filepath.Join(dir, "systemctl")
+	script := "#!/bin/sh\necho 'Access denied' >&2\nexit 1\n"
+	require.NoError(t, os.WriteFile(bin, []byte(script), 0o755))
+	s := newSystemdService(bin, dir)
+
+	_, err := s.systemctl("start", "pfm-victoriametrics.service")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Access denied")
 }
 
 func TestSaveEnvAndReloadUnchanged(t *testing.T) {
