@@ -49,12 +49,15 @@ Environment=PMM_ENABLE_UPDATES=false
 # ships no supervisord, but forcing this makes pmm-managed render /run/pfm/*.env
 # (systemd path) instead of ever falling back to writing /etc/supervisord.d.
 Environment=PMM_PROCESS_MANAGER=systemd
+# DB password via env (pmm-managed reads PMM_POSTGRES_DBPASSWORD), NOT on the
+# ExecStart cmdline: /proc/PID/cmdline is world-readable (0444), whereas
+# /proc/PID/environ is owner/root-only (0400).
+Environment=PMM_POSTGRES_DBPASSWORD=pmm-managed
 ExecStart=/usr/sbin/pmm-managed \
     --victoriametrics-config=/etc/victoriametrics-promscrape.yml \
     --victoriametrics-url=http://127.0.0.1:9090/prometheus \
     --postgres-name=pmm-managed \
     --postgres-username=pmm-managed \
-    --postgres-password=pmm-managed \
     --supervisord-config-dir=/etc/supervisord.d
 KillSignal=SIGTERM
 TimeoutStopSec=300
