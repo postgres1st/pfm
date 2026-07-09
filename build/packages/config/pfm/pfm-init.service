@@ -14,6 +14,10 @@ Type=oneshot
 RemainAfterExit=yes
 User=pfm
 Group=pfm
+# Create every provisioned file owner-only by default (single-UID pfm model), so
+# secrets written then chmod'd (the PG superuser password, the nginx TLS key) are
+# never briefly group-readable in the window before the explicit chmod.
+UMask=0077
 ExecStart=/usr/share/pfm/pfm-init.sh
 # /dev/stdout is not openable under a systemd unit; send everything to journald.
 StandardOutput=journal
