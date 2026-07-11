@@ -60,6 +60,9 @@ Requires:       percona-postgresql14
 Requires:       clickhouse-server
 Requires:       nginx
 Requires:       openssl
+# polkit evaluates the shipped rule that lets non-root pmm-managed drive systemctl
+# against pfm-* units; without polkitd running, those calls fail "Access denied".
+Requires:       polkit
 
 %description
 pfm-server assembles the pfm monitoring stack (PostgreSQL, ClickHouse,
@@ -116,6 +119,10 @@ install -p -m 0644 nginx/conf.d/pmm-ssl.conf %{buildroot}%{_sysconfdir}/nginx/co
 install -p -m 0644 nginx/ssl/dhparam.pem      %{buildroot}%{_sysconfdir}/nginx/ssl/dhparam.pem
 install -p -m 0644 nginx/ssl/ca-certs.pem     %{buildroot}%{_sysconfdir}/nginx/ssl/ca-certs.pem
 install -p -m 0644 nginx/ssl/certificate.conf %{buildroot}%{_sysconfdir}/nginx/ssl/certificate.conf
+
+# polkit rule: lets the non-root pfm account drive systemctl for pfm-* units.
+install -d -p %{buildroot}%{_datadir}/polkit-1/rules.d
+install -p -m 0644 pfm-polkit.rules %{buildroot}%{_datadir}/polkit-1/rules.d/49-pfm.rules
 
 %pre
 # Create the pfm system account before files are laid down (mirrors the
@@ -188,6 +195,7 @@ fi
 %{_sysconfdir}/nginx/ssl/dhparam.pem
 %{_sysconfdir}/nginx/ssl/ca-certs.pem
 %{_sysconfdir}/nginx/ssl/certificate.conf
+%{_datadir}/polkit-1/rules.d/49-pfm.rules
 
 %changelog
 * Sat Jul 04 2026 Postgre First <asheshvashi@gmail.com> - 3.0.0-1

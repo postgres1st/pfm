@@ -1,0 +1,40 @@
+// Installed to /usr/share/polkit-1/rules.d/49-pfm.rules by the pfm-server RPM.
+//
+// Let the non-root pfm service account drive systemd so pmm-managed (User=pfm)
+// can manage the native stack — render EnvironmentFiles then reload-or-restart
+// the dynamic services, start pfm-agent, and mask/unmask the embedded VM when an
+// external one is configured. Without this, every systemctl call from pmm-managed
+// fails with polkit "Access denied".
+//
+// Scoping note: `systemctl start` checks BOTH manage-units AND manage-unit-files,
+// and both carry the target unit — so both are gated on the pfm- prefix (a non-pfm
+// start is refused at the manage-unit-files check). mask/unmask use
+// manage-unit-files with NO unit detail (unit === undefined); that cannot be scoped
+// per-unit, so it is granted to the confined, non-root pfm account (bounded: it can
+// mask/unmask units but cannot start/stop non-pfm services or gain privilege).
+function pfmUnit(u) {
+    return u && (u.indexOf("pfm-") === 0 || u === "pfm.target");
+}
+
+polkit.addRule(function(action, subject) {
+    if (subject.user !== "pfm") {
+        return;
+    }
+    // start / stop / restart / reload / reset-failed — always carries the unit.
+    if (action.id === "org.freedesktop.systemd1.manage-units") {
+        if (pfmUnit(action.lookup("unit"))) {
+            return polkit.Result.YES;
+        }
+        return;
+    }
+    // enable/disable/mask/unmask/link. start ALSO triggers this with the unit set;
+    // mask/unmask trigger it with unit === undefined.
+    if (action.id === "org.freedesktop.systemd1.manage-unit-files") {
+        var unit = action.lookup("unit");
+        if (unit) {
+            return pfmUnit(unit) ? polkit.Result.YES : polkit.Result.NOT_HANDLED;
+        }
+        // mask/unmask (no per-unit detail) — allow for the confined pfm account.
+        return polkit.Result.YES;
+    }
+});
