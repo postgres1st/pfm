@@ -49,7 +49,7 @@ Requires:       percona-victoriametrics
 Requires:       vmproxy
 Requires:       percona-qan-api2
 Requires:       percona-dashboards
-Requires:       percona-grafana
+Requires:       pfm-grafana
 
 # Third-party data/proxy tier (Percona ppg / ClickHouse / distro repos).
 # postgresql14: -server has initdb/pg_ctl; -contrib has pg_stat_statements

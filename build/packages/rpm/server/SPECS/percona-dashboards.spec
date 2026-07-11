@@ -28,7 +28,7 @@ URL:		  https://%{provider}
 
 BuildRequires:	nodejs
 BuildRequires:	unzip
-Requires:	percona-grafana
+Requires:	pfm-grafana
 
 Source0:	https://%{provider}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 Source1:	https://github.com/grafana/clickhouse-datasource/releases/download/v%{clickhouse_datasource_version}/grafana-clickhouse-datasource-%{clickhouse_datasource_version}.%{plugin_platform}.zip

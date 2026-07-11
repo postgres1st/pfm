@@ -20,13 +20,16 @@
 %define gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**};
 %endif
 
-Name:           percona-grafana
+Name:           pfm-grafana
 Version:        %{grafana_version}
 Release:        %{rpm_release}
 Summary:        Grafana is an open source, feature rich metrics dashboard and graph editor
 License:        AGPLv3
-URL:            https://github.com/percona/grafana
-Source0:        https://github.com/percona/grafana/archive/%{commit}.tar.gz
+# Fork lineage: grafana/grafana -> percona/grafana -> postgres1st/grafana.
+# %{commit} must resolve in the postgres1st fork; bump it to the branding HEAD
+# once the Postgres1st rebrand commits land on top of the percona/grafana base.
+URL:            https://github.com/postgres1st/grafana
+Source0:        https://github.com/postgres1st/grafana/archive/%{commit}.tar.gz
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
 
 BuildRequires: fontconfig
