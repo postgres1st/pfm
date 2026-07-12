@@ -40,6 +40,11 @@ LockPersonality=yes
 CapabilityBoundingSet=
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 ReadWritePaths=/srv /run/pfm /etc/victoriametrics-promscrape.yml
+# pmm-managed writes across its own /srv areas (prometheus rules, alerting, dump,
+# backup, logs), but must NOT be able to write other services' datadirs or secrets
+# — carve those back to read-only so a compromised pmm-managed can't tamper with
+# the PG datadir, the nginx TLS private key, or the PG superuser password file.
+ReadOnlyPaths=-/srv/postgres14 -/srv/clickhouse -/srv/grafana -/srv/nginx -/srv/.postgres_password
 IPAddressDeny=any
 IPAddressAllow=localhost
 Environment=PERCONA_TELEMETRY_DISABLE=1

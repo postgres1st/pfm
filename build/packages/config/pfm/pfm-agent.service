@@ -32,7 +32,10 @@ RestrictSUIDSGID=yes
 RestrictRealtime=yes
 LockPersonality=yes
 CapabilityBoundingSet=
-RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# AF_NETLINK: pfm-agent embeds nomad + vmagent, which enumerate network interfaces
+# (socket(AF_NETLINK,…)); without it that fingerprinting fails EAFNOSUPPORT. Netlink
+# is host-local, so this does not weaken the egress posture.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 ReadWritePaths=/srv/pmm-agent /srv/nomad /srv/logs
 Environment=PERCONA_TELEMETRY_DISABLE=1
 ExecStart=/usr/sbin/pmm-agent \

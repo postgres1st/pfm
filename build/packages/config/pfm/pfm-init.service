@@ -27,7 +27,9 @@ RestrictRealtime=yes
 LockPersonality=yes
 CapabilityBoundingSet=
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-ReadWritePaths=/srv /run
+# /srv (provisioning target) + only the pg socket dir under /run — NOT all of /run
+# (which would expose /run/systemd, /run/dbus to the editable provisioning script).
+ReadWritePaths=/srv /run/postgresql
 # Create every provisioned file owner-only by default (single-UID pfm model), so
 # secrets written then chmod'd (the PG superuser password, the nginx TLS key) are
 # never briefly group-readable in the window before the explicit chmod.
