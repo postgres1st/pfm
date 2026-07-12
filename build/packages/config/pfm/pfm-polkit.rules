@@ -1,17 +1,19 @@
 // Installed to /usr/share/polkit-1/rules.d/49-pfm.rules by the pfm-server RPM.
 //
-// Let the non-root pfm service account drive systemd so pmm-managed (User=pfm)
-// can manage the native stack — render EnvironmentFiles then reload-or-restart
-// the dynamic services, start pfm-agent, and mask/unmask the embedded VM when an
-// external one is configured. Without this, every systemctl call from pmm-managed
-// fails with polkit "Access denied".
+// Let the non-root pfm service account start/stop/restart/reload ONLY pfm-*
+// units, so pmm-managed (User=pfm) can reload the dynamic services after an env
+// re-render, start pfm-agent, and stop the embedded VM. Without this, every
+// systemctl call from pmm-managed fails with polkit "Access denied".
 //
-// Scoping note: `systemctl start` checks BOTH manage-units AND manage-unit-files,
-// and both carry the target unit — so both are gated on the pfm- prefix (a non-pfm
-// start is refused at the manage-unit-files check). mask/unmask use
-// manage-unit-files with NO unit detail (unit === undefined); that cannot be scoped
-// per-unit, so it is granted to the confined, non-root pfm account (bounded: it can
-// mask/unmask units but cannot start/stop non-pfm services or gain privilege).
+// SECURITY: only the manage-units action is granted, and only for pfm-*/pfm.target
+// units — that action carries the target unit, so it can be scoped. The
+// manage-unit-files action (mask / unmask / enable / disable / LINK / preset) is
+// deliberately NOT granted: systemd exposes NO per-unit detail on it, so it cannot
+// be scoped to pfm-*, and granting it would let a compromised pfm process `link` an
+// attacker-authored unit and `start` it as root (the unit name matches the pfm-
+// prefix). pmm-managed therefore does not use mask/unmask at all — it disables the
+// embedded VM with a ConditionPathExists marker file instead (see systemd.go's
+// disableDynamicService).
 function pfmUnit(u) {
     return u && (u.indexOf("pfm-") === 0 || u === "pfm.target");
 }
@@ -20,21 +22,9 @@ polkit.addRule(function(action, subject) {
     if (subject.user !== "pfm") {
         return;
     }
-    // start / stop / restart / reload / reset-failed — always carries the unit.
-    if (action.id === "org.freedesktop.systemd1.manage-units") {
-        if (pfmUnit(action.lookup("unit"))) {
-            return polkit.Result.YES;
-        }
-        return;
-    }
-    // enable/disable/mask/unmask/link. start ALSO triggers this with the unit set;
-    // mask/unmask trigger it with unit === undefined.
-    if (action.id === "org.freedesktop.systemd1.manage-unit-files") {
-        var unit = action.lookup("unit");
-        if (unit) {
-            return pfmUnit(unit) ? polkit.Result.YES : polkit.Result.NOT_HANDLED;
-        }
-        // mask/unmask (no per-unit detail) — allow for the confined pfm account.
+    if (action.id === "org.freedesktop.systemd1.manage-units" && pfmUnit(action.lookup("unit"))) {
         return polkit.Result.YES;
     }
+    // Everything else (incl. all manage-unit-files ops) falls through to the
+    // systemd default (auth_admin) — denied for the headless pfm account.
 });

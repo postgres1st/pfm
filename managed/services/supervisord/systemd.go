@@ -273,11 +273,11 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 			// External VM: the embedded VM must not run.
 			return s.disableDynamicService(name)
 		}
-		// Embedded VM selected: clear any mask a previous external-VM config
-		// left behind, otherwise the reload-or-restart below fails on a masked
-		// unit. No-op (exit 0) when the unit was never masked.
-		if _, err := s.systemctl("unmask", systemdUnitName(name)); err != nil {
-			return fmt.Errorf("failed to unmask %s: %w", systemdUnitName(name), err)
+		// Embedded VM selected: clear the disable marker a previous external-VM
+		// config may have left, so the unit's ConditionPathExists no longer skips
+		// it and the reload-or-restart below can start it. No-op when absent.
+		if err := os.Remove(disabledMarkerPath(name)); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			return fmt.Errorf("failed to clear disable marker for %s: %w", name, err)
 		}
 	}
 
@@ -289,18 +289,42 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 	return err
 }
 
-// disableDynamicService masks-and-stops a unit and removes its EnvironmentFile
-// (e.g. when an embedded service is replaced by an external one). A plain `stop`
-// is not durable: the unit stays in pfm.target's static Wants= and pfm-tmpfiles
-// re-seeds its EnvironmentFile on every boot, so a stopped-only unit restarts on
-// reboot (embedded VM resurrected alongside the external one). `mask --now`
-// stops it and blocks any subsequent start — via the target dependency or
-// manually — until updateEnvConfig unmasks it. If the mask fails (e.g. not yet
-// authorized pre-polkit), surface it rather than silently deleting the env file
-// while the unit keeps running — that divergence must not read as success.
+// pfmDataDir is the persistent data root the units live under (/srv). A package
+// var so tests can redirect it; the disable marker must be here (persistent), not
+// in the tmpfs env dir, or the disable would not survive a reboot.
+var pfmDataDir = "/srv"
+
+// disabledMarkerPath is the persistent flag whose PRESENCE makes the unit's
+// `ConditionPathExists=!<marker>` skip it on every (re)start.
+func disabledMarkerPath(name string) string {
+	return filepath.Join(pfmDataDir, name, ".pfm-disabled")
+}
+
+// disableDynamicService stops a dynamic unit and durably keeps it down when an
+// embedded service is replaced by an external one (e.g. an external VM). A plain
+// `stop` is not durable — the unit stays in pfm.target's static Wants= and
+// pfm-tmpfiles re-seeds its EnvironmentFile every boot, so it would restart on
+// reboot. Durability is provided by a persistent marker file the unit's
+// `ConditionPathExists=!<marker>` checks, NOT by `systemctl mask`: masking needs
+// the coarse manage-unit-files polkit action, which systemd exposes with no
+// per-unit detail and so cannot be scoped to pfm-* — granting it would let a
+// compromised pfm process `link` an attacker unit and start it as root. This path
+// needs only a file write (pfm owns /srv) plus a scoped `stop` (manage-units).
+//
+// The marker is written BEFORE the stop so a crash in between still leaves the
+// unit condition-blocked from restarting, never running-without-marker.
 func (s *Service) disableDynamicService(name string) error {
-	if _, err := s.systemctl("mask", "--now", systemdUnitName(name)); err != nil {
-		return fmt.Errorf("failed to mask %s: %w", systemdUnitName(name), err)
+	marker := disabledMarkerPath(name)
+	if err := os.MkdirAll(filepath.Dir(marker), 0o750); err != nil { //nolint:mnd
+		return err
+	}
+	if err := os.WriteFile(marker, nil, 0o644); err != nil { //nolint:mnd,gosec
+		return err
+	}
+	if _, err := s.systemctl("stop", systemdUnitName(name)); err != nil {
+		// Surface it rather than silently deleting the env file while the unit keeps
+		// running; the marker already blocks the next restart and the next render retries.
+		return fmt.Errorf("failed to stop %s: %w", systemdUnitName(name), err)
 	}
 	if err := os.Remove(filepath.Join(s.envDir, name+".env")); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err

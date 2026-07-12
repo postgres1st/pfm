@@ -235,37 +235,78 @@ func TestReloadViaSystemd(t *testing.T) {
 }
 
 func TestDisableDynamicService(t *testing.T) {
-	t.Parallel()
+	// not parallel: overrides package-level pfmDataDir.
+	saved := pfmDataDir
+	t.Cleanup(func() { pfmDataDir = saved })
 
-	t.Run("mask fails -> error, env kept", func(t *testing.T) {
-		t.Parallel()
-		bin, _ := fakeSystemctl(t, 1) // mask fails
+	t.Run("stop fails -> error, env kept, but marker already written", func(t *testing.T) {
+		pfmDataDir = t.TempDir()
+		bin, _ := fakeSystemctl(t, 1) // stop fails
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
 		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
 		s := newSystemdService(bin, dir)
 		require.Error(t, s.disableDynamicService("victoriametrics"))
 		_, statErr := os.Stat(path)
-		assert.NoError(t, statErr) // not deleted when mask failed
+		assert.NoError(t, statErr) // env not deleted when stop failed
+		// The marker is written BEFORE the stop, so the unit stays down on the next
+		// boot (ConditionPathExists) even though the immediate stop failed.
+		_, mErr := os.Stat(disabledMarkerPath("victoriametrics"))
+		assert.NoError(t, mErr)
 	})
 
-	t.Run("mask ok -> masked and env removed", func(t *testing.T) {
-		t.Parallel()
+	t.Run("ok -> marker written, scoped stop (never mask), env removed", func(t *testing.T) {
+		pfmDataDir = t.TempDir()
 		bin, logPath := fakeSystemctl(t, 0)
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
 		require.NoError(t, os.WriteFile(path, []byte("x"), 0o600))
 		s := newSystemdService(bin, dir)
 		require.NoError(t, s.disableDynamicService("victoriametrics"))
-		// Must mask --now, not just stop: the unit is in pfm.target's static
-		// Wants= and tmpfiles re-seeds its env every boot, so stop alone lets it
-		// resurrect on reboot.
 		calls, err := os.ReadFile(logPath)
 		require.NoError(t, err)
-		assert.Contains(t, string(calls), "mask --now pfm-victoriametrics.service")
+		// Durable disable is a persistent marker + a SCOPED `stop` — never `mask`,
+		// which would need the unscopeable manage-unit-files polkit action (a local
+		// root-escalation vector via `link`).
+		assert.Contains(t, string(calls), "stop pfm-victoriametrics.service")
+		assert.NotContains(t, string(calls), "mask")
+		_, mErr := os.Stat(disabledMarkerPath("victoriametrics"))
+		assert.NoError(t, mErr) // marker present -> ConditionPathExists keeps it down
 		_, statErr := os.Stat(path)
 		assert.True(t, os.IsNotExist(statErr))
 	})
+}
+
+func TestUpdateEnvConfigEmbeddedClearsMarker(t *testing.T) {
+	// not parallel: overrides package-level pfmDataDir.
+	saved := pfmDataDir
+	t.Cleanup(func() { pfmDataDir = saved })
+	pfmDataDir = t.TempDir()
+
+	// A disable marker left by a prior external-VM config.
+	marker := disabledMarkerPath("victoriametrics")
+	require.NoError(t, os.MkdirAll(filepath.Dir(marker), 0o750))
+	require.NoError(t, os.WriteFile(marker, nil, 0o644))
+
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err) // embedded VM (ExternalVM() == false)
+	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u", DBPassword: "p", SSLMode: "disable"}
+	dir := t.TempDir()
+	bin, logPath := fakeSystemctl(t, 0)
+	s := New(dir, &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	s.pm, s.systemctlPath, s.envDir = pmSystemd, bin, dir
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
+	settings.VictoriaMetrics.CacheEnabled = new(false)
+
+	require.NoError(t, s.updateEnvConfig("victoriametrics", settings))
+	// Marker cleared so ConditionPathExists no longer blocks the embedded VM...
+	_, mErr := os.Stat(marker)
+	assert.True(t, os.IsNotExist(mErr))
+	// ...the env is re-rendered, and it is started via a scoped reload (no unmask).
+	_, eErr := os.Stat(filepath.Join(dir, "victoriametrics.env"))
+	assert.NoError(t, eErr)
+	calls, _ := os.ReadFile(logPath)
+	assert.NotContains(t, string(calls), "unmask")
 }
 
 func TestEnvQuote(t *testing.T) {

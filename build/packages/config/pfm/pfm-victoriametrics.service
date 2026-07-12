@@ -13,6 +13,11 @@ Description=pfm VictoriaMetrics (metrics storage)
 After=pfm-init.service pfm-postgresql.service
 Requires=pfm-init.service
 PartOf=pfm.target
+# When an EXTERNAL VictoriaMetrics is configured, pmm-managed drops this persistent
+# marker so the embedded VM stays down across reboots. Using a condition (a plain
+# file pfm can write) instead of `systemctl mask` avoids granting pfm the coarse,
+# unscopeable manage-unit-files polkit action (see pfm-polkit.rules / systemd.go).
+ConditionPathExists=!/srv/victoriametrics/.pfm-disabled
 # Match supervisord startretries=10 (systemd default is 5/10s).
 StartLimitIntervalSec=60
 StartLimitBurst=10
