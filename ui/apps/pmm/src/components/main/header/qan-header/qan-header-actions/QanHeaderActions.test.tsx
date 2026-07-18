@@ -8,7 +8,7 @@ import {
 const { mockCreateShortUrl } = vi.hoisted(() => ({
   mockCreateShortUrl: vi.fn().mockResolvedValue({
     uid: '1',
-    url: 'https://www.percona.com/',
+    url: 'https://www.postgresfirst.com/',
   }),
 }));
 
@@ -70,7 +70,7 @@ describe('QanHeaderActions', () => {
 
     await waitFor(() =>
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-        'https://www.percona.com/'
+        'https://www.postgresfirst.com/'
       )
     );
 

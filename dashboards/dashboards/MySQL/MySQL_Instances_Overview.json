@@ -9,7 +9,7 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "showIn": 0,
                 "tags": [
                     "pmm_annotation",
@@ -415,7 +415,7 @@
                 {
                     "targetBlank": true,
                     "title": "Tuning the InnoDB Buffer Pool Size",
-                    "url": "https://www.percona.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
+                    "url": "https://www.postgresfirst.com/blog/2015/06/02/80-ram-tune-innodb_buffer_pool_size/"
                 }
             ],
             "maxDataPoints": 100,
@@ -2707,7 +2707,7 @@
                         {
                             "targetBlank": true,
                             "title": "MySQL Queries and Questions",
-                            "url": "https://www.percona.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
+                            "url": "https://www.postgresfirst.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
                         }
                     ],
                     "nullPointMode": "null",
@@ -2951,7 +2951,7 @@
                         {
                             "targetBlank": true,
                             "title": "MySQL Queries and Questions",
-                            "url": "https://www.percona.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
+                            "url": "https://www.postgresfirst.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
                         }
                     ],
                     "nullPointMode": "null",
@@ -3729,7 +3729,7 @@
                         {
                             "targetBlank": true,
                             "title": "MySQL Queries and Questions",
-                            "url": "https://www.percona.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
+                            "url": "https://www.postgresfirst.com/blog/2014/05/29/how-mysql-queries-and-questions-are-measured/"
                         }
                     ],
                     "nullPointMode": "null",
@@ -8273,7 +8273,7 @@
     "schemaVersion": 34,
     "style": "dark",
     "tags": [
-        "Percona",
+        "Postgres1st",
         "MySQL",
         "Services"
     ],

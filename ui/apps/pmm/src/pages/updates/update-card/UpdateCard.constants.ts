@@ -1,7 +1,7 @@
 export const DEPRECATION_DOCKER_UPGRADE_HREF =
-  'https://per.co.na/pmm/upgrade-docker';
+  'https://docs.postgresfirst.com/pmm/upgrade-docker';
 
 export const DEPRECATION_PODMAN_UPGRADE_HREF =
-  'https://per.co.na/pmm/upgrade-podman';
+  'https://docs.postgresfirst.com/pmm/upgrade-podman';
 export const DEPRECATION_HELM_UPGRADE_HREF =
-  'https://per.co.na/pmm/upgrade-helm';
+  'https://docs.postgresfirst.com/pmm/upgrade-helm';

@@ -2,7 +2,8 @@ import { AuthContext, AuthContextProps } from 'contexts/auth';
 import { UserContext, UserContextProps } from 'contexts/user';
 import { FC, PropsWithChildren } from 'react';
 import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
-import { pmmThemeOptions, ThemeContextProvider } from '@percona/percona-ui';
+import { ThemeContextProvider } from '@percona/percona-ui';
+import { postgres1stThemeOptions } from 'lib/theme';
 import { TEST_USER_ADMIN } from './testStubs';
 
 interface TestWrapperProps extends PropsWithChildren {
@@ -23,7 +24,7 @@ export const TestWrapper: FC<TestWrapperProps> = ({
   <AuthContext.Provider value={authContext}>
     <UserContext.Provider value={userContext}>
       <MemoryRouter {...routerProps}>
-        <ThemeContextProvider themeOptions={pmmThemeOptions}>
+        <ThemeContextProvider themeOptions={postgres1stThemeOptions}>
           {children}
         </ThemeContextProvider>
       </MemoryRouter>

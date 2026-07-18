@@ -10,7 +10,7 @@
   },
   "private": "true",
   "keywords": [],
-  "author": "Percona",
+  "author": "Postgres1st",
   "license": "AGPLv3",
   "type": "module",
   "types": "dist/index.d.ts",

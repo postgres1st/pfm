@@ -2279,7 +2279,7 @@
     "tags": [
         "Kubernetes",
         "Operators",
-        "Percona"
+        "Postgres1st"
     ],
     "templating": {
         "list": [

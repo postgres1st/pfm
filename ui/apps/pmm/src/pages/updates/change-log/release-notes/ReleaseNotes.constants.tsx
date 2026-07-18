@@ -11,7 +11,7 @@ import { Icon } from 'components/icon';
 export const IconMap: Record<string, JSX.Element> = {
   danger: <Dangerous htmlColor="#ff1744" />,
   note: <Edit htmlColor="#448aff" />,
-  percona: <Icon name="percona" />,
+  percona: <Icon name="pfmm" />,
   configuration: <Settings />,
   inventory: <ContentPaste />,
   arrowdown: <ArrowDownward />,

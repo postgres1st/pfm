@@ -20,6 +20,7 @@ import { TourCloseButton } from 'components/tour-close-button';
 import { useNavigation } from 'contexts/navigation';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
+import { TOUR_ENABLED } from 'lib/constants';
 
 export const TourProvider: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
@@ -41,6 +42,9 @@ export const TourProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const startTour = useCallback(
     async (tourName: TourName) => {
+      if (!TOUR_ENABLED) {
+        return;
+      }
       const steps = stepsMap[tourName];
 
       if (!navOpen) {
@@ -69,7 +73,7 @@ export const TourProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [tourName, updateUserInfoAsync]);
 
   useEffect(() => {
-    if (isOpen || !user?.info) {
+    if (!TOUR_ENABLED || isOpen || !user?.info) {
       return;
     }
 

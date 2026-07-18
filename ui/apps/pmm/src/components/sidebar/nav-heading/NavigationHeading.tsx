@@ -58,7 +58,7 @@ const NavigationHeading: FC<NavigationHeadingProps> = memo(
         ]}
       >
         <Icon
-          name="pmm-titled"
+          name="pfmm-titled"
           className="hidden-on-hover"
           sx={(theme) => ({
             left: sidebarOpen ? 14 : 8,

@@ -25,7 +25,7 @@ describe('ClientsModal', () => {
     expect(onCloseMock).toHaveBeenCalled();
   });
 
-  it('navigates home when "Go to PMM Home" is clicked', () => {
+  it('navigates home when "Go to PFMM Home" is clicked', () => {
     render(<ClientsModal isOpen onClose={onCloseMock} />);
 
     expect(screen.getByTestId('modal-pmm-home-link')).toHaveAttribute(

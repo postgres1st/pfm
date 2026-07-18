@@ -33,7 +33,7 @@ const mockVersionInfo = {
     releaseNotesUrl: 'https://example.com/release-notes',
   },
   updateAvailable: true,
-  latestNewsUrl: 'https://per.co.na/pmm/3.1.0',
+  latestNewsUrl: 'https://docs.postgresfirst.com/pmm/3.1.0',
   lastCheck: '2024-07-30T10:34:05.886739003Z',
 };
 
@@ -164,7 +164,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PMM 3.1.0');
+      expect(titleElement).toHaveTextContent('Update to PFMM 3.1.0');
     });
 
     it('renders snackbar with correct title when snoozeCount > 1', () => {
@@ -172,7 +172,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('update-modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PMM 3.1.0');
+      expect(titleElement).toHaveTextContent('Update to PFMM 3.1.0');
     });
   });
 
@@ -206,7 +206,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PMM');
+      expect(titleElement).toHaveTextContent('Update to PFMM');
     });
 
     it('handles version info with null latest version in snackbar', () => {
@@ -222,7 +222,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('update-modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PMM');
+      expect(titleElement).toHaveTextContent('Update to PFMM');
     });
   });
 

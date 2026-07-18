@@ -27,7 +27,7 @@
                 "enable": false,
                 "hide": false,
                 "iconColor": "orange",
-                "name": "PMM Annotations",
+                "name": "PFMM Annotations",
                 "target": {
                     "limit": 100,
                     "matchAny": true,
