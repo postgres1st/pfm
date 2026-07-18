@@ -260,6 +260,7 @@ func (s *Service) systemctl(args ...string) ([]byte, error) {
 // updateEnvConfig regenerates one dynamic service's EnvironmentFile under the
 // systemd backend, mirroring the per-service special cases of UpdateConfiguration.
 func (s *Service) updateEnvConfig(name string, settings *models.Settings) error {
+	reenabled := false
 	switch {
 	case name == "nomad-server":
 		// No pfm-nomad-server unit exists under the systemd backend yet. Surface
@@ -274,9 +275,9 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 			return s.disableDynamicService(name)
 		}
 		// Embedded VM selected: clear the disable marker a previous external-VM
-		// config may have left, so the unit's ConditionPathExists no longer skips
-		// it and the reload-or-restart below can start it. No-op when absent.
-		if err := os.Remove(disabledMarkerPath(name)); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		// config may have left, so the unit's ConditionPathExists no longer skips it.
+		var err error
+		if reenabled, err = removeIfExists(disabledMarkerPath(name)); err != nil {
 			return fmt.Errorf("failed to clear disable marker for %s: %w", name, err)
 		}
 	}
@@ -285,8 +286,29 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 	if err != nil {
 		return err
 	}
-	_, err = s.saveEnvAndReload(name, cfg)
-	return err
+	applied, err := s.saveEnvAndReload(name, cfg)
+	if err != nil {
+		return err
+	}
+	if reenabled && !applied {
+		// The unit was disabled (ConditionPathExists-skipped, hence down) and the env
+		// render came out byte-identical, so saveEnvAndReload issued no restart. Force
+		// it up — clearing the marker alone only takes effect on the next (re)start.
+		return s.reload(name)
+	}
+	return nil
+}
+
+// removeIfExists deletes path, reporting whether it was there. Absence is not an error.
+func removeIfExists(path string) (bool, error) {
+	switch err := os.Remove(path); {
+	case err == nil:
+		return true, nil
+	case errors.Is(err, fs.ErrNotExist):
+		return false, nil
+	default:
+		return false, err
+	}
 }
 
 // pfmDataDir is the persistent data root the units live under (/srv). A package
@@ -295,9 +317,12 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 var pfmDataDir = "/srv"
 
 // disabledMarkerPath is the persistent flag whose PRESENCE makes the unit's
-// `ConditionPathExists=!<marker>` skip it on every (re)start.
+// `ConditionPathExists=!<marker>` skip it on every (re)start. It lives in a
+// dedicated control dir — NOT inside the service's own datadir — so wiping a
+// service's data (e.g. resetting metrics) can't silently drop the disable flag.
+// Keep this in lockstep with the unit's ConditionPathExists= path.
 func disabledMarkerPath(name string) string {
-	return filepath.Join(pfmDataDir, name, ".pfm-disabled")
+	return filepath.Join(pfmDataDir, ".pfm-disabled", name)
 }
 
 // disableDynamicService stops a dynamic unit and durably keeps it down when an
@@ -318,7 +343,7 @@ func (s *Service) disableDynamicService(name string) error {
 	if err := os.MkdirAll(filepath.Dir(marker), 0o750); err != nil { //nolint:mnd
 		return err
 	}
-	if err := os.WriteFile(marker, nil, 0o644); err != nil { //nolint:mnd,gosec
+	if err := os.WriteFile(marker, nil, 0o600); err != nil { //nolint:mnd
 		return err
 	}
 	if _, err := s.systemctl("stop", systemdUnitName(name)); err != nil {

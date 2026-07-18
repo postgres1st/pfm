@@ -309,6 +309,41 @@ func TestUpdateEnvConfigEmbeddedClearsMarker(t *testing.T) {
 	assert.NotContains(t, string(calls), "unmask")
 }
 
+func TestUpdateEnvConfigReenableForcesRestartWhenEnvUnchanged(t *testing.T) {
+	// not parallel: overrides package-level pfmDataDir.
+	saved := pfmDataDir
+	t.Cleanup(func() { pfmDataDir = saved })
+	pfmDataDir = t.TempDir()
+
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err)
+	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u", DBPassword: "p", SSLMode: "disable"}
+	dir := t.TempDir()
+	bin, logPath := fakeSystemctl(t, 0)
+	s := New(dir, &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	s.pm, s.systemctlPath, s.envDir = pmSystemd, bin, dir
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
+	settings.VictoriaMetrics.CacheEnabled = new(false)
+
+	// Pre-seed the env file with exactly what the render will produce, so
+	// saveEnvAndReload sees no change and issues no restart on its own...
+	cfg, err := s.marshalEnvConfig("victoriametrics", settings)
+	require.NoError(t, err)
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "victoriametrics.env"), cfg, 0o600))
+	// ...and mark it disabled, as a prior external-VM config would.
+	marker := disabledMarkerPath("victoriametrics")
+	require.NoError(t, os.MkdirAll(filepath.Dir(marker), 0o750))
+	require.NoError(t, os.WriteFile(marker, nil, 0o600))
+
+	require.NoError(t, s.updateEnvConfig("victoriametrics", settings))
+	_, mErr := os.Stat(marker)
+	assert.True(t, os.IsNotExist(mErr)) // marker cleared
+	// The unit was disabled and the env is byte-identical, so a restart must be
+	// FORCED — otherwise re-enabling the embedded VM leaves it down until reboot.
+	calls, _ := os.ReadFile(logPath)
+	assert.Contains(t, string(calls), "reload-or-restart pfm-victoriametrics.service")
+}
+
 func TestEnvQuote(t *testing.T) {
 	t.Parallel()
 
