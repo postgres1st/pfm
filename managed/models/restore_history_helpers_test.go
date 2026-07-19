@@ -139,9 +139,13 @@ func TestRestoreHistory(t *testing.T) {
 		prepareArtifactsAndService(q)
 
 		params := models.CreateRestoreHistoryItemParams{
-			ArtifactID:    artifactID1,
-			ServiceID:     serviceID1,
-			PITRTimestamp: new(time.Now().Round(time.Second)),
+			ArtifactID: artifactID1,
+			ServiceID:  serviceID1,
+			// UTC, matching models.Now: pitr_timestamp is a TIMESTAMP column, so PostgreSQL
+			// drops the offset on write and the value reads back labelled UTC. A local time
+			// here would come back shifted by the zone offset once ChangeRestoreHistoryItem
+			// reloads the row, which passes only where the host runs UTC.
+			PITRTimestamp: new(time.Now().UTC().Round(time.Second)),
 			Status:        models.InProgressRestoreStatus,
 		}
 
