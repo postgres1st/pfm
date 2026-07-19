@@ -273,6 +273,13 @@ type AddDBMSServiceParams struct {
 // AddNewService adds new service to storage.
 // Must be performed in transaction.
 func AddNewService(q *reform.Querier, serviceType ServiceType, params *AddDBMSServiceParams) (*Service, error) {
+	// Checked first: this is the single insert path for Services, and rejecting here keeps
+	// unsupported types away from the per-type helpers below, some of which panic on types
+	// they do not handle.
+	if !IsServiceTypeSupported(serviceType) {
+		return nil, status.Errorf(codes.InvalidArgument, "Service type %q is not supported by this deployment.", serviceType)
+	}
+
 	switch serviceType {
 	case MySQLServiceType, MongoDBServiceType, PostgreSQLServiceType, ProxySQLServiceType, ValkeyServiceType:
 		err := validateDBConnectionOptions(params.Socket, params.Address, params.Port)

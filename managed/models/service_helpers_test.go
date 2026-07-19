@@ -32,6 +32,17 @@ import (
 	"github.com/percona/pmm/managed/utils/tests"
 )
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func TestServiceHelpers(t *testing.T) {
 	now, origNowF := models.Now(), models.Now
 	models.Now = func() time.Time {
@@ -323,6 +334,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("MySQL Conflict socket and address", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -337,6 +350,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("MySQL empty connection", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -373,6 +388,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("MongoDB conflict socket and address", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -387,6 +404,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("MongoDB empty connection", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -397,6 +416,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("ProxySQL empty connection", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -408,6 +429,8 @@ func TestServiceHelpers(t *testing.T) {
 	})
 
 	t.Run("ProxySQL conflict socket and address", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		q, teardown := setup(t)
 		defer teardown(t)
 
@@ -421,37 +444,38 @@ func TestServiceHelpers(t *testing.T) {
 		tests.AssertGRPCError(t, status.New(codes.InvalidArgument, `Socket and address cannot be specified together.`), err)
 	})
 
-	t.Run("MongoDB find services in the same cluster", func(t *testing.T) {
+	// The cluster filter is service-type agnostic; PostgreSQL exercises it as well as MongoDB did.
+	t.Run("PostgreSQL find services in the same cluster", func(t *testing.T) {
 		q, teardown := setup(t)
 		defer teardown(t)
-		s1, err := models.AddNewService(q, models.MongoDBServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "mongors1",
+		s1, err := models.AddNewService(q, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+			ServiceName: "pgrs1",
 			NodeID:      "N1",
 			Cluster:     "cluster0",
 			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(27017),
+			Port:        pointer.ToUint16OrNil(5432),
 		})
 		require.NoError(t, err)
 
-		s2, err := models.AddNewService(q, models.MongoDBServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "mongors2",
+		s2, err := models.AddNewService(q, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+			ServiceName: "pgrs2",
 			NodeID:      "N1",
 			Cluster:     "cluster0",
 			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(27017),
+			Port:        pointer.ToUint16OrNil(5432),
 		})
 		require.NoError(t, err)
-		_, err = models.AddNewService(q, models.MongoDBServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "mongors3",
+		_, err = models.AddNewService(q, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+			ServiceName: "pgrs3",
 			NodeID:      "N1",
 			Cluster:     "cluster1",
 			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(27017),
+			Port:        pointer.ToUint16OrNil(5432),
 		})
 		require.NoError(t, err)
 
 		services, err := models.FindServices(q, models.ServiceFilters{
-			ServiceType: new(models.MongoDBServiceType),
+			ServiceType: new(models.PostgreSQLServiceType),
 			Cluster:     "cluster0",
 		})
 		require.NoError(t, err)
@@ -499,38 +523,43 @@ func TestServiceHelpers(t *testing.T) {
 			models.PostgreSQLServiceType: false,
 		}
 
-		s1, err := models.AddNewService(q, models.MySQLServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "mysql",
-			NodeID:      "N1",
-			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(3306),
-		})
-		require.NoError(t, err)
+		specs := []struct {
+			serviceType models.ServiceType
+			name        string
+			port        uint16
+		}{
+			{models.MySQLServiceType, "mysql", 3306},
+			{models.MongoDBServiceType, "mongo", 27017},
+			{models.PostgreSQLServiceType, "postgres", 5432},
+		}
 
-		s2, err := models.AddNewService(q, models.MongoDBServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "mongo",
-			NodeID:      "N1",
-			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(27017),
-		})
-		require.NoError(t, err)
+		var services []*models.Service
+		for _, spec := range specs {
+			if !models.IsServiceTypeSupported(spec.serviceType) {
+				continue
+			}
 
-		s3, err := models.AddNewService(q, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
-			ServiceName: "postgres",
-			NodeID:      "N1",
-			Cluster:     "cluster1",
-			Address:     new("127.0.0.1"),
-			Port:        pointer.ToUint16OrNil(5432),
-		})
-		require.NoError(t, err)
+			service, err := models.AddNewService(q, spec.serviceType, &models.AddDBMSServiceParams{
+				ServiceName: spec.name,
+				NodeID:      "N1",
+				Address:     new("127.0.0.1"),
+				Port:        pointer.ToUint16OrNil(spec.port),
+			})
+			require.NoError(t, err)
+			services = append(services, service)
+		}
+		require.NotEmpty(t, services)
 
-		for _, service := range []*models.Service{s1, s2, s3} {
+		for _, service := range services {
 			swVersions, err := models.FindServiceSoftwareVersionsByServiceID(q, service.ServiceID)
 
+			// Was "return", which exited the subtest on the first service and left the
+			// remaining types unchecked. The loop only became meaningful once the service
+			// list was filtered by the allowlist, so the fix belongs with that change.
 			if emptyVersionsCreatedByServiceType[service.ServiceType] {
 				require.NoError(t, err)
 				assert.NotNil(t, swVersions)
-				return
+				continue
 			}
 
 			require.ErrorIs(t, err, models.ErrNotFound)
