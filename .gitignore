@@ -51,6 +51,9 @@ settings.json
 /dev/clickhouse-backups/
 encryption.key
 
+# Git worktrees (isolated workspaces)
+/.worktree/
+
 # Exclude AI skills to support fast local experimentation
 .claude/
 .cursor/
