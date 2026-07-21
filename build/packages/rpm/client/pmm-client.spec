@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 
 Name:           pmm-client
-Summary:        Percona Monitoring and Management Client (pmm-agent)
+Summary:        Postgres1st Monitoring and Management Client (pmm-agent)
 Version:        %{version}
 Release:        %{release}%{?dist}
 Group:          Applications/Databases
@@ -25,12 +25,11 @@ Conflicts:      pmm-client < 3.0.0
 Obsoletes:      pmm2-client < 3.0.0
 
 %description
-Percona Monitoring and Management (PMM) is an open-source platform for managing and monitoring MySQL and MongoDB
-performance. It is developed by Percona in collaboration with experts in the field of managed database services,
-support and consulting.
-PMM is a free and open-source solution that you can run in your own environment for maximum security and reliability.
-It provides thorough time-based analysis for MySQL and MongoDB servers to ensure that your data works as efficiently
-as possible.
+Postgres1st Monitoring and Management (PFMM) is an open-source platform for managing and monitoring
+PostgreSQL performance.
+PFMM is a free and open-source solution that you can run in your own environment for maximum security and
+reliability. It provides thorough time-based analysis for PostgreSQL servers to ensure that your data works
+as efficiently as possible.
 
 
 %prep
@@ -85,10 +84,6 @@ install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-col
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-collector/medium-resolution
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-collector/high-resolution
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries
-install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql
-install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/low-resolution
-install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/medium-resolution
-install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/high-resolution
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql/low-resolution
 install -m 0755 -d $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql/medium-resolution
@@ -98,26 +93,16 @@ install -m 0755 bin/pmm-admin $RPM_BUILD_ROOT/usr/local/percona/pmm/bin
 install -m 0755 bin/pmm-agent $RPM_BUILD_ROOT/usr/local/percona/pmm/bin
 install -m 0755 bin/pmm-agent-entrypoint $RPM_BUILD_ROOT/usr/local/percona/pmm/bin
 install -m 0755 bin/node_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
-install -m 0755 bin/mysqld_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
 install -m 0755 bin/postgres_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
-install -m 0755 bin/mongodb_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
-install -m 0755 bin/proxysql_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
 install -m 0755 bin/rds_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
 install -m 0755 bin/azure_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
-install -m 0755 bin/valkey_exporter $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
 install -m 0755 bin/vmagent $RPM_BUILD_ROOT/usr/local/percona/pmm/exporters
 install -m 0755 bin/pt-summary $RPM_BUILD_ROOT/usr/local/percona/pmm/tools
-install -m 0755 bin/pt-mysql-summary $RPM_BUILD_ROOT/usr/local/percona/pmm/tools
-install -m 0755 bin/pt-mongodb-summary $RPM_BUILD_ROOT/usr/local/percona/pmm/tools
 install -m 0755 bin/pt-pg-summary $RPM_BUILD_ROOT/usr/local/percona/pmm/tools
 install -m 0755 bin/nomad $RPM_BUILD_ROOT/usr/local/percona/pmm/tools
 install -m 0660 example.prom $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-collector/low-resolution/
 install -m 0660 example.prom $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-collector/medium-resolution/
 install -m 0660 example.prom $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/textfile-collector/high-resolution/
-install -m 0660 queries-mysqld.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/low-resolution/
-install -m 0660 queries-mysqld.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/medium-resolution/
-install -m 0660 queries-mysqld.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/high-resolution/
-install -m 0660 queries-mysqld-group-replication.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/mysql/high-resolution/
 install -m 0660 example-queries-postgres.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql/low-resolution/
 install -m 0660 example-queries-postgres.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql/medium-resolution/
 install -m 0660 example-queries-postgres.yml $RPM_BUILD_ROOT/usr/local/percona/pmm/collectors/custom-queries/postgresql/high-resolution/

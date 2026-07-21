@@ -130,9 +130,6 @@ get_sources(){
     echo "GIT_REPO=${REPO}" >> $VERSION_FILE
     echo "BRANCH_NAME=${BRANCH}" >> $VERSION_FILE
     echo "NodeExp_BRANCH_NAME=${NodeExp_BRANCH_NAME}" >> $VERSION_FILE
-    echo "MongoExp_BRANCH_NAME=${MongoExp_BRANCH_NAME}" >> $VERSION_FILE
-    echo "MysqlExp_BRANCH_NAME=${MysqlExp_BRANCH_NAME}" >> $VERSION_FILE
-    echo "ProxysqlExp_BRANCH_NAME=${ProxysqlExp_BRANCH_NAME}" >> $VERSION_FILE
     echo "QAN_BRANCH_NAME=${QAN_BRANCH_NAME}" >> $VERSION_FILE
     echo "TOOLKIT_REPO=${TOOLKIT_REPO}" >> $VERSION_FILE
     echo "TOOLKIT_BRANCH_NAME=${TOOLKIT_BRANCH_NAME}" >> $VERSION_FILE
@@ -145,10 +142,7 @@ get_sources(){
     echo "BUILD_NUMBER=${BUILD_NUMBER}" >> $VERSION_FILE
     echo "BUILD_ID=${BUILD_ID}" >> $VERSION_FILE
     echo "UPLOAD=UPLOAD/experimental/BUILDS/${PRODUCT_NAME}/${VERSION}/${BRANCH_NAME}/${REVISION}/${BUILD_ID}" >> $VERSION_FILE
-    echo "MongoExp_REPO=${MongoExp_REPO}" >> $VERSION_FILE
     echo "TOOLKIT_REPO=${TOOLKIT_REPO}" >> $VERSION_FILE
-    echo "MysqlExp_REPO=${MysqlExp_REPO}" >> $VERSION_FILE
-    echo "ProxysqlExp_REPO=${ProxysqlExp_REPO}" >> $VERSION_FILE
     echo "QAN_REPO=${QAN_REPO}" >> $VERSION_FILE
     echo "NodeExp_REPO=${NodeExp_REPO}" >> $VERSION_FILE
     cd ../
@@ -363,8 +357,6 @@ build_source_deb(){
     cd ${NAME}-${VERSION}
     mv bin/* ../${NAME}-${VERSION}_all/distro/
     mv example.prom ../${NAME}-${VERSION}_all/distro/
-    mv queries-mysqld.yml ../${NAME}-${VERSION}_all/distro/
-    mv queries-mysqld-group-replication.yml ../${NAME}-${VERSION}_all/distro/
     mv example-queries-postgres.yml ../${NAME}-${VERSION}_all/distro/
     mv queries-postgres-uptime.yml ../${NAME}-${VERSION}_all/distro/
     mv queries-hr.yml ../${NAME}-${VERSION}_all/distro/
@@ -471,16 +463,10 @@ BRANCH="v3"
 REPO="https://github.com/Percona-Lab/pmm-submodules.git"
 
 if [ "$TARBALL" = '1' -o "$SOURCE" = '1' ]; then
-    MongoExp_BRANCH_NAME=$(get_branches "mongodb_exporter")
-    MongoExp_REPO=$(get_repos "mongodb_exporter")
     TOOLKIT_BRANCH_NAME=$(get_branches "percona-toolkit")
     TOOLKIT_REPO=$(get_repos "percona-toolkit")
-    MysqlExp_BRANCH_NAME=$(get_branches "mysqld_exporter")
-    MysqlExp_REPO=$(get_repos "mysqld_exporter")
     PostgreSQLExp_BRANCH_NAME=$(get_branches "postgres_exporter")
     PostgreSQLExp_REPO=$(get_repos "postgres_exporter")
-    ProxysqlExp_BRANCH_NAME=$(get_branches "proxysql_exporter")
-    ProxysqlExp_REPO=$(get_repos "proxysql_exporter")
     NodeExp_BRANCH_NAME=$(get_branches "node_exporter")
     NodeExp_REPO=$(get_repos "node_exporter")
     AzureExp_BRANCH_NAME=$(get_branches "azure_metrics_exporter")
