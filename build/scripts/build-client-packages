@@ -105,7 +105,10 @@ get_sources(){
         echo "Sources will not be downloaded"
         return 0
     fi
-    git clone $REPO
+    # Clone into a directory named for the product. Without an explicit target, git derives
+    # the directory from the repo basename (pmm-submodules), which does not match the cd/mv/rm
+    # that follow -- they all expect pfm-client.
+    git clone $REPO pfm-client
     retval=$?
     if [ $retval != 0 ]; then
         echo "There were some issues during repo cloning from github. Please retry one more time"
