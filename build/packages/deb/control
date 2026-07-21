@@ -1,16 +1,13 @@
-Source: pmm-client
+Source: pfm-client
 Section: utils
 Priority: optional
-Maintainer: Percona LLC
+Maintainer: Postgres1st
 Version: %{version}
-Homepage: https://percona.com
+Homepage: https://postgresfirst.com
 Build-Depends: debhelper
 
-Package: pmm-client
+Package: pfm-client
 Architecture: any
-Breaks: pmm-client
-Conflicts: pmm2-client
-Replaces: pmm2-client
 Description: Postgres1st Monitoring and Management Client
  Postgres1st Monitoring and Management (PFMM) is an open-source platform for managing and monitoring
  PostgreSQL performance.
