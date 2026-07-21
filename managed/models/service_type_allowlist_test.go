@@ -172,6 +172,79 @@ func TestAddNewServiceRejectsUnsupportedType(t *testing.T) {
 }
 
 // Not parallel: the subtests swap the package-level allowlist.
+func TestIsAgentTypeSupported(t *testing.T) {
+	t.Run("exporter for a permitted service type is supported", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore()
+
+		assert.True(t, IsAgentTypeSupported(PostgresExporterType))
+		assert.True(t, IsAgentTypeSupported(QANPostgreSQLPgStatementsAgentType))
+	})
+
+	t.Run("exporter for a forbidden service type is not supported", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore()
+
+		assert.False(t, IsAgentTypeSupported(MySQLdExporterType))
+		assert.False(t, IsAgentTypeSupported(MongoDBExporterType))
+		assert.False(t, IsAgentTypeSupported(ProxySQLExporterType))
+		assert.False(t, IsAgentTypeSupported(ValkeyExporterType))
+		assert.False(t, IsAgentTypeSupported(QANMySQLSlowlogAgentType))
+		assert.False(t, IsAgentTypeSupported(RTAMongoDBAgentType))
+	})
+
+	// Agents not bound to a Service at all — they attach to Nodes or to PMM itself — must
+	// stay available regardless of which database types are permitted.
+	t.Run("agents not bound to a service are always supported", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore()
+
+		assert.True(t, IsAgentTypeSupported(NodeExporterType))
+		assert.True(t, IsAgentTypeSupported(VMAgentType))
+		assert.True(t, IsAgentTypeSupported(PMMAgentType))
+	})
+
+	// These serve several service types; one permitted type is enough to keep them.
+	t.Run("multi-service exporters survive if any of their types is permitted", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore()
+
+		assert.True(t, IsAgentTypeSupported(RDSExporterType))
+		assert.True(t, IsAgentTypeSupported(AzureDatabaseExporterType))
+	})
+
+	t.Run("external exporter follows the external service type", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType, ExternalServiceType)
+		defer restore()
+		assert.True(t, IsAgentTypeSupported(ExternalExporterType))
+
+		restore2 := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore2()
+		assert.False(t, IsAgentTypeSupported(ExternalExporterType))
+	})
+}
+
+// Not parallel: the subtests swap the package-level allowlist.
+//
+// A nil Querier is passed deliberately: the check must happen before CreateAgent touches
+// the database. The ServiceID is empty because that is the path the compatibility matrix
+// does not cover — with a ServiceID set, an unsupported exporter is already rejected by
+// compatibleServiceAndAgent, since no Service of its type can exist.
+func TestCreateAgentRejectsUnsupportedType(t *testing.T) {
+	t.Run("forbidden agent type is rejected before any database access", func(t *testing.T) {
+		restore := SetSupportedServiceTypesForTests(PostgreSQLServiceType)
+		defer restore()
+
+		agent, err := CreateAgent(nil, MySQLdExporterType, &CreateAgentParams{})
+
+		require.Error(t, err)
+		assert.Nil(t, agent)
+		assert.Equal(t, codes.FailedPrecondition, status.Code(err))
+		assert.Contains(t, err.Error(), string(MySQLdExporterType))
+	})
+}
+
+// Not parallel: the subtests swap the package-level allowlist.
 func TestSupportedServiceTypes(t *testing.T) {
 	t.Run("returns types in service_model declaration order", func(t *testing.T) {
 		restore := SetSupportedServiceTypesForTests(ValkeyServiceType, MySQLServiceType, PostgreSQLServiceType)
