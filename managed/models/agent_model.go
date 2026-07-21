@@ -100,7 +100,7 @@ var v2_42 = version.MustParse("2.42.0-0")
 var PMMServerAgentID = string("pmm-server")
 
 // AgentConfigFilePath is the default path to pmm-agent config file; it changes to /srv in HA setups.
-var AgentConfigFilePath = "/usr/local/percona/pmm/config/pmm-agent.yaml"
+var AgentConfigFilePath = "/opt/postgres1st/pfm/config/pmm-agent.yaml"
 
 // ExporterOptions represents structure for special Exporter options.
 type ExporterOptions struct {

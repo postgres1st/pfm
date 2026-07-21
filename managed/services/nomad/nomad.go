@@ -35,7 +35,7 @@ import (
 var serverConfig string
 
 const (
-	pathToNomad       = "/usr/local/percona/pmm/tools/nomad"
+	pathToNomad       = "/opt/postgres1st/pfm/tools/nomad"
 	pathToCerts       = "/srv/nomad/certs"
 	pathToNomadConfig = "/srv/nomad/nomad-server-%s.hcl"
 	region            = "global"

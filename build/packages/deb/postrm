@@ -22,21 +22,21 @@ esac
 
 if [ "$1" = "purge" ]; then
     userdel pmm-agent || true
-    if [ -f /usr/local/percona/pmm/config/pmm-agent.yaml ]; then
-        rm -f /usr/local/percona/pmm/config/pmm-agent.yaml
+    if [ -f /opt/postgres1st/pfm/config/pmm-agent.yaml ]; then
+        rm -f /opt/postgres1st/pfm/config/pmm-agent.yaml
     fi
-    if [ -f /usr/local/percona/pmm/config/pmm-agent.yaml.new ]; then
-        rm -f /usr/local/percona/pmm/config/pmm-agent.yaml.new
+    if [ -f /opt/postgres1st/pfm/config/pmm-agent.yaml.new ]; then
+        rm -f /opt/postgres1st/pfm/config/pmm-agent.yaml.new
     fi
-    if [ -f /usr/local/percona/pmm/config/pmm-agent.yaml.bak ]; then
-        rm -f /usr/local/percona/pmm/config/pmm-agent.yaml.bak
+    if [ -f /opt/postgres1st/pfm/config/pmm-agent.yaml.bak ]; then
+        rm -f /opt/postgres1st/pfm/config/pmm-agent.yaml.bak
     fi
 
-    if [ -d /usr/local/percona/pmm/config ] && [ -z "$(ls -A /usr/local/percona/pmm/config)" ]; then
-        rmdir /usr/local/percona/pmm/config
+    if [ -d /opt/postgres1st/pfm/config ] && [ -z "$(ls -A /opt/postgres1st/pfm/config)" ]; then
+        rmdir /opt/postgres1st/pfm/config
     fi
-    if [ -d /usr/local/percona/pmm ] && [ -z "$(ls -A /usr/local/percona/pmm)" ]; then
-        rmdir /usr/local/percona/pmm
+    if [ -d /opt/postgres1st/pfm ] && [ -z "$(ls -A /opt/postgres1st/pfm)" ]; then
+        rmdir /opt/postgres1st/pfm
     fi
 fi
 

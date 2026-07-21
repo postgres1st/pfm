@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	pathBaseDefault = "/usr/local/percona/pmm"
+	pathBaseDefault = "/opt/postgres1st/pfm"
 	agentTmpPath    = "tmp" // temporary directory to keep exporters' config files, relative to pathBase
 	agentDataPath   = "data"
 	agentPrefix     = "/agent_id/"
