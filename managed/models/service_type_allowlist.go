@@ -105,6 +105,26 @@ func IsServiceTypeSupported(serviceType ServiceType) bool {
 	return ok
 }
 
+// IsAgentTypeSupported reports whether Agents of the given type may be created.
+//
+// Agent types not bound to a Service are always supported: they attach to a Node or to PMM
+// itself and carry no database technology. A Service-bound type survives if at least one of
+// the Service types it serves is permitted, which keeps the multi-database cloud exporters
+// available for their PostgreSQL half.
+func IsAgentTypeSupported(agentType AgentType) bool {
+	serviceTypes, ok := serviceTypesByAgentType[agentType]
+	if !ok {
+		return true
+	}
+
+	for _, serviceType := range serviceTypes {
+		if IsServiceTypeSupported(serviceType) {
+			return true
+		}
+	}
+	return false
+}
+
 // SupportedServiceTypes returns the permitted types in service_model.go declaration order,
 // for the API to expose so that clients do not hardcode their own copy of the allowlist.
 func SupportedServiceTypes() []ServiceType {

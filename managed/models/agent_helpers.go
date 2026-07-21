@@ -850,58 +850,61 @@ func compatibleNodeAndAgent(nodeType NodeType, agentType AgentType) bool {
 	return allowed == agentType
 }
 
-func compatibleServiceAndAgent(serviceType ServiceType, agentType AgentType) bool {
-	allow := map[AgentType][]ServiceType{
-		MySQLdExporterType: {
-			MySQLServiceType,
-		},
-		QANMySQLSlowlogAgentType: {
-			MySQLServiceType,
-		},
-		QANMySQLPerfSchemaAgentType: {
-			MySQLServiceType,
-		},
-		MongoDBExporterType: {
-			MongoDBServiceType,
-		},
-		ValkeyExporterType: {
-			ValkeyServiceType,
-		},
-		QANMongoDBProfilerAgentType: {
-			MongoDBServiceType,
-		},
-		QANMongoDBMongologAgentType: {
-			MongoDBServiceType,
-		},
-		RTAMongoDBAgentType: {
-			MongoDBServiceType,
-		},
-		PostgresExporterType: {
-			PostgreSQLServiceType,
-		},
-		ProxySQLExporterType: {
-			ProxySQLServiceType,
-		},
-		AzureDatabaseExporterType: {
-			PostgreSQLServiceType,
-			MySQLServiceType,
-		},
-		RDSExporterType: {
-			PostgreSQLServiceType,
-			MySQLServiceType,
-		},
-		QANPostgreSQLPgStatMonitorAgentType: {
-			PostgreSQLServiceType,
-		},
-		QANPostgreSQLPgStatementsAgentType: {
-			PostgreSQLServiceType,
-		},
-		ExternalExporterType: {
-			ExternalServiceType,
-		},
-	}
+// serviceTypesByAgentType lists the Service types each Agent type can be attached to.
+// Agent types absent from the map are not bound to a Service at all — they attach to a
+// Node or to PMM itself.
+var serviceTypesByAgentType = map[AgentType][]ServiceType{
+	MySQLdExporterType: {
+		MySQLServiceType,
+	},
+	QANMySQLSlowlogAgentType: {
+		MySQLServiceType,
+	},
+	QANMySQLPerfSchemaAgentType: {
+		MySQLServiceType,
+	},
+	MongoDBExporterType: {
+		MongoDBServiceType,
+	},
+	ValkeyExporterType: {
+		ValkeyServiceType,
+	},
+	QANMongoDBProfilerAgentType: {
+		MongoDBServiceType,
+	},
+	QANMongoDBMongologAgentType: {
+		MongoDBServiceType,
+	},
+	RTAMongoDBAgentType: {
+		MongoDBServiceType,
+	},
+	PostgresExporterType: {
+		PostgreSQLServiceType,
+	},
+	ProxySQLExporterType: {
+		ProxySQLServiceType,
+	},
+	AzureDatabaseExporterType: {
+		PostgreSQLServiceType,
+		MySQLServiceType,
+	},
+	RDSExporterType: {
+		PostgreSQLServiceType,
+		MySQLServiceType,
+	},
+	QANPostgreSQLPgStatMonitorAgentType: {
+		PostgreSQLServiceType,
+	},
+	QANPostgreSQLPgStatementsAgentType: {
+		PostgreSQLServiceType,
+	},
+	ExternalExporterType: {
+		ExternalServiceType,
+	},
+}
 
-	allowed, ok := allow[agentType]
+func compatibleServiceAndAgent(serviceType ServiceType, agentType AgentType) bool {
+	allowed, ok := serviceTypesByAgentType[agentType]
 	if !ok {
 		return false
 	}
@@ -911,6 +914,13 @@ func compatibleServiceAndAgent(serviceType ServiceType, agentType AgentType) boo
 
 // CreateAgent creates Agent with given type.
 func CreateAgent(q *reform.Querier, agentType AgentType, params *CreateAgentParams) (*Agent, error) { //nolint:unparam
+	// Checked before the ServiceID branch below: that branch rejects an incompatible
+	// exporter only when a Service is given, which would leave an exporter for an
+	// unsupported database creatable as long as it was left unattached.
+	if !IsAgentTypeSupported(agentType) {
+		return nil, status.Errorf(codes.FailedPrecondition, "Agent type %q is not supported by this deployment.", agentType)
+	}
+
 	id := uuid.New().String()
 	err := checkUniqueAgentID(q, id)
 	if err != nil {
