@@ -64,10 +64,6 @@ ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/textfile-collector/low-res
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/textfile-collector/medium-resolution
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/textfile-collector/high-resolution
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries
-${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/mysql
-${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/mysql/low-resolution
-${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/mysql/medium-resolution
-${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/mysql/high-resolution
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/postgresql
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/postgresql/low-resolution
 ${INSTALL_COMMAND} -m 0755 -d "${PMM_DIR}"/collectors/custom-queries/postgresql/medium-resolution
@@ -76,7 +72,6 @@ ${INSTALL_COMMAND} -m 0755 queries-postgres-uptime.yml "${PMM_DIR}"/collectors/c
 ${INSTALL_COMMAND} -m 0755 queries-hr.yml "${PMM_DIR}"/collectors/custom-queries/postgresql/high-resolution
 ${INSTALL_COMMAND} -m 0755 queries-mr.yaml "${PMM_DIR}"/collectors/custom-queries/postgresql/medium-resolution
 ${INSTALL_COMMAND} -m 0755 queries-lr.yaml "${PMM_DIR}"/collectors/custom-queries/postgresql/low-resolution
-${INSTALL_COMMAND} -m 0755 queries-mysqld-group-replication.yml "${PMM_DIR}"/collectors/custom-queries/mysql/high-resolution
 
 for FILE in "${PWD}"/bin/*; do
     FILE=$(basename "${FILE}")
@@ -89,12 +84,10 @@ for FILE in "${PWD}"/bin/*; do
     fi
 done
 
-for FILE in example.prom queries-mysqld.yml example-queries-postgres.yml; do
+for FILE in example.prom example-queries-postgres.yml; do
     for RESOLUTION in low medium high; do
         if [ "${FILE}" = "example.prom" ]; then
             ${INSTALL_COMMAND} -m 0755 ${FILE} "${PMM_DIR}"/collectors/textfile-collector/${RESOLUTION}-resolution
-        elif [ "${FILE}" = "queries-mysqld.yml" ]; then
-            ${INSTALL_COMMAND} -m 0755 ${FILE} "${PMM_DIR}"/collectors/custom-queries/mysql/${RESOLUTION}-resolution
         elif [ "${FILE}" = "example-queries-postgres.yml" ]; then
             ${INSTALL_COMMAND} -m 0755 ${FILE} "${PMM_DIR}"/collectors/custom-queries/postgresql/${RESOLUTION}-resolution
         fi

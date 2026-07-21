@@ -67,14 +67,10 @@ main() {
     # External sources from GitHub
     prepare_external_tarball "vmagent" "${vmagent_commit_hash}" "https://github.com/VictoriaMetrics/VictoriaMetrics/archive"
     prepare_external_tarball "nomad" "${nomad_commit_hash}" "https://github.com/hashicorp/nomad/archive"
-    prepare_external_tarball "redis_exporter" "${redis_exporter_commit_hash}" "https://github.com/oliver006/redis_exporter/archive"
 
     prepare_tarball pmm-submodules
     prepare_tarball pmm
-    prepare_tarball mongodb_exporter
-    prepare_tarball mysqld_exporter
     prepare_tarball postgres_exporter
-    prepare_tarball proxysql_exporter
     prepare_tarball node_exporter
     prepare_tarball rds_exporter
     prepare_tarball azure_metrics_exporter
