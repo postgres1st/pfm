@@ -19,7 +19,7 @@ export const WELCOME_CARD_LIST: Array<{
   },
   {
     icon: SpeedIcon,
-    content: Messages.points.backup,
+    content: Messages.points.optimize,
   },
 ];
 
