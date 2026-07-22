@@ -49,7 +49,7 @@ To ensure successful database monitoring with PFMM, confirm the following:
 
 === ":material-database: Core databases"
 
-    - [PostgreSQL monitoring requirements](../install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pmm)
+    - [PostgreSQL monitoring requirements](../install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pfmm)
 
 === ":material-cloud: Cloud services"
 

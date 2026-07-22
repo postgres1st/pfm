@@ -58,7 +58,7 @@ SELECT, PROCESS, SUPER, REPLICATION CLIENT, RELOAD
 ```
 
 !!! seealso alert alert-info "See also"
-    [Setting Up/Client/PostgreSQL](../install-pmm/install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pmm).
+    [Setting Up/Client/PostgreSQL](../install-pmm/install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pfmm).
 
 ## Can I monitor multiple service instances?
 

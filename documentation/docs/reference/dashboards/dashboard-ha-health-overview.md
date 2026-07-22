@@ -218,7 +218,7 @@ If one pod shows DOWN, identify which replica is affected and investigate the ca
 
 If all three show DOWN, your entire PFMM system is unavailable.
 
-Use this table to identify which specific PMM server pods need attention when the [**PFMM**](#pmm) health indicator shows **Not Healthy**.
+Use this table to identify which specific PFMM server pods need attention when the [**PFMM**](#pfmm) health indicator shows **Not Healthy**.
 
 
 ### ClickHouse Pods
