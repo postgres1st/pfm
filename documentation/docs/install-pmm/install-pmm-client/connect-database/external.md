@@ -1,4 +1,4 @@
-# Connect an external instance to PMM
+# Connect an external instance to PFMM
 
 ## Add general external services
 
@@ -19,7 +19,7 @@ pmm-admin add external-serverless --external-name=<external-service-name> --host
 
 ## TLS certificate verification
 
-When connecting to external services over HTTPS, PMM performs TLS certificate validation by default to ensure secure connections. However, in some scenarios you may need to skip this validation. Use the `--tls-skip-verify` flag when monitoring services with:
+When connecting to external services over HTTPS, PFMM performs TLS certificate validation by default to ensure secure connections. However, in some scenarios you may need to skip this validation. Use the `--tls-skip-verify` flag when monitoring services with:
 
 - self-signed certificates
 - development environments where proper certificates aren't configured
@@ -62,19 +62,19 @@ Connection schema of external serverless exporter:
 
 ![Connection schema of external serverless exporter](../../../images/PMM_External_Serverless_Exporter_Schema.jpg)
 
-## Add a service not supported by PMM
+## Add a service not supported by PFMM
 
-PMM can collect any metrics in [Open metrics](https://openmetrics.io) or [Prometheus exposition](https://prometheus.io/docs/instrumenting/exposition_formats/) format. You must specify the host and port of these metrics using the `pmm-admin add external` or `pmm-admin add external-serverless` commands.
+PFMM can collect any metrics in [Open metrics](https://openmetrics.io) or [Prometheus exposition](https://prometheus.io/docs/instrumenting/exposition_formats/) format. You must specify the host and port of these metrics using the `pmm-admin add external` or `pmm-admin add external-serverless` commands.
 
-From this point, PMM will collect and store available metrics.
+From this point, PFMM will collect and store available metrics.
 
 To browse and visualize collected metrics as a first step, we can look at the Advanced Data Exploration dashboard and select informative services and metrics.
 
 ![Advanced Data Exploration dashboard](../../../images/PMM_Advanced_Data_Exploration.jpg)
 
-Another way is to create a [new Grafana Dashboard to PMM as needed](https://grafana.com/docs/grafana/latest/best-practices/best-practices-for-creating-dashboards/).
+Another way is to create a [new Grafana Dashboard to PFMM as needed](https://grafana.com/docs/grafana/latest/best-practices/best-practices-for-creating-dashboards/).
 
-One more way is to search for an already created dashboard at <https://grafana.com/grafana/dashboards> for the added exporter and import it into PMM.
+One more way is to search for an already created dashboard at <https://grafana.com/grafana/dashboards> for the added exporter and import it into PFMM.
 
 ### Third-party exporters
 
@@ -120,10 +120,10 @@ You can create a custom external exporter or extend your application to expose m
 
 ## Add an external service via UI
 
-To add an external service via PMM UI:
+To add an external service via PFMM UI:
 {.power-number}
 
-1. In the PMM web interface, go to **Inventory > Add service > External Service**.
+1. In the PFMM web interface, go to **Inventory > Add service > External Service**.
 
     ![!Add external service UI](../../../images/PMM_External_Serverless.png)
 

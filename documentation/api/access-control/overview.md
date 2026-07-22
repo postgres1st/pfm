@@ -7,9 +7,9 @@ privacy:
   view: public
 ---
 
-Access Control in PMM can be used to restrict access to individual metrics.  
+Access Control in PFMM can be used to restrict access to individual metrics.  
 
-Access Control is currently in Technical Preview. To use this feature, enable it manually in PMM's settings.
+Access Control is currently in Technical Preview. To use this feature, enable it manually in PFMM's settings.
 
 Once enabled, restricting access to metrics can be performed by:
 

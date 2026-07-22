@@ -1,6 +1,6 @@
 # Set time zone
 
-By default, PMM uses the time zone from your web browser. You can change this in your profile preferences, and all dashboards will use your chosen time zone.
+By default, PFMM uses the time zone from your web browser. You can change this in your profile preferences, and all dashboards will use your chosen time zone.
 
 To set the time zone:
 {.power-number}

@@ -1,4 +1,4 @@
-# PMM components and versions
+# PFMM components and versions
 
 The following table lists all the PMM client/server components and their versions:
 

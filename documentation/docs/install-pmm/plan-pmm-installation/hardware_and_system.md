@@ -1,7 +1,7 @@
 # Hardware and system requirements
-To ensure optimal performance for your monitoring environment, check the appropriate hardware specifications before installing PMM.
+To ensure optimal performance for your monitoring environment, check the appropriate hardware specifications before installing PFMM.
 
-For guidance on selecting the best deployment method based on these requirements, see the [choose your PMM deployment strategy](../plan-pmm-installation/choose-deployment.md) topic.
+For guidance on selecting the best deployment method based on these requirements, see the [choose your PFMM deployment strategy](../plan-pmm-installation/choose-deployment.md) topic.
 
 ## PMM Server resource requirements
 Resource requirements scale with the number of nodes and services monitored. Here are our recommendations for different deployment scales:
@@ -49,10 +49,6 @@ Adjust storage calculations based on your data retention period and the number o
 - **Quick estimate**: for the default 30-day retention period, use the formula `number_of_nodes x 4 GB`
 - **High-precision monitoring**: increase estimates by 20-50% when using 1-second collection intervals
 
-### Storage optimization
-
-To reduce storage usage, consider [disable table statistics](../install-pmm-client/connect-database/mysql/improve_perf.md#disable-table-statistics), which can significantly decrease the size of the VictoriaMetrics database.
-
 ## Architecture requirements
 
 ### PMM Server 
@@ -75,7 +71,7 @@ For specific version support details, see [Percona software support life cycle](
 
 - **Docker images**: If using Docker for PMM Client on ARM systems, ensure you're using the ARM64-compatible Docker images.
 - **Performance testing**: Performance may vary across different ARM implementations. Conduct thorough testing to ensure optimal performance in your environment.
-- **Software compatibility**: Ensure you're using ARM-compatible versions of any additional software or databases you're monitoring with PMM.
+- **Software compatibility**: Ensure you're using ARM-compatible versions of any additional software or databases you're monitoring with PFMM.
 - **Resource monitoring**: Monitor resource usage closely on ARM systems, as it may differ from x86_64 systems. Adjust your configuration as needed for optimal performance.
 
 ## Next step

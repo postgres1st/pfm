@@ -1,6 +1,6 @@
 # Enable access control
 
-Access control in PMM lets you restrict user access to specific metrics and Query Analytics data based on their roles. 
+Access control in PFMM lets you restrict user access to specific metrics and Query Analytics data based on their roles. 
 Choose your preferred method to enable this feature:
 
 === "Via Docker"
@@ -33,10 +33,10 @@ Choose your preferred method to enable this feature:
 
 === "Via user interface"
 
-    To enable access control from the PMM web interface:
+    To enable access control from the PFMM web interface:
     {.power-number}
     
-    1. Log in to PMM with an administrator account.
+    1. Log in to PFMM with an administrator account.
     2. From the main menu, go to **Configuration > Settings > Advanced Settings**.
     3. Toggle the <i class="uil uil-toggle-off"></i>  **Access Control** toggle.
     4. Click **Apply changes** to save your settings.
@@ -47,5 +47,5 @@ Once access control is enabled:
 
 - All existing users will have full access until you assign specific roles.
 - [Create access roles](../access-control/create_roles.md) for different user types.
-- [Assign the new roles](../index.md) to your PMM users.
+- [Assign the new roles](../index.md) to your PFMM users.
 - Test that restrictions work as expected.

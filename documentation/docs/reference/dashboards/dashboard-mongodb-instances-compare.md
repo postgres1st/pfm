@@ -6,13 +6,13 @@ Select two or more services using the **Service Name** filter at the top, and ea
 
 Use this dashboard when you need to compare a healthy instance against a degraded one, benchmark instances after configuration changes, or check whether load is distributed evenly across services.
 
-![PMM MongoDB Instances Compare dashboard](../../images/PMM_MongoDB_Instances_Compare.jpg)
+![PFMM MongoDB Instances Compare dashboard](../../images/PMM_MongoDB_Instances_Compare.jpg)
 
 ## Overview
 
 A row of stat panels showing the current value of key metrics for each selected service. Each panel repeats horizontally so you can compare values across services at a glance:
 
-- **Service Info**: Metadata table for each selected service, including service name, node name, MongoDB version, cluster, replication set, node type, and other PMM labels. Use this to verify you are comparing equivalent services.
+- **Service Info**: Metadata table for each selected service, including service name, node name, MongoDB version, cluster, replication set, node type, and other PFMM labels. Use this to verify you are comparing equivalent services.
 - **MongoDB Uptime**: How long the service has been running. Turns orange after 5 minutes and green after 1 hour. A recently restarted service may show temporarily different behavior in other panels. Click to open the **MongoDB Instance Summary** for that service.
 - **Current QPS**: Current query throughput in operations per second, excluding commands. Use this to compare load levels across services.
 - **DB Connections**: Current number of active connections. Use this alongside the **Connections** timeseries below to see which services are under connection pressure.

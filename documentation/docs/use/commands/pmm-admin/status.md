@@ -3,7 +3,7 @@
 
 Check PMM Client connection status, list monitored services, and create diagnostic archives from the command line using these `pmm-admin` commands.
 
-To view status in the UI, see [PMM Inventory](../pmm-admin/inventory.md). For programmatic access, see the [PMM API](../../../api/index.md).
+To view status in the UI, see [PFMM Inventory](../pmm-admin/inventory.md). For programmatic access, see the [PFMM API](../../../api/index.md).
 
 ## Commands
 

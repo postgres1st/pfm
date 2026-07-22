@@ -7,7 +7,7 @@ pmm-admin remove <service-type> <service-name>
 ```
 ## Command reference
 - `service-type`: The type of service to remove: mysql, mongodb, postgresql, proxysql, haproxy, or external
-- `service-name`: The name of the service as displayed in PMM inventory
+- `service-name`: The name of the service as displayed in PFMM inventory
 
 ## Example
 To remove a MySQL service:

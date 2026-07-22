@@ -1,13 +1,13 @@
 # Upgrade PMM Server from the UI
 
-!!! warning "GUI-based upgrades ending in PMM 3.9.0"
-    GUI-based upgrades are deprecated and will be removed in PMM 3.9.0 (end of July 2026).
+!!! warning "GUI-based upgrades ending in PFMM 3.9.0"
+    GUI-based upgrades are deprecated and will be removed in PFMM 3.9.0 (end of July 2026).
 
-    To continue upgrading PMM after version 3.9.0, use [Docker](upgrade_docker.md) (recommended), [Podman](upgrade_podman.md), or [Helm](upgrade_helm.md). 
+    To continue upgrading PFMM after version 3.9.0, use [Docker](upgrade_docker.md) (recommended), [Podman](upgrade_podman.md), or [Helm](upgrade_helm.md). 
 
 PMM Server and Client components are installed and updated separately.
 
-PMM 3 Server can run natively, as a Docker image, a virtual appliance, or an AWS cloud instance. While each environment has its own specific installation and update steps, you can also upgrade from the PMM web interface using Watchtower. 
+PFMM 3 Server can run natively, as a Docker image, a virtual appliance, or an AWS cloud instance. While each environment has its own specific installation and update steps, you can also upgrade from the PFMM web interface using Watchtower. 
 
 However, since this method is deprecated, we recommend switching to a manual upgrade workflow as described above.
 
@@ -22,16 +22,16 @@ If Watchtower is not installed, the UI upgrade options will not be available. Se
 
 ## Upgrade process
 
-1. Go to **Configuration > Updates** in your PMM web interface. Here you can check the current PMM Server version, the timestamp of the last update check, and whether your instance is up to date.
+1. Go to **Configuration > Updates** in your PFMM web interface. Here you can check the current PMM Server version, the timestamp of the last update check, and whether your instance is up to date.
 2. Click **Check Updates now**. If an update is available, click the **Update now** button to install the latest version.
 
 ![Update page](../images/Update_page.png)
 
 ## Quick upgrade check
 
-For a quick overview of your PMM v3 Server's update status, you can also check the **Upgrade** panel on the **Home** page.
+For a quick overview of your PFMM v3 Server's update status, you can also check the **Upgrade** panel on the **Home** page.
 
-![PMM Home Dashboard Upgrade Panel](../images/PMM_Home_Dashboard_Panels_Upgrade.png)
+![PFMM Home Dashboard Upgrade Panel](../images/PMM_Home_Dashboard_Panels_Upgrade.png)
 
 !!! note
-    The **Upgrade** panel on the Home dashboard will be removed when GUI upgrades are removed in PMM 3.9.0. After that, use `docker pull` or your container runtime's equivalent to check for updates.
+    The **Upgrade** panel on the Home dashboard will be removed when GUI upgrades are removed in PFMM 3.9.0. After that, use `docker pull` or your container runtime's equivalent to check for updates.

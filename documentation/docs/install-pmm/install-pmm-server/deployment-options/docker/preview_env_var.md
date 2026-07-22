@@ -6,7 +6,7 @@
      For stable, production-ready configuration options, see the main [Environment variables for PMM Server](../docker/env_var.md) documentation.
 | Variable                          | Description
 | --------------------------------- | --------------------------------------------------------------------------------------------------------
-| `PMM_HA_ENABLE`                   | Enable PMM to run in High Availability (HA) mode.
+| `PMM_HA_ENABLE`                   | Enable PFMM to run in High Availability (HA) mode.
 | `PMM_HA_NODE_ID`                  | HA Node ID.
 | `PMM_HA_ADVERTISE_ADDRESS`        | HA Advertise address.
 | `PMM_HA_GOSSIP_PORT`              | HA gossip port.

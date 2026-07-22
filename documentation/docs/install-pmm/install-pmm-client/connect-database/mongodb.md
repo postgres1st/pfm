@@ -1,6 +1,6 @@
-# Connect MongoDB databases to PMM
+# Connect MongoDB databases to PFMM
 
-Connect a MongoDB instance to PMM to monitor a [MongoDB] or [Percona Server for MongoDB] database server.
+Connect a MongoDB instance to PFMM to monitor a [MongoDB] or [Percona Server for MongoDB] database server.
 
 ## Prerequisites
 
@@ -10,11 +10,11 @@ Before you start, ensure you have:
 - [PMM Client installed](../../install-pmm-client/index.md) and the nodes are registered with PMM Server.
 - admin privileges to install and configure PMM Client on the host.
 - preconfigured MongoDB user with appropriate monitoring privileges, or sufficient privileges to create the required roles and users.
-- MongoDB server version 6.0 or higher. PMM may work with MongoDB versions as old as 4.4, but we recommend using MongoDB 6.0+ for complete feature support.
+- MongoDB server version 6.0 or higher. PFMM may work with MongoDB versions as old as 4.4, but we recommend using MongoDB 6.0+ for complete feature support.
 
 ## Step 1: Set up MongoDB monitoring permissions
 
-Set up MongoDB with a dedicated user for PMM and the required permissions. First, create custom roles with the necessary privileges, then assign them to a PMM-specific user.
+Set up MongoDB with a dedicated user for PFMM and the required permissions. First, create custom roles with the necessary privileges, then assign them to a PMM-specific user.
 
 Role privileges depend on:
 
@@ -53,7 +53,7 @@ db.getSiblingDB("admin").createRole({
         
 #### Full backup management privileges
 
-If you plan to use PMM's backup features, also create a role with full backup management privileges:
+If you plan to use PFMM's backup features, also create a role with full backup management privileges:
 
 ```javascript
 db.getSiblingDB("admin").createRole({
@@ -70,10 +70,10 @@ db.getSiblingDB("admin").createRole({
 
 ### Create user and assign created role
 
-After creating the custom roles, create the PMM user and assign the roles based on your MongoDB version and requirements:
+After creating the custom roles, create the PFMM user and assign the roles based on your MongoDB version and requirements:
 
 === "MongoDB 8.0+ (Standard)"
-    MongoDB 8.0 introduced stricter security for direct shard access. For MongoDB 8.0 and later, the PMM user also requires the `directShardOperations` role to collect complete metrics from all cluster components:
+    MongoDB 8.0 introduced stricter security for direct shard access. For MongoDB 8.0 and later, the PFMM user also requires the `directShardOperations` role to collect complete metrics from all cluster components:
 
     ```javascript
     db.getSiblingDB("admin").createUser({
@@ -88,7 +88,7 @@ After creating the custom roles, create the PMM user and assign the roles based 
     })
     ```
 === "MongoDB 8.0+ (With backups)"
-    If you intend to use PMM's backup management features, create a user with grant these permissions: 
+    If you intend to use PFMM's backup management features, create a user with grant these permissions: 
 
     ```javascript
     db.getSiblingDB("admin").createUser({
@@ -108,7 +108,7 @@ After creating the custom roles, create the PMM user and assign the roles based 
     ```
 
 === "MongoDB <8.0 (Standard)"
-    Create the PMM user with standard monitoring roles:
+    Create the PFMM user with standard monitoring roles:
 
     ```javascript
     db.getSiblingDB("admin").createUser({
@@ -122,7 +122,7 @@ After creating the custom roles, create the PMM user and assign the roles based 
     })
     ```
 === "MongoDB <8.0 (With backups)"
-    If you intend to use PMM's backup management features, create a user with these additional permissions: 
+    If you intend to use PFMM's backup management features, create a user with these additional permissions: 
 
     ```javascript
     db.getSiblingDB("admin").createUser({
@@ -142,7 +142,7 @@ After creating the custom roles, create the PMM user and assign the roles based 
 
 ## Step 2: Configure query source for MongoDB query analytics
 
-PMM offers two methods for collecting MongoDB queries. Choose based on your environment's requirements and constraints.
+PFMM offers two methods for collecting MongoDB queries. Choose based on your environment's requirements and constraints.
 
 ### Compare query source methods
 
@@ -161,7 +161,7 @@ PMM offers two methods for collecting MongoDB queries. Choose based on your envi
 === "MongoDB Profiler (Default)"
     Choose this standard method for simple setups with fewer than 100 databases, remote MongoDB instances, or when you need real-time query collection. 
 
-    The MongoDB Profiler stores query performance data in `system.profile` collections for each database. PMM continuously reads from these collections to provide query analytics.
+    The MongoDB Profiler stores query performance data in `system.profile` collections for each database. PFMM continuously reads from these collections to provide query analytics.
     
     Key advantages:
 
@@ -227,7 +227,7 @@ PMM offers two methods for collecting MongoDB queries. Choose based on your envi
 === "Diagnostic Log (Recommended for scale)"
      Choose this method for production environments with 100+ databases, when experiencing connection pool issues, or when monitoring mongos routers.
 
-    Available from PMM 3.3.0+, this method reads query data directly from MongoDB's log files instead of querying the database. This eliminates connection pool usage and reduces performance impact.
+    Available from PFMM 3.3.0+, this method reads query data directly from MongoDB's log files instead of querying the database. This eliminates connection pool usage and reduces performance impact.
 
     Key advantages:
 
@@ -321,12 +321,12 @@ PMM offers two methods for collecting MongoDB queries. Choose based on your envi
         - Avoid moving/renaming log files as this breaks mongolog's file tail
         - Do not delete active log files during rotation
       
-## Step 3: Add MongoDB service to PMM
+## Step 3: Add MongoDB service to PFMM
 
 After configuring your database server, add a MongoDB service using either the user interface or the command line.
 
 !!! caution alert alert-warning "Important"
-    To monitor MongoDB sharded clusters, PMM requires access to all cluster components. Make sure to add all config servers, all shards, and at least one or two mongos routers. Otherwise, PMM will not be able to correctly collect metrics and populate dashboards.
+    To monitor MongoDB sharded clusters, PFMM requires access to all cluster components. Make sure to add all config servers, all shards, and at least one or two mongos routers. Otherwise, PFMM will not be able to correctly collect metrics and populate dashboards.
 
 === "Via CLI"
 
@@ -398,7 +398,7 @@ After configuring your database server, add a MongoDB service using either the u
 
     !!! hint alert alert-success "Tips"
         - When adding members of a replica set or sharded cluster, ensure to add each node using the same `--cluster my_cluster_or_rs_name`. This allows the [MongoDB Cluster Summary](../../../reference/dashboards/dashboard-mongodb-cluster-summary.md) and [MongoDB ReplSetSummary](../../../reference/dashboards/dashboard-mongodb-replset-summary.md) dashboards to populate correctly. 
-        - PMM does not gather collection and index metrics if it detects you have more than 200 collections, in order to limit the resource consumption. Check the [advanced options](../../../use/commands/pmm-admin/add.md#collector-options) section if you want to modify this behaviour. 
+        - PFMM does not gather collection and index metrics if it detects you have more than 200 collections, in order to limit the resource consumption. Check the [advanced options](../../../use/commands/pmm-admin/add.md#collector-options) section if you want to modify this behaviour. 
         - When running mongos routers in containers, specify the `diagnosticDataCollectionDirectoryPath` to ensure that pmm-agent can properly capture mongos metrics. For example: `mongos --setParameter diagnosticDataCollectionDirectoryPath=/var/log/mongo/mongos.diagnostic.data/`
         
 
@@ -432,7 +432,7 @@ After configuring your database server, add a MongoDB service using either the u
 
 ## Step 4: Verify MongoDB service configuration
 
-After adding MongoDB service to PMM, verify that it's properly configured and collecting data. This ensures your monitoring setup is working correctly.
+After adding MongoDB service to PFMM, verify that it's properly configured and collecting data. This ensures your monitoring setup is working correctly.
 {.power-number}
 
 1. Check service registration:
@@ -467,13 +467,13 @@ After adding MongoDB service to PMM, verify that it's properly configured and co
 
 3. Verify Query Analytics for the service:
 
-    - Open the **PMM Query Analytics** dashboard and use the filters to select your MongoDB service. 
+    - Open the **PFMM Query Analytics** dashboard and use the filters to select your MongoDB service. 
     - Check that query data is visible (it may take a few minutes for data to appear after initial setup).
     - Performance impact is virtually zero since metrics are sourced from existing log files (for mongolog) or real-time profiler data.
 
 ## Remove MongoDB service
 
-If you need to remove MongoDB service from PMM, follow these steps:
+If you need to remove MongoDB service from PFMM, follow these steps:
 
 === "Via command line"
     Replace `SERVICE_NAME` with the name you used when adding the service. You can list all services with `pmm-admin`:
@@ -483,7 +483,7 @@ If you need to remove MongoDB service from PMM, follow these steps:
     ```
 
 === "Via web UI"
-    To remove the services through the PMM interface:
+    To remove the services through the PFMM interface:
     {.power-number}
 
     1. Go to **Inventory > Services**.

@@ -26,7 +26,7 @@ Use these grids to confirm all cluster components are healthy before investigati
 
 ??? info "Configuration for correct topology display"
 
-    To ensure each component appears in the correct section when adding MongoDB services with `pmm-admin add mongodb` or via the PMM UI:
+    To ensure each component appears in the correct section when adding MongoDB services with `pmm-admin add mongodb` or via the PFMM UI:
 
     - use the same `--cluster` name for all components of your sharded cluster.
     - add config servers, shard nodes, and mongos routers as separate services.

@@ -2,7 +2,7 @@
     
 Alerting notifies of important or unusual activity in your database environments so that you can identify and resolve problems quickly. When something needs your attention, Percona Alerting can be configured to automatically send you a notification through your specified contact points.
 
-Percona Alerting is enabled by default in the PMM Settings. This feature adds the **Alert templates** option on the main menu and alert template options on the **Alerts** page.
+Percona Alerting is enabled by default in the PFMM Settings. This feature adds the **Alert templates** option on the main menu and alert template options on the **Alerts** page.
 
 These options enable you to create alerts based on a set of Percona-supplied templates with common events and expressions for alerting. 
 

@@ -42,16 +42,13 @@ For a complete list of ports and detailed network configuration options, see [Ne
 
 ## Database monitoring requirements
 
-To ensure successful database monitoring with PMM, confirm the following:
+To ensure successful database monitoring with PFMM, confirm the following:
 
 - **Monitoring users**: Create database accounts with the required permissions  
 - **Log access**: Enable file system access to database logs (where applicable)  
-- **Performance Schema**: Recommended for enhanced MySQL monitoring  
 
 === ":material-database: Core databases"
 
-    - [MySQL monitoring requirements](../install-pmm-client/connect-database/mysql/mysql.md#create-a-database-account-for-pmm)  
-    - [MongoDB monitoring requirements](../install-pmm-client/connect-database/mongodb.md#create-a-database-account-and-set-permissions)  
     - [PostgreSQL monitoring requirements](../install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pmm)
 
 === ":material-cloud: Cloud services"
@@ -62,7 +59,6 @@ To ensure successful database monitoring with PMM, confirm the following:
 
 === ":material-transit-connection-variant: Proxy services"
 
-    - [ProxySQL monitoring requirements](../install-pmm-client/connect-database/proxysql.md)  
     - [HAProxy monitoring requirements](../install-pmm-client/connect-database/haproxy.md)
 
 === ":material-gauge: Additional services"

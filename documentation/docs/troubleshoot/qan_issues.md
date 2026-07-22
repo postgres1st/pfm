@@ -49,11 +49,11 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 ### Resolution
 
-- **PMM 3.5.0 and later:** The issue is **fixed automatically**. PMM detects and completes the interrupted schema migration upon restart.
+- **PFMM 3.5.0 and later:** The issue is **fixed automatically**. PFMM detects and completes the interrupted schema migration upon restart.
 - **Earlier versions:** Use the following manual workaround:
     {.power-number}
 
-    1. Access the PMM container:
+    1. Access the PFMM container:
     ```bash
     podman exec -it pmm-server /bin/bash
     ```
@@ -85,7 +85,7 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 If you're running PMM Server with less than 16 GB RAM and seeing "memory limit exceeded" errors in ClickHouse logs, switch to the low-memory configuration.
 
-PMM includes two ClickHouse profiles:
+PFMM includes two ClickHouse profiles:
 
 - **default**: optimized for performance (16 GB+ RAM)
 - **low-memory**: optimized for constrained environments, based on [ClickHouse recommendations](https://clickhouse.com/docs/operations/tips#using-less-than-16gb-of-ram)

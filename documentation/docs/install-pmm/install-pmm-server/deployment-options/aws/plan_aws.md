@@ -31,7 +31,7 @@ PMM Server stores all monitoring data in the `/home/admin/volume` partition. Pla
 - retention period for collected data
 - frequency of metric collection
 
-As a reference, the [PMM Demo](https://pmmdemo.percona.com/) site consumes approximately 230 MB per host per day, which totals around 6.9 GB per host over a 30-day retention period.
+As a reference, the [PFMM Demo](https://pmmdemo.percona.com/) site consumes approximately 230 MB per host per day, which totals around 6.9 GB per host over a 30-day retention period.
 
 For 50 hosts with 30-day retention: 50 × 6.9 GB = 345 GB minimum storage. 
 
@@ -48,7 +48,7 @@ Plan your network configuration before deployment:
 Required ports:
 
 - port `22` (SSH): Administrative access to the instance
-- port `443` (HTTPS): Secure PMM web interface access
+- port `443` (HTTPS): Secure PFMM web interface access
 
 ## Estimate costs
 
@@ -58,7 +58,7 @@ Use the [AWS pricing calculator](https://calculator.aws/#/) to estimate monthly 
 
 ## Plan backups
 
-PMM Server uses a simple backup architecture - all monitoring data is stored in the `/home/admin/volume` partition, which means you only need to back up one EBS volume to protect all your PMM data. This simplifies your backup strategy and reduces complexity.
+PMM Server uses a simple backup architecture - all monitoring data is stored in the `/home/admin/volume` partition, which means you only need to back up one EBS volume to protect all your PFMM data. This simplifies your backup strategy and reduces complexity.
 
 When planning your deployment, consider that you'll need to create point-in-time snapshots of the EBS volume containing the `/home/admin/volume` partition. Plan for snapshot storage costs and determine your backup frequency and retention requirements.
 

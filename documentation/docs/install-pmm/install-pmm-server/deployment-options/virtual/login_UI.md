@@ -1,23 +1,23 @@
 # Access the PMM Server Virtual Appliance web interface
 
 
-!!! warning "OVF support ending in PMM 3.9.0"
-    OVF virtual appliance deployment is deprecated starting with PMM 3.7.0 and will be removed in PMM 3.9.0 (expected July 2026). If you currently run PMM on a virtual appliance, [migrate to a supported deployment method](index.md).
+!!! warning "OVF support ending in PFMM 3.9.0"
+    OVF virtual appliance deployment is deprecated starting with PFMM 3.7.0 and will be removed in PFMM 3.9.0 (expected July 2026). If you currently run PFMM on a virtual appliance, [migrate to a supported deployment method](index.md).
 
 After deploying your PMM Server as a virtual appliance (OVA), access its web interface to set up administrator credentials, verify connectivity, and prepare your monitoring environment.
 
-To log in to the PMM user interface:
+To log in to the PFMM user interface:
 {.power-number}
 
 1. Open a web browser and visit the guest IP address. Your browser may display a security warning about an untrusted certificate. This is expected with the default self-signed certificate. You can safely proceed to the website.
 
-2. The PMM [Login screen](../../../../reference/ui/log_in.md) appears.
+2. The PFMM [Login screen](../../../../reference/ui/log_in.md) appears.
 
 3. On the login screen, enter the default credentials: `admin`/`admin`.
 
 4. (Recommended) Follow the prompts to change the default password. You also can change the default password through SSH by using the `change-admin-password` command.
 
-5. The PMM Home dashboard appears.
+5. The PFMM Home dashboard appears.
 
 ??? info "(Optional) Change root password from UI"
     You can change the root password directly from the user interface:
@@ -41,7 +41,7 @@ To log in to the PMM user interface:
         ssh-keygen -f admin
         ```
 
-    2. Log into the PMM user interface.
+    2. Log into the PFMM user interface.
 
     3. Select **Configuration > Settings > SSH Key**.
 

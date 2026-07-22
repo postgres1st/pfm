@@ -42,11 +42,11 @@ A recent election is worth investigating to find out whether it was a planned fa
 
 ### State
 
-Shows the current replica set state for each selected service: PRIMARY, SECONDARY, ARBITER, or a problem state such as RECOVERING, ROLLBACK, or DOWN. "Exporter is not connected" means PMM cannot reach the MongoDB exporter for that service.
+Shows the current replica set state for each selected service: PRIMARY, SECONDARY, ARBITER, or a problem state such as RECOVERING, ROLLBACK, or DOWN. "Exporter is not connected" means PFMM cannot reach the MongoDB exporter for that service.
 
-To recover, verify that `pmm-agent` is running on that node, confirm PMM can reach the MongoDB exporter endpoint, and then restart `pmm-agent`. 
+To recover, verify that `pmm-agent` is running on that node, confirm PFMM can reach the MongoDB exporter endpoint, and then restart `pmm-agent`. 
 
-If the state persists, re-check MongoDB monitoring credentials and TLS settings, then re-register the MongoDB service in PMM.
+If the state persists, re-check MongoDB monitoring credentials and TLS settings, then re-register the MongoDB service in PFMM.
 
 Make sure to investigate any state other than PRIMARY, SECONDARY, or ARBITER.
 

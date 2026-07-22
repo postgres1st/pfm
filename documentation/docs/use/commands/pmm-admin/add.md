@@ -1,8 +1,8 @@
 # Add databases with pmm-admin
 
-Use `pmm-admin add` to add database services to PMM monitoring from the command line. This command supports MySQL, PostgreSQL, MongoDB, Valkey, ProxySQL, and HAProxy.
+Use `pmm-admin add` to add database services to PFMM monitoring from the command line. This command supports MySQL, PostgreSQL, MongoDB, Valkey, ProxySQL, and HAProxy.
 
-To add services through the web interface instead, see [Connect databases in the PMM UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PMM API](../../../api/index.md)
+To add services through the web interface instead, see [Connect databases in the PFMM UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PFMM API](../../../api/index.md)
 
 ## Syntax
 
@@ -109,7 +109,7 @@ Connect to MySQL using TCP or socket:
 | `--username` | MySQL username | |
 | `--password` | MySQL password | |
 | `--extra-dsn` | Additional DSN parameters | |
-| `--connection-timeout` | How long PMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
+| `--connection-timeout` | How long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
 
 Find the socket path:
 
@@ -142,11 +142,11 @@ Secure the connection with TLS:
 
 ### Query Analytics options
 
-Control how PMM collects query data for Query Analytics (QAN):
+Control how PFMM collects query data for Query Analytics (QAN):
 
-- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, PMM needs permissions to read the slow query log file.
+- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, PFMM needs permissions to read the slow query log file.
 
-- `--disable-queryexamples`: Disable collection of query examples. Prevents PMM from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
+- `--disable-queryexamples`: Disable collection of query examples. Prevents PFMM from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
 
 - `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PMM agent to terminate.
 
@@ -244,11 +244,11 @@ pmm-admin add postgresql [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`. The `--database` flag specifies which database to connect to (defaults to `postgres`).
 
-Use `--connection-timeout` to set how long PMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between PMM and your PostgreSQL instance with TLS:
+Secure the connection between PFMM and your PostgreSQL instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -262,7 +262,7 @@ Secure the connection between PMM and your PostgreSQL instance with TLS:
 
 ### Query Analytics options
 
-Control how PMM collects query data for Query Analytics (QAN):
+Control how PFMM collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `pgstatements` (default), `pgstatmonitor`, or `none`.
 
@@ -328,11 +328,11 @@ pmm-admin add mongodb [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`.
 
-Use `--connection-timeout` to set how long PMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between PMM and your MongoDB instance with TLS:
+Secure the connection between PFMM and your MongoDB instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -346,7 +346,7 @@ Secure the connection between PMM and your MongoDB instance with TLS:
 
 ### Query Analytics options
 
-Control how PMM collects query data for Query Analytics (QAN):
+Control how PFMM collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `profiler` (default), `mongolog`, or `none`.
 
@@ -354,19 +354,19 @@ Control how PMM collects query data for Query Analytics (QAN):
 
 ### Collector options
 
-Control which metrics PMM collects:
+Control which metrics PFMM collects:
 
-- `--enable-all-collectors`: Enable all collectors. By default, PMM enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
+- `--enable-all-collectors`: Enable all collectors. By default, PFMM enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
 
 - `--disable-collectors`: Comma-separated list of collectors to exclude.
 
-- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let PMM decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
+- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let PFMM decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
 
 - `--stats-collections`: Limit stats collection to specific databases or collections, in the format `db1,db2.collection1`. Use this to reduce the scope of monitored collections.
 
 ### Collector resolution
 
-PMM collects metrics at different intervals based on collector performance:
+PFMM collects metrics at different intervals based on collector performance:
 
 **High resolution** (fast collectors):
 
@@ -481,7 +481,7 @@ pmm-admin add valkey [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`. Use `--tls` and `--tls-skip-verify` to secure the connection with TLS.
 
-Use `--connection-timeout` to set how long PMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
 
 ### Examples
 
@@ -528,7 +528,7 @@ pmm-admin add proxysql [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password` for the ProxySQL admin interface. Use `--tls` and `--tls-skip-verify` to secure the connection.
 
-Use `--connection-timeout` to set how long PMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
 
 Use `--disable-collectors` with a comma-separated list to exclude specific collectors from monitoring.
 
@@ -603,7 +603,7 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 
 ## Add external services
 
-Add custom Prometheus exporters to PMM.
+Add custom Prometheus exporters to PFMM.
 
 ### External service
 
@@ -696,4 +696,4 @@ pmm-admin add mysql \
 
 - [Manage inventory to modify agent configurations](../pmm-admin/inventory.md)
 - [Remove services from monitoring](../../remove-services.md)
-- [Connect databases to PMM](../../../install-pmm/install-pmm-client/connect-database/index.md)
+- [Connect databases to PFMM](../../../install-pmm/install-pmm-client/connect-database/index.md)

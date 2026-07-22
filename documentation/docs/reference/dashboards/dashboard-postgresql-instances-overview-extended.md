@@ -11,7 +11,7 @@ Start here when you need to compare performance across all your databases, ident
 ## Overview 
 
 ### Services
-Shows how many PostgreSQL services you're currently monitoring with PMM. This gives you a quick count of all active database instances under management across your infrastructure.
+Shows how many PostgreSQL services you're currently monitoring with PFMM. This gives you a quick count of all active database instances under management across your infrastructure.
  
 ### Max Active Connections  
 Shows the highest number of active connections recorded across all your monitored PostgreSQL services. 

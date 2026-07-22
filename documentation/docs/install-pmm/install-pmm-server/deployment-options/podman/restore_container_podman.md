@@ -21,7 +21,7 @@ To restore your PMM Server container:
     systemctl --user stop pmm-server
     ```
 
-2. Run PMM on the previous image, replacing `x.yy.z` with the specific version you were using when you created the backup. Using the same version ensures compatibility with your backup data.
+2. Run PFMM on the previous image, replacing `x.yy.z` with the specific version you were using when you created the backup. Using the same version ensures compatibility with your backup data.
 
     ```sh
     sed -i "s|PMM_IMAGE=.*|PMM_IMAGE=docker.io/percona/pmm-server:x.yy.z|g" %h/.config/systemd/user/pmm-server.env

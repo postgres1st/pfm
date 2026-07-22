@@ -1,5 +1,5 @@
 # Install PMM Client with Package Manager
-Percona Monitoring and Management (PMM) Client can be installed using standard Linux package managers. You can choose between automated repository setup or manual package download options.
+Postgres1st (PFMM) Client can be installed using standard Linux package managers. You can choose between automated repository setup or manual package download options.
 
 ## Prerequisites
 
@@ -62,8 +62,8 @@ Choose your preferred method to configure the Percona repositories:
     Download packages directly without configuring repositories:
     {.power-number}
 
-    1. Visit the [PMM download page](https://www.percona.com/downloads/).
-    2. Select PMM 3 and choose specific version (usually the latest).
+    1. Visit the [PFMM download page](https://www.percona.com/downloads/).
+    2. Select PFMM 3 and choose specific version (usually the latest).
     3. Under **Select Platform**, select the item matching your software platform and architecture (x86_64 or ARM64).
     4. Download the package file or copy the link and use `wget` to download it.
 
@@ -106,19 +106,19 @@ pmm-admin --version
 
 After installing PMM Client, register your node with PMM Server to begin monitoring. This enables PMM Server to collect metrics and provide monitoring dashboards for your database infrastructure.
 
-Registration requires authentication to verify that your PMM Client has permission to connect and send data to the PMM Server. PMM supports two authentication methods for registering the node: secure service account tokens and standard username/password credentials.
+Registration requires authentication to verify that your PMM Client has permission to connect and send data to the PMM Server. PFMM supports two authentication methods for registering the node: secure service account tokens and standard username/password credentials.
 
 === "Using Service accounts (Recommended)"
-    [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PMM.
+    [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PFMM.
 
     To register with service accounts, create a service account then generate an authentication token that you can use to register the PMM Client:
     {.power-number}
 
-    1. Log into PMM web interface.
+    1. Log into PFMM web interface.
     2. Navigate to **Users and access > Service accounts**.
     3. Click **Add service account**.
-    4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). PMM automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
-    5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PMM](../../admin/roles/index.md).
+    4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). PFMM automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
+    5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PFMM](../../admin/roles/index.md).
     6. Click **Create > Add service account token**.
     7. (Optional) Name your token or leave blank for auto-generated name.
     8. (Optional) Set expiration date for enhanced security. Expired tokens require manual rotation. Permanent tokens remain valid until revoked.
@@ -159,7 +159,7 @@ Registration requires authentication to verify that your PMM Client has permissi
 
        - `YOUR_PMM_SERVER`- Your PMM Server's IP address or hostname
        - `443` - Default HTTPS port
-       - `admin`/`admin` - Default PMM username and password (change this immediately after first login)
+       - `admin`/`admin` - Default PFMM username and password (change this immediately after first login)
 
     ??? example "Registration with node details"
         Register a node with IP address `192.168.33.23`, type `generic`, and name `mynode`:
@@ -179,7 +179,7 @@ Registration requires authentication to verify that your PMM Client has permissi
     5. Consider restricting or disabling direct admin account usage for node registration.
 
     !!! info "HTTPS requirement"
-        PMM requires HTTPS connections (port `443` by default). HTTP URLs automatically redirect to HTTPS. For connection errors, verify:
+        PFMM requires HTTPS connections (port `443` by default). HTTP URLs automatically redirect to HTTPS. For connection errors, verify:
 
         - Port `443` is accessible
         - Firewall rules allow HTTPS traffic

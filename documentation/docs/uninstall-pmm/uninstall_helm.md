@@ -1,4 +1,4 @@
-# Uninstall PMM using Helm
+# Uninstall PFMM using Helm
 
 Remove PMM Server deployed via Helm in a Kubernetes cluster.
 
@@ -9,14 +9,14 @@ Remove PMM Server deployed via Helm in a Kubernetes cluster.
 
 - [Unregister PMM Client](unregister_client.md) from PMM Server
 - Helm and kubectl access to the cluster
-- Permissions to manage resources in the namespace where PMM is deployed
+- Permissions to manage resources in the namespace where PFMM is deployed
 
 ## Uninstall steps
 
 Follow these steps to completely remove PMM Server from your Kubernetes cluster. Helm removes most components, but some resources such as persistent volumes and secrets must be deleted manually.
 {.power-number}
 
-1. Uninstall the `pmm` Helm release and remove all resources associated with the PMM release and the release history:
+1. Uninstall the `pmm` Helm release and remove all resources associated with the PFMM release and the release history:
 
     ```sh
     helm uninstall pmm

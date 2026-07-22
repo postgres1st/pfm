@@ -1,12 +1,12 @@
-# Optimize MySQL monitoring performance in PMM
+# Optimize MySQL monitoring performance in PFMM
 
-When monitoring MySQL instances with a large number of tables, PMM's data collection can impact both client and database performance. 
+When monitoring MySQL instances with a large number of tables, PFMM's data collection can impact both client and database performance. 
 
 Here are a few optimization options to ensure efficient monitoring without overloading your systems.
 
 ## Options for table statistics optimization
 
-PMM provides two command-line options when adding MySQL instances to control table statistics collection:
+PFMM provides two command-line options when adding MySQL instances to control table statistics collection:
 
 - `--disable-tablestats`- Completely disables table statistics collection when there are more than 1000 tables (the default limit).
 - `--disable-tablestats-limit`- Customizes the threshold (number of tables) at which table statistics collection is disabled
@@ -26,9 +26,9 @@ For MySQL instances with many tables, you can completely disable per-table stati
 pmm-admin add mysql --disable-tablestats
 ```
 
-This command configures PMM to: 
+This command configures PFMM to: 
 
-- add your MySQL instance to PMM without collecting table-level statistics
+- add your MySQL instance to PFMM without collecting table-level statistics
 - still collect all instance-level and database-level metrics
 - significantly reduce the monitoring load when you have more than 1000 tables
 
@@ -42,7 +42,7 @@ When adding an instance with `pmm-admin add`, the `--disable-tablestats-limit` o
 pmm-admin add mysql --disable-tablestats-limit=<LIMIT>
 ```
 
-This command configures PMM to: 
+This command configures PFMM to: 
 
 - collect table statistics normally until the instance reaches 2000 tables
 - automatically disable table statistics when the number of tables exceeds 2000

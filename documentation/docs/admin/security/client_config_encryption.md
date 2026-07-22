@@ -4,7 +4,7 @@ The PMM Client configuration file, [`pmm-agent.yaml`](../../use/commands/pmm-age
 
 To protect this data, you can encrypt the configuration file so that its contents are unreadable on disk. 
 
-This involves generating an RSA private key and passing it to PMM Client during setup. PMM then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
+This involves generating an RSA private key and passing it to PMM Client during setup. PFMM then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
 
 Encryption is optional. Without an encryption key, PMM Client continues to read and write the configuration file in plain text.
 
@@ -54,7 +54,7 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
 
     ```bash
     pmm-agent setup \
-      --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml \
+      --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml \
       --server-address=pmm-server.example.com:443 \
       --server-insecure-tls \
       --config-file-key-file=/etc/pmm-agent-key.pem \
@@ -68,7 +68,7 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
 4. Start PMM Client with the encryption flags:
 
     ```bash
-    pmm-agent --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml \
+    pmm-agent --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml \
       --config-file-key-file=/etc/pmm-agent-key.pem \
       --config-file-key-password="$OPENSSL_PASSWORD"
     ```
@@ -107,8 +107,8 @@ PMM Client accepts encryption settings as either command-line flags or environme
     # Option 2: Environment file with restricted permissions
     # EnvironmentFile=-/etc/pmm-agent-encryption.env
 
-    ExecStart=/usr/local/percona/pmm/bin/pmm-agent \
-    --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml
+    ExecStart=/opt/postgres1st/pfm/bin/pmm-agent \
+    --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml
 
     Restart=on-failure
     RestartSec=10s
@@ -123,12 +123,12 @@ PMM Client accepts encryption settings as either command-line flags or environme
     ```bash
     docker run -d \
     --name pmm-agent \
-    -v /usr/local/percona/pmm/config/pmm-agent.yaml:/usr/local/percona/pmm/config/pmm-agent.yaml \
+    -v /opt/postgres1st/pfm/config/pmm-agent.yaml:/opt/postgres1st/pfm/config/pmm-agent.yaml \
     -v /etc/pmm-agent-key.pem:/etc/pmm-agent-key.pem:ro \
     -e PMM_AGENT_CONFIG_FILE_KEY_FILE=/etc/pmm-agent-key.pem \
     -e PMM_AGENT_CONFIG_FILE_KEY_PASSWORD=your-password \
     percona/pmm-client:3 \
-    --config-file=/usr/local/percona/pmm/config/pmm-agent.yaml
+    --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml
     ```
 
 === "Kubernetes" 
@@ -167,7 +167,7 @@ PMM Client accepts encryption settings as either command-line flags or environme
             mountPath: /etc/encryption
             readOnly: true
             - name: config
-            mountPath: /usr/local/percona/pmm/config/pmm-agent.yaml
+            mountPath: /opt/postgres1st/pfm/config/pmm-agent.yaml
             subPath: pmm-agent.yaml
         volumes:
         - name: encryption-key
@@ -222,10 +222,10 @@ Check whether a configuration file is encrypted by reading it directly:
 
 ```bash
 # Encrypted: shows binary content, not valid YAML
-cat /usr/local/percona/pmm/config/pmm-agent.yaml
+cat /opt/postgres1st/pfm/config/pmm-agent.yaml
 
 # You can also confirm with hexdump
-head -c 100 /usr/local/percona/pmm/config/pmm-agent.yaml | hexdump -C
+head -c 100 /opt/postgres1st/pfm/config/pmm-agent.yaml | hexdump -C
 ```
 
 A plain-text file shows readable YAML. An encrypted file shows binary data.

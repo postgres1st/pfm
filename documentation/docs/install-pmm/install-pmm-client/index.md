@@ -1,6 +1,6 @@
 # PMM Client installation overview
 
-PMM Client is the component of Percona Monitoring and Management (PMM) that collects metrics from your database servers and sends them to PMM Server for analysis and visualization.
+PMM Client is the component of Postgres1st (PFMM) that collects metrics from your database servers and sends them to PMM Server for analysis and visualization.
 
 ??? info "Common installation process at a glance"
     While specific steps vary by deployment method, the general installation process includes:
@@ -8,11 +8,11 @@ PMM Client is the component of Percona Monitoring and Management (PMM) that coll
     
     1. Install PMM Client using your preferred method and register the Client node with your PMM Server.
     2. Add database services for monitoring.
-    3. Verify monitoring data in the PMM web interface.
+    3. Verify monitoring data in the PFMM web interface.
 
 ## Prerequisites
 
-Complete these steps to prepare your system for PMM installation:
+Complete these steps to prepare your system for PFMM installation:
 
 - [Check system requirements](prerequisites.md) to ensure your environment meets the minimum criteria.
 
@@ -38,14 +38,10 @@ Install PMM Client using one of the following deployment methods:
 
 Each database service requires specific configuration parameters. Configure your service according to its service type:
 
-- [MySQL](connect-database/mysql/mysql.md) (and variants Percona Server for MySQL, Percona XtraDB Cluster, MariaDB)
-- [MongoDB](connect-database/mongodb.md)
 - [PostgreSQL](connect-database/postgresql.md)
-- [Valkey/Redis](connect-database/valkey-redis.md)
-- [ProxySQL](connect-database/proxysql.md)
 - [Amazon RDS](connect-database/aws.md)
 - [Microsoft Azure](connect-database/azure.md)
-- [Google Cloud Platform](connect-database/google.md) (MySQL and PostgreSQL)
+- [Google Cloud Platform](connect-database/google.md) (PostgreSQL)
 - [Linux](connect-database/linux.md)
 - [External services](connect-database/external.md)
 - [HAProxy](connect-database/haproxy.md)
@@ -58,5 +54,4 @@ If you need to modify the configuration of a service you've already added, you'l
 ## Next steps
 
 - [Connect database services](connect-database/index.md) for monitoring
-- [Configure optimization settings](connect-database/mysql/improve_perf.md) for specific database types
 - [Optimize resource usage with centralized vmagent settings](../install-pmm-server/deployment-options/docker/env_var.md#configure-vmagent-on-pmm-client)

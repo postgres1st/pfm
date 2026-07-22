@@ -1,8 +1,8 @@
-# Connect HAProxy databases to PMM
-Monitor your HAProxy load balancer performance with Percona Monitoring and Management (PMM). PMM collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
+# Connect HAProxy databases to PFMM
+Monitor your HAProxy load balancer performance with Postgres1st (PFMM). PFMM collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
 
 ## Prerequisites
-Before adding HAProxy to PMM, ensure:
+Before adding HAProxy to PFMM, ensure:
 {.power-number}
 
 1. HAProxy configured with metrics endpoint. 
@@ -54,7 +54,7 @@ pmm-admin add haproxy --listen-port=8404 Production-HAProxy
 - `--skip-connection-check`: Skip connectivity validation
 
 ### Via web UI
-To add HAProxy through the PMM web interface:
+To add HAProxy through the PFMM web interface:
 {.power-number}
 
 1. Go to **Inventory > Add service**.

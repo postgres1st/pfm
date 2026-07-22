@@ -2,7 +2,7 @@
 
 Deploy PMM Server as a Docker container for a fast, flexible and isolated setup. 
 
-While PMM Server runs independently, we highly recommend that you streamline [upgrades via the PMM user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing [Watchtower](https://containrrr.dev/watchtower/) alongside PMM Server. 
+While PMM Server runs independently, we highly recommend that you streamline [upgrades via the PFMM user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing [Watchtower](https://containrrr.dev/watchtower/) alongside PMM Server. 
 
 With Watchtower installed, you can easily update PMM Server directly from the **Upgrade** page or by clicking the **Upgrade Now** button on the **Home** dashboard.
 
@@ -42,7 +42,7 @@ You can install PMM Server with Watchtower using one of two methods:
 
 === "Easy-install script (Recommended for simplicity)"
 
-    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower commands, enabling a one-step installation of PMM with Watchtower. Run the following command:
+    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower commands, enabling a one-step installation of PFMM with Watchtower. Run the following command:
 
       ```sh
       curl -fsSL https://www.percona.com/get/pmm | /bin/bash
@@ -52,7 +52,7 @@ You can install PMM Server with Watchtower using one of two methods:
     For a more customizable setup, follow these steps:
     {.power-number}
     
-    1.  Create a Docker network for PMM and Watchtower:
+    1.  Create a Docker network for PFMM and Watchtower:
          ```sh
          docker network create pmm-network
          ``` 
@@ -120,7 +120,7 @@ You can install PMM Server with Watchtower using one of two methods:
 After installation:
 {.power-number}
 
-1. Access the PMM interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
+1. Access the PFMM interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
 
 2. Log in with default credentials: `admin` / `admin`. 
 

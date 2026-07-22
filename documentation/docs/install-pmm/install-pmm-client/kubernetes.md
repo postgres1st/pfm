@@ -110,18 +110,18 @@ Choose your deployment approach:
               initContainers:
                 - name: set-tmp-permissions
                   image: busybox
-                  command: ["sh", "-c", "chown -R 1002:0 /usr/local/percona/pmm/tmp"]
+                  command: ["sh", "-c", "chown -R 1002:0 /opt/postgres1st/pfm/tmp"]
                   securityContext:
                     runAsUser: 0
                   volumeMounts:
                     - name: pmm-client-storage
-                      mountPath: /usr/local/percona/pmm/tmp            
+                      mountPath: /opt/postgres1st/pfm/tmp            
               containers:
                 - name: pmm-client
                   image: percona/pmm-client:3
                   volumeMounts:
                     - name: pmm-client-storage
-                      mountPath: /usr/local/percona/pmm/tmp
+                      mountPath: /opt/postgres1st/pfm/tmp
                   env:
                     - name: PMM_AGENT_SERVER_ADDRESS
                       value: X.X.X.X:443
@@ -164,7 +164,7 @@ Choose your deployment approach:
         ```
 
     !!! hint alert-success "Important"
-        You can set the container environment variable `PMM_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PMM for monitoring.
+        You can set the container environment variable `PMM_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PFMM for monitoring.
 
 
 === "Deploy PMM Client as a Sidecar container"

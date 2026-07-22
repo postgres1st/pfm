@@ -1,31 +1,31 @@
 # Standard role permissions
 
-Roles are the sets of permissions and configurations that determine which metrics a user can access in Percona Monitoring and Management (PMM). Each PMM user is associated with a role that includes permissions. PMM Users then inherit permissions defined in the role which then determines the privileges that a user has in PMM.
+Roles are the sets of permissions and configurations that determine which metrics a user can access in Postgres1st (PFMM). Each PFMM user is associated with a role that includes permissions. PFMM Users then inherit permissions defined in the role which then determines the privileges that a user has in PFMM.
 
-PMM provides two methods of access control: standard roles (Viewer, Editor, Admin) that determine feature-level permissions, and label-based access control that allows administrators to create custom roles to specify which data can be queried based on specific label criteria, for instance, allowing the QA team to view data related only to test environments.
+PFMM provides two methods of access control: standard roles (Viewer, Editor, Admin) that determine feature-level permissions, and label-based access control that allows administrators to create custom roles to specify which data can be queried based on specific label criteria, for instance, allowing the QA team to view data related only to test environments.
 
 For more granular data access control, see [Labels for access control](../roles/access-control/intro.md) which allows you to restrict which metrics users can query based on labels.
 
-## Role types in PMM
+## Role types in PFMM
 
-PMM inherits its basic role structure from [Grafana](https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/) but with customizations specific to database monitoring. PMM has three main role types:
+PFMM inherits its basic role structure from [Grafana](https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/) but with customizations specific to database monitoring. PFMM has three main role types:
 
-- **Admin**: Has access to all resources and features within a PMM instance. This role can manage all aspects of PMM including users, teams, data sources, dashboards, and server settings.
+- **Admin**: Has access to all resources and features within a PFMM instance. This role can manage all aspects of PFMM including users, teams, data sources, dashboards, and server settings.
 - **Editor**: Can view and edit dashboards, create custom visualizations, work with alerts, and manage specific configurations. Editors cannot modify server-wide settings or manage users.
 - **Viewer**: Has read-only access to monitoring data and dashboards. Viewers can query data but cannot make changes to configurations.
 
 ## Default role assignment
 
-When a user signs in to PMM for the first time and has no role assigned, they are automatically assigned the default role. Administrators can configure which role is used as the default through the access control settings.
+When a user signs in to PFMM for the first time and has no role assigned, they are automatically assigned the default role. Administrators can configure which role is used as the default through the access control settings.
 
-If an Admin has not configured a custom default role, PMM assigns:
+If an Admin has not configured a custom default role, PFMM assigns:
 
 - Grafana role: Viewer
-- PMM access control: Full Access to all metrics
+- PFMM access control: Full Access to all metrics
 
 ## Dashboard permissions
 
-Dashboard creators in PMM automatically get Admin permissions for the dashboards they create. Folder permissions cascade to all dashboards within that folder.
+Dashboard creators in PFMM automatically get Admin permissions for the dashboards they create. Folder permissions cascade to all dashboards within that folder.
 
 ## Permission matrix
 Use the matrix below to check which permissions users have based on their assigned role:

@@ -13,7 +13,7 @@ curl -X POST \
   'http://<pmm-server-address>/v1/server/updates:start' \
   -H 'Content-Type: application/json'
 ```
-3. Wait 2-5 minutes and refresh the PMM Home page to verify the update.
+3. Wait 2-5 minutes and refresh the PFMM Home page to verify the update.
 
 ## Watchtower fails with "client version is too old" error
 

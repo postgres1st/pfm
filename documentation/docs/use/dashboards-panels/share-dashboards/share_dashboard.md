@@ -18,7 +18,7 @@ To share a panel via direct link:
     - toggle the **Shorten URL** option to generate a simple link with a unique identifier
 
 !!! hint alert alert-success "Tip"
-       If your current domain is different than the one specified in the Grafana .INI configuration file, PMM will ask you to correct this mismatch before you can generate a short URL.
+       If your current domain is different than the one specified in the Grafana .INI configuration file, PFMM will ask you to correct this mismatch before you can generate a short URL.
 
 ## Share a panel as a PNG file
 

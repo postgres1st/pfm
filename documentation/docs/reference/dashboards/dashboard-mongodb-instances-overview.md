@@ -1,16 +1,16 @@
 # MongoDB Instances Overview
 
-This dashboard provides a high-level view of all MongoDB deployments monitored by PMM, including sharded clusters, replica sets, and standalone instances.
+This dashboard provides a high-level view of all MongoDB deployments monitored by PFMM, including sharded clusters, replica sets, and standalone instances.
 
 Start with this dashboard to get a quick view of overall fleet health before drilling into specific instances or replica sets.
 
-![PMM MongoDB Instances Overview](../../images/PMM_MongoDB_Instances_Overview.png)
+![PFMM MongoDB Instances Overview](../../images/PMM_MongoDB_Instances_Overview.png)
 
 ## Overview
 
 ### Sharded Clusters
 
-Shows the total number of sharded clusters currently monitored by PMM as a single number.
+Shows the total number of sharded clusters currently monitored by PFMM as a single number.
 
 ### Replica Sets
 

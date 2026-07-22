@@ -7,7 +7,7 @@ Recover your PMM Server installation from a previously created volume snapshot.
 - An existing [volume snapshot backup](backup_container_helm.md) of PMM Server
 - Access to the Kubernetes cluster where the backup was created
 - Helm v3 installed and configured
-- Knowledge of the PMM version used in the backup
+- Knowledge of the PFMM version used in the backup
 
 ## Preparing for restoration
 Before restoring, gather the necessary information:
@@ -39,7 +39,7 @@ To restore PMM Server from a snapshot:
     ```sh
     kubectl wait --for=delete pod/pmm-0 --timeout=120s
     ```
-3. Restore PMM Server using the snapshot as a data source, replacing 3.1.0 with a PMM version that is equal to or newer than the version used in the backup:
+3. Restore PMM Server using the snapshot as a data source, replacing 3.1.0 with a PFMM version that is equal to or newer than the version used in the backup:
 
     ```sh
     helm install pmm \

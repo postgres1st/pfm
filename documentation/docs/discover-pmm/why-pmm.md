@@ -1,8 +1,8 @@
-# Why PMM?
+# Why PFMM?
 
-Percona Monitoring and Management (PMM) delivers:
+Postgres1st (PFMM) delivers:
 
-* **Comprehensive monitoring** of MySQL, MariaDB, MongoDB, and PostgreSQL databases
+* **Comprehensive monitoring** of PostgreSQL databases
 * **Built-in advisors and alerts** that work offline with no subscription required. Proactively detect security threats, performance issues, and configuration problems
 * **Query performance insights** to identify and optimize slow queries for improved system efficiency
 * **Database-specific features** tailored for deep monitoring of different database engines
@@ -11,4 +11,4 @@ Percona Monitoring and Management (PMM) delivers:
 * **Centralized management** of multiple database instances across different hosts
 * **Active community support** with regular updates and improvements
 
-    ![!PMM Home Screen](../images/Home_screen.png)
+    ![!PFMM Home Screen](../images/Home_screen.png)

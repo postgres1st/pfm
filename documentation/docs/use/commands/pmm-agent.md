@@ -54,7 +54,7 @@ Most options can be set via environment variables (shown in parentheses).
 | `--node-model=NODE-MODEL`              | `PMM_AGENT_SETUP_NODE_MODEL`        | Node model.
 | `--proc-mounts-path=PATH`              | `PMM_AGENT_SETUP_PROC_MOUNTS_PATH`  | Path to the `proc/mounts` file used by the `node_exporter`.
 | `--expose-exporter` | | If you enable this flag, any IP address on the local network and anywhere on the internet can access node exporter endpoints. If the flag is disabled, node exporter endpoints can be accessed only locally.|
-| `--paths-base=PATH`                    | `PMM_AGENT_PATHS_BASE`              | Base path for PMM client, where all binaries, tools and collectors are located. If not set, default is `/usr/local/percona/pmm`.
+| `--paths-base=PATH`                    | `PMM_AGENT_PATHS_BASE`              | Base path for PMM client, where all binaries, tools and collectors are located. If not set, default is `/opt/postgres1st/pfm`.
 | `--paths-exporters_base=PATH`          | `PMM_AGENT_PATHS_EXPORTERS_BASE`    | Base path for exporters to use. If not set, or set to a relative path, uses value of `--paths-base` prepended to it.
 | `--paths-mongodb_exporter=PATH`        | `PMM_AGENT_PATHS_MONGODB_EXPORTER`  | Path to `mongodb_exporter`.
 | `--paths-mysqld_exporter=PATH`         | `PMM_AGENT_PATHS_MYSQLD_EXPORTER`   | Path to `mysqld_exporter`.
@@ -70,12 +70,12 @@ Most options can be set via environment variables (shown in parentheses).
 | `--region=REGION`                      | `PMM_AGENT_SETUP_REGION`            | Node region.
 | `--skip-registration`                  | `PMM_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PMM Server.
 | `--trace`                              | `PMM_AGENT_TRACE`                   | Enable trace output (implies `--debug`).
-| `--version`                            |                                     | Show application version, PMM version, time-stamp, git commit hash and branch.
+| `--version`                            |                                     | Show application version, PFMM version, time-stamp, git commit hash and branch.
 | `-h`, `--help`                         |                                     | Show help (synonym for `pmm-agent help`).
 
 ## Config file
 
-PMM manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
+PFMM manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
 
 To do this, set the username to `service_token` and add your service token as the password. For more information about service account authorization, see [Service accounts authentication](../../api/authentication.md).
 
@@ -87,7 +87,7 @@ Since 2.23.0 this flag could be used for easier setup of PMM agent. With this fl
 
 **Examples:**
 
-- **Case 1:** There are no root permissions for `/usr/local/percona/pmm` folder or there is a need to change default folder for PMM files.
+- **Case 1:** There are no root permissions for `/opt/postgres1st/pfm` folder or there is a need to change default folder for PFMM files.
 Command:
 ````
 pmm-agent setup --paths-base=/home/user/custom/pmm --config-file=pmm-agent-dev.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
@@ -127,7 +127,7 @@ debug: false
 trace: false
 
 ````
-As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PMM that doesn't require root access could be specified.
+As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PFMM that doesn't require root access could be specified.
 
 - **Case 2:** The older `--paths-exporters_base` flag could be passed along with the `--paths-base`
 Command:

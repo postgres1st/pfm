@@ -66,7 +66,7 @@ Make sure that /srv is owned by uid 1000 and gid 0 and try again.
 You can change ownership by running: sudo chown -R 1000:0 /srv
 ```
 
-Incorrect ownership of the PMM Docker volume typically causes this error. To fix it:
+Incorrect ownership of the PFMM Docker volume typically causes this error. To fix it:
 {.power-number}
 
 1. Fix ownership inside the PMM Server container:
@@ -77,7 +77,7 @@ Incorrect ownership of the PMM Docker volume typically causes this error. To fix
     docker exec pmm-server supervisorctl start all
     ```
 
-    If PMM starts working, you don't need to do anything else.
+    If PFMM starts working, you don't need to do anything else.
 
 2. If the problem persists, stop and remove the PMM Server container:
 
@@ -85,14 +85,14 @@ Incorrect ownership of the PMM Docker volume typically causes this error. To fix
     docker stop pmm-server && docker rm pmm-server
     ```
 
-3. Remove the orphaned PMM data volume:
+3. Remove the orphaned PFMM data volume:
 
     ```sh
     docker volume rm pmm-data
     ```
 
     !!! warning "Data loss"
-        This permanently deletes all PMM data in the volume, including dashboards, metrics history, and configuration. Continue only if you want to start from scratch.
+        This permanently deletes all PFMM data in the volume, including dashboards, metrics history, and configuration. Continue only if you want to start from scratch.
 
 4. Run the Easy-install script again:
 
@@ -113,7 +113,7 @@ Incorrect ownership of the PMM Docker volume typically causes this error. To fix
     ```
 
 !!! warning "Affects all Docker workloads"
-    These commands remove unused Docker resources on the host, not just those related to PMM. Only run them if you are sure no other Docker workloads are affected.
+    These commands remove unused Docker resources on the host, not just those related to PFMM. Only run them if you are sure no other Docker workloads are affected.
 
 ### Next steps
 After PMM Server is set up successfully, set up PMM Client:

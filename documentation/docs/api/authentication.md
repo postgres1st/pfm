@@ -1,13 +1,13 @@
 # Service accounts authentication
 
 !!! caution alert alert-warning "Deprecation notice"
-    Starting with version 3, PMM no longer uses API keys as the primary method for controlling access to the PMM Server components and resources. Instead, PMM is now leveraging Grafana service accounts, which have limited scopes and offer enhanced security compared to API keys.
+    Starting with version 3, PFMM no longer uses API keys as the primary method for controlling access to the PMM Server components and resources. Instead, PFMM is now leveraging Grafana service accounts, which have limited scopes and offer enhanced security compared to API keys.
 
 ### Automatic migration of API keys
 
-When you install PMM v3.x, any existing API keys will be seamlessly converted to service accounts with corresponding service tokens. For more information about the migration, see [Migrate PMM 2 to PMM 3](../pmm-upgrade/migrating_from_pmm_2.md).
+When you install PFMM v3.x, any existing API keys will be seamlessly converted to service accounts with corresponding service tokens. For more information about the migration, see [Migrate PFMM 2 to PFMM 3](../pmm-upgrade/migrating_from_pmm_2.md).
 
-Service accounts in PMM provide a secure and efficient way to manage access to the PMM Server and its resources. They serve as a replacement for the basic authentication and API keys used in previous versions of PMM (v.2 and earlier).
+Service accounts in PFMM provide a secure and efficient way to manage access to the PMM Server and its resources. They serve as a replacement for the basic authentication and API keys used in previous versions of PFMM (v.2 and earlier).
 
 With service accounts, you can:
 
@@ -23,34 +23,34 @@ Creating multiple tokens for the same service account is beneficial in the follo
 
 ## Service Account name management
 
-To prevent node registration failures, PMM automatically manages service account names that exceed 200 characters using a `{prefix}_{hash}` pattern. For example, a very long service account name will be automatically shortened while maintaining uniqueness:
+To prevent node registration failures, PFMM automatically manages service account names that exceed 200 characters using a `{prefix}_{hash}` pattern. For example, a very long service account name will be automatically shortened while maintaining uniqueness:
 
 - **original**: `very_long_mysql_database_server_in_production_environment_with_specific_location_details...`
 - **shortened**: `very_long_mysql_database_server_in_prod_4a7b3f9d`
 
 ## Generate a service account and token
 
-PMM uses Grafana service account tokens for authentication. These tokens are randomly generated strings that serve as alternatives to API keys or basic authentication passwords.
+PFMM uses Grafana service account tokens for authentication. These tokens are randomly generated strings that serve as alternatives to API keys or basic authentication passwords.
 
 Here's how to generate a service account token:
 {.power-number}
 
-1. Log in to PMM.
+1. Log in to PFMM.
 2. From the side menu, click **Users and access > Service accounts**.
 4. Click **Add service account**. Specify a unique name for your service account, select a role from the drop-down menu, and click **Create** to display your newly created service account.
 5. Click **Add service account token**.
 6. In the pop-up dialog, provide a name for the new service token, or leave the field empty to generate an automatic name.
-7. Optionally, set an expiration date for the service account token. PMM cannot automatically rotate expired tokens, which means and you will need to manually [update the PMM-agent configuration file](../use/commands/pmm-agent.md) with a new service account token. Permanent tokens, on the other hand, remain valid indefinitely unless specifically revoked.
+7. Optionally, set an expiration date for the service account token. PFMM cannot automatically rotate expired tokens, which means and you will need to manually [update the PMM-agent configuration file](../use/commands/pmm-agent.md) with a new service account token. Permanent tokens, on the other hand, remain valid indefinitely unless specifically revoked.
 8. Click **Generate token**. A pop-up window will display the new token, which usually has a *glsa_* prefix.
 9. Click **Copy your service token to the clipboard** and store it securely.
-Now you can use your new service token for authentication in PMM API calls or in your [pmm-agent configuration](../use/commands/pmm-agent.md).
+Now you can use your new service token for authentication in PFMM API calls or in your [pmm-agent configuration](../use/commands/pmm-agent.md).
 
 ## Authenticate
 
 You can authenticate your request using the HTTPS header.
 
 !!! caution alert alert-warning "Important"
-    Use the `-k` or `--insecure` parameter to force cURL to ignore invalid and self-signed SSL certificate errors. The option will skip the SSL verification process, and you can bypass any SSL errors while still having SSL-encrypted communication. However, using the `--insecure`  parameter is not recommended. Although the data transfer is encrypted, it is not entirely secure. For enhanced security of your PMM installation, you need valid SSL certificates. For information on validating SSL certificates, see [SSL certificates](../admin/security/ssl_encryption.md).
+    Use the `-k` or `--insecure` parameter to force cURL to ignore invalid and self-signed SSL certificate errors. The option will skip the SSL verification process, and you can bypass any SSL errors while still having SSL-encrypted communication. However, using the `--insecure`  parameter is not recommended. Although the data transfer is encrypted, it is not entirely secure. For enhanced security of your PFMM installation, you need valid SSL certificates. For information on validating SSL certificates, see [SSL certificates](../admin/security/ssl_encryption.md).
 
 ```sh
 curl -H "Authorization: Bearer <SERVICE_TOKEN>" https://127.0.0.1/v1/version

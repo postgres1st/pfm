@@ -1,12 +1,12 @@
-# Choose a PMM deployment strategy
+# Choose a PFMM deployment strategy
 
 Whether you're monitoring a single database or managing hundreds across your organization, it's important to select the appropriate deployment approach for both PMM Server and PMM Client components.
 
-Plan your PMM architecture to align with your infrastructure, growth expectations, and operational needs.
+Plan your PFMM architecture to align with your infrastructure, growth expectations, and operational needs.
 
-## PMM architecture overview
+## PFMM architecture overview
 
-PMM can be deployed in flexible ways depending on your infrastructure and monitoring needs. Its architecture consists of two main components:
+PFMM can be deployed in flexible ways depending on your infrastructure and monitoring needs. Its architecture consists of two main components:
 
 - [PMM Server](../install-pmm-server/index.md): The central component that stores, analyzes, and visualizes monitoring data
 - [PMM Client](../install-pmm-client/index.md): The distributed component installed on database hosts to collect metrics
@@ -30,7 +30,7 @@ For detailed hardware and network specifications, see:
 - Plan backup strategy early. Different deployment methods have different backup requirements and capabilities.
 
 
-For information on PMM's architecture, see [PMM architecture](../../reference/index.md). 
+For information on PFMM's architecture, see [PFMM architecture](../../reference/index.md). 
 
 ## PMM Server deployment options
 
@@ -39,7 +39,7 @@ For information on PMM's architecture, see [PMM architecture](../../reference/in
 | [**:material-docker: Docker**](../install-pmm-server/deployment-options/docker/index.md) | Development, testing & production | ✔  Quick setup<br>✔  Simple upgrades<br>✔  Works in various environments | ⚠ Requires Docker knowledge<br>⚠ May need additional configuration for production |
 | [**:material-shield-lock: Podman**](../install-pmm-server/deployment-options/podman/index.md) | Security-focused setups | ✔ Rootless containers<br> ✔  Enhanced security<br> ✔  OCI-compatible | ⚠ Requires Podman installation & knowledge |
 | [**:material-kubernetes: Helm**](../install-pmm-server/deployment-options/helm/index.md) | Cloud-native environments | ✔  Scalable & high availability<br> ✔  Kubernetes-native | ⚠ Requires existing Kubernetes cluster<br>⚠ More complex setup |
-| [**:material-server: Virtual Appliance**](../install-pmm-server/deployment-options/virtual/index.md) *(deprecated)* | Traditional environments | ✔  Pre-configured with all dependencies<br>✔  Dedicated resources | ⚠ Deprecated in PMM 3.7.0, will be removed in PMM 3.9.0<br>⚠ Migrate to Docker or another supported distribution |
+| [**:material-server: Virtual Appliance**](../install-pmm-server/deployment-options/virtual/index.md) *(deprecated)* | Traditional environments | ✔  Pre-configured with all dependencies<br>✔  Dedicated resources | ⚠ Deprecated in PFMM 3.7.0, will be removed in PFMM 3.9.0<br>⚠ Migrate to Docker or another supported distribution |
 | [**:material-aws: Amazon AWS**](../install-pmm-server/deployment-options/aws/deploy_aws.md) | AWS-based environments | Seamless AWS integration, easy provisioning | Monthly subscription costs, AWS infrastructure costs |
 
 ## PMM Client deployment options
@@ -87,7 +87,7 @@ Based on the scale and environment of your monitoring needs, we recommend differ
 === "Cloud-based database monitoring"
 
     - **PMM Client**: Package Manager or automated cloud deployment
-    - **PMM Remote**: For monitoring cloud database services (RDS, Azure DB, Cloud SQL)
+    - **PFMM Remote**: For monitoring cloud database services (RDS, Azure DB, Cloud SQL)
     - **Implementation tips**:
         - use cloud-native storage options for better performance
         - leverage auto-scaling groups for handling variable loads
@@ -99,7 +99,7 @@ Based on the scale and environment of your monitoring needs, we recommend differ
 
 ## Deployment planning checklist
 
-Review this checklist to help you plan and size your monitoring environment and ensure your PMM environment is efficient, secure, and scalable from day one:
+Review this checklist to help you plan and size your monitoring environment and ensure your PFMM environment is efficient, secure, and scalable from day one:
 
 ✓ Inventory of systems - Document all database instances that need monitoring 
 
@@ -115,7 +115,7 @@ Review this checklist to help you plan and size your monitoring environment and 
 
 ✓ [Plan data retention](../../configure-pmm/advanced_settings.md#data-retention) - Establish backup and disaster recovery processes 
 
-✓ [Define maintenance](../../pmm-upgrade/index.md) - Create upgrade and patching procedures for PMM components
+✓ [Define maintenance](../../pmm-upgrade/index.md) - Create upgrade and patching procedures for PFMM components
 
 ## Next step
 

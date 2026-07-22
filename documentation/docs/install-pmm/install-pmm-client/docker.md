@@ -32,7 +32,7 @@ Set up PMM Client by deploying it as a Docker container and registering it with 
 
 Deploy and register PMM Client to start monitoring your node. 
 
-Registration gives PMM Server permission to collect metrics from your infrastructure and display them in monitoring dashboards. PMM supports two authentication methods: service account tokens (recommended) and username/password credentials. 
+Registration gives PMM Server permission to collect metrics from your infrastructure and display them in monitoring dashboards. PFMM supports two authentication methods: service account tokens (recommended) and username/password credentials. 
 
 To deploy and register PMM Client using Docker:
 {.power-number}
@@ -50,16 +50,16 @@ To deploy and register PMM Client using Docker:
    
     === "Using Service accounts (Recommended)"
    
-        [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PMM.
+        [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PFMM.
     
         To register with service accounts, create a service account then generate an authentication token that you can use to register the PMM Client:
         {.power-number}
     
-        1. Log into PMM web interface.
+        1. Log into PFMM web interface.
         2. Navigate to **Users and access > Service accounts**.
         3. Click **Add service account**.
-        4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that PMM automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
-        5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PMM](../../admin/roles/index.md).
+        4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that PFMM automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
+        5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PFMM](../../admin/roles/index.md).
         6. Click **Create > Add service account token**.
         7. (Optional) Name your token or leave blank for auto-generated name.
         8. (Optional) Set expiration date for enhanced security. Expired tokens require manual rotation. Permanent tokens remain valid until revoked.
@@ -147,7 +147,7 @@ Run the following command to check that PMM Client is properly connected and reg
 docker exec -t pmm-client pmm-admin status
 ```
 
-If the connection is successful, you should also see an increased number of monitored nodes in the PMM user interface.
+If the connection is successful, you should also see an increased number of monitored nodes in the PFMM user interface.
 
 ### View your monitored node
 To confirm your node is being monitored:

@@ -8,7 +8,7 @@ It returns a WARNING if any table in the current database has a bloat over 1GB s
 
 
 !!! warning alert alert-success "Warning"
-    At the moment of creation of this advisor, the PMM advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
+    At the moment of creation of this advisor, the PFMM advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
 
 Bloat is a natural side effect of how the Multiversion Concurrency Control (MVCC) works in a PostgreSQL instance. 
 

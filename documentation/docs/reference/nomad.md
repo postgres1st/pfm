@@ -1,14 +1,14 @@
 # Configure Nomad
 
-Percona Monitoring and Management (PMM) includes HashiCorp Nomad to enable future extensibility and enhanced service capabilities.
+Postgres1st (PFMM) includes HashiCorp Nomad to enable future extensibility and enhanced service capabilities.
 
-[Nomad](https://www.nomadproject.io/) is a workload orchestrator designed to deploy and manage containers and non-containerized applications. In PMM, Nomad provides the underlying infrastructure to:
+[Nomad](https://www.nomadproject.io/) is a workload orchestrator designed to deploy and manage containers and non-containerized applications. In PFMM, Nomad provides the underlying infrastructure to:
 
 - improve resource allocation across monitoring components
-- enable future PMM extensibility 
+- enable future PFMM extensibility 
 - manage distributed monitoring agents more efficiently
 
-Nomad is **disabled by default** in PMM and has no impact on system performance when not enabled. 
+Nomad is **disabled by default** in PFMM and has no impact on system performance when not enabled. 
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ Before enabling Nomad, check that PMM Server has a public address configured und
 
 ### Enable Nomad
 
-If you're an advanced user who needs Nomad for specific use cases, follow these steps to enable Nomad in PMM:
+If you're an advanced user who needs Nomad for specific use cases, follow these steps to enable Nomad in PFMM:
 { .power-number }
 
 1. Start PMM Server with the `PMM_ENABLE_NOMAD` environment variable:
@@ -29,7 +29,7 @@ If you're an advanced user who needs Nomad for specific use cases, follow these 
    -p 4647:4647
    ```
 
-3. Go to PMM's **Advanced Settings** and set the public address.
+3. Go to PFMM's **Advanced Settings** and set the public address.
 
 ??? info "Docker run command" 
 
@@ -73,7 +73,7 @@ To verify that Nomad is running correctly:
 
 ## Internal architecture
 
-When enabled, PMM runs the following Nomad components:
+When enabled, PFMM runs the following Nomad components:
 
 - **Nomad server** on PMM Server - manages the cluster and schedules workloads
 - **Nomad client** on PMM Server - executes jobs (workloads) on remote instances
@@ -94,7 +94,7 @@ The Nomad API is available through the PMM Server's HTTPS port via the `/nomad` 
 
 ## Future compatibility
 
-Nomad is included in PMM to support future extensibility features. Nomad will remain within PMM to provide infrastructure for upcoming enhancements and to deliver improved services for existing Percona customers.
+Nomad is included in PFMM to support future extensibility features. Nomad will remain within PFMM to provide infrastructure for upcoming enhancements and to deliver improved services for existing Percona customers.
 
 ## Related links
 

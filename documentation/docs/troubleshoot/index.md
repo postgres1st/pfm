@@ -1,6 +1,6 @@
-# Troubleshoot PMM
+# Troubleshoot PFMM
 
-This section provides comprehensive solutions to common issues and scenarios that may arise while using PMM, including a [checklist](checklist.md).
+This section provides comprehensive solutions to common issues and scenarios that may arise while using PFMM, including a [checklist](checklist.md).
 
 To quickly identify the issues and find the appropriate solution, the issues are categorized into distinct groups as follows:
 

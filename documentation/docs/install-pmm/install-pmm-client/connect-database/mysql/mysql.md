@@ -1,24 +1,24 @@
-# Connect MySQL databases to PMM
+# Connect MySQL databases to PFMM
 
-Easily connect your MySQL databases—whether self-hosted or running on AWS EC2—to Percona Monitoring and Management (PMM) for in-depth performance insights.
+Easily connect your MySQL databases—whether self-hosted or running on AWS EC2—to Postgres1st (PFMM) for in-depth performance insights.
 
 ## Quick setup
 
-Get your MySQL instance connected to PMM in just a few steps:
+Get your MySQL instance connected to PFMM in just a few steps:
 {.power-number}
 
 1. Create a dedicated MySQL user with the required permissions.  If you are using an [Administrative Connection](https://dev.mysql.com/doc/refman/8.4/en/administrative-connection-interface.html), you will also need to grant the `SERVICE_CONNECTION_ADMIN` privilege to the `pmm` user:
 
     ```sql
-    -- Create PMM user with required permissions
+    -- Create PFMM user with required permissions
     CREATE USER 'pmm'@'localhost' IDENTIFIED BY 'StrongPassword123!' WITH MAX_USER_CONNECTIONS 10;
     GRANT SELECT, PROCESS, REPLICATION CLIENT, RELOAD ON *.* TO 'pmm'@'localhost';
     ```
 
-2. Register your MySQL instance with PMM:
+2. Register your MySQL instance with PFMM:
 
     ```sh
-    # Add MySQL service to PMM
+    # Add MySQL service to PFMM
     pmm-admin add mysql \
       --username=pmm \
       --password=StrongPassword123! \
@@ -35,7 +35,7 @@ Get your MySQL instance connected to PMM in just a few steps:
     pmm-admin status
     ```
 
-That's it! Your MySQL instance should now appear in PMM dashboards. For advanced configuration options, continue reading below.
+That's it! Your MySQL instance should now appear in PFMM dashboards. For advanced configuration options, continue reading below.
 
 ## Advanced configuration
 
@@ -49,19 +49,19 @@ PMM Client supports collecting metrics from various MySQL-based database systems
 For monitoring Amazon RDS MySQL instances, see [Connect Amazon RDS instance](../aws.md).
 
 ??? info "Setup process at a glance"
-    These are the high-level steps for configuring MySQL monitoring in PMM:
+    These are the high-level steps for configuring MySQL monitoring in PFMM:
     {.power-number}
 
     1. **[Prerequisites](#prerequisites)**: Ensure PMM Server is running and PMM Client is installed
-    2. **[Create PMM user](#create-a-database-account-for-pmm)**: `CREATE USER 'pmm'@'localhost' IDENTIFIED BY '<StrongPassword>'`  
+    2. **[Create PFMM user](#create-a-database-account-for-pmm)**: `CREATE USER 'pmm'@'localhost' IDENTIFIED BY '<StrongPassword>'`  
     3. **[Grant permissions](#create-a-database-account-for-pmm)**: `GRANT SELECT, PROCESS, REPLICATION CLIENT, RELOAD ON *.* TO 'pmm'@'localhost'`
     4. **[Configure data source](#configuring-data-sources)**: Enable Slow Query Log or Performance Schema 
-    5. **[Add service](#adding-mysql-services-to-pmm)**: Use PMM UI or command line to add the MySQL instance
-    6. **[Verify connection](#verifying-the-setup)**: Check PMM Inventory and dashboards for data
+    5. **[Add service](#adding-mysql-services-to-pmm)**: Use PFMM UI or command line to add the MySQL instance
+    6. **[Verify connection](#verifying-the-setup)**: Check PFMM Inventory and dashboards for data
 
 ### Prerequisites
 
-Before connecting MySQL to PMM, review the prerequisites for your monitoring setup:
+Before connecting MySQL to PFMM, review the prerequisites for your monitoring setup:
 
 === "Local MySQL monitoring"
     - [PMM Server is installed](../../../install-pmm-server/index.md) and running.
@@ -83,12 +83,12 @@ For remote monitoring or when using only Performance Schema metrics, `root` acce
 
 ### Security setup
 
-#### Create a database account for PMM
+#### Create a database account for PFMM
 
 For security best practices, connect PMM Client to your database using a dedicated monitoring user with limited permissions. 
 
 ??? info "Password security"
-    - Use a strong, unique password for the PMM database user
+    - Use a strong, unique password for the PFMM database user
     - At least 12 characters long
     - Mix of uppercase and lowercase letters
     - Include numbers and special characters
@@ -113,7 +113,7 @@ This example creates a pmm user account that has just enough access to collect m
 
 ### Choose and configure a source
 
-PMM can collect metrics from two primary sources: Slow query log and Performance Schema.
+PFMM can collect metrics from two primary sources: Slow query log and Performance Schema.
 
 While you can use both at the same time we recommend using only one--there is some overlap in the data reported, and each incurs a small performance penalty.
 
@@ -250,7 +250,7 @@ Here are the benefits and drawbacks of Slow query log and Performance Schema met
     - **Percona XtraDB Cluster**: 5.6, 5.7, 8.0, 8.4
     - **MariaDB**: [10.3+][mariadb_perfschema_instr_table]
     
-    PMM's [MySQL Performance Schema Details dashboard](../../../../reference/dashboards/dashboard-mysql-performance-schema-details.md) charts the various [`performance_schema`][performance-schema-startup-configuration] metrics.
+    PFMM's [MySQL Performance Schema Details dashboard](../../../../reference/dashboards/dashboard-mysql-performance-schema-details.md) charts the various [`performance_schema`][performance-schema-startup-configuration] metrics.
     
     To use **Performance Schema**, set these variables:
     
@@ -299,7 +299,7 @@ Here are the benefits and drawbacks of Slow query log and Performance Schema met
     
     ##### Transactions
     
-    MariaDB doesn't implement queries history for transactions. All queries executed within a transaction won't have query examples since PMM relies on the `performance_schema.events_statements_history` to grab the query example but that table won't have any query executed as part of a transaction.  
+    MariaDB doesn't implement queries history for transactions. All queries executed within a transaction won't have query examples since PFMM relies on the `performance_schema.events_statements_history` to grab the query example but that table won't have any query executed as part of a transaction.  
     
     This behavior is because MariaDB doesn't implement these consumers:
     
@@ -382,13 +382,13 @@ User activity, individual table and index access details are shown on the [MySQL
 
 ### Disable query example collection 
 
-PMM can collect query examples to help analyze query performance with real-world data. However, you can disable this collection when handling sensitive information.
+PFMM can collect query examples to help analyze query performance with real-world data. However, you can disable this collection when handling sensitive information.
 
 When query examples are disabled, Query Analytics continues to function normally with query fingerprints and performance metrics. However, the **Examples** tab will not display query examples, and the Explain functionality will use placeholders instead of actual data values.
 To disable query examples for data privacy:
 
 === "Via UI"
-    When adding a MySQL service through the PMM UI, expand **Advanced Settings** and check **Disable query examples**. This prevents PMM from storing actual query values while maintaining all other Query Analytics functionality.
+    When adding a MySQL service through the PFMM UI, expand **Advanced Settings** and check **Disable query examples**. This prevents PFMM from storing actual query values while maintaining all other Query Analytics functionality.
 
 === "Via command line"
     Use the `--disable-queryexamples` flag when adding a MySQL service:
@@ -404,9 +404,9 @@ To disable query examples for data privacy:
         MySQL-Private
     ```
 
-### Add service to PMM
+### Add service to PFMM
 
-After creating your PMM database user, you can add your MySQL service to PMM using the command line or the UI.
+After creating your PFMM database user, you can add your MySQL service to PFMM using the command line or the UI.
 
 The **command line** (`pmm-admin`) deploys an exporter directly on the database host and automatically collects node-level metrics (CPU, memory, disk I/O) alongside MySQL metrics. Use the UI only if you cannot install PMM Client on the database host.
 
@@ -521,12 +521,12 @@ The **command line** (`pmm-admin`) deploys an exporter directly on the database 
         - **Service Name**: A descriptive name for your MySQL instance
         - **Host/Socket**: Use `localhost` for local monitoring or hostname/IP for remote monitoring
         - **Port**: MySQL port (default: 3306)
-        - **Username**: The PMM user created earlier
-        - **Password**: Your PMM user password
+        - **Username**: The PFMM user created earlier
+        - **Password**: Your PFMM user password
         - **Query Source**: Choose between **Slow Log** or **Performance Schema**
         - **PMM Agent**: Select which PMM agent should monitor this instance
-        - **Disable query examples**: Check this option to prevent collection of actual query values in QAN. When enabled, PMM will continue to collect query metrics and statistics but will not store the actual query examples with real data values.
-        - **Connection timeout**: How long PMM should wait when connecting to this service. Increase this for remote or high-latency databases. If the connection times out, PMM retries the next time it collects metrics. Leave empty to use the default of 2s.
+        - **Disable query examples**: Check this option to prevent collection of actual query values in QAN. When enabled, PFMM will continue to collect query metrics and statistics but will not store the actual query examples with real data values.
+        - **Connection timeout**: How long PFMM should wait when connecting to this service. Increase this for remote or high-latency databases. If the connection times out, PFMM retries the next time it collects metrics. Leave empty to use the default of 2s.
 
     4. Click **Add Service**.
 
@@ -535,7 +535,7 @@ The **command line** (`pmm-admin`) deploys an exporter directly on the database 
 
 #### TLS/SSL certificate configuration
 
-PMM supports flexible TLS certificate configurations for MySQL connections, enabling you to use partial certificates when client authentication is not required.
+PFMM supports flexible TLS certificate configurations for MySQL connections, enabling you to use partial certificates when client authentication is not required.
 
 === "Partial certificates (CA only)"
 
@@ -588,7 +588,7 @@ Service name: MySQL-Primary
 ```
 
 ## Verify your MySQL service
-After adding your MySQL service to PMM, it's important to verify that it's properly connected and collecting data.
+After adding your MySQL service to PFMM, it's important to verify that it's properly connected and collecting data.
 
 #### Check service status
 
@@ -666,7 +666,7 @@ Once the service is confirmed as active, verify that metrics are being properly 
 - [Understanding MySQL's INNODB_METRICS table][BLOG_INNODB_METRICS]
 - [Rotating MySQL slow logs safely][BLOG_LOG_ROTATION]
 - [Impact of logging on MySQL's performance][BLOG_LOGGING]
-- [Running custom MySQL queries in PMM][BLOG_CUSTOM_QUERIES_MYSQL]
+- [Running custom MySQL queries in PFMM][BLOG_CUSTOM_QUERIES_MYSQL]
 
 [DASH_MYSQLUSERDETAILS]: ../../../../reference//dashboards/dashboard-mysql-user-details.md
 [LOGROTATE]: https://linux.die.net/man/8/logrotate

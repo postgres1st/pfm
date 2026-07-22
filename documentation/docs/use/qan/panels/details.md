@@ -2,9 +2,6 @@
 
 The Details panel shows in-depth information about a selected query in the **Stored metrics** tab. Use it to analyze query execution time, view examples, and understand query plans.
 
-!!! note
-    The Real-time tab has its own Details panel for viewing currently executing operations. See [Real-Time Query Analytics](../QAN-realtime-analytics.md).
-
 Selecting an item under **QAN Stored metrics > Overview panel** opens the **Details panel** with a [Details tab](#details-tab).
 
 If the dimension is **Query**, the panel also contains the [Examples Tab](#examples-tab), [Explain Tab](#explain-tab), and [Tables Tab](#tables-tab).
@@ -75,8 +72,8 @@ Below is an illustration of the same query using values instead of placeholders.
 
 ![!image](../../../images/PMM_Query_Analytics_Tabs_Explain_With_Values.png)
 
-The image shown above illustrates a query with two placeholders. Therefore, you must enter the correct values in both fields. After filling in these values, click *Explain* to get the results like in the previous PMM versions without data leaks.
-You will get result like in previous PMM versions. This method of `explain` prevents data leak.
+The image shown above illustrates a query with two placeholders. Therefore, you must enter the correct values in both fields. After filling in these values, click *Explain* to get the results like in the previous PFMM versions without data leaks.
+You will get result like in previous PFMM versions. This method of `explain` prevents data leak.
 
 !!! note alert alert-primary "'Explain' for MongoDB"
 

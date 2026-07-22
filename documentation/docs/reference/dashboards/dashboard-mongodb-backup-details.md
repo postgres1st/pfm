@@ -1,6 +1,6 @@
 # MongoDB Backup Details dashboard
 
-This dashboard helps you monitor your Percona Backup for MongoDB (PBM) environment directly within PMM. 
+This dashboard helps you monitor your Percona Backup for MongoDB (PBM) environment directly within PFMM. 
 
 It brings together backup configuration, agent health, and backup history in one place, so you don't need to switch between tools.
 
@@ -11,7 +11,7 @@ Use the filters at the top to narrow down to specific environments, clusters, or
 ![MongoDB Backup Details dashboard](../../images/BackupDetails_Dashboard.png)
 
 !!! note
-    This dashboard requires MongoDB services to be added with the `--cluster` parameter. If panels show no data, see [Add MongoDB service to PMM](../../install-pmm/install-pmm-client/connect-database/mongodb.md#step-3-add-mongodb-service-to-pmm).
+    This dashboard requires MongoDB services to be added with the `--cluster` parameter. If panels show no data, see [Add MongoDB service to PFMM](../../install-pmm/install-pmm-client/connect-database/mongodb.md#step-3-add-mongodb-service-to-pmm).
 
 ## Overview 
 
@@ -31,7 +31,7 @@ PITR lets you restore to any moment in time, not just to the nearest backup snap
 
 ### Backup Agents
 
-Shows the total number of PBM agents currently monitored by PMM.
+Shows the total number of PBM agents currently monitored by PFMM.
 
 Compare this against the number of nodes you expect to be covered. A lower count means some agents have gone offline or failed to register. Any node without a running agent won't be backed up, so investigate immediately if the count doesn't match.
 

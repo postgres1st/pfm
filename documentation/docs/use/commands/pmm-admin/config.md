@@ -2,7 +2,7 @@
 
 Use these `pmm-admin` commands from the command line to configure PMM Client, register nodes with PMM Server, remove services from monitoring, and add event annotations.
 
-`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PMM Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PMM API](../../../api/index.md).
+`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PFMM Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PFMM API](../../../api/index.md).
 
 ## Commands
 
@@ -12,7 +12,7 @@ Use these commands to set up and maintain your PMM Client connection, control wh
 
 - [`pmm-admin register`](#pmm-admin-register):   Register this node with PMM Server
 
-- [`pmm-admin remove`](#pmm-admin-remove):   Stop monitoring a service and remove it from PMM
+- [`pmm-admin remove`](#pmm-admin-remove):   Stop monitoring a service and remove it from PFMM
 
 - [`pmm-admin annotate`](#pmm-admin-annotate):   Add event markers to dashboards (deployments, maintenance, incidents)
 
@@ -131,7 +131,7 @@ pmm-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ## pmm-admin remove
 
-Stop monitoring a service and remove it from PMM. This removes the service and its agents from PMM Server but does not delete any collected data. 
+Stop monitoring a service and remove it from PFMM. This removes the service and its agents from PMM Server but does not delete any collected data. 
 
 Data remains on PMM Server for the configured [retention period](../../../reference/faq.md#retention).
 
@@ -185,7 +185,7 @@ pmm-admin list
 
 ## pmm-admin annotate
 
-Add event annotations to PMM dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
+Add event annotations to PFMM dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
 
 Annotations appear as vertical lines on Grafana dashboards, helping you correlate performance changes with events. 
 
