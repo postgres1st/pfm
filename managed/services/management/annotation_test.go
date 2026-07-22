@@ -113,11 +113,11 @@ func TestAnnotations(t *testing.T) {
 		ctx, s, db, grafanaClient, teardown := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
-		_, err := models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err := models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 
@@ -182,11 +182,11 @@ func TestAnnotations(t *testing.T) {
 		ctx, s, db, _, teardown := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
-		_, err := models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err := models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 
@@ -207,11 +207,11 @@ func TestAnnotations(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		_, err = models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err = models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 
@@ -230,19 +230,19 @@ func TestAnnotations(t *testing.T) {
 		ctx, s, db, grafanaClient, teardown := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
-		_, err := models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err := models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 
-		_, err = models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err = models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test2",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3307)),
+			Port:        new(uint16(5433)),
 		})
 		require.NoError(t, err)
 
@@ -260,11 +260,11 @@ func TestAnnotations(t *testing.T) {
 		ctx, s, db, _, teardown := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
-		_, err := models.AddNewService(db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
+		_, err := models.AddNewService(db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
 			ServiceName: "service-test",
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 

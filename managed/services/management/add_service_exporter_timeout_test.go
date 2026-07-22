@@ -79,6 +79,8 @@ func TestAddServiceExporterTimeout(t *testing.T) {
 	want := durationpb.New(17 * time.Second)
 
 	t.Run("MySQL", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		state.On("RequestStateUpdate", ctx, models.PMMServerAgentID).Once()
 		vc.On("RequestSoftwareVersionsUpdate").Once()
 
@@ -127,6 +129,8 @@ func TestAddServiceExporterTimeout(t *testing.T) {
 	})
 
 	t.Run("ProxySQL", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		state.On("RequestStateUpdate", ctx, models.PMMServerAgentID).Once()
 
 		resp, err := s.AddService(ctx, &managementv1.AddServiceRequest{
@@ -150,6 +154,8 @@ func TestAddServiceExporterTimeout(t *testing.T) {
 	})
 
 	t.Run("Valkey", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ValkeyServiceType)
+
 		state.On("RequestStateUpdate", ctx, models.PMMServerAgentID).Once()
 
 		resp, err := s.AddService(ctx, &managementv1.AddServiceRequest{
@@ -172,6 +178,9 @@ func TestAddServiceExporterTimeout(t *testing.T) {
 	})
 
 	t.Run("Azure Database", func(t *testing.T) {
+		// The Azure exporter itself is permitted, but this case provisions a MySQL Service.
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		_, err := models.UpdateSettings(sqlDB, &models.ChangeSettingsParams{
 			EnableAzurediscover: new(true),
 		})
@@ -218,6 +227,9 @@ func TestAddServiceExporterTimeout(t *testing.T) {
 	})
 
 	t.Run("RDS MySQL", func(t *testing.T) {
+		// The RDS exporter itself is permitted, but this case provisions a MySQL Service.
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		state.On("RequestStateUpdate", ctx, models.PMMServerAgentID).Once()
 
 		resp, err := s.addRDS(ctx, &managementv1.AddRDSServiceParams{

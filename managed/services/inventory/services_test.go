@@ -39,6 +39,17 @@ import (
 	"github.com/percona/pmm/utils/logger"
 )
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func setup(t *testing.T) (*ServicesService, *AgentsService, *NodesService, func(t *testing.T), context.Context, *mockPrometheusService) {
 	t.Helper()
 
@@ -96,6 +107,8 @@ func setup(t *testing.T) (*ServicesService, *AgentsService, *NodesService, func(
 
 func TestServices(t *testing.T) {
 	t.Run("BasicMySQL", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -137,6 +150,10 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("RDSServiceRemoving", func(t *testing.T) {
+		// Provisions a MySQL Service and MySQLd exporter; the equivalent PostgreSQL RDS
+		// cascade is covered in management's TestServiceService/Remove/RDS.
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, as, ns, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -199,6 +216,10 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("AzureServiceRemoving", func(t *testing.T) {
+		// Provisions a MySQL Service and MySQLd exporter; the equivalent PostgreSQL Azure
+		// cascade is covered in management's TestServiceService/Remove/Azure.
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, as, ns, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -260,6 +281,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("BasicMySQLWithSocket", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -299,6 +322,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("MySQLSocketAddressConflict", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -316,6 +341,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("MySQLSocketAndPort", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -333,6 +360,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("BasicMongoDB", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -493,6 +522,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("Valkey", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ValkeyServiceType)
+
 		t.Run("Basic", func(t *testing.T) {
 			ss, _, _, teardown, ctx, _ := setup(t)
 			defer teardown(t)
@@ -610,6 +641,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("BasicProxySQL", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -650,6 +683,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("BasicProxySQLWithSocket", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -688,6 +723,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("ProxySQLSocketAddressConflict", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -705,6 +742,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("ProxySQLSocketAndPort", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.ProxySQLServiceType)
+
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
@@ -808,33 +847,35 @@ func TestServices(t *testing.T) {
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
-		ss.vc.(*mockVersionCache).On("RequestSoftwareVersionsUpdate").Once()
-		_, err := ss.AddMySQL(ctx, &models.AddDBMSServiceParams{
-			ServiceName: "test-mysql",
+		// Retargeted to PostgreSQL: name uniqueness is service-type agnostic.
+		const serviceName = "test-postgres"
+		_, err := ss.AddPostgreSQL(ctx, &models.AddDBMSServiceParams{
+			ServiceName: serviceName,
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		require.NoError(t, err)
 
-		_, err = ss.AddMySQL(ctx, &models.AddDBMSServiceParams{
-			ServiceName: "test-mysql",
+		_, err = ss.AddPostgreSQL(ctx, &models.AddDBMSServiceParams{
+			ServiceName: serviceName,
 			NodeID:      models.PMMServerNodeID,
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
-		tests.AssertGRPCError(t, status.New(codes.AlreadyExists, `Service with name "test-mysql" already exists.`), err)
+		tests.AssertGRPCError(t, status.New(codes.AlreadyExists, fmt.Sprintf(`Service with name %q already exists.`, serviceName)), err)
 	})
 
 	t.Run("AddNodeNotFound", func(t *testing.T) {
 		ss, _, _, teardown, ctx, _ := setup(t)
 		defer teardown(t)
 
-		_, err := ss.AddMySQL(ctx, &models.AddDBMSServiceParams{
-			ServiceName: "test-mysql",
+		// Retargeted to PostgreSQL: node lookup is service-type agnostic.
+		_, err := ss.AddPostgreSQL(ctx, &models.AddDBMSServiceParams{
+			ServiceName: "test-postgres",
 			NodeID:      "no-such-id",
 			Address:     new("127.0.0.1"),
-			Port:        new(uint16(3306)),
+			Port:        new(uint16(5432)),
 		})
 		tests.AssertGRPCError(t, status.New(codes.NotFound, `Node with ID "no-such-id" not found.`), err)
 	})
@@ -848,6 +889,8 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("MongoDB", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		t.Run("WithSocket", func(t *testing.T) {
 			ss, _, _, teardown, ctx, _ := setup(t)
 			defer teardown(t)

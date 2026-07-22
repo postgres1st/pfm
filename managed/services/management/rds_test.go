@@ -251,98 +251,6 @@ func TestRDSService(t *testing.T) {
 		}
 	})
 
-	t.Run("AddRDS", func(t *testing.T) {
-		ctx := logger.Set(t.Context(), t.Name())
-		accessKey, secretKey := "EXAMPLE_ACCESS_KEY", "EXAMPLE_SECRET_KEY"
-
-		req := &managementv1.AddRDSServiceParams{
-			Region:             "us-east-1",
-			Az:                 "us-east-1b",
-			InstanceId:         "rds-mysql57",
-			NodeModel:          "db.t3.micro",
-			Address:            "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
-			Port:               3306,
-			Engine:             managementv1.DiscoverRDSEngine_DISCOVER_RDS_ENGINE_MYSQL,
-			Environment:        "production",
-			Cluster:            "c-01",
-			ReplicationSet:     "rs-01",
-			Username:           "username",
-			Password:           "password",
-			AwsAccessKey:       accessKey,
-			AwsSecretKey:       secretKey,
-			RdsExporter:        true,
-			QanMysqlPerfschema: true,
-			CustomLabels: map[string]string{
-				"foo": "bar",
-			},
-			SkipConnectionCheck:       true,
-			Tls:                       false,
-			TlsSkipVerify:             false,
-			DisableQueryExamples:      true,
-			TablestatsGroupTableLimit: 0,
-		}
-
-		state.On("RequestStateUpdate", ctx, "pmm-server")
-		resp, err := s.addRDS(ctx, req)
-		require.NoError(t, err)
-
-		expected := &managementv1.AddServiceResponse{
-			Service: &managementv1.AddServiceResponse_Rds{
-				Rds: &managementv1.RDSServiceResult{
-					Node: &inventoryv1.RemoteRDSNode{
-						NodeId:     "00000000-0000-4000-8000-000000000005",
-						NodeName:   "rds-mysql57",
-						Address:    "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
-						InstanceId: "rds-mysql57",
-						NodeModel:  "db.t3.micro",
-						Region:     "us-east-1",
-						Az:         "us-east-1b",
-						CustomLabels: map[string]string{
-							"foo": "bar",
-						},
-					},
-					RdsExporter: &inventoryv1.RDSExporter{
-						AgentId:      "00000000-0000-4000-8000-000000000006",
-						PmmAgentId:   "pmm-server",
-						NodeId:       "00000000-0000-4000-8000-000000000005",
-						AwsAccessKey: "EXAMPLE_ACCESS_KEY",
-						Status:       inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-					},
-					Mysql: &inventoryv1.MySQLService{
-						ServiceId:      "00000000-0000-4000-8000-000000000007",
-						NodeId:         "00000000-0000-4000-8000-000000000005",
-						Address:        "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
-						Port:           3306,
-						Environment:    "production",
-						Cluster:        "c-01",
-						ReplicationSet: "rs-01",
-						ServiceName:    "rds-mysql57",
-						CustomLabels: map[string]string{
-							"foo": "bar",
-						},
-					},
-					MysqldExporter: &inventoryv1.MySQLdExporter{
-						AgentId:                   "00000000-0000-4000-8000-000000000008",
-						PmmAgentId:                "pmm-server",
-						ServiceId:                 "00000000-0000-4000-8000-000000000007",
-						Username:                  "username",
-						TablestatsGroupTableLimit: 1000,
-						Status:                    inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-					},
-					QanMysqlPerfschema: &inventoryv1.QANMySQLPerfSchemaAgent{
-						AgentId:               "00000000-0000-4000-8000-000000000009",
-						PmmAgentId:            "pmm-server",
-						ServiceId:             "00000000-0000-4000-8000-000000000007",
-						Username:              "username",
-						QueryExamplesDisabled: true,
-						Status:                inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-					},
-				},
-			},
-		}
-		assert.Equal(t, prototext.Format(expected), prototext.Format(resp)) // for better diffs
-	})
-
 	t.Run("AddRDSPostgreSQL", func(t *testing.T) {
 		ctx := logger.Set(t.Context(), t.Name())
 		accessKey, secretKey := "EXAMPLE_ACCESS_KEY", "EXAMPLE_SECRET_KEY"
@@ -384,10 +292,107 @@ func TestRDSService(t *testing.T) {
 			Service: &managementv1.AddServiceResponse_Rds{
 				Rds: &managementv1.RDSServiceResult{
 					Node: &inventoryv1.RemoteRDSNode{
-						NodeId:     "00000000-0000-4000-8000-00000000000a",
+						NodeId:     "00000000-0000-4000-8000-000000000005",
 						NodeName:   "rds-postgresql",
 						Address:    "rds-postgresql-renaming.xyzzy.us-east-1.rds.amazonaws.com",
 						InstanceId: "rds-postgresql",
+						NodeModel:  "db.t3.micro",
+						Region:     "us-east-1",
+						Az:         "us-east-1b",
+						CustomLabels: map[string]string{
+							"foo": "bar",
+						},
+					},
+					RdsExporter: &inventoryv1.RDSExporter{
+						AgentId:      "00000000-0000-4000-8000-000000000006",
+						PmmAgentId:   "pmm-server",
+						NodeId:       "00000000-0000-4000-8000-000000000005",
+						AwsAccessKey: "EXAMPLE_ACCESS_KEY",
+						Status:       inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
+					},
+					Postgresql: &inventoryv1.PostgreSQLService{
+						ServiceId:      "00000000-0000-4000-8000-000000000007",
+						NodeId:         "00000000-0000-4000-8000-000000000005",
+						Address:        "rds-postgresql-renaming.xyzzy.us-east-1.rds.amazonaws.com",
+						Port:           3306,
+						Environment:    "production",
+						Cluster:        "c-01",
+						ReplicationSet: "rs-01",
+						ServiceName:    "rds-postgresql",
+						DatabaseName:   "postgres",
+						CustomLabels: map[string]string{
+							"foo": "bar",
+						},
+					},
+					PostgresqlExporter: &inventoryv1.PostgresExporter{
+						AgentId:                "00000000-0000-4000-8000-000000000008",
+						PmmAgentId:             "pmm-server",
+						ServiceId:              "00000000-0000-4000-8000-000000000007",
+						Username:               "username",
+						Status:                 inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
+						AutoDiscoveryLimit:     10,
+						MaxExporterConnections: 15,
+					},
+					QanPostgresqlPgstatements: &inventoryv1.QANPostgreSQLPgStatementsAgent{
+						AgentId:    "00000000-0000-4000-8000-000000000009",
+						PmmAgentId: "pmm-server",
+						ServiceId:  "00000000-0000-4000-8000-000000000007",
+						Username:   "username",
+						Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
+					},
+				},
+			},
+		}
+		assert.Equal(t, prototext.Format(expected), prototext.Format(resp)) // for better diffs
+	})
+
+	t.Run("AddRDS", func(t *testing.T) {
+		// This case adds a MySQL RDS instance (Service type "mysql"), which this build rejects.
+		// The PostgreSQL RDS path below preserves cloud-discovery coverage for a supported type.
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
+		ctx := logger.Set(t.Context(), t.Name())
+		accessKey, secretKey := "EXAMPLE_ACCESS_KEY", "EXAMPLE_SECRET_KEY"
+
+		req := &managementv1.AddRDSServiceParams{
+			Region:             "us-east-1",
+			Az:                 "us-east-1b",
+			InstanceId:         "rds-mysql57",
+			NodeModel:          "db.t3.micro",
+			Address:            "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
+			Port:               3306,
+			Engine:             managementv1.DiscoverRDSEngine_DISCOVER_RDS_ENGINE_MYSQL,
+			Environment:        "production",
+			Cluster:            "c-01",
+			ReplicationSet:     "rs-01",
+			Username:           "username",
+			Password:           "password",
+			AwsAccessKey:       accessKey,
+			AwsSecretKey:       secretKey,
+			RdsExporter:        true,
+			QanMysqlPerfschema: true,
+			CustomLabels: map[string]string{
+				"foo": "bar",
+			},
+			SkipConnectionCheck:       true,
+			Tls:                       false,
+			TlsSkipVerify:             false,
+			DisableQueryExamples:      true,
+			TablestatsGroupTableLimit: 0,
+		}
+
+		state.On("RequestStateUpdate", ctx, "pmm-server")
+		resp, err := s.addRDS(ctx, req)
+		require.NoError(t, err)
+
+		expected := &managementv1.AddServiceResponse{
+			Service: &managementv1.AddServiceResponse_Rds{
+				Rds: &managementv1.RDSServiceResult{
+					Node: &inventoryv1.RemoteRDSNode{
+						NodeId:     "00000000-0000-4000-8000-00000000000a",
+						NodeName:   "rds-mysql57",
+						Address:    "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
+						InstanceId: "rds-mysql57",
 						NodeModel:  "db.t3.micro",
 						Region:     "us-east-1",
 						Az:         "us-east-1b",
@@ -402,35 +407,34 @@ func TestRDSService(t *testing.T) {
 						AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 						Status:       inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
 					},
-					Postgresql: &inventoryv1.PostgreSQLService{
+					Mysql: &inventoryv1.MySQLService{
 						ServiceId:      "00000000-0000-4000-8000-00000000000c",
 						NodeId:         "00000000-0000-4000-8000-00000000000a",
-						Address:        "rds-postgresql-renaming.xyzzy.us-east-1.rds.amazonaws.com",
+						Address:        "rds-mysql57-renaming.xyzzy.us-east-1.rds.amazonaws.com",
 						Port:           3306,
 						Environment:    "production",
 						Cluster:        "c-01",
 						ReplicationSet: "rs-01",
-						ServiceName:    "rds-postgresql",
-						DatabaseName:   "postgres",
+						ServiceName:    "rds-mysql57",
 						CustomLabels: map[string]string{
 							"foo": "bar",
 						},
 					},
-					PostgresqlExporter: &inventoryv1.PostgresExporter{
-						AgentId:                "00000000-0000-4000-8000-00000000000d",
-						PmmAgentId:             "pmm-server",
-						ServiceId:              "00000000-0000-4000-8000-00000000000c",
-						Username:               "username",
-						Status:                 inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-						AutoDiscoveryLimit:     10,
-						MaxExporterConnections: 15,
+					MysqldExporter: &inventoryv1.MySQLdExporter{
+						AgentId:                   "00000000-0000-4000-8000-00000000000d",
+						PmmAgentId:                "pmm-server",
+						ServiceId:                 "00000000-0000-4000-8000-00000000000c",
+						Username:                  "username",
+						TablestatsGroupTableLimit: 1000,
+						Status:                    inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
 					},
-					QanPostgresqlPgstatements: &inventoryv1.QANPostgreSQLPgStatementsAgent{
-						AgentId:    "00000000-0000-4000-8000-00000000000e",
-						PmmAgentId: "pmm-server",
-						ServiceId:  "00000000-0000-4000-8000-00000000000c",
-						Username:   "username",
-						Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
+					QanMysqlPerfschema: &inventoryv1.QANMySQLPerfSchemaAgent{
+						AgentId:               "00000000-0000-4000-8000-00000000000e",
+						PmmAgentId:            "pmm-server",
+						ServiceId:             "00000000-0000-4000-8000-00000000000c",
+						Username:              "username",
+						QueryExamplesDisabled: true,
+						Status:                inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
 					},
 				},
 			},
