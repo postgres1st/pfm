@@ -8,7 +8,7 @@ Create a backup of your PMM Server data to protect against data loss, prepare fo
 
 ## Backing up Grafana plugins
 
-Grafana plugins have been moved to the `/srv` directory since PMM 2.23.0. So if you are upgrading PMM from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
+Grafana plugins have been moved to the `/srv` directory since PFMM 2.23.0. So if you are upgrading PFMM from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
  
 To check used Grafana plugins:
 ```sh

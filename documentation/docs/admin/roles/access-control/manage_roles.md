@@ -1,6 +1,6 @@
 # Manage access roles
 
-You can manage roles in PMM by editing or deleting a role.
+You can manage roles in PFMM by editing or deleting a role.
 
 ## Edit roles
 
@@ -18,7 +18,7 @@ To edit access roles:
 
 ## Set a role as default
 
-When a user signs in to PMM for the first time and the user has no role assigned, the user is automatically assigned the **Default** role. For administrators, the default role provides a convenient way to configure default permissions for new users.
+When a user signs in to PFMM for the first time and the user has no role assigned, the user is automatically assigned the **Default** role. For administrators, the default role provides a convenient way to configure default permissions for new users.
 
 To set a role as default, do the following:
 {.power-number}

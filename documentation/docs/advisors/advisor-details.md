@@ -1,6 +1,6 @@
 ## List of advisors and checks
  
-Percona Monitoring and Management (PMM) offers four categories of database advisors to help you improve database performance: Configuration, Performance, Query and Security advisors.
+Postgres1st (PFMM) offers four categories of database advisors to help you improve database performance: Configuration, Performance, Query and Security advisors.
 
 Each advisor includes a set of automated checks that investigate specific ranges of possible issues and areas of improvement: security threats, non-compliance issues, performance degradation, query and index optimization strategies etc. 
 

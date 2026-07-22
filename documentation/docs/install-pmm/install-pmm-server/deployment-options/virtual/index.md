@@ -2,15 +2,15 @@
 
 ## End of support for OVF deployment
 
-OVF virtual appliance deployment is deprecated starting with PMM 3.7.0 and will be removed in PMM 3.9.0 (expected July 2026). If you currently run PMM on a virtual appliance, migrate to a supported deployment method before that date.
+OVF virtual appliance deployment is deprecated starting with PFMM 3.7.0 and will be removed in PFMM 3.9.0 (expected July 2026). If you currently run PFMM on a virtual appliance, migrate to a supported deployment method before that date.
 
 ### Before you migrate
 
 Your PMM Server stores monitoring data, dashboards, alert configurations, and user settings. To preserve this data during migration:
 {.power-number}
 
-1. Note your current PMM Server version. Run `pmm-admin status` on any connected client or check **Configuration > Updates** in the PMM UI.
-2. Document your connected databases. Go to **Configuration > Inventory** in the PMM UI and record all monitored services, their connection parameters, and any custom labels.
+1. Note your current PMM Server version. Run `pmm-admin status` on any connected client or check **Configuration > Updates** in the PFMM UI.
+2. Document your connected databases. Go to **Configuration > Inventory** in the PFMM UI and record all monitored services, their connection parameters, and any custom labels.
 3. Export custom dashboards. If you have created or modified dashboards, export them as JSON from the Grafana UI (**Dashboard > Share > Export**).
 4. Back up alert rules and contact points. Note any custom alert templates, notification channels, and silences you have configured.
 

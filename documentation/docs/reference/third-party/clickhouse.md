@@ -1,10 +1,10 @@
-# Use external ClickHouse with PMM
+# Use external ClickHouse with PFMM
 
 You can use an external ClickHouse database instance outside the PMM Server container running on other hosts.
 
 ## Environment variables
 
-PMM predefines certain flags that allow you to use ClickHouse parameters as environment variables.
+PFMM predefines certain flags that allow you to use ClickHouse parameters as environment variables.
 
 
 To use ClickHouse as an external database instance, provide the following environment variables: 
@@ -34,7 +34,7 @@ To use ClickHouse as an external database instance, provide the following enviro
  
 **Example**
 
-To use ClickHouse as an external database instance, run PMM in docker or podman with the specified variables for external ClickHouse:
+To use ClickHouse as an external database instance, run PFMM in docker or podman with the specified variables for external ClickHouse:
 
 ```sh
 -e PMM_CLICKHOUSE_ADDR=<hostname>:<port>
@@ -55,15 +55,15 @@ Alternatively, you can use the `PMM_CLICKHOUSE_HOST` and `PMM_CLICKHOUSE_PORT` v
 -e PMM_DISABLE_BUILTIN_CLICKHOUSE=1
 ```
 
-## Enhance ClickHouse security for PMM
+## Enhance ClickHouse security for PFMM
 
-When configuring PMM to use an external ClickHouse instance, make sure to enforce robust security practices to protect sensitive data and prevent unauthorized access:
+When configuring PFMM to use an external ClickHouse instance, make sure to enforce robust security practices to protect sensitive data and prevent unauthorized access:
 
 - Enable SSL/TLS encryption for all connections
 - Ensure that your ClickHouse instance is properly secured and monitored
 - Disable empty passwords and plain text passwords
 - Define all ClickHouse users explicitly, including permissions, to prevent automatic creation of unsecured users without passwords.
-- Generate strong, random passwords for the dedicated PMM ClickHouse user. Use the following commands to generate a password and its SHA256 hash (useful for advanced ClickHouse configurations):
+- Generate strong, random passwords for the dedicated PFMM ClickHouse user. Use the following commands to generate a password and its SHA256 hash (useful for advanced ClickHouse configurations):
 
     ```sh
     PASSWORD=$(base64 < /dev/urandom | head -c12)

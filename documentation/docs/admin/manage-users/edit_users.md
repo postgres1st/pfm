@@ -3,7 +3,7 @@
 You can edit users by changing the information or settings for an individual user account.
 
 !!! caution alert alert-warning "Important"
-    After changing the default admin password for the PMM Server, register the pmm-agent using the same credentials and add the services again. Otherwise, PMM will cease to monitor the service/nodes.
+    After changing the default admin password for the PMM Server, register the pmm-agent using the same credentials and add the services again. Otherwise, PFMM will cease to monitor the service/nodes.
 
 ## Grant or revoke admin privileges
 

@@ -2,7 +2,7 @@
 # Run Docker with the host directory
 
 !!! danger alert alert-danger "Not recommended for production environments"
-    Using a host directory for PMM data persistence is not recommended for production environments. This approach may lead to permission issues, inconsistent backup behavior, and potential data corruption during upgrades. 
+    Using a host directory for PFMM data persistence is not recommended for production environments. This approach may lead to permission issues, inconsistent backup behavior, and potential data corruption during upgrades. 
     
     For production deployments, we strongly recommend using [Docker volumes](./run_with_vol.md) instead, which provide better isolation, portability, and compatibility with Docker's ecosystem.
 
@@ -10,7 +10,7 @@
 Host directory mounting can be useful in specific scenarios:
 
 - development and testing environments
-- when you need direct filesystem access to PMM data
+- when you need direct filesystem access to PFMM data
 - integration with existing host-based backup solutions
 - migration from other deployment methods
 
@@ -23,7 +23,7 @@ To deploy PMM Server using a host directory:
    docker pull percona/pmm-server:3
    ```
 
-2. Create and identify a directory on the host where to store PMM data. For example, `/home/user/srv`.
+2. Create and identify a directory on the host where to store PFMM data. For example, `/home/user/srv`.
 
 3. Run the PMM Server with the host image mounted, making sure to replace `your_watchtower_token` with the token created during [Watchtower setup](../docker/index.md#installation-options): 
 
@@ -44,7 +44,7 @@ To deploy PMM Server using a host directory:
     docker exec -t pmm-server change-admin-password your_secure_password
     ```
 
-5. Access the PMM web interface at `https://localhost:443` in a web browser. If you're connecting from a different machine, replace `localhost` with your server's IP address or hostname.
+5. Access the PFMM web interface at `https://localhost:443` in a web browser. If you're connecting from a different machine, replace `localhost` with your server's IP address or hostname.
 
 ## Migrate from data container to host directory
 
@@ -73,4 +73,4 @@ docker run --rm -v /path/on/host:/source -v pmm-data:/target alpine cp -a /sourc
 
 - [Install PMM Client](../../../install-pmm-client/index.md) to start monitoring your database instances
 - [Consider migrating to Docker volumes](../docker/run_with_vol.md) for production environments
-- [Learn how to back up your PMM Server](../../../../backup/index.md)
+- [Learn how to back up your PMM Server](backup_container.md)

@@ -48,7 +48,7 @@ To deploy PMM Server using Docker volumes:
         docker exec -t pmm-server change-admin-password your_secure_password
         ```
 
-5. Access the PMM web interface at `https://localhost` in a web browser. 
+5. Access the PFMM web interface at `https://localhost` in a web browser. 
 If you are accessing the Docker host remotely, replace `localhost` with your server's IP address or hostname.
 
 ## Additional configuration options
@@ -77,5 +77,5 @@ For a complete list of configuration options, see the [full list of environment 
 ## Next steps
 
 - [Install PMM Client](../../../install-pmm-client/index.md) to start monitoring your database instances
-- [Set up backups](../../../../backup/index.md) to protect your monitoring data
+- [Back up your PMM Server](backup_container.md) to protect your monitoring data
 - [Configure SSL certificates](../../../../admin/security/ssl_encryption.md) for secure communications

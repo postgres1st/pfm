@@ -1,6 +1,6 @@
 # Contact points
 
-Contact points specify where Percona Alerting should deliver notifications for alerts. PMM can be configured via a Notification policy to send a notification to specified contact points whenever an alert is fired.
+Contact points specify where Percona Alerting should deliver notifications for alerts. PFMM can be configured via a Notification policy to send a notification to specified contact points whenever an alert is fired.
 
 Depending on the severity of an alert, you might want to send different alert notifications to different channels. For example, you can deliver common notifications via a Slack channel, but send an email notification for potentially critical issues.  
 
@@ -16,7 +16,7 @@ Contact points with invalid settings show a **No Attempts** status under <i clas
 
 ## Configure Email (SMTP) server settings
 
-To use SMTP with a PMM Docker installation:
+To use SMTP with a PFMM Docker installation:
 {.power-number}
 
 1. Create an `.env` file and populate it with your SMTP credentials (and other environment variables) as follows:
@@ -50,7 +50,7 @@ To use SMTP with a PMM Docker installation:
 
 ## Restore SMTP settings following an upgrade
 
-If you configured PMM to use SMTP settings via environment variables, you do not need to do anything after an upgrade as your settings will be transferred.
+If you configured PFMM to use SMTP settings via environment variables, you do not need to do anything after an upgrade as your settings will be transferred.
 
 ## Configure an Email contact point
 
@@ -58,7 +58,7 @@ After configuring the SMTP settings, specify email delivery options for an Email
 {.power-number}
 
 1. Go to **Alerts > Contact points**.
-2. Click the edit button next to the **grafana-default-email** to update PMM's default Email contact point, or click **Create contact point** to create a custom one.
+2. Click the edit button next to the **grafana-default-email** to update PFMM's default Email contact point, or click **Create contact point** to create a custom one.
 3. Enter a contact point name, and add the email addresses for the recipients of the email notifications.
 4. Expand **Optional Email settings** and fill in any other relevant settings:
     - Enable the **Single email** option to send a single email to the recipients containing alerts that are firing. For example, if an alert fires for three nodes, this would send only one email listing all three alerts.
@@ -76,7 +76,7 @@ After configuring the SMTP settings, specify email delivery options for an Email
 
 In addition to Email contact points, you can add a variety of other contact points, including Slack, email, webhooks, PagerDuty, and more.
 
-Follow the steps above to create additional contact points. Different contact points require different configuration information. For example, for Slack, PMM requires the recipient information, the API token and the webhook URL, which you can get from your Slack administrator.
+Follow the steps above to create additional contact points. Different contact points require different configuration information. For example, for Slack, PFMM requires the recipient information, the API token and the webhook URL, which you can get from your Slack administrator.
 
 ## Notification policies
 
@@ -124,7 +124,7 @@ A policy will match an alert if the alert’s labels match all the matching labe
 5. Enable **Continue matching subsequent sibling nodes** to continue matching subsequent siblings of the policy after an alert matched the parent policy.
 This can be useful, for example, when you want to send notifications to a catch-all contact point as well as to one of more specific contact points handled by subsequent policies.
 6. Toggle **Override grouping** if you do not want to use root policy grouping.
-7. Toggle **Override general timings** to specify how often you want to wait until the initial notification is sent for a new group. When this is disabled, PMM uses root policy group timings instead.
+7. Toggle **Override general timings** to specify how often you want to wait until the initial notification is sent for a new group. When this is disabled, PFMM uses root policy group timings instead.
 8. Add a mute timing if you want to mute notifications or this policy for a specific, regular interval. For example, you can create a mute to suppress trivial notifications during weekends. Mute timings are different from silences in the sense that they are recurring, while silences have a fixed start and end time.
    
     !!! caution alert alert-warning "Important"

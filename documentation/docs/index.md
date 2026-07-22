@@ -1,32 +1,32 @@
-# About PMM
+# About PFMM
 
-<i info>:material-information: Info:</i> This is the documentation for the latest PMM 3 release. For details, see the [PMM {{release}} release notes](release-notes/{{release}}.md).
+<i info>:material-information: Info:</i> This is the documentation for the latest PFMM 3 release. For details, see the [PFMM {{release}} release notes](release-notes/{{release}}.md).
 
-Percona Monitoring and Management (PMM) is an open source database observability, monitoring, and management platform that gives you a single view of performance metrics - from entire database clusters down to individual queries.
+Postgres1st (PFMM) is an open source database observability, monitoring, and management platform that gives you a single view of performance metrics - from entire database clusters down to individual queries.
 
 Key features:
 
-- Complete visibility of MySQL, PostgreSQL, and MongoDB performance
+- Complete visibility of PostgreSQL performance
 - Unified dashboard for all your database metrics and query analytics
 - Flexible deployment options: on-premises, cloud, or hybrid environments
 - Easy setup with just two components: Server and Client
 
-## Try PMM Demo
-Want to see PMM in action before installing? Visit our [live demo](https://pmmdemo.percona.com/) to explore PMM's features and interface with sample data.
+## Try PFMM Demo
+Want to see PFMM in action before installing? Visit our [live demo](https://pmmdemo.percona.com/) to explore PFMM's features and interface with sample data.
 
 <div data-grid markdown><div data-banner markdown>
 
 ## :material-telescope: Discover { .title }
 
-Discover how PMM can help you monitor your systems and make informed decisions.
+Discover how PFMM can help you monitor your systems and make informed decisions.
 
-[Discover PMM :material-arrow-right:](discover-pmm/features.md){ .md-button .md-button--primary }
+[Discover PFMM :material-arrow-right:](discover-pmm/features.md){ .md-button .md-button--primary }
 
 </div><div data-banner markdown>
 
 ## :material-progress-download: Install { .title }
 
-Ready to dive into PMM? Follow our simple, step-by-step installation instructions to get started in no time!
+Ready to dive into PFMM? Follow our simple, step-by-step installation instructions to get started in no time!
 
 [Quickstart guide :material-arrow-right:](quickstart/quickstart.md){ .md-button .md-button--primary }
 
@@ -34,9 +34,9 @@ Ready to dive into PMM? Follow our simple, step-by-step installation instruction
 
 ## :material-cog: Configure { .title }
 
-Are you ready to begin configuring PMM  but need help figuring out how to begin? Let's dive in together.
+Are you ready to begin configuring PFMM  but need help figuring out how to begin? Let's dive in together.
 
-[Configure PMM :material-arrow-right:](configure-pmm/configure.md){ .md-button .md-button--primary }
+[Configure PFMM :material-arrow-right:](configure-pmm/configure.md){ .md-button .md-button--primary }
 
 </div><div data-banner markdown>
 

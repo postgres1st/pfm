@@ -79,6 +79,6 @@ For MySQL 8.0 and later versions, this dashboard is not available. Instead, use:
 
 ## Related topics
 
-- [Connect MySQL databases to PMM](../../install-pmm/install-pmm-client/connect-database/mysql/mysql.md)
+- [Connect MySQL databases to PFMM](../../install-pmm/install-pmm-client/connect-database/mysql/mysql.md)
 - [Query Analytics](../../use/qan/index.md)
 - [Percona Server Response Time Distribution documentation](https://www.percona.com/doc/percona-server/5.7/diagnostics/response_time_distribution.html)

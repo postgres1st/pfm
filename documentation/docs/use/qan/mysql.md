@@ -20,11 +20,11 @@ A query may appear in the digest summary but not in the history table when:
 - it was executed frequently enough to appear in the digest summary
 - all its individual executions were overwritten in the history buffer due to high query volume overwhelming the buffer and ongoing activity
 
-When this happens, QAN can still display the query’s metrics, but cannot show an example query because it's no longer available in `events_statements_history` table when PMM tries to capture it.
+When this happens, QAN can still display the query’s metrics, but cannot show an example query because it's no longer available in `events_statements_history` table when PFMM tries to capture it.
 
 ## Performance Schema refresh rate tuning
 
-PMM Agent includes a configurable **Performance Schema Refresh Rate** that can help capture more query examples. This setting controls how often PMM scrapes data from the history table. Using a shorter interval increases the likelihood that query examples will be captured before being overwritten.
+PMM Agent includes a configurable **Performance Schema Refresh Rate** that can help capture more query examples. This setting controls how often PFMM scrapes data from the history table. Using a shorter interval increases the likelihood that query examples will be captured before being overwritten.
 
 ### Configuration options
 

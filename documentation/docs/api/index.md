@@ -1,6 +1,6 @@
-# About PMM API
+# About PFMM API
 
-PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate PMM operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other PMM components. 
+PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate PFMM operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other PFMM components. 
 
 The [complete API documentation on Readme.io](https://percona-pmm.readme.io/reference/introduction) includes detailed endpoint specifications, authentication methods, example requests, and response schemas.
 
@@ -18,7 +18,7 @@ You can explore and test the API using the built-in [Swagger](https://swagger.io
 
 ## Core API resources
 
-The PMM API organizes resources into Nodes, Services and Agents. 
+The PFMM API organizes resources into Nodes, Services and Agents. 
 
 
 ### Nodes
@@ -52,11 +52,11 @@ Agents are the monitoring components that:
 
 ## Resource types and management
 
-All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within PMM.
+All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within PFMM.
 
 The management of these resources follows specific patterns:
 
- - **Nodes and Services**: These are inherently external resources. PMM does not manage their actual creation or deletion. Instead, PMM maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
+ - **Nodes and Services**: These are inherently external resources. PFMM does not manage their actual creation or deletion. Instead, PFMM maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
 - **Agents**: Most Agents are initiated and halted by pmm-agent. The exception is the External Exporter Type, which is initiated externally. Agents are responsible for collecting and reporting monitoring data about Nodes and Services.
 
 ## Authentication

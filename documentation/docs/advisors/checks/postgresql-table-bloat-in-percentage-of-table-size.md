@@ -6,7 +6,7 @@ This advisor check verifies the table bloat from the currently connected databas
 It returns an error if the bloat is larger than 1GB size and it represents 50% or more of the total table size.
 
 !!! warning alert alert-success "Warning"
-    At the moment of creation of this advisor, the PMM advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
+    At the moment of creation of this advisor, the PFMM advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
 
 Bloat is a natural side effect of how the Multiversion Concurrency Control (MVCC) works in a PostgreSQL instance. 
 

@@ -12,7 +12,7 @@ Create backups of your PMM Server Kubernetes deployment to protect your monitori
 
 PMM Server Helm chart uses [PersistentVolume and PersistentVolumeClaim](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) to allocate storage in the Kubernetes cluster.
 
-Volumes could be pre-provisioned and dynamic. PMM chart supports both and exposes it through [PMM storage configuration](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#pmm-storage-configuration).
+Volumes could be pre-provisioned and dynamic. PFMM chart supports both and exposes it through [PFMM storage configuration](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#pmm-storage-configuration).
 
 Backups for the PMM Server currently support only storage layer backups and thus require:
 
@@ -43,7 +43,7 @@ Volume snapshot support varies by platform:
 To create a backup of your PMM Server:  
 {.power-number}
 
-1. Identify the current PMM version (for restoration purposes):
+1. Identify the current PFMM version (for restoration purposes):
 
     ```sh
     kubectl get deployment pmm -o jsonpath='{.spec.template.spec.containers[0].image}' | cut -d: -f2
@@ -108,7 +108,7 @@ To create a backup of your PMM Server:
     kubectl get pods -l app.kubernetes.io/name=pmm
     ```
 
-    !!! note "PMM scale"
+    !!! note "PFMM scale"
         Only one replica set is currently supported for PMM Server on Kubernetes.
 
 ## List available backups

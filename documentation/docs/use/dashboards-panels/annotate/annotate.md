@@ -8,6 +8,6 @@ Annotations show as a vertical dashed line on a dashboard graph. Reveal the anno
 
 ![!image](../../../images/pmm-server.mysql-overview.mysql-client-thread-activity.1.png)
 
-You turn annotations on or off with the **PMM Annotations** switch in the second row menu bar.
+You turn annotations on or off with the **PFMM Annotations** switch in the second row menu bar.
 
-![!PMM Annotations switch](../../../images/PMM_Common_Controls_Annotation_Toggle.jpg)
+![!PFMM Annotations switch](../../../images/PMM_Common_Controls_Annotation_Toggle.jpg)

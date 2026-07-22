@@ -1,6 +1,6 @@
-# Connect PostgreSQL databases to PMM
+# Connect PostgreSQL databases to PFMM
 
-Connect your PostgreSQL databases—whether self-hosted or running in the cloud—to Percona Monitoring and Management (PMM) for comprehensive performance monitoring and analysis.
+Connect your PostgreSQL databases—whether self-hosted or running in the cloud—to Postgres1st (PFMM) for comprehensive performance monitoring and analysis.
 
 PMM Client supports collecting metrics from PostgreSQL-based database systems:
 
@@ -10,14 +10,14 @@ PMM Client supports collecting metrics from PostgreSQL-based database systems:
 For monitoring Amazon RDS PostgreSQL instances, see [Connect Amazon RDS instance](../connect-database/aws.md).
 
 ??? info "Setup process at a glance"
-    These are the high-level steps for configuring PostgreSQL monitoring in PMM:
+    These are the high-level steps for configuring PostgreSQL monitoring in PFMM:
     {.power-number}
 
     1. [Prerequisites](#before-you-start): Ensure PMM Server is running and PMM Client is installed
-    2. [Create PMM user](#create-a-database-account-for-pmm): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
+    2. [Create PFMM user](#create-a-database-account-for-pmm): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
     3. [Configure extension](#choose-a-monitoring-extension): Set up `pg_stat_statements` or `pg_stat_monitor`
-    4. [Add service](#add-service-to-pmm): Use PMM UI or command line to add the PostgreSQL instance
-    5. [Verify connection](#check-the-service): Check PMM Inventory and dashboards for data. 
+    4. [Add service](#add-service-to-pmm): Use PFMM UI or command line to add the PostgreSQL instance
+    5. [Verify connection](#check-the-service): Check PFMM Inventory and dashboards for data. 
 
 ## Before you start
 
@@ -28,11 +28,11 @@ Check that:
 - You have superuser (root) access on the client host.
 - You have superuser access to any database servers that you want to monitor.
 
-PMM follows [PostgreSQL's end-of-life policy][POSTGRESQL_VERSIONING]. For specific details on supported platforms and versions, see [Percona's Software Platform Lifecycle page][PERCONA_LIFECYCLE].
+PFMM follows [PostgreSQL's end-of-life policy][POSTGRESQL_VERSIONING]. For specific details on supported platforms and versions, see [Percona's Software Platform Lifecycle page][PERCONA_LIFECYCLE].
 
-## Create a database account for PMM
+## Create a database account for PFMM
 
-PMM requires a dedicated database account with appropriate permissions to collect metrics effectively. We recommend creating a PMM database account that can connect to the postgres database with the SUPERUSER role.
+PFMM requires a dedicated database account with appropriate permissions to collect metrics effectively. We recommend creating a PFMM database account that can connect to the postgres database with the SUPERUSER role.
 
 === "Standard PostgreSQL"
 
@@ -87,7 +87,7 @@ After creating the database user, complete the configuration:
     psql -c "select pg_reload_conf()"
     ```
 
-2. Verify the PMM user can connect locally:
+2. Verify the PFMM user can connect locally:
 
     ```sh
     psql postgres pmm -c "\conninfo"
@@ -112,7 +112,7 @@ Choose:
 | **Installation complexity** | ⚠ Low | ⚠ Medium |
 | **Benefits** | • Part of official PostgreSQL<br>• Minimal overhead<br>• Simple to set up and use | • Builds on pg_stat_statements features<br>• Bucket-based time-series analysis<br>• Query examples for troubleshooting<br>• More accurate performance data |
 | **Drawbacks** | • No aggregated statistics or histograms<br>• No Query Examples<br>• Limited metrics collection | • Slightly higher resource overhead<br>• Requires separate installation<br>• More complex configuration |
-| **Known Issues** | None | **⚠️ PMM v2.x/v3.x**: Query plan metrics cause incorrect time measurements (off by 1000x+) |
+| **Known Issues** | None | **⚠️ PFMM v2.x/v3.x**: Query plan metrics cause incorrect time measurements (off by 1000x+) |
 
 For a more detailed comparison of extensions, see the [pg_stat_monitor documentation](https://docs.percona.com/pg-stat-monitor/user_guide.html).
 
@@ -148,7 +148,7 @@ For a more detailed comparison of extensions, see the [pg_stat_monitor documenta
         # Add to shared libraries
         shared_preload_libraries = 'pg_stat_monitor'
         
-        # Required for PMM
+        # Required for PFMM
         pg_stat_monitor.pgsm_query_max_len = 2048
         
         # Recommended settings
@@ -232,7 +232,7 @@ When using `pgstatmonitor`, query examples are collected by default but can be d
 For `pg_stat_statements`, query examples are never collected by design, providing inherent privacy without requiring any configuration. 
 
 === "Via UI"
-    When adding a PostgreSQL service through the PMM UI, expand **Advanced Settings** and check **Disable query examples**. This prevents PMM from storing actual query values while maintaining all other Query Analytics functionality.
+    When adding a PostgreSQL service through the PFMM UI, expand **Advanced Settings** and check **Disable query examples**. This prevents PFMM from storing actual query values while maintaining all other Query Analytics functionality.
 
 === "Via command line"
     Use the `--disable-queryexamples` flag:
@@ -245,9 +245,9 @@ For `pg_stat_statements`, query examples are never collected by design, providin
         PostgreSQL-Private
     ```
 
-## Add service to PMM
+## Add service to PFMM
 
-After configuring your database server with the appropriate extension, you need to add it as a service to PMM. You can do this using the command line or the UI.
+After configuring your database server with the appropriate extension, you need to add it as a service to PFMM. You can do this using the command line or the UI.
 
 The **command line** (`pmm-admin`) deploys an exporter directly on the database host and automatically collects node-level metrics (CPU, memory, disk I/O) alongside PostgreSQL metrics. Use the UI only if you cannot install PMM Client on the database host.
 
@@ -315,7 +315,7 @@ The **command line** (`pmm-admin`) deploys an exporter directly on the database 
         - `HOST`: Instance hostname or IP
         - `PORT`: PostgreSQL service port number
         - `USER`: Database user allowed to connect via TLS (should match the CN in the client certificate)
-        - `SERVICE-NAME`: Name to give to the service within PMM
+        - `SERVICE-NAME`: Name to give to the service within PFMM
 
 === "Via UI"
 
@@ -387,7 +387,7 @@ Auto-discovery dynamically identifies all databases in your PostgreSQL instance.
     
 ## Check the service
 
-After adding a PostgreSQL service, verify that it's properly connected and sending data to PMM.
+After adding a PostgreSQL service, verify that it's properly connected and sending data to PFMM.
 
 === "Via command line"
 
@@ -429,13 +429,13 @@ After adding a PostgreSQL service, verify that it's properly connected and sendi
 
 ### Running custom queries
 
-The PostgreSQL exporter can execute custom queries to collect additional metrics beyond what PMM provides by default.
+The PostgreSQL exporter can execute custom queries to collect additional metrics beyond what PFMM provides by default.
 
 === "Configuration basics"
 
     Custom queries must be defined in this directory on the host where the exporter is running:
     ```
-    /usr/local/percona/pmm/collectors/custom-queries/postgresql
+    /opt/postgres1st/pfm/collectors/custom-queries/postgresql
     ```
     
     Three resolution directories are available:
@@ -488,7 +488,7 @@ The PostgreSQL exporter can execute custom queries to collect additional metrics
 
 - [`pmm-admin` man page for `pmm-admin add postgresql`](../../../use/commands/pmm-admin/add.md)
 - [Configuring Percona repositories with percona-release][PERCONA_RELEASE]
-- [Running custom MySQL queries in PMM][BLOG_CUSTOM_QUERIES_MYSQL]
+- [Running custom MySQL queries in PFMM][BLOG_CUSTOM_QUERIES_MYSQL]
 
 [PostgreSQL]: https://www.postgresql.org/
 [Percona Distribution for PostgreSQL]: https://www.percona.com/postgresql/software/

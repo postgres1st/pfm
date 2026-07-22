@@ -5,7 +5,7 @@ Silences default to today’s current date and have a default duration of two ho
 
 You can also schedule a silence for a future date and time. This is referred to as a `Pending` silence, which can be observed on the Silences page.
 
-During a silence, PMM continues to track metrics but does not trigger alerts or send notifications to any specified contact points. Once the silence expires alerts and notifications will resume.
+During a silence, PFMM continues to track metrics but does not trigger alerts or send notifications to any specified contact points. Once the silence expires alerts and notifications will resume.
 
 Silenced alerts are still recorded under **Alerting > Fired Alerts** so that you can review them later. Silenced alerts show up as **Suppressed** and are disabled for as long as it's specified in the **Silence Duration**, or until you remove a silence.
 
@@ -28,11 +28,11 @@ For more information on working with silences, see [About alerting silences](htt
 
 ## Alerting compatibility
 
-### Template compatibility with PMM 2
+### Template compatibility with PFMM 2
 
-After upgrading from the latest PMM 2 version to PMM 3, you will find all your alert templates under **Alerting > Alert rule templates**.
+After upgrading from the latest PFMM 2 version to PFMM 3, you will find all your alert templates under **Alerting > Alert rule templates**.
 
-If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as PMM 3 will look for custom templates in this location.
+If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as PFMM 3 will look for custom templates in this location.
 
 ### Template compatibility with other alerting tools
 

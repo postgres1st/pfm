@@ -1,6 +1,6 @@
-# Connect Google Cloud Platform instances to PMM
+# Connect Google Cloud Platform instances to PFMM
 
-PMM can monitor MySQL or PostgreSQL instances hosted on the [Google Cloud Platform][GOOGLE_CLOUD].
+PFMM can monitor MySQL or PostgreSQL instances hosted on the [Google Cloud Platform][GOOGLE_CLOUD].
 
 The connection can be direct, or indirect using [Cloud SQL Proxy][GOOGLE_CLOUD_SQL_PROXY].
 
@@ -21,7 +21,7 @@ To add a MySQL instance on Google Cloud:
 
 4. (Optional) For SSL/TLS connections, download the server CA certificate from the GCP Console under your Cloud SQL instance > **Connections > Security**.
 
-5. Log into the PMM user interface.
+5. Log into the PFMM user interface.
 
 6. Select **Inventory > Add Service > MySQL**.
 
@@ -113,7 +113,7 @@ To add a PostgreSQL instance on Google Cloud:
     CREATE EXTENSION pg_stat_statements;
     ```
 
-4. Log into the PMM user interface.
+4. Log into the PFMM user interface.
 
 5. Select **Inventory > Add service > PostgreSQL**.
 

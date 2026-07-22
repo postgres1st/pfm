@@ -1,4 +1,4 @@
-# Connect Azure instance to PMM
+# Connect Azure instance to PFMM
 
 !!! caution alert alert-warning "Technical Preview"
     Microsoft Azure functionality is currently in [technical preview](../../../reference/glossary.md#technical-preview) and is subject to change.
@@ -14,9 +14,9 @@ The Microsoft Azure feature is turned off by default. To turn it on:
 
 ## Prerequisites
 
-PMM can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
+PFMM can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
 
-By using the PMM web interface, you connect to the Azure DB instance. Discovery is not yet implemented in PMM but it is possible to add known instances by providing the connection parameters.
+By using the PFMM web interface, you connect to the Azure DB instance. Discovery is not yet implemented in PFMM but it is possible to add known instances by providing the connection parameters.
 {.power-number}
 
 1. Minimize network latency between PMM Server and the Azure instance.
@@ -139,15 +139,15 @@ You can find more details on how to create DB on Azure at:
 - <https://docs.microsoft.com/en-us/azure/mysql/>
 
 !!! hint alert alert-success "Tip"
-    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use PMM Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
+    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use PFMM Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
 
 ![!](../../../images/PMM_Add_Instance_Azure_3.png)
 
-In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to PMM.
+In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to PFMM.
 
-Fill in all required fields. To set how long PMM waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
+Fill in all required fields. To set how long PFMM waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
 
-PMM can use 3 exporters to collect metrics:
+PFMM can use 3 exporters to collect metrics:
 
 - Azure Metrics Exporter – collect "system" metrics related to DB.
 

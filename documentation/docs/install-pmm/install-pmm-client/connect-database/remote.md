@@ -1,9 +1,9 @@
-# Connect remote instance to PMM
+# Connect remote instance to PFMM
 
 ## Recommended resolution settings
 When monitoring remote instances (including RDS and Google Cloud databases), network latency can affect data collection and cause timeout errors. For this reason, it is recommended to [lower the metrics resolution](../../../configure-pmm/metrics_res.md).
 
-PMM dynamically sets scrape timeouts based on the data collection resolution:
+PFMM dynamically sets scrape timeouts based on the data collection resolution:
 
 - FHigh frequency collection (≤ 2 seconds resolution): 1 second timeout
 - Medium frequency collection (≤ 10 seconds resolution): (resolution - 1) second timeout. Example: For 10 second resolution, timeout is 9 seconds
@@ -30,7 +30,7 @@ In the example:
 - scrape duration column says the scrape took 10 seconds. This means that the exporter didn't respond in the 10 seconds the scrape process was allowed to run due to the configured metric resolutions and their timeouts.
 
 ## Resolving timeout issues
-If you see timeout errors, increase the metric resolution values in PMM:
+If you see timeout errors, increase the metric resolution values in PFMM:
 
 ![!image](../../../images/scrape_targets_03.png)
 

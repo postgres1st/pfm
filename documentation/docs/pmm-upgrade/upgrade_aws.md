@@ -6,7 +6,7 @@ Keep your PMM Server up to date with the latest features, security patches, and 
 
 Before upgrading your PMM Server, ensure you have:
 
-- a current backup of your PMM data volume
+- a current backup of your PFMM data volume
 - scheduled maintenance window for potential downtime
 
 ## Upgrade process
@@ -14,7 +14,7 @@ Before upgrading your PMM Server, ensure you have:
 To upgrade PMM Server on AWS: 
 {.power-number}
 
-1. Create a backup snapshot of your PMM data volume:
+1. Create a backup snapshot of your PFMM data volume:
 
     ```sh
     aws ec2 create-snapshot --volume-id vol-xxxxxxxxx --description "Pre-upgrade backup $(date)"
@@ -27,7 +27,7 @@ To upgrade PMM Server on AWS:
 After upgrading PMM Server:
 {.power-number}
 
-1. Go to **All dashboards > PMM Health > PMM Health** and check that all services are running. 
+1. Go to **All dashboards > PFMM Health > PFMM Health** and check that all services are running. 
 
 2. Go to **Inventory > Services** and verify that all monitored nodes and services are listed, their status is **Up**.
 
@@ -38,12 +38,12 @@ After upgrading PMM Server:
 If issues occur after upgrade:
 {.power-number}
 
-1. Stop the new PMM container:
+1. Stop the new PFMM container:
    ```bash
    systemctl --user stop pmm-server
    ```
 
-2. Restore using your pre-upgrade snapshot. Create a volume from the snapshot, attach it to the instance, and start the previous PMM version.
+2. Restore using your pre-upgrade snapshot. Create a volume from the snapshot, attach it to the instance, and start the previous PFMM version.
 
 ## Troubleshooting upgrades
 

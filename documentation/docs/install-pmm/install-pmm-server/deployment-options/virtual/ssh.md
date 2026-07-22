@@ -2,7 +2,7 @@
 
 When you run PMM Server as a virtual machine (AMI or OVF), you can upload your public SSH key to enable SSH access for direct management and troubleshooting.
 
-![PMM Settings SSH Key](../../../../images/PMM_Settings_SSH_Key.jpg)
+![PFMM Settings SSH Key](../../../../images/PMM_Settings_SSH_Key.jpg)
 
 ## Configure SSH access
 

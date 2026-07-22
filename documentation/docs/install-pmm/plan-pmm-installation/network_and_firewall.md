@@ -1,8 +1,8 @@
 # Network and firewall requirements
 
-Before installing PMM, ensure your network configuration allows the necessary connections between PMM components. Here are the required ports and connectivity settings.
+Before installing PFMM, ensure your network configuration allows the necessary connections between PFMM components. Here are the required ports and connectivity settings.
 
-For guidance on selecting the best deployment method based on these requirements, see the [choosing your PMM deployment strategy](../plan-pmm-installation/choose-deployment.md).
+For guidance on selecting the best deployment method based on these requirements, see the [choosing your PFMM deployment strategy](../plan-pmm-installation/choose-deployment.md).
 
 
 ## System requirements
@@ -15,13 +15,13 @@ Key requirements at a glance:
 - Requires 100 MB storage for installation plus caching space
 - Supports modern 64-bit Linux distributions.
 
-This is a list of ports used by the various components of PMM. For PMM to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
+This is a list of ports used by the various components of PFMM. For PFMM to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
 
 ### Essential ports
 
-These are the host ports that must be accessible for basic PMM functionality:
+These are the host ports that must be accessible for basic PFMM functionality:
 
-| PMM component | Host port     | Direction     | Description
+| PFMM component | Host port     | Direction     | Description
 |---------------|---------------|---------------|------------------------------------------------------------------------------------------
 | PMM Server    |  443 or 8443  | in            | HTTPS server for web interface and gRPC communication between PMM Client and PMM Server. Use of SSL certificates is highly encouraged.
 
@@ -29,15 +29,15 @@ These are the host ports that must be accessible for basic PMM functionality:
 
 PMM Server containers listen on port 8443 internally. 
 
-When running PMM in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
+When running PFMM in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
 
 If privileged ports (<1024) are not allowed in your environment, use:`-p 8443:8443` instead.
 
 ### Internal component ports 
 
-These ports are used for communication between PMM components:
+These ports are used for communication between PFMM components:
 
-| PMM component | TCP port      | Direction     | Description
+| PFMM component | TCP port      | Direction     | Description
 |---------------|---------------|---------------|-----------------------------------------------------------------
 | PMM Server    | 7771          | both          | gRPC, used for communication between `pmm-agent` and `pmm-admin`.
 | PMM Server    | 7772          | out           | HTTP1 server, used for older links like `logs.zip`.

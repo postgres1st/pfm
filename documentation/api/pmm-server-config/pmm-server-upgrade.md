@@ -6,7 +6,7 @@ category:
 position: 3
 ---
 
-To get the most of PMM, you need to keep your PMM Server up-to-date.
+To get the most of PFMM, you need to keep your PMM Server up-to-date.
 
 Here are the main methods to achieve it:
 

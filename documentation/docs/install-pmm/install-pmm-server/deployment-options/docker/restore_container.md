@@ -1,12 +1,12 @@
 # Restore PMM Server Docker container
-You can restore PMM Server either from a manual backup or from an automated backup volume that was created during migration to PMM v3.
+You can restore PMM Server either from a manual backup or from an automated backup volume that was created during migration to PFMM v3.
 
 ## Before you begin
 
 Before proceeding with restoration, ensure you have one of the following:
 
 - a manual backup you previously created. Make sure to verify its integrity using the verification procedures in the [back up guide](backup_container.md).
-- an [automated backup volume](../../../../pmm-upgrade/migrating_from_pmm_2.md#step-3-migrate-to-the-latest-pmm-3) created during migration from PMM V3
+- an [automated backup volume](../../../../pmm-upgrade/migrating_from_pmm_2.md#step-3-migrate-to-the-latest-pmm-3) created during migration from PFMM V3
 
 # Restore methods
 
@@ -65,7 +65,7 @@ Choose the restoration method that matches how your backup was created:
         docker rm pmm-server
         ```
 
-    3. Copy backup data to PMM volume:
+    3. Copy backup data to PFMM volume:
         ```sh
         # Remove current volume (WARNING: This deletes current data)
         docker volume rm pmm-data
@@ -93,20 +93,20 @@ Choose the restoration method that matches how your backup was created:
         ```
 
 === "Migration rollback"
-    Rollback from PMM 3 to PMM 2 using automated migration backup:
+    Rollback from PFMM 3 to PFMM 2 using automated migration backup:
     {.power-number}
 
-    1. Stop the current PMM v3 container:
+    1. Stop the current PFMM v3 container:
         ```sh
         docker stop pmm-server
         ```
 
-    2. Remove the PMM v3 container:
+    2. Remove the PFMM v3 container:
         ```sh
         docker rm pmm-server
         ```
 
-    3. Start a PMM v2 container using your backup volume:
+    3. Start a PFMM v2 container using your backup volume:
         ```sh
         docker run -d \
         -p 443:443 \
@@ -116,9 +116,9 @@ Choose the restoration method that matches how your backup was created:
         percona/pmm-server:2.44.0
         ```
         
-        Replace `<backup-volume-name>` with your PMM v2 backup volume name (e.g., `pmm-data-2025-01-16-165135`).
+        Replace `<backup-volume-name>` with your PFMM v2 backup volume name (e.g., `pmm-data-2025-01-16-165135`).
 
-    4. Verify that your PMM v2 instance is running correctly:
+    4. Verify that your PFMM v2 instance is running correctly:
         ```sh
         docker logs pmm-server
         # Check that all your data is accessible via the web interface
@@ -128,7 +128,7 @@ Choose the restoration method that matches how your backup was created:
     Use this as a fallback method when:
 
     - you created a backup using `docker cp pmm-server-backup:/srv .`  
-    - you have a backup directory with an `srv/` folder containing PMM data
+    - you have a backup directory with an `srv/` folder containing PFMM data
     - you used the [**Universal container copy** backup option](../docker/backup_container.md)
     - other restore methods don't match your backup type
 
@@ -155,7 +155,7 @@ Choose the restoration method that matches how your backup was created:
         cd pmm-data-backup-YYYYMMDD-HHMMSS
         ```
 
-    5. Copy the backup data to the PMM data volume:
+    5. Copy the backup data to the PFMM data volume:
         ```sh
         docker run --rm -v $(pwd)/srv:/backup -v pmm-data:/srv -t percona/pmm-server:3 cp -r /backup/* /srv
         ```
@@ -185,4 +185,4 @@ If you're restoring from an automated migration backup and don't know the volume
 
 - [Create a backup of your PMM Server](../docker/backup_container.md)
 - [Upgrade your PMM Server](../docker/upgrade_container.md) to a newer version
-- [Migrate from PMM v2 to v3](../../../../pmm-upgrade/migrating_from_pmm_2.md) if restoring to upgrade
+- [Migrate from PFMM v2 to v3](../../../../pmm-upgrade/migrating_from_pmm_2.md) if restoring to upgrade

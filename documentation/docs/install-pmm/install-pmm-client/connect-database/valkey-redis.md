@@ -1,12 +1,12 @@
-# Connect Valkey and Redis databases to PMM
+# Connect Valkey and Redis databases to PFMM
 
-Valkey is a high-performance open-source alternative to Redis. Because Valkey is a Redis fork that maintains full protocol compatibility, PMM monitors both databases using the same proven methods and dashboards.
+Valkey is a high-performance open-source alternative to Redis. Because Valkey is a Redis fork that maintains full protocol compatibility, PFMM monitors both databases using the same proven methods and dashboards.
 
-Connect your Valkey or Redis instances to PMM to track performance, analyze commands, and monitor cluster health. PMM's 10 dedicated **Valkey/Redis** dashboards help you spot memory issues, diagnose slow queries, and maintain healthy replication across your Valkey/Redis deployments.
+Connect your Valkey or Redis instances to PFMM to track performance, analyze commands, and monitor cluster health. PFMM's 10 dedicated **Valkey/Redis** dashboards help you spot memory issues, diagnose slow queries, and maintain healthy replication across your Valkey/Redis deployments.
 
 ### Prerequisites
 
-Before connecting Valkey or Redis to PMM, review the prerequisites for your monitoring setup:
+Before connecting Valkey or Redis to PFMM, review the prerequisites for your monitoring setup:
 
 === ":material-server: Local Valkey/Redis monitoring"
     - [PMM Server is installed](../../install-pmm-server/index.md) and running.
@@ -38,8 +38,8 @@ ACL SETUSER pmm on >StrongPassword123! ~* +@read +info +config|get +slowlog +lat
 #### Password-only authentication
 
 For Redis or Valkey without ACL, use basic password authentication when adding the service.
-### Add service to PMM
-You can add your Valkey or Redis service to PMM either through the user interface or via the command line:
+### Add service to PFMM
+You can add your Valkey or Redis service to PFMM either through the user interface or via the command line:
 
 === ":material-web: Via UI"
 
@@ -53,11 +53,11 @@ You can add your Valkey or Redis service to PMM either through the user interfac
     3. Fill in the **Main details** section:
 
         - **Service name**: e.g., `valkey-primary-svc`. This defaults to `hostname` if you don't specify a custom descriptive name.
-        - **Nodes**: Select the PMM node where the agent is running.
+        - **Nodes**: Select the PFMM node where the agent is running.
         - **Agents**: Select the PMM agent that should monitor this instance.
         - **Hostname/Port**: The address and port (default: `6379`) of your instance.
         - **Username/Password**: Authentication credentials (if ACL is enabled).
-        - **Connection timeout**: How long PMM should wait when connecting to this service. Increase this for remote or high-latency databases. If the connection times out, PMM retries the next time it collects metrics. Leave empty to use the default of 3s.
+        - **Connection timeout**: How long PFMM should wait when connecting to this service. Increase this for remote or high-latency databases. If the connection times out, PFMM retries the next time it collects metrics. Leave empty to use the default of 3s.
 
     4. Configure **Labels** (optional): Add descriptive tags. For clustered/replicated setups, ensure you set the `role` label here (e.g., `role:primary`).
         
@@ -142,7 +142,7 @@ You can add your Valkey or Redis service to PMM either through the user interfac
         ```
 
 === ":material-cog: Via inventory commands (Advanced)"
-    PMM also provides inventory commands for more granular control:
+    PFMM also provides inventory commands for more granular control:
 
     === ":material-database-plus: Add Valkey service via inventory"
         ```sh
@@ -163,7 +163,7 @@ You can add your Valkey or Redis service to PMM either through the user interfac
 
 #### Confirmation message
 
-If the service is added successfully, PMM displays:
+If the service is added successfully, PFMM displays:
 ```sh
 Valkey Service added
 Service ID  : /service_id/abcd1234-5678-efgh-ijkl-mnopqrstuvwx
@@ -172,7 +172,7 @@ Service name: Valkey-Primary
 
 ## Verify your Valkey/Redis service
 
-After adding your Valkey or Redis service to PMM, verify that it's properly connected and collecting data.
+After adding your Valkey or Redis service to PFMM, verify that it's properly connected and collecting data.
 
 ### Check service status
 
@@ -216,12 +216,12 @@ After adding your Valkey or Redis service to PMM, verify that it's properly conn
 
 ### Verify data collection
 
-After adding your Valkey or Redis service to PMM, verify that it's properly connected and collecting data.
+After adding your Valkey or Redis service to PFMM, verify that it's properly connected and collecting data.
 {.power-number}
 
 1. Open the **Home** dashboard and verify your Valkey/Redis service appears in the **Monitored DB Services** and **Monitored DB Instances** panels.
 
-2. Navigate to the **Valkey/Redis** dashboards from the left menu. PMM provides 10 dedicated dashboards:
+2. Navigate to the **Valkey/Redis** dashboards from the left menu. PFMM provides 10 dedicated dashboards:
 
     - **[Clients](../../../reference/dashboards/dashboard-valkey-redis-clients.md)**: Monitor client connections and blocked clients
     - **[Cluster Details](../../../reference/dashboards/dashboard-valkey-redis-cluster-details.md)**: Track cluster topology and replication health
@@ -270,11 +270,11 @@ If you need to remove a Valkey or Redis service from monitoring:
 
 ## Next steps
 
-After successfully connecting your Valkey or Redis instance to PMM:
+After successfully connecting your Valkey or Redis instance to PFMM:
 
 - Access the [10 Valkey/Redis dashboards](../../../use/dashboards-panels/index.md/#available-dashboards) from the left menu to track performance, memory usage, replication, and slow queries.
 - [Configure alerts](../../../alert/index.md) for critical metrics like memory usage, replication lag, and slow command execution.
-- Use [PMM Inventory](../../../use/dashboard-inventory.md) to view and manage all monitored instances.
+- Use [PFMM Inventory](../../../use/dashboard-inventory.md) to view and manage all monitored instances.
 - [Valkey official documentation](https://valkey.io/docs/)
 - [Redis official Documentation](https://redis.io/docs/)
 - [pmm-admin command reference](../../../use/commands/pmm-admin/pmm-admin.md)

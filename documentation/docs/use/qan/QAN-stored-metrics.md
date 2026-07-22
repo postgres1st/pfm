@@ -18,7 +18,7 @@ Stored metrics supports MySQL, MongoDB, and PostgreSQL with the following requir
     - PostgreSQL 11 or later
     - `pg_stat_monitor` extension (recommended) or `pg_stat_statements` extension
     - Appropriate `shared_preload_libraries` configuration
-    - Superuser privileges for PMM monitoring account
+    - Superuser privileges for PFMM monitoring account
 
 === "MongoDB"
     - MongoDB 6.0 or later (4.4+ may work with limited features)
@@ -61,14 +61,13 @@ To enable:
 2. Switch on the **QAN for PMM Server** option.
 3. Open **Query Analytics** and filter by `pmm-server-postgresql` to view queries.
 
-When enabled, you'll see queries related to PMM's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
+When enabled, you'll see queries related to PFMM's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
 
 !!! warning
     Do not use PMM Server's PostgreSQL database for application workloads. Use dedicated databases for your applications.
 
 ## See also
 
-- [Real-time Query Analytics](../qan/QAN-realtime-analytics.md)
 - [Filters panel](panels/filters.md)
 - [Overview panel](panels/overview.md)
 - [Details panel](panels/details.md)

@@ -4,7 +4,7 @@
 Regular backups of your PMM Server are essential for protecting your monitoring configuration and historical data, especially before migrations and upgrades.
     
 ## Back up Grafana plugins 
-Grafana plugins have been moved to the `/srv` directory since PMM 2.23.0. So if you are upgrading PMM from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
+Grafana plugins have been moved to the `/srv` directory since PFMM 2.23.0. So if you are upgrading PFMM from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
     
 To check used Grafana plugins:
 
@@ -20,7 +20,7 @@ To back up your PMM Server container, follow the backup instructions for your de
 Identify your deployment type and storage method since different PMM Server deployments store data differently:
 
 === "Docker with named volumes"
-    Your PMM data is stored in a Docker-managed volume (like pmm-data). You'll need to copy this volume's contents to create a backup.
+    Your PFMM data is stored in a Docker-managed volume (like pmm-data). You'll need to copy this volume's contents to create a backup.
 
     **Command to check mount configuration**
     ```sh
@@ -44,7 +44,7 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Docker with host directories"
-    Your PMM data is stored in a directory on your host machine that's mounted into the container. You'll back up this directory using standard file system tools.
+    Your PFMM data is stored in a directory on your host machine that's mounted into the container. You'll back up this directory using standard file system tools.
 
     **Command to check mount configuration**
     ```sh
@@ -66,9 +66,9 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Podman with SystemD"
-    Your PMM runs as a SystemD service using Podman. You'll need to stop the service, back up the volume, and restart the service.
+    Your PFMM runs as a SystemD service using Podman. You'll need to stop the service, back up the volume, and restart the service.
 
-    **Command to check if PMM service is running**
+    **Command to check if PFMM service is running**
     ```sh
     systemctl --user is-active pmm-server
     ```
@@ -79,9 +79,9 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Kubernetes"
-    Your PMM runs in a Kubernetes cluster. You'll use volume snapshots or persistent volume backups.
+    Your PFMM runs in a Kubernetes cluster. You'll use volume snapshots or persistent volume backups.
 
-    **Command to check if PMM pods are running**
+    **Command to check if PFMM pods are running**
     ```sh
     kubectl get pods -l app.kubernetes.io/name=pmm
     ```

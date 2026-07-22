@@ -9,7 +9,7 @@ Dashboards provide insightful and actionable data, enabling you to gain an overv
 
 ## Available dashboards
 
-Performance Monitoring and Management (PMM) offers a range of dashboards you can access. Some of these dashboards are as follows:
+Performance Monitoring and Management (PFMM) offers a range of dashboards you can access. Some of these dashboards are as follows:
 
 === "Insight"
 
@@ -22,11 +22,11 @@ Performance Monitoring and Management (PMM) offers a range of dashboards you can
     | [VictoriaMetrics]                                                                        | VictoriaMetrics performance and storage metrics
     | [VictoriaMetrics Agents Overview]                                                        | VictoriaMetrics agents status and data collection
 
-=== "PMM"
+=== "PFMM"
 
     | Dashboard                                                                                | Description |
     |------------------------------------------------------------------------------------------|-------------|
-    | [PMM Inventory]                                                                          | Manage monitored services, nodes, and agents
+    | [PFMM Inventory]                                                                          | Manage monitored services, nodes, and agents
     | [Environment Overview]                                                                   | High-level view of all monitored environments
     | [Environment Summary]                                                                    | Aggregated metrics across environments
 
@@ -125,7 +125,7 @@ Performance Monitoring and Management (PMM) offers a range of dashboards you can
 [Prometheus Exporters Overview]: ../../reference/dashboards/dashboard-prometheus-exporters-overview.md
 [VictoriaMetrics]: ../../reference/dashboards/dashboard-victoriametrics.md
 [VictoriaMetrics Agents Overview]: ../../reference/dashboards/dashboard-victoriametrics-agents-overview.md
-[PMM Inventory]: ../../use/dashboard-inventory.md
+[PFMM Inventory]: ../../use/dashboard-inventory.md
 [Environment Overview]: ../../reference/dashboards/dashboard-env-overview.md
 [Environment Summary]: ../../reference/dashboards/dashboard-env-overview.md
 [CPU Utilization Details]: ../../reference/dashboards/dashboard-cpu-utilization-details.md

@@ -20,10 +20,10 @@ Before starting the upgrade, complete these preparation steps to ensure you can 
 
 1. [Create a backup](../install-pmm/install-pmm-server/deployment-options/helm/backup_container_helm.md) before upgrading, as downgrades are not possible. Therefore, reverting to a previous version requires a backup made prior to the upgrade.
 
-2. To reduce downtime, pre-pull the new image on the node where PMM is running:
+2. To reduce downtime, pre-pull the new image on the node where PFMM is running:
 
     ```sh
-    # Replace <version> with the latest PMM version
+    # Replace <version> with the latest PFMM version
     docker pull percona/pmm-server:3
     ```
 
@@ -37,7 +37,7 @@ Follow these steps to upgrade your PMM Server while preserving your monitoring d
    helm repo update percona
     ```
 
-2. Upgrade PMM:
+2. Upgrade PFMM:
     ```sh
    helm upgrade pmm -f values.yaml --set podSecurityContext.runAsGroup=null --set podSecurityContext.fsGroup=null percona/pmm
     ```

@@ -1,11 +1,11 @@
-# Connect Linux databases to PMM
+# Connect Linux databases to PFMM
 
 ## Supported Linux distributions
 
 PMM Client supports collecting system metrics from various Linux distributions:
 
 - Red Hat/CentOS/Oracle Linux 8, 9 and 10
-- Amazon Linux 2023 (native support added in PMM 3.2.0)
+- Amazon Linux 2023 (native support added in PFMM 3.2.0)
 - Debian 11 (Bullseye), 12 (Bookworm) and 13 (Trixie)
 - Ubuntu 22.04 (Jammy) and 24.04 (Noble)
 
@@ -38,4 +38,4 @@ To view collected Linux metrics:
 
 - [Install PMM Client](../../install-pmm-client/index.md)
 - [Operating System dashboard reference](../../../reference/dashboards/dashboard-node-summary.md)
-- [Troubleshooting PMM](../../../troubleshoot/index.md)
+- [Troubleshooting PFMM](../../../troubleshoot/index.md)

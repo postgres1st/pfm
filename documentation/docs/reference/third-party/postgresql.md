@@ -1,30 +1,30 @@
-# Configure PMM with external PostgreSQL
+# Configure PFMM with external PostgreSQL
 
-Percona Monitoring and Management (PMM) can be configured to use an external PostgreSQL database instead of its built-in instance. This provides several advantages, including:
+Postgres1st (PFMM) can be configured to use an external PostgreSQL database instead of its built-in instance. This provides several advantages, including:
 
 - enhanced high availability (HA) capabilities
 - improved performance with dedicated database servers
 - integration with existing database infrastructure
 - better control over data retention and backups
 
-To configure PMM Server to connect to an external PostgreSQL database running on the same host or a remote server, set up the required environment variables, configure SSL for secure connections, and ensure proper permissions for both PMM components and Grafana.
+To configure PMM Server to connect to an external PostgreSQL database running on the same host or a remote server, set up the required environment variables, configure SSL for secure connections, and ensure proper permissions for both PFMM components and Grafana.
 
 ## Prerequisites
-Before configuring PMM with an external PostgreSQL database, ensure you have a PostgreSQL 14+ server accessible from your PMM Server.
+Before configuring PFMM with an external PostgreSQL database, ensure you have a PostgreSQL 14+ server accessible from your PMM Server.
 
 ## Configuration overview
 To configure PMM Server to connect to an external PostgreSQL database:
 
 - set up the external PostgreSQL server with required databases and permissions
-- configure required environment variables for both PMM components and Grafana
+- configure required environment variables for both PFMM components and Grafana
 - disable the built-in PostgreSQL server
 - start PMM Server with the appropriate configuration
 
 ## Environment variables
-!!! caution alert alert-warning "Important for PMM 3.2.0 and later"
-    Due to a regression in Grafana 11.6 (included in PMM 3.2.0+), the `GF_DATABASE_URL` environment variable is no longer sufficient for configuring Grafana's connection to an external PostgreSQL database. When using PMM 3.2.0 or later with an external PostgreSQL, you must use the individual `GF_DATABASE_*` environment variables.
+!!! caution alert alert-warning "Important for PFMM 3.2.0 and later"
+    Due to a regression in Grafana 11.6 (included in PFMM 3.2.0+), the `GF_DATABASE_URL` environment variable is no longer sufficient for configuring Grafana's connection to an external PostgreSQL database. When using PFMM 3.2.0 or later with an external PostgreSQL, you must use the individual `GF_DATABASE_*` environment variables.
 
-### PMM PostgreSQL variables
+### PFMM PostgreSQL variables
 To use PostgreSQL as an external database instance, use the following environment variables:
 
 | Environment variable         | Flag                                                                                                    | Description                                                                                                                                                                                      |
@@ -42,10 +42,10 @@ To use PostgreSQL as an external database instance, use the following environmen
 By default, communication between the PMM Server and the database is not encrypted. To secure a connection, follow [PostgreSQL SSL instructions](https://www.postgresql.org/docs/14/ssl-tcp.html) and provide `POSTGRES_SSL_*` variables.
 
 ## Grafana database configuration
-When using an external PostgreSQL database with PMM, configure both PMM's components and Grafana to use the external database.
+When using an external PostgreSQL database with PFMM, configure both PFMM's components and Grafana to use the external database.
 
-- For PMM versions prior to 3.2.0, use a single `GF_DATABASE_URL` in the format `postgres://USER:PASSWORD@HOST:PORT/DATABASE_NAME`.
-- For PMM 3.2.0 and later, Grafana requires individual database parameters instead of a single connection URL. Use the following environment variables:
+- For PFMM versions prior to 3.2.0, use a single `GF_DATABASE_URL` in the format `postgres://USER:PASSWORD@HOST:PORT/DATABASE_NAME`.
+- For PFMM 3.2.0 and later, Grafana requires individual database parameters instead of a single connection URL. Use the following environment variables:
 
 | Environment variable     | Description                                                      |
 |--------------------------|------------------------------------------------------------------|
@@ -59,17 +59,17 @@ When using an external PostgreSQL database with PMM, configure both PMM's compon
 | GF_DATABASE_CLIENT_CERT_PATH | Path to client certificate file                              |
 
 ### Configuration requirements
-To successfully use an external PostgreSQL database with PMM:
+To successfully use an external PostgreSQL database with PFMM:
 
-- Ensure both PMM Server and Grafana database connections are configured. This means providing the appropriate `PMM_POSTGRES_*` environment variables for PMM's internal operations and the `GF_DATABASE_*` variables (or `GF_DATABASE_URL` for PMM versions prior to 3.2.0) for Grafana's data source.
-- Enable the `pg_stat_statements` extension in the PostgreSQL database that PMM will connect to. This extension enables PMM to collect performance statistics.
-- Do not specify `GF_DATABASE_TYPE`as PMM uses PostgreSQL for external database connection
+- Ensure both PMM Server and Grafana database connections are configured. This means providing the appropriate `PMM_POSTGRES_*` environment variables for PFMM's internal operations and the `GF_DATABASE_*` variables (or `GF_DATABASE_URL` for PFMM versions prior to 3.2.0) for Grafana's data source.
+- Enable the `pg_stat_statements` extension in the PostgreSQL database that PFMM will connect to. This extension enables PFMM to collect performance statistics.
+- Do not specify `GF_DATABASE_TYPE`as PFMM uses PostgreSQL for external database connection
 
-## Set up PostgreSQL for PMM 
+## Set up PostgreSQL for PFMM 
 
 ### 1. Prepare the PostgreSQL Server
 
-To use PostgreSQL as an external database with PMM:
+To use PostgreSQL as an external database with PFMM:
 {.power-number}
 
 1.  Pull the PostgreSQL Docker image:
@@ -175,7 +175,7 @@ If you need to secure the connection with SSL:
 
 Now that PostgreSQL is set up, configure PMM Server to use it:
 
-=== "PMM 3.1.x and 3.0.0"
+=== "PFMM 3.1.x and 3.0.0"
     ```sh
     docker run -d \
     -p 443:443 \
@@ -193,7 +193,7 @@ Now that PostgreSQL is set up, configure PMM Server to use it:
     --name pmm-server \
     percona/pmm-server:3
     ```
-=== "PMM 3.2.0 and later"
+=== "PFMM 3.2.0 and later"
     ```sh
     docker run -d \
     -p 443:443 \
@@ -215,7 +215,7 @@ Now that PostgreSQL is set up, configure PMM Server to use it:
     percona/pmm-server:3
     ```
 ## Docker Compose example
-When using Docker Compose to run PMM with an external PostgreSQL database, make sure to configure both PMM and Grafana database parameters.
+When using Docker Compose to run PFMM with an external PostgreSQL database, make sure to configure both PFMM and Grafana database parameters.
 Create a `docker-compose.yml` file with the following content (adjust values as needed), then restart the PMM Server: 
 
    ```yaml
@@ -227,12 +227,12 @@ Create a `docker-compose.yml` file with the following content (adjust values as 
        volumes:
          - pmm-data:/srv
        environment:
-         # PMM PostgreSQL connection variables
+         # PFMM PostgreSQL connection variables
          - PMM_POSTGRES_ADDR=your_host:your_port
          - PMM_POSTGRES_DBNAME=pmm-managed
          - PMM_POSTGRES_USERNAME=your_pmm_user
          - PMM_POSTGRES_DBPASSWORD=your_pmm_password
-         # Grafana PostgreSQL connection variables (for PMM 3.2.0+)
+         # Grafana PostgreSQL connection variables (for PFMM 3.2.0+)
          - GF_DATABASE_USER=your_grafana_user
          - GF_DATABASE_PASSWORD=your_grafana_password
          - GF_DATABASE_HOST=your_host:your_port
@@ -246,11 +246,11 @@ Create a `docker-compose.yml` file with the following content (adjust values as 
    ```
   
 ## Troubleshooting
-If you encounter issues when configuring PMM with an external PostgreSQL database, check the following:
+If you encounter issues when configuring PFMM with an external PostgreSQL database, check the following:
 
-- make sure all required environment variables are set (both PMM and Grafana variables)
+- make sure all required environment variables are set (both PFMM and Grafana variables)
 - verify that PostgreSQL is running and accessible from the PMM Server container
 - check that the correct database names and credentials are used
-- for PMM 3.2.0+, make sure you're using the individual Grafana database parameters instead of `GF_DATABASE_URL`
+- for PFMM 3.2.0+, make sure you're using the individual Grafana database parameters instead of `GF_DATABASE_URL`
 - confirm that `pg_stat_statements` extension is enabled in the PostgreSQL database
 - check the Grafana logs for database connection issues

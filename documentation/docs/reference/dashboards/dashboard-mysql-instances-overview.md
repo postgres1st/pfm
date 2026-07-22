@@ -11,7 +11,7 @@ Use the filters at the top to narrow down by Region, Environment, Cluster, Repli
 ### Services
 Shows the total number of MySQL services currently being monitored.
 
-Use this to verify that all expected MySQL instances are reporting to PMM. If this count is lower than expected, you may have agents that are offline or not properly configured.
+Use this to verify that all expected MySQL instances are reporting to PFMM. If this count is lower than expected, you may have agents that are offline or not properly configured.
 
 ### Min MySQL Uptime
 Shows the shortest uptime among all monitored MySQL instances. The color changes based on uptime: red for very recent restarts (under 5 minutes), orange for short uptimes (5 minutes to 1 hour), and green for longer uptimes (over 1 hour).

@@ -1,8 +1,8 @@
 # Monitoring labels
 
-PMM uses labels (key/value pairs) to tag the monitoring data it collects. Labels appear in both Prometheus metrics and Query Analytics (QAN), so you can use them to filter, group, and create alert rules across your entire infrastructure.
+PFMM uses labels (key/value pairs) to tag the monitoring data it collects. Labels appear in both Prometheus metrics and Query Analytics (QAN), so you can use them to filter, group, and create alert rules across your entire infrastructure.
 
-## Where labels appear in PMM
+## Where labels appear in PFMM
 
 Labels are available as filters in dashboards, Query Analytics, and the **Explore** section.
 
@@ -22,12 +22,12 @@ If you prefer to browse metrics without writing queries, you can also enable the
 
 ## Label types
 
-PMM supports two types of labels:
+PFMM supports two types of labels:
 
 === "Standard labels"
-    Standard labels are automatically assigned by PMM based on detected characteristics of the monitored object. Required standard labels are created when you add a Node, Service, or Agent. 
+    Standard labels are automatically assigned by PFMM based on detected characteristics of the monitored object. Required standard labels are created when you add a Node, Service, or Agent. 
     
-    Those records cannot be created without them. Optional standard labels are populated when PMM can detect the value. You can set an initial value for a standard label when adding a service, but PMM may update it automatically if it detects a change.
+    Those records cannot be created without them. Optional standard labels are populated when PFMM can detect the value. You can set an initial value for a standard label when adding a service, but PFMM may update it automatically if it detects a change.
 
     | Label | Applies to | Required | Modifiable |
     |---|---|---|---|
@@ -53,7 +53,7 @@ PMM supports two types of labels:
     For labels where Modifiable is No, remove the service and re-add it with the correct values.
 
 === "Custom labels"
-    Custom labels are defined and managed by you. Use them to organize your infrastructure by team, application, owner, or any other attribute that matters to your organization. PMM never overwrites custom labels.
+    Custom labels are defined and managed by you. Use them to organize your infrastructure by team, application, owner, or any other attribute that matters to your organization. PFMM never overwrites custom labels.
 
     Custom labels can hold any value you choose. When naming custom labels:
 
@@ -61,10 +61,10 @@ PMM supports two types of labels:
     - A label name can start with a single underscore (`_`).
     - A label name cannot start with double underscores (`__`), which are reserved by Prometheus.
 
-    Custom labels can be updated at any time via the PMM UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
+    Custom labels can be updated at any time via the PFMM UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
 
 !!! note
-    When PMM writes metrics, it merges standard and custom labels. If a custom label has the same name as a standard label, the custom label takes precedence.
+    When PFMM writes metrics, it merges standard and custom labels. If a custom label has the same name as a standard label, the custom label takes precedence.
 
 ## Set labels
 
@@ -78,9 +78,9 @@ pmm-admin add mysql --replication-set=MySet1 --environment=production ...
 pmm-admin add mysql --custom-labels="owner=joe,team=backend" ...
 ```
 
-You can also set labels through the PMM UI when adding a service under **Inventory > Add Service**, or via the [PMM API](https://percona-pmm.readme.io/reference/changeservice).
+You can also set labels through the PFMM UI when adding a service under **Inventory > Add Service**, or via the [PFMM API](https://percona-pmm.readme.io/reference/changeservice).
 
-To view labels on existing services, go to **Inventory > Services** in the PMM UI and expand the **Details** section :material-arrow-downward: on the **Options** column.
+To view labels on existing services, go to **Inventory > Services** in the PFMM UI and expand the **Details** section :material-arrow-downward: on the **Options** column.
 
 ## Modify labels
 
@@ -90,7 +90,7 @@ You can update the following standard labels after a service is created, without
 - `cluster`
 - `replication_set`
 
-For all other standard labels, remove the service and re-add it with the correct values. Custom labels can be updated at any time via the PMM UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
+For all other standard labels, remove the service and re-add it with the correct values. Custom labels can be updated at any time via the PFMM UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
 
 ## Related topics
 

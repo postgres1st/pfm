@@ -1,6 +1,6 @@
 ## Delete users
 
-You can delete a user in PMM as follows:
+You can delete a user in PFMM as follows:
 {.power-number}
 
 1. Go to **Users and access > Users** tab.

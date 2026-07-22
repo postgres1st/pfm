@@ -1,14 +1,14 @@
-# About PMM commands
+# About PFMM commands
 
-PMM provides two command-line tools for managing your monitoring setup from the terminal. 
+PFMM provides two command-line tools for managing your monitoring setup from the terminal. 
 
 Use these tools to add databases, configure agents, check status, and troubleshoot issues without leaving the command line.
 
-You can also perform most of these tasks through the [PMM web interface](../../reference/ui/ui_components.md) or the [PMM API](../../api/index.md).
+You can also perform most of these tasks through the [PFMM web interface](../../reference/ui/ui_components.md) or the [PFMM API](../../api/index.md).
 
 ## Command-line tools
 
-`pmm-admin`: The primary CLI tool for administering PMM. Use it to add and remove database services, check connection status, list monitored services, modify agent configurations, create diagnostic archives, and annotate dashboards. Communicates directly with PMM Server.
+`pmm-admin`: The primary CLI tool for administering PFMM. Use it to add and remove database services, check connection status, list monitored services, modify agent configurations, create diagnostic archives, and annotate dashboards. Communicates directly with PMM Server.
 
     `pmm-admin` is installed automatically as part of the [PMM Client](../../../install-pmm/install-pmm-client/index.md) package.
 

@@ -2,9 +2,9 @@
 
 ## Exporter consuming excessive CPU or memory
 
-If a PMM exporter (such as `mysqld_exporter`, `postgres_exporter`, or `mongodb_exporter`) is using excessive CPU or memory, you can collect profiling data to diagnose the issue.
+If a PFMM exporter (such as `mysqld_exporter`, `postgres_exporter`, or `mongodb_exporter`) is using excessive CPU or memory, you can collect profiling data to diagnose the issue.
 
-PMM exporters expose `/debug/pprof/` endpoints for performance profiling. Use these to generate diagnostic data for analysis or to share with Percona Support.
+PFMM exporters expose `/debug/pprof/` endpoints for performance profiling. Use these to generate diagnostic data for analysis or to share with Percona Support.
 
 ### Collect profiling data
 

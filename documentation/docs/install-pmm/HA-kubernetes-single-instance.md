@@ -1,4 +1,4 @@
-# Install PMM with Kubernetes HA (Single-Instance)
+# Install PFMM with Kubernetes HA (Single-Instance)
 
 Kubernetes provides enterprise-grade high availability through automated container orchestration, self-healing capabilities, and intelligent workload distribution. This production-ready option combines simplicity with Kubernetes' built-in resilience for automatic recovery from failures.
 
@@ -7,7 +7,7 @@ Kubernetes provides enterprise-grade high availability through automated contain
 
 ## What is Kubernetes HA Single-Instance?
 
-Kubernetes HA Single-Instance leverages Kubernetes' native pod management and self-healing capabilities to ensure PMM stays available even when infrastructure fails. 
+Kubernetes HA Single-Instance leverages Kubernetes' native pod management and self-healing capabilities to ensure PFMM stays available even when infrastructure fails. 
 
 Combined with persistent volumes and PMM Client caching, this approach prevents data loss and maintains monitoring continuity with minimal operational overhead.
 
@@ -18,20 +18,20 @@ Combined with persistent volumes and PMM Client caching, this approach prevents 
 - **Health monitoring**: Liveness and readiness probes ensure only healthy instances receive traffic
 - **Zero data loss**: PMM Clients cache metrics locally during brief outages
 - **Production-tested**: Stable and battle-tested in production environments for years
-- **Simple operations**: Single PMM instance is easier to manage than distributed clusters
+- **Simple operations**: Single PFMM instance is easier to manage than distributed clusters
 
 ### How it works
 
-Kubernetes watches your PMM deployment and fixes problems automatically. 
+Kubernetes watches your PFMM deployment and fixes problems automatically. 
 
 If a pod crashes or a node fails, Kubernetes restarts it on a healthy node within a few minutes.
 
-Your persistent volume keeps all your data safe and it stays attached when the pod moves. Your PMM Clients cache metrics locally, so nothing gets lost during the restart. Once PMM comes back up, everything syncs automatically.
+Your persistent volume keeps all your data safe and it stays attached when the pod moves. Your PMM Clients cache metrics locally, so nothing gets lost during the restart. Once PFMM comes back up, everything syncs automatically.
 
 ### Limitations
 
 - **Brief monitoring gaps**: 2-5 minutes of downtime during pod rescheduling
-- **Single PMM instance**: No load distribution across multiple servers
+- **Single PFMM instance**: No load distribution across multiple servers
 - **No zero-downtime**: Cannot maintain continuous monitoring during failures
 - **Node-level delays**: Pod rescheduling takes longer than container restarts
 
@@ -95,7 +95,7 @@ Choose the installation method that fits your needs and install PMM Server on Ku
         helm repo update
       ```
 
-    2. Create a namespace for PMM:
+    2. Create a namespace for PFMM:
       ```sh
         kubectl create namespace monitoring
       ```
@@ -166,7 +166,7 @@ Choose the installation method that fits your needs and install PMM Server on Ku
         helm repo update
       ```
 
-    3. Create a namespace for PMM:
+    3. Create a namespace for PFMM:
       ```sh
         kubectl create namespace monitoring
       ```
@@ -222,7 +222,7 @@ pod/pmm-0   1/1   Running   0   2m
 After first login, immediately change the default password:
 {.power-number}
 
-1. Log in to PMM UI.
+1. Log in to PFMM UI.
 2. Go to **Account > Change password**.
 4. Enter current password and new secure password.
 
@@ -279,7 +279,7 @@ Choose the service type that fits your environment and apply the configuration.
 
     **Best for**: Bare-metal, on-premise, or testing environments
 
-    Use NodePort to expose PMM on a static port on each cluster node:
+    Use NodePort to expose PFMM on a static port on each cluster node:
     {.power-number}
 
     1. Create or update your `values.yaml` file:
@@ -303,7 +303,7 @@ Choose the service type that fits your environment and apply the configuration.
 
         Look for the `PORT(S)` column showing the NodePort number.
 
-    4. Access PMM using any node IP and the NodePort:
+    4. Access PFMM using any node IP and the NodePort:
       ```
         https://<any-node-ip>:<nodeport>
       ```
@@ -348,7 +348,7 @@ Choose the service type that fits your environment and apply the configuration.
           --values values.yaml
       ```
 
-    3. Access PMM at your configured domain:
+    3. Access PFMM at your configured domain:
       ```
         https://pmm.example.com
       ```
@@ -382,7 +382,7 @@ persistence:
 
 ### Configure data retention
 
-Set how long PMM retains monitoring data:
+Set how long PFMM retains monitoring data:
 ```yaml
 # values.yaml
 env:
@@ -464,11 +464,11 @@ To monitor your databases, install PMM Client on each database host and connect 
 
 ### Test automatic recovery
 
-Verify Kubernetes automatically recovers PMM:
+Verify Kubernetes automatically recovers PFMM:
 
 **Test 1: Delete pod**
 ```sh
-# Delete the PMM pod
+# Delete the PFMM pod
 kubectl delete pod -n monitoring -l app=pmm
 
 # Watch Kubernetes recreate it
@@ -482,17 +482,17 @@ Recovery should complete in 30-60 seconds on the same node.
 
 **Test 2: Drain node (simulate node failure)**
 ```sh
-# Get node running PMM
+# Get node running PFMM
 export PMM_NODE=$(kubectl get pod -n monitoring -l app=pmm \
   -o jsonpath='{.items[0].spec.nodeName}')
 
 # Drain the node
 kubectl drain $PMM_NODE --ignore-daemonsets --delete-emptydir-data
 
-# Watch PMM reschedule to another node
+# Watch PFMM reschedule to another node
 kubectl get pods -n monitoring -w
 
-# Check PMM is running on different node
+# Check PFMM is running on different node
 kubectl get pod -n monitoring -l app=pmm -o wide
 
 # Uncordon the node when done testing
@@ -501,9 +501,9 @@ kubectl uncordon $PMM_NODE
 
 Recovery should complete in 2-5 minutes with pod rescheduled to a healthy node.
 
-### Monitor PMM health
+### Monitor PFMM health
 
-Check PMM status and resource usage:
+Check PFMM status and resource usage:
 ```sh
 # Check pod status
 kubectl get pods -n monitoring -l app=pmm
@@ -521,9 +521,9 @@ kubectl get pvc -n monitoring
 kubectl describe pod -n monitoring -l app=pmm
 ```
 
-### Access PMM pod directly
+### Access PFMM pod directly
 
-For troubleshooting, access the PMM pod:
+For troubleshooting, access the PFMM pod:
 ```sh
 # Execute commands in pod
 kubectl exec -it -n monitoring -l app=pmm -- bash
@@ -588,7 +588,7 @@ helm upgrade pmm percona/pmm \
   --values values.yaml
 ```
 
-### Upgrade PMM
+### Upgrade PFMM
 
 Perform zero-downtime upgrades:
 ```sh
@@ -633,7 +633,7 @@ helm rollback pmm 2 -n monitoring
 
 ### Pod stuck in Pending state
 
-**Problem**: PMM pod remains in `Pending` state
+**Problem**: PFMM pod remains in `Pending` state
 
 **Solution**: Check for resource or storage issues:
 ```sh
@@ -670,7 +670,7 @@ kubectl logs -n monitoring -l app=pmm --previous
 # - Configuration errors (check env vars)
 ```
 
-### Cannot access PMM UI
+### Cannot access PFMM UI
 
 **Problem**: LoadBalancer external IP pending or connection refused
 
@@ -696,7 +696,7 @@ kubectl run -it --rm debug \
 
 ### High memory usage
 
-**Problem**: PMM consuming excessive memory
+**Problem**: PFMM consuming excessive memory
 
 **Solution**: Optimize configuration:
 ```sh
@@ -765,17 +765,17 @@ kubectl describe pod -n monitoring -l app=pmm
 - **Cloud-native architectures** already using Kubernetes
 - **Environments with maintenance windows** for planned upgrades
 
-### When to consider PMM High Availability Cluster
+### When to consider PFMM High Availability Cluster
 
 !!! warning "HA Clustered is Tech Preview only"
-    PMM Kubernetes HA Cluster is currently NOT production-ready. Only consider it for testing and evaluation purposes.
+    PFMM Kubernetes HA Cluster is currently NOT production-ready. Only consider it for testing and evaluation purposes.
 
 Consider upgrading to [Kubernetes HA Cluster](HA-clustered.md) when you:
 
 - require **zero-downtime monitoring** (< 30 second failover)
 - can tolerate **Tech Preview status** with known issues
 - have **expert Kubernetes skills** to manage complex deployments
-- need **multiple active PMM instances** for load distribution
+- need **multiple active PFMM instances** for load distribution
 - are **testing for future production** HA requirements
 
 ### When to stay with Docker HA
@@ -790,8 +790,8 @@ Consider using [Docker HA](HA-docker.md) instead if:
 
 ## Get help
 
-- [PMM Community Forums](https://per.co.na/PMM3_forums) 
+- [PFMM Community Forums](https://per.co.na/PMM3_forums) 
 - [Contact Percona Support](https://www.percona.com/services/support) 
 - [Report bugs or technical issues](https://perconadev.atlassian.net/jira/software/c/projects/PMM/issues/)
 - [Helm chart documentation](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm)
-- [Kubernetes best practices for PMM](../install-pmm/install-pmm-server/deployment-options/helm/index.md)
+- [Kubernetes best practices for PFMM](../install-pmm/install-pmm-server/deployment-options/helm/index.md)

@@ -1,10 +1,10 @@
-# Connect ProxySQL databases to PMM
+# Connect ProxySQL databases to PFMM
 
-Monitor your ProxySQL instances with Percona Monitoring and Management (PMM) to track performance metrics and gain insights into query routing behavior.
+Monitor your ProxySQL instances with Postgres1st (PFMM) to track performance metrics and gain insights into query routing behavior.
 
 ## Prerequisites
 
-Before adding a ProxySQL instance to PMM:
+Before adding a ProxySQL instance to PFMM:
 
 - ensure PMM Server is running and accessible
 - verify PMM Client is installed on the host running ProxySQL
@@ -14,7 +14,7 @@ Use the `proxysql` alias to enable ProxySQL performance metrics monitoring.
 
 ## Add ProxySQL service
 
-Add your ProxySQL instance to PMM using the proxysql service type:
+Add your ProxySQL instance to PFMM using the proxysql service type:
 
 ### Basic usage
 
@@ -25,9 +25,9 @@ pmm-admin add proxysql --username=pmm --password=pmm
 Replace `pmm` with the credentials for your ProxySQL administration interface. For security, configure a dedicated read-only monitoring account using the [`admin-stats_credentials`](https://proxysql.com/documentation/global-variables/admin-variables/#admin-stats_credentials) variable in ProxySQL.
 
 !!! warning
-    The monitoring user needs admin read-only permissions in ProxySQL to collect runtime server metrics. Without these permissions, PMM will skip runtime server metrics collection.
+    The monitoring user needs admin read-only permissions in ProxySQL to collect runtime server metrics. Without these permissions, PFMM will skip runtime server metrics collection.
 
-You can append two optional positional arguments: a service name and a service address. If omitted, PMM uses `<node>-proxysql` and `127.0.0.1:6032` as defaults.
+You can append two optional positional arguments: a service name and a service address. If omitted, PFMM uses `<node>-proxysql` and `127.0.0.1:6032` as defaults.
 
 ## Example output
 
@@ -49,7 +49,7 @@ You can customize the ProxySQL service configuration using command-line flags. T
 
 ### Service identification flags
 
-- `--service-name`: Custom name for the ProxySQL service in PMM
+- `--service-name`: Custom name for the ProxySQL service in PFMM
 - `--host`: Hostname or IP address of the ProxySQL instance  
 - `--port`: Port number for ProxySQL admin interface
 - `--socket`: UNIX socket path (alternative to host/port)

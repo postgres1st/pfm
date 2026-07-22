@@ -1,21 +1,21 @@
-# PMM installation overview
+# PFMM installation overview
 
-Installing Percona Monitoring and Management (PMM) involves setting up a central PMM Server and distributed PMM Clients that work together to monitor your database environment. 
+Installing Postgres1st (PFMM) involves setting up a central PMM Server and distributed PMM Clients that work together to monitor your database environment. 
 
 PMM Server provides the web interface with dashboards and analytics, while PMM Clients collect data from your databases with minimal performance impact and send it back to PMM Server for analysis and visualization.
 
 ## What the installation involves
 
-The PMM installation consists of three main steps that need to be completed in sequence: 
+The PFMM installation consists of three main steps that need to be completed in sequence: 
 {.power-number}
 
 1. [Install PMM Server](#1-install-pmm-server): centralized platform that collects, analyzes, and visualizes your monitoring data
 2. [Install PMM Clients](#2-install-pmm-client): lightweight agents on each database host that collect metrics without impacting performance
-3. [Configure monitoring services](#3-add-services-for-monitoring): connect PMM to your database instances, select which metrics to collect, and customize monitoring parameters
+3. [Configure monitoring services](#3-add-services-for-monitoring): connect PFMM to your database instances, select which metrics to collect, and customize monitoring parameters
 
 ## Plan the installation
 
-Before ou install PMM, ensure your environment is properly prepared:
+Before ou install PFMM, ensure your environment is properly prepared:
 
 - [Choose a deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) based on your environment needs.
 - [Verify hardware requirements](../install-pmm/plan-pmm-installation/hardware_and_system.md) to ensure your system meets the necessary specifications.
@@ -37,7 +37,7 @@ Compare the available deployment methods to choose what works best for your setu
 
 ### 1. Install PMM Server
 
-Install and run at least one PMM Server using one of the following deployment methods. If you're not sure which deployment method is best for your environment, check out this [Choose a PMM deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) topic for a comparison of your options.
+Install and run at least one PMM Server using one of the following deployment methods. If you're not sure which deployment method is best for your environment, check out this [Choose a PFMM deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) topic for a comparison of your options.
 
 === ":material-docker: Docker"
     Run PMM Server as a Docker container
@@ -87,15 +87,12 @@ Install and run PMM Client on every node where there is a service you want to mo
 
 After installing PMM Client, configure the nodes and services you want to monitor. 
 
-PMM supports monitoring across the following database technologies, cloud services, proxy services, and system metrics:
+PFMM supports monitoring across the following database technologies, cloud services, proxy services, and system metrics:
 
 === ":material-database: Database services"
-    Monitor relational and NoSQL database instances:
+    Monitor PostgreSQL database instances:
 
-    - [MySQL](../install-pmm/install-pmm-client/connect-database/mysql/mysql.md) and variants (Percona Server for MySQL, Percona XtraDB Cluster, MariaDB)
-    - [MongoDB](../install-pmm/install-pmm-client/connect-database/mongodb.md)
     - [PostgreSQL](../install-pmm/install-pmm-client/connect-database/postgresql.md)
-    - [Valkey/Redis](../install-pmm/install-pmm-client/connect-database/valkey-redis.md)
 
 === ":material-cloud: Cloud services"
 
@@ -117,5 +114,4 @@ PMM supports monitoring across the following database technologies, cloud servic
 
     Monitor database proxy and load balancing services:
 
-    - [ProxySQL](../install-pmm/install-pmm-client/connect-database/proxysql.md)
     - [HAProxy](../install-pmm/install-pmm-client/connect-database/haproxy.md)

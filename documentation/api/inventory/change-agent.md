@@ -13,7 +13,7 @@ This section describes how to change Agent attributes.
 > 
 > Not all attributes can be changed. For example, you cannot change the Agent type nor its ID.
 
-In PMM versions prior to 3.0.0, we featured a separate API call for each Agent type. Starting with PMM 3.0.0, we have streamlined the process by offering a single API endpoint for all Agent types. 
+In PFMM versions prior to 3.0.0, we featured a separate API call for each Agent type. Starting with PFMM 3.0.0, we have streamlined the process by offering a single API endpoint for all Agent types. 
 
 Previously, the Agent type was defined by the endpoint, i.e. `/v1/inventory/Agents/ChangeMySQLdExporter`. In the new approach, the Agent type must be specified as the top-level property of the request payload. 
 As part of the single API endpoint update, we have deprecated individual API endpoints for each Agent type.

@@ -12,7 +12,7 @@ If you need to change the metrics mode for an existing Service, you must remove 
 
 ## Remapped targets for direct Prometheus paths
 
-Direct Prometheus paths return structured information directly from Prometheus, bypassing the PMM application.
+Direct Prometheus paths return structured information directly from Prometheus, bypassing the PFMM application.
 
 They are accessed by requesting a URL of the form `<PMM SERVER URL>/prometheus/<PATH>`.
 
@@ -23,7 +23,7 @@ As a result of the move to VictoriaMetrics some direct Prometheus paths are no l
 | `/prometheus/alerts`            | No change.
 | `/prometheus/config`            | No equivalent, but there is some information at `/prometheus/targets`.
 | `/prometheus/flags`             | The `flag` metrics at `/prometheus/metrics`.
-| `/prometheus/graph`             | `/graph/explore` (Grafana) or `graph/d/prometheus-advanced/advanced-data-exploration` (PMM dashboard).
+| `/prometheus/graph`             | `/graph/explore` (Grafana) or `graph/d/prometheus-advanced/advanced-data-exploration` (PFMM dashboard).
 | `/prometheus/rules`             | No change.
 | `/prometheus/service-discovery` | No equivalent.
 | `/prometheus/status`            | Some information at `/prometheus/metrics`. High cardinality metrics information at `/prometheus/api/v1/status/tsdb`.
@@ -31,7 +31,7 @@ As a result of the move to VictoriaMetrics some direct Prometheus paths are no l
 
 ## Environment variables
 
-PMM predefines certain flags that allow users to set all other [VictoriaMetrics parameters](https://docs.victoriametrics.com/#list-of-command-line-flags) as environment variables:
+PFMM predefines certain flags that allow users to set all other [VictoriaMetrics parameters](https://docs.victoriametrics.com/#list-of-command-line-flags) as environment variables:
 
 The environment variable must be prepended with `VM_`.
 
@@ -50,7 +50,7 @@ This instructs VictoriaMetrics to [deduplicate](https://docs.victoriametrics.com
 !!! caution alert alert-warning "Important/Caution"
     This feature is still in [Technical Preview](../../reference/glossary.md#technical-preview) and is subject to change. We recommend that early adopters use this feature for evaluation purposes only.
 
-You can use an external VictoriaMetrics database for monitoring in PMM.
+You can use an external VictoriaMetrics database for monitoring in PFMM.
 
 The environment variable `PMM_VM_URL` has been added, which should point to the external VictoriaMetrics database and should have the following format:
 

@@ -1,14 +1,14 @@
-# Migrate external PostgreSQL configuration for PMM 3.2.0+ upgrades
+# Migrate external PostgreSQL configuration for PFMM 3.2.0+ upgrades
 
-If you're using an external PostgreSQL database with PMM, you will need to update your configuration before upgrading to PMM 3.2.0. This is due to a [regression issue in Grafana](https://github.com/grafana/grafana/issues/102337), where the single `GF_DATABASE_URL` environment variable is no longer sufficient for configuring the database.
+If you're using an external PostgreSQL database with PFMM, you will need to update your configuration before upgrading to PFMM 3.2.0. This is due to a [regression issue in Grafana](https://github.com/grafana/grafana/issues/102337), where the single `GF_DATABASE_URL` environment variable is no longer sufficient for configuring the database.
 
-To upgrade to PMM 3.2.0 successfully, convert your configuration to use individual environment variables instead of `GF_DATABASE_URL`: 
+To upgrade to PFMM 3.2.0 successfully, convert your configuration to use individual environment variables instead of `GF_DATABASE_URL`: 
 
 ## Before you begin
 
-- Verify you're using an external PostgreSQL database with PMM
+- Verify you're using an external PostgreSQL database with PFMM
 - Ensure you have the connection details for your PostgreSQL database
-- Back up your PMM data before starting the migration
+- Back up your PFMM data before starting the migration
 
 ## Migration procedure
 
@@ -42,7 +42,7 @@ Use the appropriate command for your deployment method to stop and remove the PM
 
 === "Kubernetes/Helm"
     ```bash
-    # Scale down the PMM deployment
+    # Scale down the PFMM deployment
     kubectl scale deployment pmm-server --replicas=0 -n <namespace>
     # Wait for the pod to terminate
     kubectl wait --for=delete pod -l app=pmm-server -n <namespace>
@@ -50,7 +50,7 @@ Use the appropriate command for your deployment method to stop and remove the PM
 
 ### 3. Replace the database URL with individual parameters
 
-To configure your external PostgreSQL database for PMM 3.2.0 and later, replace the `GF_DATABASE_URL` with individual environment variables:
+To configure your external PostgreSQL database for PFMM 3.2.0 and later, replace the `GF_DATABASE_URL` with individual environment variables:
 
 | Old format | New format |
 |------------|------------|
@@ -58,13 +58,13 @@ To configure your external PostgreSQL database for PMM 3.2.0 and later, replace 
 
 #### Port and type defaults
 - If your database URL doesn't specify a port, the default PostgreSQL port `5432` will be used.
-- PMM automatically uses PostgreSQL for external database connections, so you don't need to specify `GF_DATABASE_TYPE`.
+- PFMM automatically uses PostgreSQL for external database connections, so you don't need to specify `GF_DATABASE_TYPE`.
 
-### 4. Upgrade to PMM 3.2.0 and restart PMM Server with the new configuration
+### 4. Upgrade to PFMM 3.2.0 and restart PMM Server with the new configuration
 
 Modify your startup command or configuration file to use the new parameters:
 !!! note "Version Upgrade"
-    This step will upgrade your PMM instance to version 3.2.0 and apply the new database configuration. 
+    This step will upgrade your PFMM instance to version 3.2.0 and apply the new database configuration. 
 
 === "Docker"
     ```bash
@@ -95,7 +95,7 @@ Modify your startup command or configuration file to use the new parameters:
     ```
 
 === "Docker Compose"
-    Update your `docker-compose.yml` file to include both PMM and Grafana database configuration variables. `PMM_POSTGRES_*` is required for PMM's internal components and `GF_DATABASE_*` for Grafana. For details, see the [Configure PMM with external PostgreSQL](../reference/third-party/postgresql.md#environment-variables) topic.
+    Update your `docker-compose.yml` file to include both PFMM and Grafana database configuration variables. `PMM_POSTGRES_*` is required for PFMM's internal components and `GF_DATABASE_*` for Grafana. For details, see the [Configure PFMM with external PostgreSQL](../reference/third-party/postgresql.md#environment-variables) topic.
 
     ```yaml
     services:
@@ -106,12 +106,12 @@ Modify your startup command or configuration file to use the new parameters:
         volumes:
           - pmm-data:/srv
         environment:
-          # PMM PostgreSQL connection variables
+          # PFMM PostgreSQL connection variables
           - PMM_POSTGRES_ADDR=your_host:your_port
           - PMM_POSTGRES_DBNAME=your_pmm_db_name
           - PMM_POSTGRES_USERNAME=your_pmm_user
           - PMM_POSTGRES_DBPASSWORD=your_pmm_password
-          # Grafana PostgreSQL connection variables (for PMM 3.2.0+)
+          # Grafana PostgreSQL connection variables (for PFMM 3.2.0+)
           - GF_DATABASE_USER=your_grafana_user
           - GF_DATABASE_PASSWORD=your_grafana_password
           - GF_DATABASE_HOST=your_host:your_port
@@ -158,13 +158,13 @@ After completing the upgrade, check that PMM Server is functioning correctly and
 {.power-number}
 
 1. Wait for PMM Server to start. 
-2. Access the PMM web interface. 
+2. Access the PFMM web interface. 
 3. Check that dashboards and metrics are loading correctly. 
 4. Verify that no database connection errors appear in the PMM Server logs. 
 
 ## Troubleshooting
 
-If PMM fails to connect to your PostgreSQL database, verify that:
+If PFMM fails to connect to your PostgreSQL database, verify that:
 
 - Database credentials are correct
 - Database host is accessible from the PMM Server container

@@ -71,14 +71,14 @@ Create the required Kubernetes secret and deploy PMM Server using Helm:
     kubectl get secret pmm-secret -o jsonpath='{.data.PMM_ADMIN_PASSWORD}' | base64 --decode
     ```
 
-3. Add the Percona repository and check available PMM versions:
+3. Add the Percona repository and check available PFMM versions:
 
     ```bash
     helm repo add percona https://percona.github.io/percona-helm-charts
     helm repo update
     ```
 
-4. Choose your PMM version by checking available chart versions:
+4. Choose your PFMM version by checking available chart versions:
 
     ```bash
     helm search repo percona/pmm --versions
@@ -157,7 +157,7 @@ Create the required Kubernetes secret and deploy PMM Server using Helm:
         OpenShift offers native routing capabilities through its Route resource, which provides external access with built-in load balancing and SSL termination:
 
         ```bash
-        # Create a Route to expose PMM
+        # Create a Route to expose PFMM
         oc expose svc/monitoring-service --port=8443
         # Get the Route URL
         oc get route monitoring-service -o jsonpath='{.spec.host}'
@@ -170,7 +170,7 @@ Create the required Kubernetes secret and deploy PMM Server using Helm:
 
 #### View available parameters
 
-Check the list of available parameters in the [PMM Helm chart documentation](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#parameters). You can also list the default parameters by either: 
+Check the list of available parameters in the [PFMM Helm chart documentation](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#parameters). You can also list the default parameters by either: 
 
 - check [values.yaml file](https://github.com/percona/percona-helm-charts/blob/main/charts/pmm/values.yaml) in our repository
 - run the chart definition: `helm show values percona/pmm`
@@ -198,9 +198,9 @@ Configure PMM Server using either command-line arguments or a YAML file:
 Helm cannot modify application credentials after deployment.  To change credentials after deployment, either:
 
 - redeploy PMM Server with new persistent volumes
-- use PMM's built-in administrative tools
+- use PFMM's built-in administrative tools
 
-### PMM environment variables
+### PFMM environment variables
 
 Add [environment variables](../docker/env_var.md) for advanced operations (like custom init scripts) using the `pmmEnv` property:
 
@@ -211,7 +211,7 @@ pmmEnv:
 
 ### SSL certificates
 
-PMM comes with [self-signed SSL certificates](../../../../admin/security/ssl_encryption.md), ensuring a secure connection between the Client and Server. However, since these certificates are not issued by a trusted authority, you may encounter a security warning when connecting to PMM.
+PFMM comes with [self-signed SSL certificates](../../../../admin/security/ssl_encryption.md), ensuring a secure connection between the Client and Server. However, since these certificates are not issued by a trusted authority, you may encounter a security warning when connecting to PFMM.
 
 To enhance security, you have two options: 
 {.power-number}
@@ -228,7 +228,7 @@ To enhance security, you have two options:
         dhparam.pem: <content>
     ```
 
-2. Use [Ingress controller with TLS](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls). See [PMM network configuration](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#pmm-network-configuration) for details.
+2. Use [Ingress controller with TLS](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls). See [PFMM network configuration](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm#pmm-network-configuration) for details.
 
 ## Next steps
 

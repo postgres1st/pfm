@@ -1,10 +1,10 @@
 # pmm-admin command overview
 
-`pmm-admin` is the command-line tool for managing your PMM monitoring setup. Use it to add databases, check connection status, update agent configurations, and troubleshoot issues from your terminal.
+`pmm-admin` is the command-line tool for managing your PFMM monitoring setup. Use it to add databases, check connection status, update agent configurations, and troubleshoot issues from your terminal.
 
 `pmm-admin` is installed automatically with PMM Client.
 
-To add services through the UI instead, see [Connect databases via the web interface](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PMM API](../../../api/index.md).
+To add services through the UI instead, see [Connect databases via the web interface](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PFMM API](../../../api/index.md).
 
 Use `pmm-admin` to:
 
@@ -113,5 +113,5 @@ pmm-admin inventory change agent --help
 ## See also
 
 - [PMM Client agent](../pmm-agent.md)
-- [Connect databases to PMM](../../../install-pmm/install-pmm-client/connect-database/index.md)
+- [Connect databases to PFMM](../../../install-pmm/install-pmm-client/connect-database/index.md)
 - [Remove databases from monitoring](../../remove-services.md)

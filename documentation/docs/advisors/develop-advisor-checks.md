@@ -1,10 +1,10 @@
 # Developing Advisor checks
 
-PMM offers sets of checks that can detect common security threats, performance degradation, data loss and data corruption.
+PFMM offers sets of checks that can detect common security threats, performance degradation, data loss and data corruption.
 
 As a developer, you can create custom checks to cover additional use cases, relevant to your specific database infrastructure.
 
-Starting with PMM 3.5.0, all advisor checks are built-in and use the v2 check format. Custom checks must also use the v2 format.
+Starting with PFMM 3.5.0, all advisor checks are built-in and use the v2 check format. Custom checks must also use the v2 format.
 
 ## Check components
 
@@ -13,7 +13,7 @@ A check is a combination of:
 - A query for extracting data from the database.
 - Python script for converting extracted data into check results. This is actually a [Starlark](https://github.com/google/starlark-go) script, which is a Python dialect that adds more imperative features than Python. The script's execution environment is sandboxed, and no I/O can be done from it.
 
-All checks are self-contained in the first phase, as well as in most of the planned phases. This means that extracted data is processed on the PMM side.
+All checks are self-contained in the first phase, as well as in most of the planned phases. This means that extracted data is processed on the PFMM side.
 
 ## Backend
 
@@ -32,7 +32,7 @@ At the backend, pmm-managed does the following:
 ![!](../images/BackendChecks.png)
 
 ## Frontend
-PMM uses Alertmanager API to get information about failed checks and show them on the UI:
+PFMM uses Alertmanager API to get information about failed checks and show them on the UI:
 
 ![!](../images/FrontEndChecks.png)
 
@@ -48,8 +48,8 @@ Advisor checks use the following format:
         description: Checks something important
         interval: standard
         family: MYSQL
-        category: configuration ## Deprecated since PMM 2.36
-        advisor: dev            ## Required since PMM 2.36
+        category: configuration ## Deprecated since PFMM 2.36
+        advisor: dev            ## Required since PFMM 2.36
         queries:
           - type: MYSQL_SHOW
             query: VARIABLES
@@ -156,7 +156,7 @@ The check script assumes that there is a function with `check_context`, that acc
 ## Check severity levels
 
 You can label your advisor checks with one of the following available severity levels: **Emergency**, **Alert**, **Critical**, **Error**, **Warning**, **Notice**, **Info**, **Debug**.
-PMM groups failed checks by their severity, and displays them under **Advisors Checks > Failed Checks**.
+PFMM groups failed checks by their severity, and displays them under **Advisors Checks > Failed Checks**.
 
 ## Check fields
 
@@ -178,7 +178,7 @@ Checks can include the following fields:
 
 ## Query types
 
-Expand the table below for the list of checks types that you can use to define your query type and the PMM Service type for which the check will run.
+Expand the table below for the list of checks types that you can use to define your query type and the PFMM Service type for which the check will run.
 
 ??? note alert alert-info "Check types"
 
@@ -195,7 +195,7 @@ Expand the table below for the list of checks types that you can use to define y
     | MONGODB_GETDIAGNOSTICDATA |Executes db.adminCommand( { getDiagnosticData: 1 } ) against MongoDB's "admin" database. For more information, see [MongoDB Performance](https://docs.mongodb.com/manual/administration/analyzing-mongodb-performance/#full-time-diagnostic-data-capture)| No|
     | METRICS_INSTANT |Executes instant [MetricsQL](https://docs.victoriametrics.com/MetricsQL.html) query. Query can use placeholders in query string {% raw %} **{{.NodeName**}} and **{{.ServiceName}}**  {% endraw %}. Both match target service/node names. To read more about instant queries, check out the [Prometheus docs](https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries).|Yes|
     | METRICS_RANGE |Executes range [MetricsQL](https://docs.victoriametrics.com/MetricsQL.html) query. Query can use placeholders in query string {% raw %} **{{.NodeName**}} and **{{.ServiceName}}**  {% endraw %}. Both match target service/node names. To read more about range queries, check out the [Prometheus docs](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).|Yes|
-    | CLICKHOUSE_SELECT |Executes 'SELECT ...' statements against PMM's [Query Analytics](../use/qan/index.md) ClickHouse database. Queries can use the {% raw %} **{{.ServiceName**}} and **{{.ServiceID}}**  {% endraw %} placeholders in query string. They match the target service name and service ID respectively.|Yes|
+    | CLICKHOUSE_SELECT |Executes 'SELECT ...' statements against PFMM's [Query Analytics](../use/qan/index.md) ClickHouse database. Queries can use the {% raw %} **{{.ServiceName**}} and **{{.ServiceID}}**  {% endraw %} placeholders in query string. They match the target service name and service ID respectively.|Yes|
 
 ## Query parameters
 - `METRICS_INSTANT`
@@ -205,20 +205,20 @@ Expand the table below for the list of checks types that you can use to define y
     - **range** (duration, required): specifies time window of the query. This parameter is equal to [Prometheus API](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).
     - **step** (duration, required): query resolution. This parameter is equal to [Prometheus API](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).
 - `POSTGRESQL_SELECT`
-    - **all_dbs** (boolean, optional): execute query on all available databases in PostgreSQL instance. If this parameter is not specified, then query executed on the default database (the one that was specified when service was added to PMM).
+    - **all_dbs** (boolean, optional): execute query on all available databases in PostgreSQL instance. If this parameter is not specified, then query executed on the default database (the one that was specified when service was added to PFMM).
 
 ## Develop checks
 
 !!! note alert alert-primary "Development/debugging only"
-    Note that check development in PMM is currently for **debugging only** and **NOT for production use!**  Future releases plan to include the option to run custom local checks in addition to default PMM checks.
+    Note that check development in PFMM is currently for **debugging only** and **NOT for production use!**  Future releases plan to include the option to run custom local checks in addition to default PFMM checks.
 
-To develop custom checks for PMM:
+To develop custom checks for PFMM:
 {.power-number}
 
 1. Install the latest PMM Server and PMM Client builds following the [installation instructions](../quickstart/quickstart.md).
 2. Run PMM Server with special environment variables:
 
-    - `PMM_DEV_ADVISOR_CHECKS_FILE=/srv/custom-checks.yml` to use checks from the local files instead of default PMM ones.
+    - `PMM_DEV_ADVISOR_CHECKS_FILE=/srv/custom-checks.yml` to use checks from the local files instead of default PFMM ones.
     - `PMM_ADVISORS_CHECKS_DISABLE_START_DELAY=true` to disable the default check execution start delay. This is currently set to one minute, so that checks run upon system start.
 
     ```sh
@@ -249,7 +249,7 @@ To develop custom checks for PMM:
 
 ## Troubleshooting and tips
 
-When developing checks for PMM, you may encounter various issues. Here are solutions for common problems:
+When developing checks for PFMM, you may encounter various issues. Here are solutions for common problems:
 
 ### Managing debug output
 Debug mode generates excessive information in log files that can obscure important data. To disable debug logging, use `PMM_DEBUG=0`.

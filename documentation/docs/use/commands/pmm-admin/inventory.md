@@ -2,7 +2,7 @@
 
 Use `pmm-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
 
-To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PMM API](../../../api/index.md).
+To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PFMM API](../../../api/index.md).
 
 ## Commands
 
@@ -46,8 +46,8 @@ pmm-admin inventory list services
 
 Modify agent configuration without removing and re-adding the service. Use this to update collector settings, enable or disable features, or change connection parameters.
 
-!!! note "PMM 3.7.0+"
-    This command is available starting with PMM 3.7.0.
+!!! note "PFMM 3.7.0+"
+    This command is available starting with PFMM 3.7.0.
 
 ### Syntax
 
@@ -131,7 +131,7 @@ You can also use `pmm-admin list` to see agents alongside their services.
 :   Comma-separated list of collectors to disable
 
 - `--max-collections-limit`
-:   Max collections to monitor (-1=PMM decides, 0=unlimited)
+:   Max collections to monitor (-1=PFMM decides, 0=unlimited)
 
 - `--stats-collections`
 :   Limit stats to specific databases/collections
@@ -220,7 +220,7 @@ You can also use `pmm-admin list` to see agents alongside their services.
 
 The command returns a clear error message in these cases:
 
-- **Non-existent agent ID**: The specified agent ID does not exist in PMM inventory.
+- **Non-existent agent ID**: The specified agent ID does not exist in PFMM inventory.
 - **Mismatched agent type**: The agent ID exists but belongs to a different agent type (e.g., using a `mysqld-exporter` ID with the `mongodb-exporter` subcommand).
 - **Invalid flag value**: A flag receives a value outside its allowed range (e.g., an invalid log level).
 

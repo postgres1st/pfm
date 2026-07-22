@@ -1,6 +1,6 @@
-# About PMM Inventory
+# About PFMM Inventory
 
-The **Inventory** dashboard is a high-level overview of all objects registered in PMM.
+The **Inventory** dashboard is a high-level overview of all objects registered in PFMM.
 
 To check your inventory list, go to **Inventory  > Services**.
 
@@ -30,12 +30,12 @@ These are some of the attributes for a service:
 
 - Every service is related to a certain node via its `node_id` attribute. This feature allows to support monitoring of multiple instances on a single node, with different service names, e.g. `mysql1-3306`, and `mysql1-3307`.
 
-- Each instance of a service gets a `version` attribute to the response of the endpoint that provides a list of services being monitored by PMM. This makes it easy to visualize the database server version.
+- Each instance of a service gets a `version` attribute to the response of the endpoint that provides a list of services being monitored by PFMM. This makes it easy to visualize the database server version.
 
     Limitations:
 
     - The version is not captured for the internal PostgreSQL database.
-    - The version is only captured when a new service is being added to PMM and the agent installed on the client side is equal to or greater than v2.41.0.
+    - The version is only captured when a new service is being added to PFMM and the agent installed on the client side is equal to or greater than v2.41.0.
     - When a database is upgraded, you will not see the database version updated automatically. It will be updated if you remove and then re-add the service.
 
 #### Agents
@@ -52,11 +52,11 @@ To view the agents running on a service and their health status, click the statu
 
 You can also check the properties of a particular agent by clicking the :material-arrow-downward: icon under the **Options** column.
 
-![!PMM Inventory Service Agent Properties](../images/PMM_Inventory_Service_Agent_Properties.png)
+![!PFMM Inventory Service Agent Properties](../images/PMM_Inventory_Service_Agent_Properties.png)
 
 #### Agent status indicators
 
-Agents in PMM Inventory display the following status indicators:
+Agents in PFMM Inventory display the following status indicators:
 
 | Status | Color | Description |
 |--------|-------|-------------|
@@ -80,7 +80,7 @@ Click on the link in the **Node Name** column to view the node on which a specif
 
 Understanding the relationship between nodes and services is key to gaining insights into the distribution and performance of individual services across nodes.
 
-- **Deployment**: Services within PMM are deployed on nodes and rely on them for resources, such as CPU, memory, and storage, to execute tasks.
+- **Deployment**: Services within PFMM are deployed on nodes and rely on them for resources, such as CPU, memory, and storage, to execute tasks.
 
 - **Resource allocation**: It is essential to know which nodes host which services to allocate resources appropriately to avoid underuse or overload.
 
@@ -99,13 +99,13 @@ To edit the labels:
 
 3. Click **Edit** to change the labels, then click **Save Changes**. 
 
-    ![PMM - editing labels](../images/PMM_access_edit_labels.png)
+    ![PFMM - editing labels](../images/PMM_access_edit_labels.png)
 
 5. Click **Confirm and save changes**. You will be taken back to the **Inventory/Services** page.
 
 #### Effect of editing labels for a service
 
-Editing existing labels can impact the following PMM functions:
+Editing existing labels can impact the following PFMM functions:
 
 - **Alerting** 
 

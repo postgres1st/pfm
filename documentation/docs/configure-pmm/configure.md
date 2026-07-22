@@ -1,8 +1,8 @@
-# Configure PMM
+# Configure PFMM
 
-This section provides the instructions to configure your PMM instance after you have installed PMM.
+This section provides the instructions to configure your PFMM instance after you have installed PFMM.
 
-**Configuration > Settings** gives you access to PMM setup's settings and inventory options:
+**Configuration > Settings** gives you access to PFMM setup's settings and inventory options:
 
 * [Metrics resolution](metrics_res.md)
 * [Advanced settings](advanced_settings.md)

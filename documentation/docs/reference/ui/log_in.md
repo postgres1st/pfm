@@ -1,15 +1,15 @@
-# Log into PMM
+# Log into PFMM
 
 ## Basic authentication
 
-Basic authentication is the default method, using usernames and passwords stored in PMM.
+Basic authentication is the default method, using usernames and passwords stored in PFMM.
 
-To log into PMM with basic authentication:
+To log into PFMM with basic authentication:
 {.power-number}
 
 1. Open a web browser and enter the server name or IP address of the PMM Server host: 
 
-   ![PMM Login](../../images/PMM_Login.jpg)
+   ![PFMM Login](../../images/PMM_Login.jpg)
 
 2. Enter your username and password:
    - **Default credentials:** `admin`/`admin` 
@@ -19,11 +19,11 @@ To log into PMM with basic authentication:
 
 4. On first login, you'll be prompted to set a new password. Enter a new password and click **Submit**, or click **Skip** to keep the default (not recommended for production).
 
-![PMM Home dashboard](../../images/PMM_Home_Dashboard.png)
+![PFMM Home dashboard](../../images/PMM_Home_Dashboard.png)
 
 ## Other authentication methods
 
-PMM supports all authentication methods available in Grafana, including:
+PFMM supports all authentication methods available in Grafana, including:
 
 - **LDAP** - Integrate with your directory service
 - **OAuth 2.0** - GitHub, GitLab, Google, Azure AD, Okta, and other providers

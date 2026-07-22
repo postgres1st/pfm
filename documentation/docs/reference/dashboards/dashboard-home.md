@@ -1,6 +1,6 @@
 # Home Dashboard
 
-The Home Dashboard is the default landing page in PMM. It gives you a unified view of your monitored databases and infrastructure, highlights unusual behavior, and helps you spot trends by comparing current resource usage with the same time last week.
+The Home Dashboard is the default landing page in PFMM. It gives you a unified view of your monitored databases and infrastructure, highlights unusual behavior, and helps you spot trends by comparing current resource usage with the same time last week.
 
 Use this dashboard as your starting point, then drill down into technology-specific dashboards (such as MySQL, MongoDB, or PostgreSQL) or node-level dashboards when you need more detail.
 
@@ -12,7 +12,7 @@ The Overview section shows key counts and capacity metrics across all monitored 
 
 ### Monitored DB Services
 
-Shows how many database services PMM is actively collecting data from, broken down by technology: MySQL, MongoDB, PostgreSQL, ProxySQL, and Valkey.
+Shows how many database services PFMM is actively collecting data from, broken down by technology: MySQL, MongoDB, PostgreSQL, ProxySQL, and Valkey.
 
 This count can be higher than **Monitored DB Instances** because a single database may have more than one monitoring connection. For example, if you have multiple exporters or nodes reporting for the same service, each one counts separately here.
 
@@ -28,7 +28,7 @@ Use this alongside Monitored DB Services to confirm whether a high service count
 
 Shows the total number of infrastructure nodes matching the current dashboard filters. A node is either a physical server, VM, or Kubernetes node.
 
-Use this to confirm all expected nodes are registered with PMM. Click to open the **Nodes Overview** dashboard.
+Use this to confirm all expected nodes are registered with PFMM. Click to open the **Nodes Overview** dashboard.
 
 ### Min Node Uptime
 
@@ -94,13 +94,13 @@ Use this to understand total compute capacity across your environment. Click to 
 
 Shows the number of advisor checks that failed during the most recent run.
 
-Use this to stay on top of advisor findings. A non-zero count means PMM has flagged conditions that need your attention. 
+Use this to stay on top of advisor findings. A non-zero count means PFMM has flagged conditions that need your attention. 
 
 Click to open the **Advisors** page and see which specific checks need attention.
 
-### PMM Upgrade
+### PFMM Upgrade
 
-Shows the current PMM version and whether a newer version is available. Use this to stay current. You can start an upgrade directly from the dashboard.
+Shows the current PFMM version and whether a newer version is available. Use this to stay current. You can start an upgrade directly from the dashboard.
 
 ## Anomaly Detection
 

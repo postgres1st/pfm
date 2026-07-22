@@ -9,9 +9,9 @@ The collector is enabled by default. The following folders are used for differen
 
 | Resolution | Folder                                                                    |
 |------------|---------------------------------------------------------------------------|
-|  High      | `/usr/local/percona/pmm/collectors/textfile-collector/high-resolution`   |
-|  Medium    | `/usr/local/percona/pmm/collectors/textfile-collector/medium-resolution` |
-|  Low       | `/usr/local/percona/pmm/collectors/textfile-collector/low-resolution`    |
+|  High      | `/opt/postgres1st/pfm/collectors/textfile-collector/high-resolution`   |
+|  Medium    | `/opt/postgres1st/pfm/collectors/textfile-collector/medium-resolution` |
+|  Low       | `/opt/postgres1st/pfm/collectors/textfile-collector/low-resolution`    |
 
 ![Node Exporter Textfile Collector 1](../../images/node-exporter.textfile-collector.1.png)
 
@@ -23,14 +23,14 @@ Metrics are stored on the PMM Server-side with additional labels related to this
 To statically set roles for a machine using labels:
 
 ```sh
-echo 'node_role{role="my_monitored_server_1"} 1' > /usr/local/percona/pmm/collectors/textfile-collector/low-resolution/node_role.prom
+echo 'node_role{role="my_monitored_server_1"} 1' > /opt/postgres1st/pfm/collectors/textfile-collector/low-resolution/node_role.prom
 ```
 
 Here's an example of a `cron` job that automatically pushes logged-in users:
 
 ```sh
 $ cat /etc/cron.d/loggedin_users
-*/1 * * * *     root    /usr/bin/who | /usr/bin/wc -l | sed -ne 's/^/node_loggedin_users /p' > /usr/local/percona/pmm/collectors/textfile-collector/high-resolution/node_users.prom
+*/1 * * * *     root    /usr/bin/who | /usr/bin/wc -l | sed -ne 's/^/node_loggedin_users /p' > /opt/postgres1st/pfm/collectors/textfile-collector/high-resolution/node_users.prom
 ```
 
 ![Node Exporter Textfile Collector 2](../../images/node-exporter.textfile-collector.2.png)

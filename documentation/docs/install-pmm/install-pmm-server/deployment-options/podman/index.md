@@ -8,7 +8,7 @@ Podman is an open-source, daemonless container engine for developing, managing, 
 
 One of Podman's main benefits is that non-privileged users can run containers without elevated permissions. Podman is largely compatible with Docker commands. If needed, you can set an alias (`alias docker=podman`) and use familiar Docker workflows. 
 
-Most Docker-based PMM steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
+Most Docker-based PFMM steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
 
 Choose Podman deployment when:
 
@@ -19,7 +19,7 @@ Choose Podman deployment when:
 
 
 !!! tip "Recommended setup for best performance"
-    Percona recommends running PMM with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
+    Percona recommends running PFMM with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
 
 ## Before you start
 
@@ -28,11 +28,11 @@ Before installing PMM Server with Podman, ensure you have:
 
 1. Install [Podman](https://podman.io/getting-started/installation).
 2. Configure [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) Podman.
-3. Create the Podman volume for PMM:
+3. Create the Podman volume for PFMM:
   ```sh
   podman volume create pmm-data
   ```
-4. Create the Podman network for PMM:
+4. Create the Podman network for PFMM:
   ```sh
   podman network create pmm_default
   ```
@@ -85,7 +85,7 @@ Use one of these log drivers instead:
 - `none`: disables logging
 
 === "Installation with UI updates"
-    This method enables updates through the PMM web interface using Watchtower and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting Watchtower to pull the new image. 
+    This method enables updates through the PFMM web interface using Watchtower and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting Watchtower to pull the new image. 
 
     Watchtower then stops the existing container, and systemd automatically restarts it with the updated image.
     {.power-number}
@@ -174,7 +174,7 @@ Use one of these log drivers instead:
         systemctl --user enable --now watchtower
         ```
 
-    7. Go to `https://localhost:443` to access the PMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    7. Go to `https://localhost:443` to access the PFMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 === "Installation with manual updates"
     The installation with manual updates offers a straightforward setup with direct control over updates, without relying on additional services. 
@@ -228,7 +228,7 @@ Use one of these log drivers instead:
         systemctl --user enable --now pmm-server
         ```
 
-    5. Go to `https://localhost:443` to access the PMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    5. Go to `https://localhost:443` to access the PFMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 For information on manually upgrading, see [Upgrade PMM Server using Podman](../../../../pmm-upgrade/upgrade_podman.md).
 
