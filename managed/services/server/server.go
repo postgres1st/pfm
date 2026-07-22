@@ -487,6 +487,17 @@ func (s *Server) readUpdateAuthToken() (string, error) {
 	return a.AuthToken, nil
 }
 
+// supportedServiceTypeStrings returns the permitted Service types as their lowercase model
+// identifiers, for the API to expose so clients read the allowlist instead of hardcoding it.
+func supportedServiceTypeStrings() []string {
+	types := models.SupportedServiceTypes()
+	res := make([]string, len(types))
+	for i, t := range types {
+		res[i] = string(t)
+	}
+	return res
+}
+
 // convertSettings merges database settings and settings from environment variables into API response.
 func (s *Server) convertSettings(settings *models.Settings, disableInternalPgQan bool) *serverv1.Settings {
 	res := &serverv1.Settings{
@@ -518,6 +529,8 @@ func (s *Server) convertSettings(settings *models.Settings, disableInternalPgQan
 		EnableAccessControl:  settings.IsAccessControlEnabled(),
 		DefaultRoleId:        uint32(settings.DefaultRoleID),
 		UpdateSnoozeDuration: durationpb.New(settings.Updates.SnoozeDuration),
+
+		SupportedServiceTypes: supportedServiceTypeStrings(),
 	}
 
 	return res
@@ -534,6 +547,8 @@ func (s *Server) convertReadOnlySettings(settings *models.Settings) *serverv1.Re
 		BackupManagementEnabled: settings.IsBackupManagementEnabled(),
 		AzurediscoverEnabled:    settings.IsAzureDiscoverEnabled(),
 		EnableAccessControl:     settings.IsAccessControlEnabled(),
+
+		SupportedServiceTypes: supportedServiceTypeStrings(),
 	}
 
 	return res

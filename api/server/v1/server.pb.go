@@ -1101,8 +1101,11 @@ type Settings struct {
 	EnableInternalPgQan bool `protobuf:"varint,19,opt,name=enable_internal_pg_qan,json=enableInternalPgQan,proto3" json:"enable_internal_pg_qan,omitempty"`
 	// Duration for which an update is snoozed
 	UpdateSnoozeDuration *durationpb.Duration `protobuf:"bytes,20,opt,name=update_snooze_duration,json=updateSnoozeDuration,proto3" json:"update_snooze_duration,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Database service types this deployment accepts, as lowercase model identifiers
+	// (e.g. "postgresql"). Clients use it to hide unsupported types.
+	SupportedServiceTypes []string `protobuf:"bytes,21,rep,name=supported_service_types,json=supportedServiceTypes,proto3" json:"supported_service_types,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *Settings) Reset() {
@@ -1270,6 +1273,13 @@ func (x *Settings) GetUpdateSnoozeDuration() *durationpb.Duration {
 	return nil
 }
 
+func (x *Settings) GetSupportedServiceTypes() []string {
+	if x != nil {
+		return x.SupportedServiceTypes
+	}
+	return nil
+}
+
 // ReadOnlySettings represents a stripped-down version of PMM Server settings that can be accessed by users of all roles.
 type ReadOnlySettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1289,8 +1299,11 @@ type ReadOnlySettings struct {
 	AzurediscoverEnabled bool `protobuf:"varint,7,opt,name=azurediscover_enabled,json=azurediscoverEnabled,proto3" json:"azurediscover_enabled,omitempty"`
 	// True if Access Control is enabled.
 	EnableAccessControl bool `protobuf:"varint,8,opt,name=enable_access_control,json=enableAccessControl,proto3" json:"enable_access_control,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Database service types this deployment accepts, as lowercase model identifiers
+	// (e.g. "postgresql"). Clients use it to hide unsupported types.
+	SupportedServiceTypes []string `protobuf:"bytes,9,rep,name=supported_service_types,json=supportedServiceTypes,proto3" json:"supported_service_types,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ReadOnlySettings) Reset() {
@@ -1377,6 +1390,13 @@ func (x *ReadOnlySettings) GetEnableAccessControl() bool {
 		return x.EnableAccessControl
 	}
 	return false
+}
+
+func (x *ReadOnlySettings) GetSupportedServiceTypes() []string {
+	if x != nil {
+		return x.SupportedServiceTypes
+	}
+	return nil
 }
 
 type GetSettingsRequest struct {
@@ -1814,7 +1834,7 @@ const file_server_v1_server_proto_rawDesc = "" +
 	"\x13AdvisorRunIntervals\x12F\n" +
 	"\x11standard_interval\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x10standardInterval\x12>\n" +
 	"\rrare_interval\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\frareInterval\x12F\n" +
-	"\x11frequent_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x10frequentInterval\"\xef\a\n" +
+	"\x11frequent_interval\x18\x03 \x01(\v2\x19.google.protobuf.DurationR\x10frequentInterval\"\xa7\b\n" +
 	"\bSettings\x12'\n" +
 	"\x0fupdates_enabled\x18\x01 \x01(\bR\x0eupdatesEnabled\x12+\n" +
 	"\x11telemetry_enabled\x18\x02 \x01(\bR\x10telemetryEnabled\x12N\n" +
@@ -1835,7 +1855,8 @@ const file_server_v1_server_proto_rawDesc = "" +
 	"\x15enable_access_control\x18\x11 \x01(\bR\x13enableAccessControl\x12&\n" +
 	"\x0fdefault_role_id\x18\x12 \x01(\rR\rdefaultRoleId\x123\n" +
 	"\x16enable_internal_pg_qan\x18\x13 \x01(\bR\x13enableInternalPgQan\x12O\n" +
-	"\x16update_snooze_duration\x18\x14 \x01(\v2\x19.google.protobuf.DurationR\x14updateSnoozeDuration\"\x8f\x03\n" +
+	"\x16update_snooze_duration\x18\x14 \x01(\v2\x19.google.protobuf.DurationR\x14updateSnoozeDuration\x126\n" +
+	"\x17supported_service_types\x18\x15 \x03(\tR\x15supportedServiceTypes\"\xc7\x03\n" +
 	"\x10ReadOnlySettings\x12'\n" +
 	"\x0fupdates_enabled\x18\x01 \x01(\bR\x0eupdatesEnabled\x12+\n" +
 	"\x11telemetry_enabled\x18\x02 \x01(\bR\x10telemetryEnabled\x12'\n" +
@@ -1844,7 +1865,8 @@ const file_server_v1_server_proto_rawDesc = "" +
 	"\x12pmm_public_address\x18\x05 \x01(\tR\x10pmmPublicAddress\x12:\n" +
 	"\x19backup_management_enabled\x18\x06 \x01(\bR\x17backupManagementEnabled\x123\n" +
 	"\x15azurediscover_enabled\x18\a \x01(\bR\x14azurediscoverEnabled\x122\n" +
-	"\x15enable_access_control\x18\b \x01(\bR\x13enableAccessControl\"\x14\n" +
+	"\x15enable_access_control\x18\b \x01(\bR\x13enableAccessControl\x126\n" +
+	"\x17supported_service_types\x18\t \x03(\tR\x15supportedServiceTypes\"\x14\n" +
 	"\x12GetSettingsRequest\"\x1c\n" +
 	"\x1aGetReadOnlySettingsRequest\"F\n" +
 	"\x13GetSettingsResponse\x12/\n" +
@@ -1952,7 +1974,6 @@ var (
 		(*common.StringArray)(nil),          // 29: common.StringArray
 	}
 )
-
 var file_server_v1_server_proto_depIdxs = []int32{
 	27, // 0: server.v1.VersionInfo.timestamp:type_name -> google.protobuf.Timestamp
 	1,  // 1: server.v1.VersionResponse.server:type_name -> server.v1.VersionInfo
