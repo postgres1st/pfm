@@ -1,6 +1,11 @@
-import { addConfiguration } from './navigation.utils';
+import {
+  addConfiguration,
+  filterSupportedServiceTypes,
+} from './navigation.utils';
 import { NAV_CONFIGURATION } from './navigation.constants';
 import { GetUpdatesResponse, UpdateStatus } from 'types/updates.types';
+import { ManagedServiceType, ServiceType } from 'types/services.types';
+import { DEFAULT_SUPPORTED_SERVICE_TYPES } from 'lib/constants';
 
 // The Updates feature is flag-disabled in the shipped app; force it on here to
 // cover the enabled path (where addConfiguration touches the updates nav item).
@@ -25,6 +30,66 @@ const VERSION_INFO: GetUpdatesResponse = {
 
 const getUpdatesChild = (node = NAV_CONFIGURATION) =>
   node.children?.find((c) => c.id === 'updates');
+
+describe('filterSupportedServiceTypes', () => {
+  const ALL: ServiceType[] = [
+    ServiceType.mysql,
+    ServiceType.mongodb,
+    ServiceType.posgresql,
+    ServiceType.proxysql,
+    ServiceType.haproxy,
+    ServiceType.valkey,
+    ServiceType.external,
+  ];
+
+  it('keeps only the types present in the supported allowlist', () => {
+    expect(
+      filterSupportedServiceTypes(ALL, DEFAULT_SUPPORTED_SERVICE_TYPES)
+    ).toEqual([
+      ServiceType.posgresql,
+      ServiceType.haproxy,
+      ServiceType.external,
+    ]);
+  });
+
+  it('drops unsupported DB types (MySQL, MongoDB, ProxySQL, Valkey)', () => {
+    const result = filterSupportedServiceTypes(
+      ALL,
+      DEFAULT_SUPPORTED_SERVICE_TYPES
+    );
+
+    expect(result).not.toContain(ServiceType.mysql);
+    expect(result).not.toContain(ServiceType.mongodb);
+    expect(result).not.toContain(ServiceType.proxysql);
+    expect(result).not.toContain(ServiceType.valkey);
+  });
+
+  it('honours a runtime override that re-enables a type', () => {
+    const supported = [...DEFAULT_SUPPORTED_SERVICE_TYPES, ManagedServiceType.mysql];
+
+    expect(filterSupportedServiceTypes(ALL, supported)).toContain(
+      ServiceType.mysql
+    );
+  });
+
+  it('returns an empty list when nothing is supported', () => {
+    expect(filterSupportedServiceTypes(ALL, [])).toEqual([]);
+  });
+
+  it('drops the unspecified type and any unmapped inventory type', () => {
+    // unspecified maps to '' and a future/unknown type maps to undefined — both
+    // must be filtered out rather than leaking through as a matchless nav tree.
+    const withOddballs = [
+      ServiceType.posgresql,
+      ServiceType.unspecified,
+      'SERVICE_TYPE_FUTURE' as ServiceType,
+    ];
+
+    expect(
+      filterSupportedServiceTypes(withOddballs, DEFAULT_SUPPORTED_SERVICE_TYPES)
+    ).toEqual([ServiceType.posgresql]);
+  });
+});
 
 describe('addConfiguration (UPDATES_ENABLED=true)', () => {
   it('does not mutate the shared NAV_CONFIGURATION updates child', () => {
