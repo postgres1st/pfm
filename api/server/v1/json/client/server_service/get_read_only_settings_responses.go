@@ -707,6 +707,10 @@ type GetReadOnlySettingsOKBodySettings struct {
 
 	// True if Access Control is enabled.
 	EnableAccessControl bool `json:"enable_access_control,omitempty"`
+
+	// Database service types this deployment accepts, as lowercase model identifiers
+	// (e.g. "postgresql"). Clients use it to hide unsupported types.
+	SupportedServiceTypes []string `json:"supported_service_types"`
 }
 
 // Validate validates this get read only settings OK body settings
