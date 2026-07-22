@@ -204,7 +204,8 @@ func TestRTAMongoDBAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				RtaMongodbAgent: &agents.ChangeAgentParamsBodyRtaMongodbAgent{
-					Password: new("new-rotated-rta-mongodb-password"),
+					SkipConnectionCheck: new(true),
+					Password:            new("new-rotated-rta-mongodb-password"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -218,8 +219,9 @@ func TestRTAMongoDBAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				RtaMongodbAgent: &agents.ChangeAgentParamsBodyRtaMongodbAgent{
-					Username: new("new-rta-mongodb-user"),
-					Password: new("another-new-rta-mongodb-password"),
+					SkipConnectionCheck: new(true),
+					Username:            new("new-rta-mongodb-user"),
+					Password:            new("another-new-rta-mongodb-password"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -280,7 +282,8 @@ func TestRTAMongoDBAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				RtaMongodbAgent: &agents.ChangeAgentParamsBodyRtaMongodbAgent{
-					Username: new("updated-profiler-user"),
+					SkipConnectionCheck: new(true),
+					Username:            new("updated-profiler-user"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -350,10 +353,11 @@ func TestRTAMongoDBAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				RtaMongodbAgent: &agents.ChangeAgentParamsBodyRtaMongodbAgent{
-					Username:      new("changed-mongodb-user"),
-					Password:      new("changed-mongodb-password"),
-					TLS:           new(true),
-					TLSSkipVerify: new(false),
+					SkipConnectionCheck: new(true),
+					Username:            new("changed-mongodb-user"),
+					Password:            new("changed-mongodb-password"),
+					TLS:                 new(true),
+					TLSSkipVerify:       new(false),
 					CustomLabels: &agents.ChangeAgentParamsBodyRtaMongodbAgentCustomLabels{
 						Values: map[string]string{
 							"environment": "production",

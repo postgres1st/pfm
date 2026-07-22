@@ -187,7 +187,8 @@ func TestQANMySQLSlowlogAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				QANMysqlSlowlogAgent: &agents.ChangeAgentParamsBodyQANMysqlSlowlogAgent{
-					Password: new("new-rotated-mysql-slowlog-password"),
+					SkipConnectionCheck: new(true),
+					Password:            new("new-rotated-mysql-slowlog-password"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -201,8 +202,9 @@ func TestQANMySQLSlowlogAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				QANMysqlSlowlogAgent: &agents.ChangeAgentParamsBodyQANMysqlSlowlogAgent{
-					Username: new("new-mysql-slowlog-user"),
-					Password: new("another-new-mysql-slowlog-password"),
+					SkipConnectionCheck: new(true),
+					Username:            new("new-mysql-slowlog-user"),
+					Password:            new("another-new-mysql-slowlog-password"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -262,7 +264,8 @@ func TestQANMySQLSlowlogAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				QANMysqlSlowlogAgent: &agents.ChangeAgentParamsBodyQANMysqlSlowlogAgent{
-					Username: new("updated-slowlog-user"),
+					SkipConnectionCheck: new(true),
+					Username:            new("updated-slowlog-user"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -336,6 +339,7 @@ func TestQANMySQLSlowlogAgent(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				QANMysqlSlowlogAgent: &agents.ChangeAgentParamsBodyQANMysqlSlowlogAgent{
+					SkipConnectionCheck:  new(true),
 					Username:             new("changed-slowlog-user"),
 					Password:             new("changed-slowlog-password"),
 					MaxQueryLength:       new(int32(2048)),

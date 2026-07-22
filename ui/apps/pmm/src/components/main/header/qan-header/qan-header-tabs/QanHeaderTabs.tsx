@@ -9,7 +9,12 @@ import { PMM_NEW_NAV_GRAFANA_PATH } from 'lib/constants';
 // support, so only the stored-metrics (historical) tab is shown.
 const QanHeaderTabs: FC = () => {
   return (
-    <Tabs value="historical">
+    <Tabs
+      value="historical"
+      variant="scrollable"
+      scrollButtons="auto"
+      sx={{ flex: 1, minWidth: 0 }}
+    >
       <Tab
         value="historical"
         label={Messages.tabStoredMetrics}

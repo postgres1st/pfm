@@ -3,7 +3,6 @@ export PACKER_VERSION := 1.15.4
 # check available versions at https://vagrantcloud.com/api/v2/vagrant/bento/rockylinux-9
 export BOX_VERSION := 202510.26.0
 export PMM_SERVER_IMAGE ?= docker.io/perconalab/pmm-server:3-dev-latest
-export WATCHTOWER_IMAGE ?= docker.io/perconalab/watchtower:dev-latest
 # --- Go-related variables ----------------------------------------------------------------
 GO_VERSION := $(shell grep '^go ' $(CURDIR)/../go.mod | awk '{print $$2}')
 
@@ -41,7 +40,6 @@ pmm-azure:
 pmm-ami:
 	docker run --rm -v ${HOME}/.aws:/root/.aws -v `pwd`:/build -w /build \hashicorp/packer:${PACKER_VERSION} \
 		build -var 'pmm_server_image_name=${PMM_SERVER_IMAGE}' \
-		-var 'watchtower_image_name=${WATCHTOWER_IMAGE}' \
 		-only amazon-ebs -color=false packer/pmm.json | tee build.log
 ## ----------------- PACKER ------------------
 

@@ -600,10 +600,7 @@ func UpdateAgent(q *reform.Querier, agent *Agent) error {
 
 // ExtractPmmAgentVersionFromAgent extract PMM agent version from Agent by pmm-agent-id.
 func ExtractPmmAgentVersionFromAgent(q *reform.Querier, agent *Agent) *version.Parsed {
-	pmmAgentID, err := ExtractPmmAgentID(agent)
-	if err != nil {
-		return nil
-	}
+	pmmAgentID := ExtractPmmAgentID(agent)
 	pmmAgent, err := FindAgentByID(q, pmmAgentID)
 	if err != nil {
 		return nil
@@ -617,12 +614,12 @@ func ExtractPmmAgentVersionFromAgent(q *reform.Querier, agent *Agent) *version.P
 }
 
 // ExtractPmmAgentID extract pmm-agent-id from Agent by type.
-func ExtractPmmAgentID(agent *Agent) (string, error) {
+func ExtractPmmAgentID(agent *Agent) string {
 	switch agent.AgentType {
 	case PMMAgentType:
-		return agent.AgentID, nil
+		return agent.AgentID
 	default:
-		return pointer.GetString(agent.PMMAgentID), nil
+		return pointer.GetString(agent.PMMAgentID)
 	}
 }
 
@@ -666,6 +663,8 @@ func CreatePMMAgent(q *reform.Querier, runsOnNodeID string, customLabels map[str
 }
 
 // CreateNodeExporter creates NodeExporter.
+//
+//nolint:unparam
 func CreateNodeExporter(q *reform.Querier,
 	pmmAgentID string,
 	customLabels map[string]string,
@@ -826,6 +825,9 @@ type CreateAgentParams struct {
 	MySQLOptions             MySQLOptions
 	PostgreSQLOptions        PostgreSQLOptions
 	ValkeyOptions            ValkeyOptions
+
+	// SkipConnectionCheck is a request-scoped flag, not an agent attribute.
+	SkipConnectionCheck bool
 }
 
 func compatibleNodeAndAgent(nodeType NodeType, agentType AgentType) bool {
@@ -1136,6 +1138,52 @@ type ChangeAgentParams struct {
 	TLS           *bool
 	TLSSkipVerify *bool
 	ListenPort    *uint32 // for external exporter
+
+	// SkipConnectionCheck is a request-scoped flag, not an agent attribute
+	SkipConnectionCheck bool
+}
+
+// AffectsConnection returns true if the change modifies parameters used to connect
+// to the service (credentials, TLS options, endpoint), i.e. changes that should be
+// validated with a connection check before they are applied.
+func (p *ChangeAgentParams) AffectsConnection() bool {
+	if p.Username != nil || p.Password != nil || p.TLS != nil || p.TLSSkipVerify != nil || p.ListenPort != nil {
+		return true
+	}
+
+	if o := p.MySQLOptions; o != nil {
+		if o.TLSCa != nil || o.TLSCert != nil || o.TLSKey != nil {
+			return true
+		}
+	}
+
+	if o := p.PostgreSQLOptions; o != nil {
+		if o.SSLCa != nil || o.SSLCert != nil || o.SSLKey != nil {
+			return true
+		}
+	}
+
+	if o := p.MongoDBOptions; o != nil {
+		if o.TLSCertificateKey != nil || o.TLSCertificateKeyFilePassword != nil || o.TLSCa != nil ||
+			o.AuthenticationMechanism != nil || o.AuthenticationDatabase != nil {
+			return true
+		}
+	}
+
+	if o := p.ValkeyOptions; o != nil {
+		if o.SSLCa != nil || o.SSLCert != nil || o.SSLKey != nil {
+			return true
+		}
+	}
+
+	if o := p.ExporterOptions; o != nil {
+		// Scheme and path define the external exporter's metrics endpoint.
+		if o.MetricsScheme != nil || o.MetricsPath != nil {
+			return true
+		}
+	}
+
+	return false
 }
 
 // ChangeAgent changes agent parameters based on agent type.
@@ -1466,9 +1514,4 @@ func updateExternalExporterParams(q *reform.Querier, row *Agent) error {
 		row.PMMAgentID = nil
 	}
 	return nil
-}
-
-// IsPushMetricsSupported return if PUSH mode is supported for pmm agent version.
-func IsPushMetricsSupported(pmmAgentVersion *string) bool {
-	return true
 }

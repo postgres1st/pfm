@@ -176,7 +176,7 @@ docker exec -t pmm-server change-admin-password your_secure_password
 PMM_PASSWORD="mypassword"
 echo "Waiting for PFMM to initialize to set password..."
 until [ $(docker inspect -f {% raw %}'{{.State.Health.Status}}'{% endraw %} pmm-server) = "healthy" ]; do sleep 1; done
-docker exec -t pmm-server bash -c  "grafana cli --homepath /usr/share/grafana --config=/etc/grafana/grafana.ini admin reset-admin-password $PMM_PASSWORD"
+docker exec -t pmm-server bash -c  "grafana cli --homepath /usr/share/grafana --config=/etc/grafana/grafana.ini admin reset-admin-password $PMM_PASSWORD"
 ```
 
 ## How to use a non-default listen-port for pmm-admin?
