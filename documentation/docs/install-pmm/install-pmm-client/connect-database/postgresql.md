@@ -14,9 +14,9 @@ For monitoring Amazon RDS PostgreSQL instances, see [Connect Amazon RDS instance
     {.power-number}
 
     1. [Prerequisites](#before-you-start): Ensure PMM Server is running and PMM Client is installed
-    2. [Create PFMM user](#create-a-database-account-for-pmm): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
+    2. [Create PFMM user](#create-a-database-account-for-pfmm): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
     3. [Configure extension](#choose-a-monitoring-extension): Set up `pg_stat_statements` or `pg_stat_monitor`
-    4. [Add service](#add-service-to-pmm): Use PFMM UI or command line to add the PostgreSQL instance
+    4. [Add service](#add-service-to-pfmm): Use PFMM UI or command line to add the PostgreSQL instance
     5. [Verify connection](#check-the-service): Check PFMM Inventory and dashboards for data. 
 
 ## Before you start
