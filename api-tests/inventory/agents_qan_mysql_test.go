@@ -29,6 +29,7 @@ import (
 )
 
 func TestQANMySQLPerfSchemaAgent(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()

@@ -32,6 +32,7 @@ import (
 )
 
 func TestAddMySQL(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 
 	t.Run("Basic", func(t *testing.T) {
@@ -919,6 +920,7 @@ func TestAddMySQL(t *testing.T) {
 }
 
 func TestRemoveMySQL(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 
 	addMySQL := func(t *testing.T, serviceName, nodeName string, withAgents bool) (serviceID string) {

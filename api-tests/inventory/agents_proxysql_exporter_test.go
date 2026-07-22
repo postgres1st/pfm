@@ -29,6 +29,7 @@ import (
 )
 
 func TestProxySQLExporter(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "proxysql")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()

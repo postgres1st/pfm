@@ -29,6 +29,7 @@ import (
 )
 
 func TestQANMongoDBProfilerAgent(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mongodb")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()
