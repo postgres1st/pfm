@@ -30,9 +30,23 @@ import (
 	"github.com/percona/pmm/managed/utils/testdb"
 )
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests. Backup is a MySQL/MongoDB-only feature
+// with no PostgreSQL equivalent, so these tests are skipped (not retargeted) under the
+// default PostgreSQL-only gate.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func setup(t *testing.T, q *reform.Querier, serviceType models.ServiceType, serviceName string) (*models.Agent, *models.Service) {
 	t.Helper()
 	require.Contains(t, []models.ServiceType{models.MySQLServiceType, models.MongoDBServiceType}, serviceType)
+	skipIfServiceTypeUnsupported(t, serviceType)
 
 	node, err := models.CreateNode(q, models.GenericNodeType, &models.CreateNodeParams{
 		NodeName: "test-node-" + t.Name(),

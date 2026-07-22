@@ -32,9 +32,23 @@ import (
 	"github.com/percona/pmm/managed/utils/tests"
 )
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests. These scheduler tests exercise scheduled
+// backups, a MySQL/MongoDB-only feature with no PostgreSQL equivalent, so they are skipped
+// (not retargeted) under the default PostgreSQL-only gate.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func TestService(t *testing.T) {
 	setup := func(t *testing.T, ctx context.Context, serviceType models.ServiceType, serviceName string) (*Service, *models.Service, *models.BackupLocation) {
 		t.Helper()
+		skipIfServiceTypeUnsupported(t, serviceType)
 		sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 		t.Cleanup(func() {
 			require.NoError(t, sqlDB.Close())
