@@ -114,15 +114,16 @@ func TestServiceService(t *testing.T) {
 			ctx, s, teardown, _ := setup(t)
 			defer teardown(t)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			// Retargeted to a supported type; the requested type below is deliberately mismatched.
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      models.PMMServerNodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
-			response, err := s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceID, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE})
+			response, err := s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceID, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_MYSQL_SERVICE})
 			assert.Nil(t, response)
 			tests.AssertGRPCError(t, status.New(codes.InvalidArgument, `wrong service type`), err)
 		})
@@ -131,18 +132,18 @@ func TestServiceService(t *testing.T) {
 			ctx, s, teardown, _ := setup(t)
 			defer teardown(t)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      models.PMMServerNodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
 			pmmAgent, err := models.CreatePMMAgent(s.db.Querier, models.PMMServerNodeID, nil)
 			require.NoError(t, err)
 
-			mysqldExporter, err := models.CreateAgent(s.db.Querier, models.MySQLdExporterType, &models.CreateAgentParams{
+			postgresExporter, err := models.CreateAgent(s.db.Querier, models.PostgresExporterType, &models.CreateAgentParams{
 				PMMAgentID: pmmAgent.AgentID,
 				ServiceID:  service.ServiceID,
 				Password:   "password",
@@ -152,11 +153,11 @@ func TestServiceService(t *testing.T) {
 			require.NoError(t, err)
 
 			s.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, pmmAgent.AgentID)
-			response, err := s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_MYSQL_SERVICE})
+			response, err := s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE})
 			assert.NotNil(t, response)
 			require.NoError(t, err)
 
-			agent, err := models.FindAgentByID(s.db.Querier, mysqldExporter.AgentID)
+			agent, err := models.FindAgentByID(s.db.Querier, postgresExporter.AgentID)
 			assert.Nil(t, agent)
 			tests.AssertGRPCError(t, status.New(codes.NotFound, `Agent with ID 00000000-0000-4000-8000-000000000007 not found.`), err)
 
@@ -176,18 +177,18 @@ func TestServiceService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
 			pmmAgent, err := models.CreatePMMAgent(s.db.Querier, models.PMMServerNodeID, nil)
 			require.NoError(t, err)
 
-			mysqldExporter, err := models.CreateAgent(s.db.Querier, models.MySQLdExporterType, &models.CreateAgentParams{
+			postgresExporter, err := models.CreateAgent(s.db.Querier, models.PostgresExporterType, &models.CreateAgentParams{
 				PMMAgentID: pmmAgent.AgentID,
 				ServiceID:  service.ServiceID,
 				Password:   "password",
@@ -203,14 +204,14 @@ func TestServiceService(t *testing.T) {
 			require.NoError(t, err)
 
 			s.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, pmmAgent.AgentID)
-			_, err = s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_MYSQL_SERVICE})
+			_, err = s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE})
 			require.NoError(t, err)
 
 			_, err = models.FindServiceByID(s.db.Querier, service.ServiceID)
 			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Service with ID "%s" not found.`, service.ServiceID)), err)
 
-			_, err = models.FindAgentByID(s.db.Querier, mysqldExporter.AgentID)
-			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, mysqldExporter.AgentID)), err)
+			_, err = models.FindAgentByID(s.db.Querier, postgresExporter.AgentID)
+			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, postgresExporter.AgentID)), err)
 
 			_, err = models.FindAgentByID(s.db.Querier, rdsExporter.AgentID)
 			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, rdsExporter.AgentID)), err)
@@ -230,18 +231,18 @@ func TestServiceService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
 			pmmAgent, err := models.CreatePMMAgent(s.db.Querier, models.PMMServerNodeID, nil)
 			require.NoError(t, err)
 
-			mysqldExporter, err := models.CreateAgent(s.db.Querier, models.MySQLdExporterType, &models.CreateAgentParams{
+			postgresExporter, err := models.CreateAgent(s.db.Querier, models.PostgresExporterType, &models.CreateAgentParams{
 				PMMAgentID: pmmAgent.AgentID,
 				ServiceID:  service.ServiceID,
 				Password:   "password",
@@ -257,14 +258,14 @@ func TestServiceService(t *testing.T) {
 			require.NoError(t, err)
 
 			s.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, pmmAgent.AgentID)
-			_, err = s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_MYSQL_SERVICE})
+			_, err = s.RemoveService(ctx, &managementv1.RemoveServiceRequest{ServiceId: service.ServiceName, ServiceType: inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE})
 			require.NoError(t, err)
 
 			_, err = models.FindServiceByID(s.db.Querier, service.ServiceID)
 			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Service with ID "%s" not found.`, service.ServiceID)), err)
 
-			_, err = models.FindAgentByID(s.db.Querier, mysqldExporter.AgentID)
-			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, mysqldExporter.AgentID)), err)
+			_, err = models.FindAgentByID(s.db.Querier, postgresExporter.AgentID)
+			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, postgresExporter.AgentID)), err)
 
 			_, err = models.FindAgentByID(s.db.Querier, azureExporter.AgentID)
 			tests.AssertGRPCError(t, status.New(codes.NotFound, fmt.Sprintf(`Agent with ID %s not found.`, azureExporter.AgentID)), err)
@@ -361,18 +362,18 @@ func TestServiceService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
 			pmmAgent, err := models.CreatePMMAgent(s.db.Querier, models.PMMServerNodeID, nil)
 			require.NoError(t, err)
 
-			mysqldExporter, err := models.CreateAgent(s.db.Querier, models.MySQLdExporterType, &models.CreateAgentParams{
+			postgresExporter, err := models.CreateAgent(s.db.Querier, models.PostgresExporterType, &models.CreateAgentParams{
 				PMMAgentID: pmmAgent.AgentID,
 				ServiceID:  service.ServiceID,
 				Password:   "password",
@@ -392,7 +393,7 @@ func TestServiceService(t *testing.T) {
 			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()           // PMM Server PostgreSQL exporter
 			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()      // PMM Server PG Stat Statements agent
 			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                    // PMM Agent 2
-			s.r.(*mockAgentsRegistry).On("IsConnected", mysqldExporter.AgentID).Return(false).Once() // MySQLd exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", postgresExporter.AgentID).Return(false).Once() // PostgreSQL exporter
 			s.r.(*mockAgentsRegistry).On("IsConnected", rdsExporter.AgentID).Return(false).Once()    // RDS exporter
 
 			response, err := s.ListServices(ctx, &managementv1.ListServicesRequest{})
@@ -414,18 +415,18 @@ func TestServiceService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgres",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
 			pmmAgent, err := models.CreatePMMAgent(s.db.Querier, models.PMMServerNodeID, nil)
 			require.NoError(t, err)
 
-			mysqldExporter, err := models.CreateAgent(s.db.Querier, models.MySQLdExporterType, &models.CreateAgentParams{
+			postgresExporter, err := models.CreateAgent(s.db.Querier, models.PostgresExporterType, &models.CreateAgentParams{
 				PMMAgentID: pmmAgent.AgentID,
 				ServiceID:  service.ServiceID,
 				Password:   "password",
@@ -445,7 +446,7 @@ func TestServiceService(t *testing.T) {
 			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()           // PMM Server PostgreSQL exporter
 			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()      // PMM Server PG Stat Statements agent
 			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                    // PMM Agent 2
-			s.r.(*mockAgentsRegistry).On("IsConnected", mysqldExporter.AgentID).Return(false).Once() // MySQLd exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", postgresExporter.AgentID).Return(false).Once() // PostgreSQL exporter
 			s.r.(*mockAgentsRegistry).On("IsConnected", azureExporter.AgentID).Return(false).Once()  // Azure exporter
 
 			response, err := s.ListServices(ctx, &managementv1.ListServicesRequest{})

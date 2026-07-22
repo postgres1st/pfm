@@ -41,6 +41,17 @@ import (
 
 var now time.Time
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func setup(t *testing.T) (context.Context, *ManagementService, func(t *testing.T)) {
 	t.Helper()
 
@@ -207,11 +218,12 @@ func TestAgentService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			// RDS PostgreSQL is a supported cloud target; the engine is incidental to agent listing.
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgresql",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
@@ -257,11 +269,12 @@ func TestAgentService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			service, err := models.AddNewService(s.db.Querier, models.MySQLServiceType, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
+			// Azure PostgreSQL is a supported cloud target; the engine is incidental to agent listing.
+			service, err := models.AddNewService(s.db.Querier, models.PostgreSQLServiceType, &models.AddDBMSServiceParams{
+				ServiceName: "test-postgresql",
 				NodeID:      node.NodeID,
 				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
+				Port:        new(uint16(5432)),
 			})
 			require.NoError(t, err)
 
@@ -298,6 +311,9 @@ func TestAgentService(t *testing.T) {
 		})
 
 		t.Run("should output a list of agents provisioned for MongoDB service", func(t *testing.T) {
+			// The RTA MongoDB agent serves only MongoDB, which this build does not support.
+			skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 			ctx, s, teardown := setup(t)
 			t.Cleanup(func() { teardown(t) })
 

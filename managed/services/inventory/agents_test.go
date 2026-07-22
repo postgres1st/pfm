@@ -40,18 +40,15 @@ func TestAgents(t *testing.T) {
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
+		// MySQL, MongoDB and Valkey Services (and their exporters) are gated out of this build,
+		// so this flow exercises only the supported agent types. The removed steps are covered
+		// per-type by the sibling subtests, which skip when their Service type is unsupported.
 		var (
-			pmmAgentID                   string
-			ms                           *inventoryv1.MySQLService
-			ps                           *inventoryv1.PostgreSQLService
-			valkey                       *inventoryv1.ValkeyService
-			expectedNodeExporter         *inventoryv1.NodeExporter
-			expectedMySQLdExporter       *inventoryv1.MySQLdExporter
-			expectedMongoDBExporter      *inventoryv1.MongoDBExporter
-			expectedQANMySQLSlowlogAgent *inventoryv1.QANMySQLSlowlogAgent
-			expectedPostgresExporter     *inventoryv1.PostgresExporter
-			expectedExternalExporter     *inventoryv1.ExternalExporter
-			expectedValkeyExporter       *inventoryv1.ValkeyExporter
+			pmmAgentID               string
+			ps                       *inventoryv1.PostgreSQLService
+			expectedNodeExporter     *inventoryv1.NodeExporter
+			expectedPostgresExporter *inventoryv1.PostgresExporter
+			expectedExternalExporter *inventoryv1.ExternalExporter
 		)
 
 		t.Run("AddPMMAgent", func(t *testing.T) {
@@ -134,91 +131,6 @@ func TestAgents(t *testing.T) {
 			assert.Equal(t, expectedNodeExporter, actualAgent.(*inventoryv1.NodeExporter))
 		})
 
-		t.Run("AddMySQLExporter", func(t *testing.T) {
-			var err error
-			ss.vc.(*mockVersionCache).On("RequestSoftwareVersionsUpdate").Once()
-			ms, err = ss.AddMySQL(ctx, &models.AddDBMSServiceParams{
-				ServiceName: "test-mysql",
-				NodeID:      models.PMMServerNodeID,
-				Address:     new("127.0.0.1"),
-				Port:        new(uint16(3306)),
-			})
-			require.NoError(t, err)
-
-			actualAgent, err := as.AddMySQLdExporter(ctx, &inventoryv1.AddMySQLdExporterParams{
-				PmmAgentId:        pmmAgentID,
-				ServiceId:         ms.ServiceId,
-				Username:          "username",
-				ConnectionTimeout: durationpb.New(11 * time.Second),
-			})
-			require.NoError(t, err)
-			expectedMySQLdExporter = &inventoryv1.MySQLdExporter{
-				AgentId:           "00000000-0000-4000-8000-000000000008",
-				PmmAgentId:        "00000000-0000-4000-8000-000000000005",
-				ServiceId:         ms.ServiceId,
-				Username:          "username",
-				Status:            inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-				ConnectionTimeout: durationpb.New(11 * time.Second),
-			}
-			assert.Equal(t, expectedMySQLdExporter, actualAgent.GetMysqldExporter())
-
-			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-000000000008")
-			require.NoError(t, err)
-			assert.Equal(t, expectedMySQLdExporter, exporter.(*inventoryv1.MySQLdExporter))
-		})
-
-		t.Run("AddMongoDBExporter", func(t *testing.T) {
-			ms, err := ss.AddMongoDB(ctx, &models.AddDBMSServiceParams{
-				ServiceName: "test-mongo",
-				NodeID:      models.PMMServerNodeID,
-				Address:     new("127.0.0.1"),
-				Port:        new(uint16(27017)),
-			})
-			require.NoError(t, err)
-
-			actualAgent, err := as.AddMongoDBExporter(ctx, &inventoryv1.AddMongoDBExporterParams{
-				PmmAgentId:       pmmAgentID,
-				ServiceId:        ms.ServiceId,
-				Username:         "username",
-				StatsCollections: nil,
-				CollectionsLimit: 0, // no limit
-			})
-			require.NoError(t, err)
-			expectedMongoDBExporter = &inventoryv1.MongoDBExporter{
-				AgentId:    "00000000-0000-4000-8000-00000000000a",
-				PmmAgentId: pmmAgentID,
-				ServiceId:  ms.ServiceId,
-				Username:   "username",
-				Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-			}
-			assert.Equal(t, expectedMongoDBExporter, actualAgent.GetMongodbExporter())
-
-			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-00000000000a")
-			require.NoError(t, err)
-			assert.Equal(t, expectedMongoDBExporter, exporter.(*inventoryv1.MongoDBExporter))
-		})
-
-		t.Run("AddQANMySQLSlowlogAgent", func(t *testing.T) {
-			actualAgent, err := as.AddQANMySQLSlowlogAgent(ctx, &inventoryv1.AddQANMySQLSlowlogAgentParams{
-				PmmAgentId: pmmAgentID,
-				ServiceId:  ms.ServiceId,
-				Username:   "username",
-			})
-			require.NoError(t, err)
-			expectedQANMySQLSlowlogAgent = &inventoryv1.QANMySQLSlowlogAgent{
-				AgentId:    "00000000-0000-4000-8000-00000000000b",
-				PmmAgentId: pmmAgentID,
-				ServiceId:  ms.ServiceId,
-				Username:   "username",
-				Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-			}
-			assert.Equal(t, expectedQANMySQLSlowlogAgent, actualAgent.GetQanMysqlSlowlogAgent())
-
-			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-00000000000b")
-			require.NoError(t, err)
-			assert.Equal(t, expectedQANMySQLSlowlogAgent, exporter.(*inventoryv1.QANMySQLSlowlogAgent))
-		})
-
 		t.Run("AddPostgreSQLExporter", func(t *testing.T) {
 			var err error
 			ps, err = ss.AddPostgreSQL(ctx, &models.AddDBMSServiceParams{
@@ -237,7 +149,7 @@ func TestAgents(t *testing.T) {
 			})
 			require.NoError(t, err)
 			expectedPostgresExporter = &inventoryv1.PostgresExporter{
-				AgentId:           "00000000-0000-4000-8000-00000000000d",
+				AgentId:           "00000000-0000-4000-8000-000000000008",
 				PmmAgentId:        pmmAgentID,
 				ServiceId:         ps.ServiceId,
 				Username:          "username",
@@ -246,7 +158,7 @@ func TestAgents(t *testing.T) {
 			}
 			assert.Equal(t, expectedPostgresExporter, actualAgent.GetPostgresExporter())
 
-			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-00000000000d")
+			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-000000000008")
 			require.NoError(t, err)
 			assert.Equal(t, expectedPostgresExporter, exporter.(*inventoryv1.PostgresExporter))
 		})
@@ -260,7 +172,7 @@ func TestAgents(t *testing.T) {
 			})
 			require.NoError(t, err)
 			expectedExternalExporter = &inventoryv1.ExternalExporter{
-				AgentId:      "00000000-0000-4000-8000-00000000000e",
+				AgentId:      "00000000-0000-4000-8000-000000000009",
 				RunsOnNodeId: models.PMMServerNodeID,
 				ServiceId:    ps.ServiceId,
 				Username:     "username",
@@ -272,37 +184,6 @@ func TestAgents(t *testing.T) {
 			assert.Equal(t, expectedExternalExporter, actualAgent.GetExternalExporter())
 		})
 
-		t.Run("AddValkeyExporter", func(t *testing.T) {
-			var err error
-			valkey, err = ss.AddValkey(ctx, &models.AddDBMSServiceParams{
-				ServiceName: "test-valkey",
-				NodeID:      models.PMMServerNodeID,
-				Address:     new("127.0.0.1"),
-				Port:        new(uint16(6379)),
-			})
-			require.NoError(t, err)
-
-			actualAgent, err := as.AddValkeyExporter(ctx, &inventoryv1.AddValkeyExporterParams{
-				PmmAgentId: pmmAgentID,
-				ServiceId:  valkey.ServiceId,
-				Username:   "username",
-				Password:   "password",
-			})
-			require.NoError(t, err)
-			expectedValkeyExporter = &inventoryv1.ValkeyExporter{
-				AgentId:    "00000000-0000-4000-8000-000000000010",
-				PmmAgentId: pmmAgentID,
-				ServiceId:  valkey.ServiceId,
-				Username:   "username",
-				Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
-			}
-			assert.Equal(t, expectedValkeyExporter, actualAgent.GetValkeyExporter())
-
-			exporter, err := as.Get(ctx, "00000000-0000-4000-8000-000000000010")
-			require.NoError(t, err)
-			assert.Equal(t, expectedValkeyExporter, exporter.(*inventoryv1.ValkeyExporter))
-		})
-
 		var actualAgents []inventoryv1.Agent
 		t.Run("ListAllAgents", func(t *testing.T) {
 			actualAgents, err := as.List(ctx, models.AgentFilters{})
@@ -310,35 +191,29 @@ func TestAgents(t *testing.T) {
 			for i, a := range actualAgents {
 				t.Logf("%d: %T %s", i, a, a)
 			}
-			require.Len(t, actualAgents, 12)
+			require.Len(t, actualAgents, 8)
 
 			// TODO: fix protobuf equality https://jira.percona.com/browse/PMM-6743
 			assert.Equal(t, pmmAgentID, actualAgents[3].(*inventoryv1.PMMAgent).AgentId)
 			assert.Equal(t, expectedNodeExporter.AgentId, actualAgents[4].(*inventoryv1.NodeExporter).AgentId)
-			assert.Equal(t, expectedMySQLdExporter.AgentId, actualAgents[5].(*inventoryv1.MySQLdExporter).AgentId)
-			assert.Equal(t, expectedMongoDBExporter.AgentId, actualAgents[6].(*inventoryv1.MongoDBExporter).AgentId)
-			assert.Equal(t, expectedQANMySQLSlowlogAgent.AgentId, actualAgents[7].(*inventoryv1.QANMySQLSlowlogAgent).AgentId)
-			assert.Equal(t, expectedPostgresExporter.AgentId, actualAgents[8].(*inventoryv1.PostgresExporter).AgentId)
-			assert.Equal(t, expectedExternalExporter.AgentId, actualAgents[9].(*inventoryv1.ExternalExporter).AgentId)
+			assert.Equal(t, expectedPostgresExporter.AgentId, actualAgents[5].(*inventoryv1.PostgresExporter).AgentId)
+			assert.Equal(t, expectedExternalExporter.AgentId, actualAgents[6].(*inventoryv1.ExternalExporter).AgentId)
 		})
 
 		t.Run("FilterByServiceID", func(t *testing.T) {
-			actualAgents, err := as.List(ctx, models.AgentFilters{ServiceID: ms.ServiceId})
+			actualAgents, err := as.List(ctx, models.AgentFilters{ServiceID: ps.ServiceId})
 			require.NoError(t, err)
 			require.Len(t, actualAgents, 2)
-			assert.Equal(t, expectedMySQLdExporter, actualAgents[0])
-			assert.Equal(t, expectedQANMySQLSlowlogAgent, actualAgents[1])
+			assert.Equal(t, expectedPostgresExporter, actualAgents[0])
+			assert.Equal(t, expectedExternalExporter, actualAgents[1])
 		})
 
 		t.Run("FilterByPMMAgent", func(t *testing.T) {
 			actualAgents, err := as.List(ctx, models.AgentFilters{PMMAgentID: pmmAgentID})
 			require.NoError(t, err)
-			require.Len(t, actualAgents, 6)
+			require.Len(t, actualAgents, 2)
 			assert.Equal(t, expectedNodeExporter, actualAgents[0])
-			assert.Equal(t, expectedMySQLdExporter, actualAgents[1])
-			assert.Equal(t, expectedMongoDBExporter, actualAgents[2])
-			assert.Equal(t, expectedQANMySQLSlowlogAgent, actualAgents[3])
-			assert.Equal(t, expectedPostgresExporter, actualAgents[4])
+			assert.Equal(t, expectedPostgresExporter, actualAgents[1])
 		})
 
 		t.Run("FilterByNode", func(t *testing.T) {
@@ -544,7 +419,10 @@ func TestAgents(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		_, err = as.AddMySQLdExporter(ctx, &inventoryv1.AddMySQLdExporterParams{
+		// Retargeted to a supported (postgres) exporter: a MySQLd exporter would be rejected by
+		// the agent-type gate before the service lookup ever runs, masking this path. Using a
+		// supported exporter passes the gate so the "service not found" lookup is what's exercised.
+		_, err = as.AddPostgresExporter(ctx, &inventoryv1.AddPostgresExporterParams{
 			PmmAgentId: pmmAgent.GetPmmAgent().AgentId,
 			ServiceId:  "no-such-id",
 		})
@@ -560,6 +438,8 @@ func TestAgents(t *testing.T) {
 	})
 
 	t.Run("PushMetricsMongodbExporter", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
@@ -708,6 +588,8 @@ func TestAgents(t *testing.T) {
 	})
 
 	t.Run("PushMetricsMySQLExporter", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
+
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
@@ -852,6 +734,8 @@ func TestAgents(t *testing.T) {
 	})
 
 	t.Run("AddRTAMongoDBAgent", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
@@ -970,6 +854,8 @@ func TestChangeQANPostgreSQLPgStatementsAgentWithEnvVar(t *testing.T) {
 
 func TestChangeRTAMongoDBAgent(t *testing.T) {
 	t.Run("update RTA options ", func(t *testing.T) {
+		skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
