@@ -1,12 +1,12 @@
 export const Messages = {
   title: 'Welcome to PFMM',
   description:
-    'Postgres1st Monitoring and Management (PFMM) is your open-source solution to monitor, manage, and optimize MySQL, PostgreSQL, MongoDB, and other database systems. With PFMM, you can:',
+    'Postgres1st Monitoring and Management (PFMM) is your open-source solution to monitor, manage, and optimize your PostgreSQL databases. With PFMM, you can:',
   points: {
     spot: 'Spot and fix issues faster with detailed insights into performance and incidents.',
     keep: 'Keep databases healthy with automated checks and alerts for security, performance, and data risks.',
-    backup:
-      'Back up critical data seamlessly with zero downtime and minimal impact.',
+    optimize:
+      'Optimize query performance with deep insights down to individual PostgreSQL queries.',
   },
   ready: 'Ready to begin?',
   tour: 'Take the PFMM tour to learn your way around. For immediate value, add your first database service and explore our Help Center resources below.',

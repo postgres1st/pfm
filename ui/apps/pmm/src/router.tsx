@@ -6,13 +6,9 @@ import { UpdateClients } from 'pages/update-clients/UpdateClients';
 import { MainWithNav } from 'components/main/MainWithNav';
 import { NotFoundPage } from 'pages/not-found';
 import { HelpCenter } from 'pages/help-center';
-import { RealtimeSelection } from 'pages/rta/selection';
 import Providers from 'Providers';
 import { PMM_NEW_NAV_PATH, UPDATES_ENABLED } from 'lib/constants';
-import { RealtimeSessionsPage } from 'pages/rta/sessions';
 import { Redirect, SettingsRedirect } from 'components/redirect';
-import RealtimeOverviewPage from 'pages/rta/overview/RealtimeOverview';
-import RealtimeTab from 'pages/rta/tab/RealtimeTab';
 
 const router = createBrowserRouter(
   [
@@ -47,27 +43,6 @@ const router = createBrowserRouter(
             {
               path: 'settings/:tab?',
               element: <Settings />,
-            },
-            {
-              path: 'rta',
-              children: [
-                {
-                  path: '',
-                  element: <RealtimeTab />,
-                },
-                {
-                  path: 'selection',
-                  element: <RealtimeSelection />,
-                },
-                {
-                  path: 'sessions',
-                  element: <RealtimeSessionsPage />,
-                },
-                {
-                  path: 'overview',
-                  element: <RealtimeOverviewPage />,
-                },
-              ],
             },
             // Fallback
             {

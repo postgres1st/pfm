@@ -39,16 +39,6 @@ export const ADVISOR_INTERVAL: Record<AdvisorInterval, string> = {
   [AdvisorInterval.unspecified]: 'Unspecified',
 };
 
-export const ALL_SERVICE_TYPES = [
-  ServiceType.external,
-  ServiceType.haproxy,
-  ServiceType.mongodb,
-  ServiceType.mysql,
-  ServiceType.posgresql,
-  ServiceType.proxysql,
-  ServiceType.valkey,
-];
-
 // Maps the inventory ServiceType enum (SERVICE_TYPE_*) to the lowercase model
 // identifier the server reports in `supported_service_types` (e.g. "postgresql").
 export const SERVICE_TYPE_MODEL_ID: Record<ServiceType, ManagedServiceType | ''> =
