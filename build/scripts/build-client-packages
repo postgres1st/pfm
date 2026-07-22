@@ -463,7 +463,10 @@ get_system
 install_deps
 
 BRANCH="v3"
-REPO="https://github.com/Percona-Lab/pmm-submodules.git"
+# pfm fork of pmm-submodules: repoints ONLY the `pmm` submodule at postgres1st/pfm
+# (the PostgreSQL-only-gated pmm-managed/pmm-agent); exporters/grafana stay percona/*.
+# Building from upstream Percona-Lab/pmm-submodules would ship un-gated pmm.
+REPO="https://github.com/postgres1st/pfm-submodules.git"
 
 if [ "$TARBALL" = '1' -o "$SOURCE" = '1' ]; then
     TOOLKIT_BRANCH_NAME=$(get_branches "percona-toolkit")
