@@ -32,6 +32,7 @@ import (
 )
 
 func TestAddMongoDB(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mongodb")
 	t.Parallel()
 
 	t.Run("Basic", func(t *testing.T) {
@@ -928,6 +929,7 @@ func TestAddMongoDB(t *testing.T) {
 }
 
 func TestRemoveMongoDB(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mongodb")
 	t.Parallel()
 
 	addMongoDB := func(t *testing.T, serviceName, nodeName string, withAgents bool) (serviceID string) {

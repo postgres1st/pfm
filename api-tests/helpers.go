@@ -22,6 +22,7 @@ import (
 	"math"
 	"math/big"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"sync"
@@ -48,6 +49,36 @@ import (
 // ErrorResponse represents the response structure for error scenarios.
 type ErrorResponse interface {
 	Code() int
+}
+
+// defaultSupportedServiceTypes mirrors models.defaultSupportedServiceTypes: what the server
+// accepts when PFM_DB_TYPES is unset. Kept as a literal so these black-box tests need not
+// import managed internals; keep in sync with that package.
+var defaultSupportedServiceTypes = []string{"postgresql", "haproxy", "external"}
+
+// SkipIfServiceTypeUnsupported skips a test for a database Service type the deployment under
+// test does not accept. It reads the same PFM_DB_TYPES the server reads (default
+// postgresql,haproxy,external when unset), so server and tests agree on the allowlist
+// without the tests hardcoding a second copy of the runtime value.
+func SkipIfServiceTypeUnsupported(t *testing.T, serviceType string) {
+	t.Helper()
+
+	allowed := defaultSupportedServiceTypes
+	if raw, ok := os.LookupEnv("PFM_DB_TYPES"); ok {
+		allowed = nil
+		for _, field := range strings.Split(raw, ",") {
+			if field = strings.TrimSpace(field); field != "" {
+				allowed = append(allowed, field)
+			}
+		}
+	}
+
+	for _, a := range allowed {
+		if a == serviceType {
+			return
+		}
+	}
+	t.Skipf("Service type %q is not supported by this deployment (PFM_DB_TYPES).", serviceType)
 }
 
 // TestString returns semi-random string that can be used as a test data.

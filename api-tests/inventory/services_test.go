@@ -303,6 +303,7 @@ func TestRemoveService(t *testing.T) {
 }
 
 func TestMySQLService(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()
@@ -514,6 +515,7 @@ func TestMySQLService(t *testing.T) {
 }
 
 func TestMongoDBService(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mongodb")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()
@@ -927,6 +929,7 @@ func TestPostgreSQLService(t *testing.T) {
 }
 
 func TestProxySQLService(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "proxysql")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()

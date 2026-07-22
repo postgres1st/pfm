@@ -32,6 +32,7 @@ import (
 )
 
 func TestAddProxySQL(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "proxysql")
 	t.Parallel()
 
 	t.Run("Basic", func(t *testing.T) {
@@ -638,6 +639,7 @@ func TestAddProxySQL(t *testing.T) {
 }
 
 func TestRemoveProxySQL(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "proxysql")
 	t.Parallel()
 
 	addProxySQL := func(t *testing.T, serviceName, nodeName string) (serviceID string) {
