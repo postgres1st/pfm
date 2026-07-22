@@ -29,7 +29,7 @@
         - /var/lib/pgsql
         - /var/cache/dnf
         - /var/cache/yum
-        - /usr/local/percona/pmm/config/pmm-agent.yaml
+        - /opt/postgres1st/pfm/config/pmm-agent.yaml
 
     - name: Remove users created by installers
       user:

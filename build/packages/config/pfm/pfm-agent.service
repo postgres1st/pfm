@@ -6,7 +6,7 @@
 # stop/restart to the stack lifecycle.
 #
 # Its config is created by pfm-init.sh's `pmm-agent setup` step, under /srv
-# (pfm-writable) rather than the container's root-owned /usr/local/percona path.
+# (pfm-writable) rather than the container's root-owned /opt/postgres1st/pfm path.
 # PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
 [Unit]
 Description=pfm self-monitoring agent (pmm-agent)

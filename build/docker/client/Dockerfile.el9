@@ -1,13 +1,10 @@
 FROM redhat/ubi9 AS builder
 
-RUN dnf install -y shadow-utils jq tar https://repo.percona.com/yum/percona-release-latest.noarch.rpm \
-    && percona-release enable ps-80 \
-    && dnf install -y percona-server-client
+RUN dnf install -y shadow-utils jq tar
 
 # Install required dependencies
 RUN dnf install -y \
     perl-core \
-    perl-DBD-MySQL \
     perl-DBI \
     perl-Digest-MD5 \
     perl-English \
@@ -45,7 +42,6 @@ COPY --from=builder --chown=0:0 \
   /usr/bin/sed \
   /usr/bin/grep \
   /usr/bin/awk \
-  /usr/bin/mysql* \
   /usr/bin/perl* \
   /usr/bin/
 
@@ -75,7 +71,6 @@ COPY --from=builder --chown=0:0 \
   /usr/lib64/
 
 COPY --from=builder --chown=0:0 /usr/share/perl5 /usr/share/perl5
-COPY --from=builder --chown=0:0 /etc/ld.so.conf.d/mysql-*.conf /etc/ld.so.conf.d
 
 # Install pmm-client
 RUN install -d -o pmm-agent -g pmm-agent -m 0775 /opt/postgres1st/pfm
