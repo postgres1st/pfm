@@ -30,7 +30,24 @@ import (
 	"github.com/percona/pmm/managed/utils/testdb"
 )
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func TestToAPIAgent(t *testing.T) {
+	// The subjects here are a MongoDB RTA agent and a mysqld exporter (with MySQL-specific
+	// options); both require their respective services, which are unsupported under the
+	// default PostgreSQL-only gate. Skip gated rather than retarget so widening PFM_DB_TYPES
+	// restores the coverage.
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
+	skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
 	t.Parallel()
 
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)

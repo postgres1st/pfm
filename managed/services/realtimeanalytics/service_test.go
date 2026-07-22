@@ -76,7 +76,21 @@ func getServiceQueries(serviceID, serviceName string, count int) []*rtav1.QueryD
 	return data
 }
 
+// skipIfServiceTypeUnsupported skips tests covering a service type this build does not
+// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// restores the coverage without editing tests. Real-Time Analytics is a MySQL/MongoDB-only
+// feature with no PostgreSQL equivalent, so these tests are skipped (not retargeted) under
+// the default PostgreSQL-only gate.
+func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
+	t.Helper()
+
+	if !models.IsServiceTypeSupported(serviceType) {
+		t.Skipf("Service type %q is not supported by this deployment.", serviceType)
+	}
+}
+
 func TestListServices(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
 
@@ -196,6 +210,7 @@ func TestListServices(t *testing.T) {
 }
 
 func TestListSessions(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
 
@@ -278,6 +293,7 @@ func TestListSessions(t *testing.T) {
 }
 
 func TestStartSession(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
 
@@ -491,6 +507,7 @@ func TestStartSession(t *testing.T) {
 }
 
 func TestStopSession(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
 
@@ -653,6 +670,7 @@ func TestStopSession(t *testing.T) {
 }
 
 func TestSearchQueries(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	t.Parallel()
 
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
@@ -802,6 +820,7 @@ func getTestClient(t *testing.T) rtav1.CollectorServiceClient {
 }
 
 func TestService_Collect(t *testing.T) {
+	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)
 	t.Cleanup(func() {
 		require.NoError(t, sqlDB.Close())
