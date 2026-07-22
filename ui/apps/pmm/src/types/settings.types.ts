@@ -7,6 +7,9 @@ export interface ReadonlySettings {
   backupManagementEnabled: boolean;
   azurediscoverEnabled: boolean;
   enableAccessControl: boolean;
+  // Lowercase model identifiers (e.g. "postgresql") this deployment accepts.
+  // Optional: absent until settings load, or on servers predating the field.
+  supportedServiceTypes?: string[];
 }
 
 export interface MetricsResolutions {

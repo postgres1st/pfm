@@ -1,5 +1,5 @@
 import { AdvisorFamily, AdvisorInterval } from 'types/advisors.types';
-import { ServiceType } from 'types/services.types';
+import { ManagedServiceType, ServiceType } from 'types/services.types';
 
 export const PMM_TITLE = 'Postgres1st Monitoring and Management';
 
@@ -47,6 +47,30 @@ export const ALL_SERVICE_TYPES = [
   ServiceType.posgresql,
   ServiceType.proxysql,
   ServiceType.valkey,
+];
+
+// Maps the inventory ServiceType enum (SERVICE_TYPE_*) to the lowercase model
+// identifier the server reports in `supported_service_types` (e.g. "postgresql").
+export const SERVICE_TYPE_MODEL_ID: Record<ServiceType, ManagedServiceType | ''> =
+  {
+    [ServiceType.unspecified]: '',
+    [ServiceType.mysql]: ManagedServiceType.mysql,
+    [ServiceType.mongodb]: ManagedServiceType.mongodb,
+    [ServiceType.posgresql]: ManagedServiceType.postgresql,
+    [ServiceType.proxysql]: ManagedServiceType.proxysql,
+    [ServiceType.haproxy]: ManagedServiceType.haproxy,
+    [ServiceType.valkey]: ManagedServiceType.valkey,
+    [ServiceType.external]: ManagedServiceType.external,
+  };
+
+// Fallback used only until the server settings (and their runtime
+// `supportedServiceTypes` allowlist) have loaded. Mirrors the backend's shipped
+// default so the sidebar shows the PostgreSQL-first set without flicker; once
+// settings arrive, the live value (which honours PFM_DB_TYPES) takes over.
+export const DEFAULT_SUPPORTED_SERVICE_TYPES: string[] = [
+  ManagedServiceType.postgresql,
+  ManagedServiceType.haproxy,
+  ManagedServiceType.external,
 ];
 
 // 5 seconds

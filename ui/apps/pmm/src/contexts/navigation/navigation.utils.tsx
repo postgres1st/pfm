@@ -3,7 +3,11 @@ import { ServiceType } from 'types/services.types';
 import { User, UserPreferences } from 'types/user.types';
 import { Advisor } from 'types/advisors.types';
 import { groupAdvisorsIntoCategories } from 'utils/advisors.utils';
-import { PMM_NEW_NAV_GRAFANA_PATH, UPDATES_ENABLED } from 'lib/constants';
+import {
+  PMM_NEW_NAV_GRAFANA_PATH,
+  SERVICE_TYPE_MODEL_ID,
+  UPDATES_ENABLED,
+} from 'lib/constants';
 import { ColorMode } from '@pmm/shared';
 import {
   NAV_ACCOUNT,
@@ -54,6 +58,16 @@ import { GetUpdatesResponse, UpdateStatus } from 'types/updates.types';
 import { HighAvailabilityIcon } from 'components/ha-icon';
 import { HighAvailabilityBadge } from 'components/ha-badge';
 import { HAInfo } from 'types/ha.types';
+
+// Keeps only the inventory service types the deployment supports, per the
+// server's `supported_service_types` allowlist. Hides DB-specific nav trees
+// (MySQL, MongoDB, ProxySQL, Valkey, ...) for types this build rejects — even
+// when legacy services of that type still linger in inventory.
+export const filterSupportedServiceTypes = (
+  types: ServiceType[],
+  supported: string[]
+): ServiceType[] =>
+  types.filter((type) => supported.includes(SERVICE_TYPE_MODEL_ID[type]));
 
 export const addOtherDashboardsItem = (
   rootNode: NavItem,

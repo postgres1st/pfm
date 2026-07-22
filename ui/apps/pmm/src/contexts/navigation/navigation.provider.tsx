@@ -12,11 +12,12 @@ import {
   addHighAvailability,
   addUsersAndAccess,
   addHomePage,
+  filterSupportedServiceTypes,
 } from './navigation.utils';
 import { useUser } from 'contexts/user';
 import { useAdvisors } from 'hooks/api/useAdvisors';
 import { useColorMode } from 'hooks/theme';
-import { INTERVALS_MS } from 'lib/constants';
+import { DEFAULT_SUPPORTED_SERVICE_TYPES, INTERVALS_MS } from 'lib/constants';
 import { useSettings } from 'contexts/settings';
 import {
   NAV_BACKUPS,
@@ -54,8 +55,21 @@ export const NavigationProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const navTree = useMemo<NavItem[]>(() => {
     const items: NavItem[] = [];
-    // use fetched service types, falling back to an empty list while unavailable
-    const currentServiceTypes = serviceTypes?.serviceTypes || [];
+    // Use fetched service types, falling back to an empty list while unavailable,
+    // then drop any type this deployment does not support so unsupported DB nav
+    // trees (MySQL, MongoDB, ProxySQL, Valkey, ...) stay hidden. Until settings
+    // load, `supportedServiceTypes` is undefined — fall back to the shipped
+    // PostgreSQL-first default (which also honours PFM_DB_TYPES once loaded).
+    // An empty array is treated as "not yet loaded" too: the backend never ships
+    // an empty allowlist, so a missing value must not silently blank the whole
+    // sidebar (PostgreSQL included).
+    const supportedServiceTypes = settings?.supportedServiceTypes?.length
+      ? settings.supportedServiceTypes
+      : DEFAULT_SUPPORTED_SERVICE_TYPES;
+    const currentServiceTypes = filterSupportedServiceTypes(
+      serviceTypes?.serviceTypes || [],
+      supportedServiceTypes
+    );
 
     items.push(addHomePage(user?.preferences));
 
