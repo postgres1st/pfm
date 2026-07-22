@@ -32259,6 +32259,14 @@
                       "type": "string",
                       "title": "Duration for which an update is snoozed",
                       "x-order": 18
+                    },
+                    "supported_service_types": {
+                      "description": "Database service types this deployment accepts, as lowercase model identifiers\n(e.g. \"postgresql\"). Clients use it to hide unsupported types.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "x-order": 19
                     }
                   },
                   "x-order": 0
@@ -32587,6 +32595,14 @@
                       "type": "string",
                       "title": "Duration for which an update is snoozed",
                       "x-order": 18
+                    },
+                    "supported_service_types": {
+                      "description": "Database service types this deployment accepts, as lowercase model identifiers\n(e.g. \"postgresql\"). Clients use it to hide unsupported types.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "x-order": 19
                     }
                   },
                   "x-order": 0
@@ -32687,6 +32703,14 @@
                       "description": "True if Access Control is enabled.",
                       "type": "boolean",
                       "x-order": 7
+                    },
+                    "supported_service_types": {
+                      "description": "Database service types this deployment accepts, as lowercase model identifiers\n(e.g. \"postgresql\"). Clients use it to hide unsupported types.",
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "x-order": 8
                     }
                   },
                   "x-order": 0

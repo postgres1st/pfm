@@ -735,6 +735,10 @@ type GetSettingsOKBodySettings struct {
 	// Duration for which an update is snoozed
 	UpdateSnoozeDuration string `json:"update_snooze_duration,omitempty"`
 
+	// Database service types this deployment accepts, as lowercase model identifiers
+	// (e.g. "postgresql"). Clients use it to hide unsupported types.
+	SupportedServiceTypes []string `json:"supported_service_types"`
+
 	// advisor run intervals
 	AdvisorRunIntervals *GetSettingsOKBodySettingsAdvisorRunIntervals `json:"advisor_run_intervals,omitempty"`
 
