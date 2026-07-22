@@ -249,7 +249,10 @@ func TestJobLogs(t *testing.T) {
 	})
 
 	t.Run("delete job", func(t *testing.T) {
-		require.NoError(t, models.CleanupOldJobs(tx.Querier, time.Now()))
+		// UTC to match models.Now: updated_at is a TIMESTAMP column stored in UTC, so a local
+		// cutoff would compare against the wrong wall-clock. At a negative UTC offset local
+		// time.Now() is behind the stored UTC updated_at, so nothing would be deleted.
+		require.NoError(t, models.CleanupOldJobs(tx.Querier, time.Now().UTC()))
 		for _, jobID := range []string{job1.ID, job2.ID} {
 			logs, err := models.FindJobLogs(tx.Querier, models.JobLogsFilter{
 				JobID: jobID,
