@@ -31,7 +31,7 @@
 
 - name: Create symlinks to the binaries
   file:
-    src: /usr/local/percona/pmm/bin/{{ item }}
+    src: /opt/postgres1st/pfm/bin/{{ item }}
     dest: /usr/sbin/{{ item }}
     state: link
   loop:

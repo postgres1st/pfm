@@ -162,7 +162,7 @@ prepare_runtime() {
 
     # Create the pmm-agent config (idempotent) so pfm-agent.service can start.
     # Native keeps it under /srv (pfm-writable, persistent) rather than the
-    # container's root-owned /usr/local/percona/pmm/config; pfm-agent.service's
+    # container's root-owned /opt/postgres1st/pfm/config; pfm-agent.service's
     # --config-file points here to match.
     install -d -m 770 /srv/pmm-agent/config /srv/pmm-agent/tmp /srv/nomad/data
     local agent_cfg=/srv/pmm-agent/config/pmm-agent.yaml
