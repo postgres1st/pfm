@@ -112,7 +112,7 @@ func runPmmAgent(ctx context.Context, commandLineArgs []string, restartPolicy re
 }
 
 func commandPmmAgent(args []string) *exec.Cmd {
-	const pmmAgentCommandName = "pmm-agent"
+	const pmmAgentCommandName = "pfm-agent"
 	command := exec.Command(pmmAgentCommandName, args...)
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
@@ -173,7 +173,7 @@ func main() { //nolint:gocognit
 
 	if len(os.Args) > 1 {
 		l.Info(helpText)
-		exec.CommandContext(ctx, "pmm-agent", "setup", "--help")
+		exec.CommandContext(ctx, "pfm-agent", "setup", "--help")
 		os.Exit(1)
 	}
 

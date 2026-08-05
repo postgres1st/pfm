@@ -1,3 +1,4 @@
+%global debug_package   %{nil}
 %undefine _missing_build_ids_terminate_build
 %global _dwz_low_mem_die_limit 0
 
@@ -12,10 +13,10 @@
 # the line below is sed'ed by build/bin/build-server-rpm to set a correct version
 %define full_pmm_version 2.0.0
 
-Name:		pmm-managed
+Name:		pfm-managed
 Version:	%{version}
 Release:	%{rpm_release}
-Summary:	Percona Monitoring and Management management daemon
+Summary:	Postgres1st Monitoring and Management management daemon
 
 License:	AGPLv3
 URL:		  https://%{provider}
@@ -49,35 +50,48 @@ make release
 install -d -p %{buildroot}%{_bindir}
 install -d -p %{buildroot}%{_sbindir}
 install -d -p %{buildroot}%{_datadir}/%{name}
-install -d -p %{buildroot}%{_datadir}/pmm-ui
-install -d -p %{buildroot}%{_datadir}/percona-dashboards/panels/pmm-compat-app
-install -d -o 1000 %{buildroot}/usr/local/percona/{advisors,checks,alerting-templates}
-install -p -m 0755 bin/pmm-managed %{buildroot}%{_sbindir}/pmm-managed
-install -p -m 0755 bin/pmm-encryption-rotation %{buildroot}%{_sbindir}/pmm-encryption-rotation
-install -p -m 0755 bin/pmm-managed-init %{buildroot}%{_sbindir}/pmm-managed-init
-install -p -m 0755 bin/pmm-managed-starlark %{buildroot}%{_sbindir}/pmm-managed-starlark
+install -d -p %{buildroot}%{_datadir}/pfm-ui
+install -d -p %{buildroot}/opt/postgres1st/pfmm/dashboards/panels/pmm-compat-app
+install -d -p %{buildroot}/opt/postgres1st/pfmm/{advisors,checks,alerting-templates}
+install -p -m 0755 bin/pfm-managed %{buildroot}%{_sbindir}/pfm-managed
+install -p -m 0755 bin/pfm-encryption-rotation %{buildroot}%{_sbindir}/pfm-encryption-rotation
+install -p -m 0755 bin/pfm-managed-init %{buildroot}%{_sbindir}/pfm-managed-init
+install -p -m 0755 bin/pfm-managed-starlark %{buildroot}%{_sbindir}/pfm-managed-starlark
 
 cd src/github.com/percona/pmm
 cp -pa ./api/swagger %{buildroot}%{_datadir}/%{name}
-cp -pa ./ui/apps/pmm/dist/. %{buildroot}%{_datadir}/pmm-ui
-cp -pa ./ui/apps/pmm-compat/dist/. %{buildroot}%{_datadir}/percona-dashboards/panels/pmm-compat-app
-cp -pa ./managed/data/advisors/*.yml %{buildroot}/usr/local/percona/advisors/
-cp -pa ./managed/data/checks/*.yml %{buildroot}/usr/local/percona/checks/
-cp -pa ./managed/data/alerting-templates/*.yml %{buildroot}/usr/local/percona/alerting-templates/
+cp -pa ./ui/apps/pmm/dist/. %{buildroot}%{_datadir}/pfm-ui
+cp -pa ./ui/apps/pmm-compat/dist/. %{buildroot}/opt/postgres1st/pfmm/dashboards/panels/pmm-compat-app
+cp -pa ./managed/data/advisors/*.yml %{buildroot}/opt/postgres1st/pfmm/advisors/
+cp -pa ./managed/data/checks/*.yml %{buildroot}/opt/postgres1st/pfmm/checks/
+cp -pa ./managed/data/alerting-templates/*.yml %{buildroot}/opt/postgres1st/pfmm/alerting-templates/
+
+%pre
+# Create the pfm system account before files are laid down so the %attr
+# ownership below resolves at unpack. pmm-managed is a dependency of
+# pfm-server, so it is unpacked BEFORE pfm-server's own %pre runs; without
+# this the pfm-owned paths would silently fall back to root.
+getent group pfm >/dev/null || groupadd -r pfm
+getent passwd pfm >/dev/null || \
+    useradd -r -g pfm -d /srv -s /usr/sbin/nologin -c "pfm monitoring service" pfm
+exit 0
 
 %files
 %license src/%{provider}/LICENSE
 %doc src/%{provider}/README.md
-%{_sbindir}/pmm-managed
-%{_sbindir}/pmm-encryption-rotation
-%{_sbindir}/pmm-managed-init
-%{_sbindir}/pmm-managed-starlark
+%{_sbindir}/pfm-managed
+%{_sbindir}/pfm-encryption-rotation
+%{_sbindir}/pfm-managed-init
+%{_sbindir}/pfm-managed-starlark
 %{_datadir}/%{name}
-%attr(-, pmm, root) %{_datadir}/pmm-ui
-%attr(-, pmm, root) %{_datadir}/percona-dashboards/panels/pmm-compat-app
-%attr(0644, pmm, root) /usr/local/percona/advisors/*.yml
-%attr(0644, pmm, root) /usr/local/percona/checks/*.yml
-%attr(0644, pmm, root) /usr/local/percona/alerting-templates/*.yml
+%attr(-, pfm, root) %{_datadir}/pfm-ui
+%attr(-, pfm, root) /opt/postgres1st/pfmm/dashboards/panels/pmm-compat-app
+%dir %attr(0755, pfm, pfm) /opt/postgres1st/pfmm/advisors
+%dir %attr(0755, pfm, pfm) /opt/postgres1st/pfmm/checks
+%dir %attr(0755, pfm, pfm) /opt/postgres1st/pfmm/alerting-templates
+%attr(0644, pfm, root) /opt/postgres1st/pfmm/advisors/*.yml
+%attr(0644, pfm, root) /opt/postgres1st/pfmm/checks/*.yml
+%attr(0644, pfm, root) /opt/postgres1st/pfmm/alerting-templates/*.yml
 
 %changelog
 * Thu Sep 4 2025 Michael Okoko <michael.okoko@percona.com> - 3.4.0-1

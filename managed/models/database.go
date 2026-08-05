@@ -1565,7 +1565,7 @@ func setupPMMServerHAAgents(q *reform.Querier, params SetupDBParams) error {
 		"--skip-registration",
 		"--server-insecure-tls",
 	}
-	cmd := exec.Command("pmm-agent", args...) //nolint:gosec
+	cmd := exec.Command("pfm-agent", args...) //nolint:gosec
 	logrus.Debugf("Running: pmm-agent %s", strings.Join(cmd.Args, " "))
 	output, err := cmd.CombinedOutput()
 	if err != nil {

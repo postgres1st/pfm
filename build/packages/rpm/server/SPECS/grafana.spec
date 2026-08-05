@@ -1,5 +1,5 @@
 %global debug_package   %{nil}
-%global commit          ec2024f6718a4f490fc2ab54877d9c8720b5c5b9
+%global commit          f4d9e0d87d3cd2dc315a1fa7a24482499518015c
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 %define build_timestamp %(date -u +"%y%m%d%H%M")
 %define release         117
@@ -70,20 +70,20 @@ mv conf/ldap.toml %{buildroot}%{_sysconfdir}/grafana/
 install -d -p %{buildroot}%{_sharedstatedir}/grafana
 
 %files
-%defattr(-, pmm, root, -)
+%defattr(-, pfm, root, -)
 %{_datadir}/grafana
 %doc CHANGELOG.md README.md
 %license LICENSE
-%attr(0755, pmm, root) %{_sbindir}/grafana
-%attr(0755, pmm, root) %{_sbindir}/grafana-server
-%attr(0755, pmm, root) %{_bindir}/grafana-cli
+%attr(0755, pfm, root) %{_sbindir}/grafana
+%attr(0755, pfm, root) %{_sbindir}/grafana-server
+%attr(0755, pfm, root) %{_bindir}/grafana-cli
 %{_sysconfdir}/grafana/grafana.ini
 %{_sysconfdir}/grafana/ldap.toml
 %dir %{_sharedstatedir}/grafana
 
 %pre
-getent group pmm >/dev/null || echo "Group pmm does not exist. Please create it manually."
-getent passwd pmm >/dev/null || echo "User pmm does not exist. Please create it manually."
+getent group pfm >/dev/null || echo "Group pfm does not exist. Please create it manually."
+getent passwd pfm >/dev/null || echo "User pfm does not exist. Please create it manually."
 exit 0
 
 %changelog

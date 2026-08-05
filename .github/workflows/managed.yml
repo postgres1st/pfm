@@ -64,9 +64,9 @@ jobs:
             -v ./:/root/go/src/github.com/percona/pmm \
             -v ~/go-mod-cache:/home/pmm/.cache/go/mod \
             -v ~/go-build-cache:/home/pmm/.cache/go-build \
-            -v ./managed/data/advisors/:/usr/local/percona/advisors/ \
-            -v ./managed/data/checks/:/usr/local/percona/checks/ \
-            -v ./managed/data/alerting-templates/:/usr/local/percona/alerting-templates/ \
+            -v ./managed/data/advisors/:/opt/postgres1st/pfmm/advisors/ \
+            -v ./managed/data/checks/:/opt/postgres1st/pfmm/checks/ \
+            -v ./managed/data/alerting-templates/:/opt/postgres1st/pfmm/alerting-templates/ \
             -v ./Makefile.devcontainer:/root/go/src/github.com/percona/pmm/Makefile:ro \
             ${PMM_CONTAINER:-perconalab/pmm-server:3-dev-container}
           sleep 20

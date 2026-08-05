@@ -147,7 +147,7 @@ func (cmd *ConfigCommand) args(globals *flags.GlobalFlags) ([]string, bool) {
 // RunCmd runs config command.
 func (cmd *ConfigCommand) RunCmd(globals *flags.GlobalFlags) (Result, error) {
 	args, switchedToTLS := cmd.args(globals)
-	c := exec.Command("pmm-agent", args...) //nolint:gosec
+	c := exec.Command("pfm-agent", args...) //nolint:gosec
 	logrus.Debugf("Running: %s", strings.Join(c.Args, " "))
 	b, err := c.Output() // hide pmm-agent's stderr logging
 	res := &configResult{

@@ -49,7 +49,7 @@ import (
 )
 
 const (
-	builtinTemplatesDir       = "/usr/local/percona/alerting-templates"
+	builtinTemplatesDir       = "/opt/postgres1st/pfmm/alerting-templates"
 	userTemplatesDir          = "/srv/alerting/templates"
 	defaultEvaluationInterval = time.Minute
 

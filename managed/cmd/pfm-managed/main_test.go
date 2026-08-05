@@ -29,7 +29,7 @@ import (
 )
 
 func TestPackages(t *testing.T) {
-	cmd := exec.Command("pmm-managed", "-h")
+	cmd := exec.Command("pfm-managed", "-h")
 	b, err := cmd.CombinedOutput()
 	require.NoError(t, err, "%s", b)
 

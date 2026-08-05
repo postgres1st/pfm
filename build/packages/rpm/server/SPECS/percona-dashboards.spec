@@ -50,19 +50,19 @@ make -C dashboards release
 
 
 %install
-install -d %{buildroot}%{_datadir}/%{name}/panels/pmm-app
+install -d %{buildroot}/opt/postgres1st/pfmm/dashboards/panels/pmm-app
 
-# cp -a ./dashboards/panels %{buildroot}%{_datadir}/%{name}
-cp -a ./dashboards/pmm-app/dist %{buildroot}%{_datadir}/%{name}/panels/pmm-app
-unzip -q %{SOURCE1} -d %{buildroot}%{_datadir}/%{name}/panels
-unzip -q %{SOURCE2} -d %{buildroot}%{_datadir}/%{name}/panels
-echo %{version} > %{buildroot}%{_datadir}/%{name}/VERSION
+# cp -a ./dashboards/panels %{buildroot}/opt/postgres1st/pfmm/dashboards
+cp -a ./dashboards/pmm-app/dist %{buildroot}/opt/postgres1st/pfmm/dashboards/panels/pmm-app
+unzip -q %{SOURCE1} -d %{buildroot}/opt/postgres1st/pfmm/dashboards/panels
+unzip -q %{SOURCE2} -d %{buildroot}/opt/postgres1st/pfmm/dashboards/panels
+echo %{version} > %{buildroot}/opt/postgres1st/pfmm/dashboards/VERSION
 
 
 %files
 %license ./dashboards/LICENSE
 %doc ./dashboards/README.md
-%attr(-,pmm,root) %{_datadir}/%{name}
+%attr(-,pfm,root) /opt/postgres1st/pfmm/dashboards
 
 
 %changelog

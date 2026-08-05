@@ -57,8 +57,8 @@ The following sections describe the migration steps for individual components. T
 ```
   # Read the postgres password from the secure file
   PGPASSWORD=$(cat /srv/.postgres_password)
-  PGPASSWORD="$PGPASSWORD" /usr/pgsql-14/bin/pg_dump --host=/run/postgresql --username=postgres --file=/srv/backup/grafana.sql --dbname grafana
-  PGPASSWORD="$PGPASSWORD" /usr/pgsql-14/bin/pg_dump --host=/run/postgresql --username=postgres --file=/srv/backup/pmm-managed.sql --dbname pmm-managed
+  PGPASSWORD="$PGPASSWORD" /usr/pgsql-18/bin/pg_dump --host=/run/postgresql --username=postgres --file=/srv/backup/grafana.sql --dbname grafana
+  PGPASSWORD="$PGPASSWORD" /usr/pgsql-18/bin/pg_dump --host=/run/postgresql --username=postgres --file=/srv/backup/pmm-managed.sql --dbname pmm-managed
   unset PGPASSWORD
 ```
 
@@ -68,9 +68,9 @@ The following sections describe the migration steps for individual components. T
 ```
 
 4. Recreate the following files or directories setting the ownership to `pmm` user:
-    - /srv/postgres14 (0750)
+    - /srv/postgres18 (0750)
     - /run/postgresql (0775)
-    - /srv/logs/postgresql14.log (0664)
+    - /srv/logs/postgresql18.log (0664)
 
 5. Start a v3 instance
 Remember to pass the data volume to the instance so it can bootstrap the database. This is normally done by passing the `-v pmm-data:/srv` option to the `docker run` command, where `pmm-data` is the name of the volume.
@@ -85,8 +85,8 @@ Remember to pass the data volume to the instance so it can bootstrap the databas
 ```
   # Read the postgres password from the secure file
   PGPASSWORD=$(cat /srv/.postgres_password)
-  PGPASSWORD="$PGPASSWORD" /usr/pgsql-14/bin/pg_restore --host=/run/postgresql --username=postgres --file=/srv/backup/postgres.sql -S postgres
-  PGPASSWORD="$PGPASSWORD" /usr/pgsql-14/bin/pg_restore --host=/run/postgresql --username=postgres --file=/srv/backup/grafana.sql -S postgres
+  PGPASSWORD="$PGPASSWORD" /usr/pgsql-18/bin/pg_restore --host=/run/postgresql --username=postgres --file=/srv/backup/postgres.sql -S postgres
+  PGPASSWORD="$PGPASSWORD" /usr/pgsql-18/bin/pg_restore --host=/run/postgresql --username=postgres --file=/srv/backup/grafana.sql -S postgres
   unset PGPASSWORD
 ```
 

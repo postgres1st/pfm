@@ -2,7 +2,7 @@
 # This role installs pmm-client.
 - name: Get the image version
   slurp:
-    src: /usr/share/percona-dashboards/VERSION
+    src: /opt/postgres1st/pfmm/dashboards/VERSION
   register: image_version_file
 
 - name: Set the PMM image version

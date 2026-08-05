@@ -14,7 +14,7 @@ PMM_RELEASE_FULLCOMMIT ?= $(shell git rev-parse HEAD)
 PMM_RELEASE_BRANCH ?= $(shell git describe --always --contains --all)
 
 PMM_LD_FLAGS = -ldflags " \
-			-X 'github.com/percona/pmm/version.ProjectName=pmm-managed' \
+			-X 'github.com/percona/pmm/version.ProjectName=pfm-managed' \
 			-X 'github.com/percona/pmm/version.Version=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.PMMVersion=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.Timestamp=$(PMM_RELEASE_TIMESTAMP)' \
@@ -42,11 +42,11 @@ release:                        ## Build pmm-managed release binaries
 	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/...
 
 release-encryption-rotation:                        ## Build PMM encryption rotation tool
-	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pmm-encryption-rotation/...
+	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfm-encryption-rotation/...
 
 release-starlark:
-	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pmm-managed-starlark/...
-	$(PMM_RELEASE_PATH)/pmm-managed-starlark --version
+	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfm-managed-starlark/...
+	$(PMM_RELEASE_PATH)/pfm-managed-starlark --version
 
 release-dev:										## Build pmm-managed binaries for development
 	go build $(PMM_RACE_FLAG) -gcflags="all=-N -l" -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/...

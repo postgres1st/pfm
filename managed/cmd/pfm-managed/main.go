@@ -890,7 +890,7 @@ func main() { //nolint:gocognit,maintidx,cyclop
 	defer sqlDB.Close() //nolint:errcheck
 
 	if *haEnabled {
-		models.AgentConfigFilePath = "/srv/pmm-agent/config/pmm-agent.yaml"
+		models.AgentConfigFilePath = "/srv/pfm-agent/config/pfm-agent.yaml"
 	}
 
 	migrateDB(ctx, sqlDB, setupParams)

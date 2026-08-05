@@ -57,8 +57,8 @@ const (
 	// Environment variables that affect checks service; only for testing.
 	envCheckFile         = "PMM_DEV_ADVISOR_CHECKS_FILE"
 	envDisableStartDelay = "PMM_ADVISORS_CHECKS_DISABLE_START_DELAY"
-	builtinAdvisorsPath  = "/usr/local/percona/advisors"
-	builtinChecksPath    = "/usr/local/percona/checks"
+	builtinAdvisorsPath  = "/opt/postgres1st/pfmm/advisors"
+	builtinChecksPath    = "/opt/postgres1st/pfmm/checks"
 
 	checkExecutionTimeout  = 5 * time.Minute  // limits execution time for every single check
 	resultAwaitTimeout     = 20 * time.Second // should be greater than agents.defaultQueryActionTimeout
@@ -1323,7 +1323,7 @@ func (s *Service) processResults(ctx context.Context, aCheck check.Check, target
 	cmdCtx, cancel := context.WithTimeout(ctx, scriptExecutionTimeout)
 	defer cancel()
 
-	cmd := exec.CommandContext(cmdCtx, "pmm-managed-starlark")
+	cmd := exec.CommandContext(cmdCtx, "pfm-managed-starlark")
 	pdeathsig.Set(cmd, syscall.SIGKILL)
 
 	var stdin, stderr bytes.Buffer

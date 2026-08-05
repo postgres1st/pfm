@@ -66,7 +66,7 @@ func main() {
 
 	isHAEnabled, _ := strconv.ParseBool(os.Getenv("PMM_HA_ENABLE"))
 	if isHAEnabled {
-		pmmConfigParams["AgentConfigFilePath"] = "/srv/pmm-agent/config/pmm-agent.yaml"
+		pmmConfigParams["AgentConfigFilePath"] = "/srv/pfm-agent/config/pfm-agent.yaml"
 	}
 
 	err = supervisord.SavePMMConfig(pmmConfigParams)
