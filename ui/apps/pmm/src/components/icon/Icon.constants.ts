@@ -68,7 +68,7 @@ export const VIEWBOX_MAP: Partial<
   pfmm: '0 0 180 155',
   'knowledge-base': '0 0 28 28',
   'pfmm-rounded': '0 0 160 160',
-  'pfmm-titled': '0 0 141 48',
+  'pfmm-titled': '0 0 48 48',
   'pfmm-titled-outlined': '0 0 252 113',
   'real-time-database-off': '0 0 192 192',
   'electric-bolt': '0 0 20 20',

@@ -20,7 +20,6 @@ import { useColorMode } from 'hooks/theme';
 import { DEFAULT_SUPPORTED_SERVICE_TYPES, INTERVALS_MS } from 'lib/constants';
 import { useSettings } from 'contexts/settings';
 import {
-  NAV_BACKUPS,
   NAV_DIVIDERS,
   NAV_HELP,
   NAV_INVENTORY,
@@ -46,7 +45,7 @@ export const NavigationProvider: FC<PropsWithChildren> = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { status, versionInfo } = useUpdates();
   const [navOpen, setNavOpen] = useLocalStorage<boolean>(
-    'pmm-ui.sidebar.expanded',
+    'pfm-ui.sidebar.expanded',
     true
   );
   const { data: haInfo } = useHaInfo({
@@ -103,9 +102,12 @@ export const NavigationProvider: FC<PropsWithChildren> = ({ children }) => {
 
         items.push(NAV_INVENTORY);
 
-        if (settings.backupManagementEnabled) {
-          items.push(NAV_BACKUPS);
-        }
+        // Backups are deliberately not offered. The server implements backup for
+        // MySQL and MongoDB only -- vendorToServiceType() in
+        // managed/services/backup returns Unimplemented for postgresql -- so in a
+        // PostgreSQL-only deployment every action behind this section fails. The
+        // backupManagementEnabled setting still defaults to true, which is why
+        // this has to be dropped here rather than left to the setting.
 
         items.push(NAV_DIVIDERS.backups);
 
