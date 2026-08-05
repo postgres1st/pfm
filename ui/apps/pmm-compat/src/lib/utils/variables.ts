@@ -61,7 +61,7 @@ const getDbType = (url: string): string | undefined => {
   const pathname = new URL(url, window.location.origin).pathname;
   // normalize to the dashboard uid
   const pathParts = pathname
-    .replace('/pmm-ui', '')
+    .replace('/pfm-ui', '')
     .replace('/next', '')
     .replace('/graph', '')
     .replace('/d/', '')

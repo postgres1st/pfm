@@ -17,7 +17,7 @@ ifeq ($(GOBIN),)
 endif
 GOPATH=$(shell go env GOPATH)
 
-VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pmm-agent' \
+VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pfm-agent' \
 				-X 'github.com/percona/pmm/version.Version=$(PMM_RELEASE_VERSION)' \
 				-X 'github.com/percona/pmm/version.PMMVersion=$(PMM_RELEASE_VERSION)' \
 				-X 'github.com/percona/pmm/version.Timestamp=$(PMM_RELEASE_TIMESTAMP)' \
@@ -25,17 +25,17 @@ VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pmm-agent' \
 				-X 'github.com/percona/pmm/version.Branch=$(PMM_RELEASE_BRANCH)'
 
 release:                        ## Build static pmm-agent release binary (Linux only)
-	CGO_ENABLED=1 go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pmm-agent
-	go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pmm-agent-entrypoint ./cmd/pmm-agent-entrypoint
-	$(PMM_RELEASE_PATH)/pmm-agent --version
-	ldd $(PMM_RELEASE_PATH)/pmm-agent 2>&1 | grep -Fq 'not a dynamic executable'
+	CGO_ENABLED=1 go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfm-agent
+	go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfm-agent-entrypoint ./cmd/pfm-agent-entrypoint
+	$(PMM_RELEASE_PATH)/pfm-agent --version
+	ldd $(PMM_RELEASE_PATH)/pfm-agent 2>&1 | grep -Fq 'not a dynamic executable'
 
 release-gssapi:                 ## Build dynamic pmm-agent release binary (for GSSAPI support)
-	CGO_ENABLED=1 go build -v -ldflags "$(VERSION_FLAGS)" -tags 'osusergo netgo gssapi' -o $(PMM_RELEASE_PATH)/pmm-agent
-	$(PMM_RELEASE_PATH)/pmm-agent --version
+	CGO_ENABLED=1 go build -v -ldflags "$(VERSION_FLAGS)" -tags 'osusergo netgo gssapi' -o $(PMM_RELEASE_PATH)/pfm-agent
+	$(PMM_RELEASE_PATH)/pfm-agent --version
 
 release-dev:
-	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -o $(PMM_RELEASE_PATH)/pmm-agent
+	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -o $(PMM_RELEASE_PATH)/pfm-agent
 
 release-dev-gssapi:
 	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -tags 'gssapi' -o $(PMM_RELEASE_PATH)/pmm-agent-gssapi
@@ -92,7 +92,7 @@ bench:                          ## Run benchmarks
 	go test -bench=. -benchtime=1s -count=5 -cpu=1 -timeout=30m -failfast github.com/percona/pmm/agent/agents/postgres/parser | tee postgres_parser_new.bench
 	go tool benchstat postgres_parser_old.bench postgres_parser_new.bench
 
-RUN_FLAGS = --config-file=pmm-agent-dev.yaml
+RUN_FLAGS = --config-file=pmm-agent.yaml
 
 run: install _run               ## Run pmm-agent
 

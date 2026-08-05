@@ -2,7 +2,7 @@
 set -o errexit
 set -o pipefail
 
-declare POSTGRES_DATA_DIR="${POSTGRES_DATA_DIR:-/srv/postgres14}"
+declare POSTGRES_DATA_DIR="${POSTGRES_DATA_DIR:-/srv/postgres18}"
 declare POSTGRES_PASSWORD_FILE="${POSTGRES_PASSWORD_FILE:-/srv/.postgres_password}"
 
 ensure_postgres_password() {
@@ -20,8 +20,8 @@ ensure_postgres_password() {
     echo "Generating postgres superuser password..."
     POSTGRES_PASSWORD=$(openssl rand -hex 16)
 
-    if ! /usr/pgsql-14/bin/pg_ctl status -D "$POSTGRES_DATA_DIR" > /dev/null 2>&1; then
-        /usr/pgsql-14/bin/pg_ctl start -D "$POSTGRES_DATA_DIR" -o "-c logging_collector=off"
+    if ! /usr/pgsql-18/bin/pg_ctl status -D "$POSTGRES_DATA_DIR" > /dev/null 2>&1; then
+        /usr/pgsql-18/bin/pg_ctl start -D "$POSTGRES_DATA_DIR" -o "-c logging_collector=off"
         STARTED=1
     fi
 
@@ -32,7 +32,7 @@ ensure_postgres_password() {
     chmod 600 "$POSTGRES_PASSWORD_FILE"
 
     if [ "$STARTED" -eq 1 ]; then
-        /usr/pgsql-14/bin/pg_ctl stop -D "$POSTGRES_DATA_DIR"
+        /usr/pgsql-18/bin/pg_ctl stop -D "$POSTGRES_DATA_DIR"
     fi
 }
 
@@ -53,8 +53,8 @@ update_pg_hba_auth() {
     sed -E 's/^([[:space:]]*host[[:space:]].*[[:space:]])trust([[:space:]]*)$/\1scram-sha-256\2/' "$hba" > "$tmp"
     mv "$tmp" "$hba"
 
-    if /usr/pgsql-14/bin/pg_ctl status -D "$POSTGRES_DATA_DIR" > /dev/null 2>&1; then
-        /usr/pgsql-14/bin/pg_ctl reload -D "$POSTGRES_DATA_DIR"
+    if /usr/pgsql-18/bin/pg_ctl status -D "$POSTGRES_DATA_DIR" > /dev/null 2>&1; then
+        /usr/pgsql-18/bin/pg_ctl reload -D "$POSTGRES_DATA_DIR"
     fi
 }
 

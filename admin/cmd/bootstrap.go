@@ -47,7 +47,7 @@ func Bootstrap(opts cli.PMMAdminCommands) {
 	var kongParser *kong.Kong
 	var parsedOpts any
 
-	kongParser = kong.Must(&opts, getDefaultKongOptions("pmm-admin")...)
+	kongParser = kong.Must(&opts, getDefaultKongOptions("pfm-admin")...)
 	parsedOpts = &opts
 
 	kongcompletion.Register(kongParser)

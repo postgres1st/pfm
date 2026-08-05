@@ -22,6 +22,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/percona/pmm/managed/models"
 )
 
 func TestSavePMMConfig(t *testing.T) {
@@ -34,13 +36,18 @@ func TestSavePMMConfig(t *testing.T) {
 	}{
 		{
 			description: "disable internal postgresql db",
-			params:      map[string]any{"DisableInternalDB": true, "DisableSupervisor": false, "DisableInternalClickhouse": false, "AgentConfigFilePath": "/opt/postgres1st/pfm/config/pmm-agent.yaml"},
+			params:      map[string]any{"DisableInternalDB": true, "DisableSupervisor": false, "DisableInternalClickhouse": false, "AgentConfigFilePath": models.AgentConfigFilePath, "ClickHouseConfig": "default"},
 			file:        "pmm-db_disabled",
 		},
 		{
 			description: "enable internal postgresql db",
-			params:      map[string]any{"DisableInternalDB": false, "DisableSupervisor": false, "DisableInternalClickhouse": false, "AgentConfigFilePath": "/opt/postgres1st/pfm/config/pmm-agent.yaml"},
+			params:      map[string]any{"DisableInternalDB": false, "DisableSupervisor": false, "DisableInternalClickhouse": false, "AgentConfigFilePath": models.AgentConfigFilePath, "ClickHouseConfig": "default"},
 			file:        "pmm-db_enabled",
+		},
+		{
+			description: "low-memory clickhouse profile",
+			params:      map[string]any{"DisableInternalDB": false, "DisableSupervisor": false, "DisableInternalClickhouse": false, "AgentConfigFilePath": models.AgentConfigFilePath, "ClickHouseConfig": "low-memory"},
+			file:        "pmm-ch_low_memory",
 		},
 	}
 	for _, test := range tests {

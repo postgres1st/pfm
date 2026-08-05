@@ -37,6 +37,8 @@ compose.yml
 .modules
 build.log
 build/.cache/
+# build-pfmm-airgap workspace + bundle output
+build/.pfmm-airgap/
 packer.log
 ci.yml
 

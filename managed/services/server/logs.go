@@ -420,7 +420,7 @@ func addAdminSummary(ctx context.Context, zw *zip.Writer) error {
 	}
 	defer os.Remove(sf.Name()) //nolint:errcheck
 
-	cmd := exec.CommandContext(ctx, "pmm-admin", "summary", "--skip-server", "--filename", sf.Name()) //nolint:gosec
+	cmd := exec.CommandContext(ctx, "pfm-admin", "summary", "--skip-server", "--filename", sf.Name()) //nolint:gosec
 	pdeathsig.Set(cmd, unix.SIGKILL)
 	cmd.Stdout = os.Stderr // stdout to stderr
 	cmd.Stderr = os.Stderr

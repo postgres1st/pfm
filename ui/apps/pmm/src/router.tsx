@@ -9,6 +9,7 @@ import { HelpCenter } from 'pages/help-center';
 import Providers from 'Providers';
 import { PMM_NEW_NAV_PATH, UPDATES_ENABLED } from 'lib/constants';
 import { Redirect, SettingsRedirect } from 'components/redirect';
+import { AlertsPage } from 'pages/alerting/status';
 
 const router = createBrowserRouter(
   [
@@ -41,6 +42,15 @@ const router = createBrowserRouter(
               element: <HelpCenter />,
             },
             {
+              path: 'alerting',
+              children: [
+                {
+                  path: 'status',
+                  element: <AlertsPage />,
+                },
+              ],
+            },
+            {
               path: 'settings/:tab?',
               element: <Settings />,
             },
@@ -48,6 +58,10 @@ const router = createBrowserRouter(
             {
               path: 'graph/settings/:tab?',
               element: <SettingsRedirect />,
+            },
+            {
+              path: 'graph/alerting/alerts',
+              element: <Navigate to="/alerting/status" replace />,
             },
             // Grafana routes are handled at the Main component level
             {
@@ -73,7 +87,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: '/pmm-ui',
+    basename: '/pfm-ui',
   }
 );
 

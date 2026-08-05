@@ -1,9 +1,9 @@
 import { useSyncExternalStore } from 'react';
 
-const CLIENT_SESSION_KEY = 'pmm-ui.session.active';
+const CLIENT_SESSION_KEY = 'pfm-ui.session.active';
 const SESSION_CHANGE_EVENT = 'pmm-client-session-change';
 
-const PMM_STORAGE_PREFIXES = ['pmm-ui.', 'grafana.'] as const;
+const PMM_STORAGE_PREFIXES = ['pfm-ui.', 'grafana.'] as const;
 
 const isTrackedStorageKey = (key: string) =>
   key === CLIENT_SESSION_KEY ||

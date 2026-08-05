@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# Pinned inputs for the air-gapped PFMM server bundle (build-pfmm-airgap).
+#
+# Sourced, not executed. Everything the bundle is built from is pinned to an
+# exact commit here: a build from the same checkout of this file must produce the
+# same package set. Do NOT replace these with branch names -- "main" moves and the
+# bundle stops being reproducible.
+#
+# NOTE: this pipeline is deliberately independent of build/scripts/vars, which is
+# wired to the Percona-Lab/pmm-submodules Jenkins layout (root_dir eight levels
+# up, sources/pmm/src/...). This one builds from THIS checkout.
+
+# --- versions that land in RPM NEVRAs -----------------------------------------
+# pfm-server's version comes from %define full_pfm_version in its own spec (its
+# release is stamped with a build timestamp + commit there, like the sibling
+# specs). It is deliberately not settable here -- a variable that looked like it
+# controlled the version but was never passed to rpmbuild is worse than none.
+PFMM_PMM_VERSION=${PFMM_PMM_VERSION:-3.9.0}         # pfm-managed / pfm-client
+PFMM_GRAFANA_VERSION=${PFMM_GRAFANA_VERSION:-12.4.5}
+PFMM_DIST=${PFMM_DIST:-.el9}
+
+# --- our rebranded Grafana fork -----------------------------------------------
+# Published at postgres1st/grafana, which grafana.spec's Source0 points at. That
+# repository is private, so Source0 only resolves with credentials -- this build
+# reads the local clone instead and therefore needs neither credentials nor the
+# commit to have been pushed. Keep the commit in sync with %global commit in
+# build/packages/rpm/server/SPECS/grafana.spec (preflight enforces it).
+PFMM_GRAFANA_FORK=${PFMM_GRAFANA_FORK:-${HOME}/Projects/postgres1st-grafana}
+PFMM_GRAFANA_COMMIT=${PFMM_GRAFANA_COMMIT:-f4d9e0d87d3cd2dc315a1fa7a24482499518015c}
+
+# --- client-side components built from source ---------------------------------
+# Percona's exporter forks + toolkit. Upstream tracks these as submodule branches
+# in Percona-Lab/pmm-submodules; pinned to the exact commits this bundle was
+# validated against.
+PFMM_NODE_EXPORTER_REPO=https://github.com/percona/node_exporter.git
+PFMM_NODE_EXPORTER_COMMIT=a547672a2ff50e0b98b0458133f191895050d526
+
+PFMM_POSTGRES_EXPORTER_REPO=https://github.com/percona/postgres_exporter.git
+PFMM_POSTGRES_EXPORTER_COMMIT=f6ffcfff11491eab0ad3bbd1f5b666645be1eb4e
+
+PFMM_RDS_EXPORTER_REPO=https://github.com/percona/rds_exporter.git
+PFMM_RDS_EXPORTER_COMMIT=325cfc574c36cc81e8f925101bbd954fd4ee2ed5
+
+PFMM_AZURE_EXPORTER_REPO=https://github.com/percona/azure_metrics_exporter.git
+PFMM_AZURE_EXPORTER_COMMIT=d81fabbf1c62f9e876838860fbb972b13a554092
+
+PFMM_TOOLKIT_REPO=https://github.com/percona/percona-toolkit.git
+PFMM_TOOLKIT_COMMIT=892463d318826b7185a827c2f38fe740f375b676
+
+# Same commits build/scripts/vars pins for the upstream client build.
+PFMM_VMAGENT_REPO=https://github.com/VictoriaMetrics/VictoriaMetrics.git
+PFMM_VMAGENT_COMMIT=7e6644db82229b47349636552238545de9728f60
+
+PFMM_NOMAD_REPO=https://github.com/hashicorp/nomad.git
+PFMM_NOMAD_COMMIT=a2a5fee9c42d6481adcb9be865bcbccf8fd4d725
+
+# --- target architecture ------------------------------------------------------
+# Defaults to the build host. Cross-building is NOT supported: the Go/webpack
+# builds and rpmbuild all produce host-native output, so an x86_64 bundle must be
+# built on an x86_64 host. This variable selects the arch-specific *inputs*.
+PFMM_ARCH=${PFMM_ARCH:-$(uname -m)}
+
+# --- server components we do NOT build (Percona's public S3 build cache) ------
+# These are NOT in any public YUM repo and cannot be extracted from the pmm-server
+# image -- S3 is the only public source.
+#
+# Layout differs per arch: ARM lives under RELEASE/el9-aarch64/ with a single
+# build per component, x86_64 under the unsuffixed RELEASE/el9/ with one build
+# per CI commit (hence the exact keys pinned below). The build timestamps in the
+# filenames differ between arches because they are separate CI runs; pmm-dump
+# additionally has no x86_64 build at the ARM commit, so a different one is pinned.
+PFMM_S3_BASE=https://pmm-build-cache.s3.us-east-2.amazonaws.com/RELEASE
+case "${PFMM_ARCH}" in
+aarch64)
+  PFMM_S3_DIR=el9-aarch64
+  PFMM_S3_COMPONENTS=(
+    "victoriametrics-1.145.0-1/aarch64/percona-victoriametrics-1.145.0-1.el9.aarch64.rpm"
+    "percona-qan-api2-3.9.0-17.58f5711/aarch64/percona-qan-api2-3.9.0-17.2607091640.58f5711.el9.aarch64.rpm"
+    "vmproxy-3.9.0-1.58f5711/aarch64/vmproxy-3.9.0-1.2607091641.58f5711.el9.aarch64.rpm"
+    "pmm-dump-3.9.0-1.cb87779/aarch64/pmm-dump-3.9.0-1.2607091641.cb87779.el9.aarch64.rpm"
+  )
+  PFMM_PGDG_ARCH=aarch64
+  PFMM_PLUGIN_ARCH=linux_arm64
+  ;;
+x86_64)
+  PFMM_S3_DIR=el9
+  PFMM_S3_COMPONENTS=(
+    "victoriametrics-1.145.0-1/x86_64/percona-victoriametrics-1.145.0-1.el9.x86_64.rpm"
+    "percona-qan-api2-3.9.0-17.58f5711/x86_64/percona-qan-api2-3.9.0-17.2607091643.58f5711.el9.x86_64.rpm"
+    "vmproxy-3.9.0-1.58f5711/x86_64/vmproxy-3.9.0-1.2607091644.58f5711.el9.x86_64.rpm"
+    "pmm-dump-3.9.0-1.ba46863/x86_64/pmm-dump-3.9.0-1.2607152315.ba46863.el9.x86_64.rpm"
+  )
+  PFMM_PGDG_ARCH=x86_64
+  PFMM_PLUGIN_ARCH=linux_amd64
+  ;;
+*)
+  echo "unsupported architecture: ${PFMM_ARCH} (expected aarch64 or x86_64)" >&2
+  return 1 2>/dev/null || exit 1
+  ;;
+esac
+
+# --- grafana dashboard plugins (percona-dashboards.spec Source1/Source2) ------
+PFMM_CLICKHOUSE_DS_VERSION=4.19.0
+PFMM_POLYSTAT_VERSION=2.1.16
+
+# --- third-party repos the dependency closure is resolved against -------------
+PFMM_PGDG_REPO_RPM=https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-${PFMM_PGDG_ARCH}/pgdg-redhat-repo-latest.noarch.rpm
+PFMM_PERCONA_REPO_RPM=https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+PFMM_CLICKHOUSE_BASEURL=https://packages.clickhouse.com/rpm/stable/
+
+# --- package signing ----------------------------------------------------------
+# Every RPM in the bundle is signed with this key, including the third-party ones.
+# That is deliberate: the bundle is a curated set, ClickHouse ships its RPMs
+# unsigned, and PGDG/Rocky are signed by keys the customer would otherwise have to
+# import separately -- so signing the whole set lets `gpgcheck=1` work after a
+# single `rpm --import`. Package contents are untouched; only the signature header
+# changes.
+#
+# PLACEHOLDER IDENTITY: contact@postgresfirst.com is a stand-in until the team
+# settles on a real org key. Replacing it is a one-line change here plus a
+# re-run of the bundle stage -- nothing else references the key.
+#
+# Set PFMM_SIGN_KEY empty to build an unsigned bundle (INSTALL.md then has to keep
+# gpgcheck=0); the bundle stage skips signing rather than failing if the secret key
+# is not in the caller's keyring.
+PFMM_SIGN_KEY=${PFMM_SIGN_KEY:-contact@postgresfirst.com}
+PFMM_SIGN_KEY_FILE=${PFMM_SIGN_KEY_FILE:-RPM-GPG-KEY-postgres1st}
+
+# --- toolchain images ---------------------------------------------------------
+# Must satisfy: pmm go.mod (go 1.26.5), grafana go.mod (1.25.9) and .nvmrc
+# (node >=22 <25); the pmm UI needs node >=22 with yarn classic.
+PFMM_GO_IMAGE=${PFMM_GO_IMAGE:-golang:1.26.5}
+PFMM_NODE_IMAGE=${PFMM_NODE_IMAGE:-node:24}
+PFMM_UI_NODE_IMAGE=${PFMM_UI_NODE_IMAGE:-node:22}
+PFMM_RPMBUILD_IMAGE=${PFMM_RPMBUILD_IMAGE:-pfm-rpmbuilder:9}
+PFMM_EL_IMAGE=${PFMM_EL_IMAGE:-rockylinux/rockylinux:9}
+PFMM_SYSTEMD_IMAGE=${PFMM_SYSTEMD_IMAGE:-pfm-rocky9-systemd}
+
+# Webpack peaks around 8-10 GB; 7.7 GB has been observed to OOM.
+PFMM_NODE_HEAP_MB=${PFMM_NODE_HEAP_MB:-10240}

@@ -600,7 +600,8 @@ func TestMongoDBExporter(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				MongodbExporter: &agents.ChangeAgentParamsBodyMongodbExporter{
-					Password: new("rotated-mongodb-password-456"),
+					SkipConnectionCheck: new(true),
+					Password:            new("rotated-mongodb-password-456"),
 				},
 			},
 			Context: pmmapitests.Context,
@@ -628,6 +629,7 @@ func TestMongoDBExporter(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				MongodbExporter: &agents.ChangeAgentParamsBodyMongodbExporter{
+					SkipConnectionCheck:     new(true),
 					Username:                new("new-mongodb-user"),
 					Password:                new("final-mongodb-password-789"),
 					AuthenticationMechanism: new("SCRAM-SHA-256"),
@@ -715,7 +717,8 @@ func TestMongoDBExporter(t *testing.T) {
 			AgentID: agentID,
 			Body: agents.ChangeAgentBody{
 				MongodbExporter: &agents.ChangeAgentParamsBodyMongodbExporter{
-					Password: new("new-password-only"),
+					SkipConnectionCheck: new(true),
+					Password:            new("new-password-only"),
 					// All other fields are intentionally NOT set (nil)
 				},
 			},

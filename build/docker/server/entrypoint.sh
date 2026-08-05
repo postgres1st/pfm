@@ -6,7 +6,7 @@ declare CURRENT_GID CURRENT_UID CURRENT_USER
 
 # Returns 0 (true) if the given variable is set to "1" or "true".
 is_enabled() { [ "$1" = "1" ] || [ "$1" = "true" ]; }
-declare POSTGRES_DATA_DIR="/srv/postgres14"
+declare POSTGRES_DATA_DIR="/srv/postgres18"
 declare POSTGRES_PASSWORD_FILE="/srv/.postgres_password"
 
 # Get current user info - handle cases where user doesn't exist in passwd
@@ -79,8 +79,6 @@ if [ ! -f "$DIST_FILE" ]; then
     echo -n "$PMM_DISTRIBUTION_METHOD" > "$DIST_FILE"
     echo "Initializing /srv..."
     mkdir -p /srv/{backup,clickhouse,grafana/plugins,logs,nginx,prometheus/rules,victoriametrics}
-    echo "Copying grafana plugins and the VERSION file..."
-    cp -r /usr/share/percona-dashboards/panels/* /srv/grafana/plugins
 
     if is_enabled "$PMM_HA_ENABLE"; then
         echo "Skipping embedded PostgreSQL initialization in HA mode."
@@ -99,24 +97,45 @@ if [ ! -f "$DIST_FILE" ]; then
         chmod 600 "$POSTGRES_PASSWORD_FILE"
 
         # Initialize database with password authentication
-        /usr/pgsql-14/bin/initdb -D "$POSTGRES_DATA_DIR" --auth-host=scram-sha-256 --auth-local=trust --username=postgres --pwfile="$POSTGRES_PASSWORD_FILE"
+        /usr/pgsql-18/bin/initdb -D "$POSTGRES_DATA_DIR" --auth-host=scram-sha-256 --auth-local=trust --username=postgres --pwfile="$POSTGRES_PASSWORD_FILE"
 
         echo "Enabling pg_stat_statements extension for PostgreSQL..."
-        /usr/pgsql-14/bin/pg_ctl start -D "$POSTGRES_DATA_DIR" -o "-c logging_collector=off"
+        /usr/pgsql-18/bin/pg_ctl start -D "$POSTGRES_DATA_DIR" -o "-c logging_collector=off"
         PGPASSWORD="$POSTGRES_PASSWORD" /usr/bin/psql -U postgres -h /run/postgresql -d postgres -c 'CREATE EXTENSION pg_stat_statements SCHEMA public'
-        /usr/pgsql-14/bin/pg_ctl stop -D "$POSTGRES_DATA_DIR"
+        /usr/pgsql-18/bin/pg_ctl stop -D "$POSTGRES_DATA_DIR"
 
         # Clean up password from environment
         unset POSTGRES_PASSWORD
     fi
 fi
 
+# Sync bundled Grafana plugins into /srv when the bundled set changes. 
+# This must happen before supervisord starts.
+declare PLUGINS_SRC=/opt/postgres1st/pfmm/dashboards/panels
+declare PLUGINS_DST=/srv/grafana/plugins
+declare PLUGINS_MARKER="$PLUGINS_DST/.pmm-synced-version"
+declare BUNDLED_VERSION SYNCED_VERSION=""
+BUNDLED_VERSION=$(< /opt/postgres1st/pfmm/dashboards/VERSION)
+if [ -f "$PLUGINS_MARKER" ]; then
+    SYNCED_VERSION=$(< "$PLUGINS_MARKER")
+fi
+if [ "$BUNDLED_VERSION" != "$SYNCED_VERSION" ]; then
+    echo "Synchronizing Grafana plugins..."
+    mkdir -p "$PLUGINS_DST"
+    for panel in "$PLUGINS_SRC"/*/; do
+        rm -rf "${PLUGINS_DST:?}/$(basename "$panel")"
+    done
+    cp -r "$PLUGINS_SRC"/* "$PLUGINS_DST"
+    echo -n "$BUNDLED_VERSION" > "$PLUGINS_MARKER"
+fi
+unset PLUGINS_SRC PLUGINS_DST PLUGINS_MARKER BUNDLED_VERSION SYNCED_VERSION
+
 echo "Creating nginx temp directories..."
 mkdir -p /srv/nginx/tmp/{client,proxy,fastcgi,uwsgi,scgi}
 
-if [ ! -d "/srv/pmm-agent/tmp" ]; then
+if [ ! -d "/srv/pfm-agent/tmp" ]; then
     echo "Creating pmm-agent temp directory..."
-    install -d -m 770 /srv/pmm-agent/tmp
+    install -d -m 770 /srv/pfm-agent/tmp
 fi
 
 if is_enabled "$PMM_HA_ENABLE"; then
@@ -146,11 +165,11 @@ declare AGENT_ID=pmm-server
 
 if is_enabled "$PMM_HA_ENABLE"; then
     echo "High Availability mode is enabled."
-    if [ -f "$AGENT_CONFIG_DIR/pmm-agent.yaml" ]; then
-        rm -f "$AGENT_CONFIG_DIR/pmm-agent.yaml"
+    if [ -f "$AGENT_CONFIG_DIR/pfm-agent.yaml" ]; then
+        rm -f "$AGENT_CONFIG_DIR/pfm-agent.yaml"
     fi
 
-    AGENT_CONFIG_DIR="/srv/pmm-agent/config"
+    AGENT_CONFIG_DIR="/srv/pfm-agent/config"
     if [ ! -d "$AGENT_CONFIG_DIR" ]; then
         echo "Creating pmm-agent config directory..."
         install -d -m 770 "$AGENT_CONFIG_DIR"
@@ -159,13 +178,13 @@ if is_enabled "$PMM_HA_ENABLE"; then
     AGENT_ID="$(uuidgen)"
 fi
 
-if [ ! -f "$AGENT_CONFIG_DIR/pmm-agent.yaml" ]; then
+if [ ! -f "$AGENT_CONFIG_DIR/pfm-agent.yaml" ]; then
   echo "Creating pmm-agent configuration..."
   pmm-agent setup \
-      --config-file="$AGENT_CONFIG_DIR/pmm-agent.yaml" \
+      --config-file="$AGENT_CONFIG_DIR/pfm-agent.yaml" \
       --skip-registration \
       --id="$AGENT_ID" \
-      --paths-tempdir=/srv/pmm-agent/tmp \
+      --paths-tempdir=/srv/pfm-agent/tmp \
       --paths-nomad-data-dir=/srv/nomad/data \
       --server-address=127.0.0.1:8443 \
       --server-insecure-tls

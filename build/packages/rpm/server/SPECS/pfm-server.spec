@@ -6,8 +6,12 @@
 # `pfm` account. This is pfm's value-add: upstream PMM ships only a container,
 # so there is no server meta-package to base this on.
 #
-# Service/binary references remain pmm-* (ExecStart=/usr/sbin/pmm-managed, etc.)
-# until the rebrand workstream renames the binaries.
+# Binaries/packages are pfm-* (ExecStart=/usr/sbin/pfm-managed). The client owns
+# the pfm-agent.service name, so this package's self-monitoring unit is
+# pfm-server-agent.service; %post masks the client's unit so the two agents don't
+# compete. Names kept as pmm-* on purpose: the pmm_managed Prometheus metric
+# namespace (dashboards query it), the pmm-managed Postgres role/DB, and the
+# PMM_* environment-variable contract.
 #
 # NOT yet validated on a real host (this was authored off-VM): the exact
 # Requires names/versions, the %post enable/tmpfiles/sysusers sequence, and the
@@ -20,12 +24,28 @@
 # "<repo>-<commit>/" where repo_name=pmm — must match the %setup -n below.
 %global repo        pmm
 
-# the line below is sed'ed by the build script to set a correct version
-%define full_pfm_version 3.0.0
+# Tracks the upstream PMM release this assembly is built from, so pfm-server,
+# pfm-managed and pfm-client all read the same version. It was 3.0.0 -- an
+# independent number chosen when this spec was written -- which made the
+# metapackage the customer actually installs look OLDER than the 3.9.0 components
+# inside it. 3.9.0 > 3.0.0, so this is a normal upgrade for anyone already on the
+# old number and needs no Epoch.
+%define full_pfm_version 3.9.0
+
+# Release carries a build timestamp and the source commit, matching the sibling
+# specs (pfm-managed, percona-dashboards, grafana). Without it every build
+# produced the identical NEVRA 3.0.0-1, so `dnf upgrade` had nothing to compare
+# and silently skipped the package -- and this is the package that owns the
+# systemd units, pfm-init.sh, the grafana/nginx config and the polkit rule, so
+# none of those could ever be updated on an existing install without a manual
+# `dnf reinstall`.
+%define build_timestamp %(date -u +"%y%m%d%H%M")
+%define release         1
+%define rpm_release     %{release}.%{build_timestamp}.%{shortcommit}%{?dist}
 
 Name:           pfm-server
 Version:        %{full_pfm_version}
-Release:        1%{?dist}
+Release:        %{rpm_release}
 Summary:        Native systemd assembly of the pfm (PMM-derived) monitoring stack
 
 License:        AGPLv3
@@ -43,20 +63,20 @@ Requires(postun): systemd
 # Component packages built from this monorepo (pmm-managed carries the systemd
 # process-management backend). NOTE: names/versions to be pinned on first VM
 # install against the actual built RPMs + the dep-availability grid.
-Requires:       pmm-managed
-Requires:       pmm-client
+Requires:       pfm-managed
+Requires:       pfm-client
 Requires:       percona-victoriametrics
 Requires:       vmproxy
 Requires:       percona-qan-api2
 Requires:       percona-dashboards
 Requires:       pfm-grafana
 
-# Third-party data/proxy tier (Percona ppg / ClickHouse / distro repos).
-# postgresql14: -server has initdb/pg_ctl; -contrib has pg_stat_statements
+# Third-party data/proxy tier (PGDG PostgreSQL / ClickHouse / distro repos).
+# postgresql18: -server has initdb/pg_ctl; -contrib has pg_stat_statements
 # (postgres won't start without it); the base package has psql (pfm-init.sh).
-Requires:       percona-postgresql14-server
-Requires:       percona-postgresql14-contrib
-Requires:       percona-postgresql14
+Requires:       postgresql18-server
+Requires:       postgresql18-contrib
+Requires:       postgresql18
 Requires:       clickhouse-server
 Requires:       nginx
 Requires:       openssl
@@ -66,8 +86,8 @@ Requires:       polkit
 
 %description
 pfm-server assembles the pfm monitoring stack (PostgreSQL, ClickHouse,
-VictoriaMetrics, vmalert, vmproxy, qan-api2, nginx, Grafana, pmm-managed and
-pmm-agent) into a native systemd service set. It provides one unit per service
+VictoriaMetrics, vmalert, vmproxy, qan-api2, nginx, Grafana, pfm-managed and
+pfm-agent) into a native systemd service set. It provides one unit per service
 plus a pfm.target that starts the whole stack, idempotent first-boot
 provisioning, zero-egress defaults, and a non-root pfm service account —
 without a container.
@@ -90,13 +110,53 @@ cd build/packages/config/pfm
 install -p -m 0644 pfm.target %{buildroot}%{_unitdir}/pfm.target
 for u in pfm-init pfm-postgresql pfm-clickhouse pfm-nginx pfm-grafana \
          pfm-victoriametrics pfm-vmalert pfm-vmproxy pfm-qan-api2 \
-         pfm-managed pfm-agent; do
+         pfm-managed pfm-server-agent pfm-clickhouse-perms; do
     install -p -m 0644 ${u}.service %{buildroot}%{_unitdir}/${u}.service
 done
 
 install -p -m 0644 pfm-tmpfiles.conf  %{buildroot}%{_tmpfilesdir}/pfm.conf
 install -p -m 0644 pfm-sysusers.conf  %{buildroot}%{_sysusersdir}/pfm.conf
 install -p -m 0755 pfm-init.sh        %{buildroot}%{_datadir}/pfm/pfm-init.sh
+
+# ClickHouse custom config (data under /srv/clickhouse to match pfm-clickhouse's
+# ReadWritePaths). Staged here; %post deploys it to /etc/clickhouse-server and
+# symlinks config.xml/users.xml -> default-*. Single source of truth with the
+# container image build (build/ansible/roles/clickhouse/files).
+install -d -p %{buildroot}%{_datadir}/pfm/clickhouse
+for f in default-config.xml default-users.xml low-memory-config.xml \
+         low-memory-users.xml dhparam.pem switch-config.sh; do
+    install -p -m 0644 ../../../ansible/roles/clickhouse/files/${f} \
+        %{buildroot}%{_datadir}/pfm/clickhouse/${f}
+done
+
+# Grafana config (postgres backend + /srv/grafana paths). The percona-grafana RPM
+# ships a stock grafana.ini (sqlite under the homepath, unwritable by the pfm
+# user); %post deploys this one over it. Single source of truth with the image
+# build (build/ansible/roles/grafana/files).
+install -d -p %{buildroot}%{_datadir}/pfm/grafana
+# Ships as /etc/grafana/pfm.ini and is selected via `grafana server --config`
+# (same pattern as nginx/pfm.conf above). pfm-grafana owns grafana.ini, so a
+# copy written over it is reverted the next time that package is upgraded --
+# which silently returns grafana to its stock sqlite-in-homepath config and the
+# server then fails to start ("mkdir /usr/share/grafana/data: read-only").
+install -d -p %{buildroot}%{_sysconfdir}/grafana
+install -p -m 0644 ../../../ansible/roles/grafana/files/grafana.ini \
+    %{buildroot}%{_sysconfdir}/grafana/pfm.ini
+
+# Grafana provisioning: datasources (VictoriaMetrics/ClickHouse/PTSummary),
+# dashboards (from the percona-dashboards pmm-app plugin), plugins. Without these
+# grafana boots but has no datasources/dashboards (empty UI). Grafana reads these
+# in place -- pfm.ini sets paths.provisioning here -- so there is no copy into
+# grafana's own conf dir to go stale or be reverted by a pfm-grafana upgrade.
+for p in datasources dashboards plugins; do
+    install -d -p %{buildroot}%{_datadir}/pfm/grafana/provisioning/${p}
+done
+install -p -m 0644 ../../../ansible/roles/grafana/files/datasources.yml \
+    %{buildroot}%{_datadir}/pfm/grafana/provisioning/datasources/default.yml
+install -p -m 0644 ../../../ansible/roles/grafana/files/dashboards.yml \
+    %{buildroot}%{_datadir}/pfm/grafana/provisioning/dashboards/default.yml
+install -p -m 0644 ../../../ansible/roles/grafana/files/plugins.yml \
+    %{buildroot}%{_datadir}/pfm/grafana/provisioning/plugins/default.yml
 
 for e in victoriametrics vmalert vmproxy qan-api2 grafana; do
     # 0640 root:pfm — these seeds carry default DB/ClickHouse credentials; only
@@ -143,11 +203,58 @@ if [ $1 -eq 1 ]; then
     install -d -m 0770 -o pfm -g pfm /srv || :
     systemd-tmpfiles --create %{_tmpfilesdir}/pfm.conf >/dev/null 2>&1 || :
     systemctl enable pfm.target >/dev/null 2>&1 || :
-    # pmm-client's %post starts its own pmm-agent.service (different unit + user);
-    # pfm uses pfm-agent.service, driven by pmm-managed. Stop and mask the client
+    # pfm-client's %post starts its own pfm-agent.service (different unit + user);
+    # the server uses pfm-server-agent.service, driven by pfm-managed. Stop and mask
     # unit so the two agents don't compete.
-    systemctl disable --now pmm-agent.service >/dev/null 2>&1 || :
-    systemctl mask pmm-agent.service >/dev/null 2>&1 || :
+    systemctl disable --now pfm-agent.service >/dev/null 2>&1 || :
+    systemctl mask pfm-agent.service >/dev/null 2>&1 || :
+
+    # First-boot fixes that need root — pfm-init.sh runs as the pfm user and is
+    # sandboxed to /srv, so it cannot touch these root-owned /etc paths.
+
+    # (1) pmm-managed's unit binds /etc/victoriametrics-promscrape.yml in
+    # ReadWritePaths (mandatory). The file doesn't exist until pmm-managed writes
+    # it, but pmm-managed (pfm user) can't create files in root-owned /etc, so the
+    # namespace fails to set up (exit 226) and pmm-managed can never start to
+    # generate it. Seed an empty pfm-owned file here to break the chicken-and-egg;
+    # pmm-managed overwrites it with the real scrape config on first run.
+    if [ ! -e %{_sysconfdir}/victoriametrics-promscrape.yml ]; then
+        install -m 0644 -o pfm -g pfm /dev/null %{_sysconfdir}/victoriametrics-promscrape.yml || :
+    fi
+
+    # (2) Deploy the pfm ClickHouse config. The stock clickhouse-server RPM ships a
+    # config.xml with data under /var/lib/clickhouse, but pfm-clickhouse.service
+    # runs as pfm and its ReadWritePaths only expose /srv/clickhouse — so the stock
+    # config can't write its data dir. Install our custom config (data in
+    # /srv/clickhouse) exactly as Percona's image does: drop the files in, replace
+    # config.xml/users.xml with symlinks to the default-* variants, hand the tree
+    # to pfm (stock perms are 0700 clickhouse:clickhouse — unreadable by pfm).
+    if [ -d %{_datadir}/pfm/clickhouse ]; then
+        for f in default-config.xml default-users.xml low-memory-config.xml \
+                 low-memory-users.xml dhparam.pem switch-config.sh; do
+            [ -e %{_datadir}/pfm/clickhouse/${f} ] && \
+                install -m 0644 %{_datadir}/pfm/clickhouse/${f} %{_sysconfdir}/clickhouse-server/${f} || :
+        done
+        chmod 0755 %{_sysconfdir}/clickhouse-server/switch-config.sh 2>/dev/null || :
+        # config.xml/users.xml -> default-* symlinks (remove stock regular files first)
+        [ -L %{_sysconfdir}/clickhouse-server/config.xml ] || rm -f %{_sysconfdir}/clickhouse-server/config.xml
+        [ -L %{_sysconfdir}/clickhouse-server/users.xml ]  || rm -f %{_sysconfdir}/clickhouse-server/users.xml
+        ln -sf default-config.xml %{_sysconfdir}/clickhouse-server/config.xml || :
+        ln -sf default-users.xml  %{_sysconfdir}/clickhouse-server/users.xml  || :
+    fi
+    for d in %{_sysconfdir}/clickhouse-server /var/lib/clickhouse /var/log/clickhouse-server; do
+        [ -d "$d" ] && chown -R pfm:pfm "$d" && chmod -R u+rwX "$d" || :
+    done
+
+    # (3) Nothing to deploy for grafana any more, deliberately. Both its config
+    # and its provisioning are now read from pfm-owned paths that this package
+    # ships directly (/etc/grafana/pfm.ini via --config, and
+    # %{_datadir}/pfm/grafana/provisioning via the ini's paths.provisioning), and
+    # plugins are read from the package that owns them. Copying into
+    # percona-grafana's own directories is what made upgrades of that package
+    # revert our settings, and copying dashboards into /srv on first boot is what
+    # made dashboard updates never reach a running server.
+
     echo "pfm-server installed. Start it with: systemctl start pfm.target"
 fi
 
@@ -158,9 +265,9 @@ fi
 %systemd_postun pfm.target
 if [ $1 -eq 0 ]; then
     # Full removal (not upgrade, where $1 >= 1): undo the mask %post applied to
-    # pmm-client's pmm-agent.service, otherwise it stays masked forever and
-    # pmm-client can never run its own agent again.
-    systemctl unmask pmm-agent.service >/dev/null 2>&1 || :
+    # pfm-client's pfm-agent.service, otherwise it stays masked forever and
+    # pfm-client can never run its own agent again.
+    systemctl unmask pfm-agent.service >/dev/null 2>&1 || :
 fi
 
 %files
@@ -168,6 +275,7 @@ fi
 %{_unitdir}/pfm-init.service
 %{_unitdir}/pfm-postgresql.service
 %{_unitdir}/pfm-clickhouse.service
+%{_unitdir}/pfm-clickhouse-perms.service
 %{_unitdir}/pfm-nginx.service
 %{_unitdir}/pfm-grafana.service
 %{_unitdir}/pfm-victoriametrics.service
@@ -175,11 +283,13 @@ fi
 %{_unitdir}/pfm-vmproxy.service
 %{_unitdir}/pfm-qan-api2.service
 %{_unitdir}/pfm-managed.service
-%{_unitdir}/pfm-agent.service
+%{_unitdir}/pfm-server-agent.service
 %{_tmpfilesdir}/pfm.conf
 %{_sysusersdir}/pfm.conf
 %dir %{_datadir}/pfm
 %attr(0755, root, root) %{_datadir}/pfm/pfm-init.sh
+%{_datadir}/pfm/clickhouse
+%{_datadir}/pfm/grafana
 %dir %{_prefix}/lib/pfm
 %dir %{_prefix}/lib/pfm/defaults
 # Secret-bearing credential seeds: root-owned, group pfm, not world-readable.
@@ -187,6 +297,14 @@ fi
 # Native nginx config (/etc/nginx and conf.d are owned by the base nginx package,
 # so they are not %dir'd here; only the ssl subdir is ours). Operator-editable
 # config is %config(noreplace).
+# Our grafana config, read via `grafana server --config` from pfm-grafana.service.
+# Deliberately NOT /etc/grafana/grafana.ini: that path belongs to pfm-grafana, and
+# writing over it means every upgrade of that package silently reverts us to the
+# stock sqlite-in-homepath config. /etc/grafana itself is pfm-grafana's, so only
+# the file is listed here.
+# 0640 root:pfm — carries the grafana DB password, so it must not be
+# world-readable; grafana runs as pfm and reads it via group.
+%config(noreplace) %attr(0640, root, pfm) %{_sysconfdir}/grafana/pfm.ini
 %config(noreplace) %{_sysconfdir}/nginx/pfm.conf
 %config(noreplace) %{_sysconfdir}/nginx/conf.d/pmm.conf
 %config(noreplace) %{_sysconfdir}/nginx/conf.d/pmm-ssl.conf
@@ -198,6 +316,10 @@ fi
 %{_datadir}/polkit-1/rules.d/49-pfm.rules
 
 %changelog
+* Wed Aug 05 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
+- Track the upstream PMM version so pfm-server matches pfm-managed/pfm-client
+  instead of carrying an independent 3.0.0.
+
 * Sat Jul 04 2026 Postgre First <asheshvashi@gmail.com> - 3.0.0-1
 - Initial pfm-server assembly: native systemd unit set, first-boot provisioning,
   zero-egress defaults, and the pfm service account.

@@ -1,0 +1,377 @@
+#!/usr/bin/env bash
+# In-place upgrade test for the air-gapped PFMM bundle.
+#
+#   build/scripts/test-pfmm-upgrade [/path/to/pfmm-repo]
+#
+# Installs a synthesised PREVIOUS release, boots it, puts real state into all four
+# data stores, then upgrades to the shipped bundle exactly the way INSTALL.md tells
+# an operator to -- and asserts the server comes back with its data intact.
+#
+# WHY THIS EXISTS, SEPARATELY FROM test-pfmm-airgap
+#
+# A from-scratch install cannot observe an upgrade defect. Every one of these
+# shipped, and every one was found by upgrading a running server by hand:
+#
+#   1. pfm-grafana's upgrade reverted our config    -> server dead on restart
+#   2. dashboards were copied at first boot         -> no update ever reached an install
+#   3. pfm-server/pfm-client had static NEVRAs      -> dnf upgrade skipped them silently
+#   4. a clickhouse-server upgrade reset ownership  -> readyz 504
+#
+# test-pfmm-airgap asserts the four mechanisms structurally, which is a proxy: a
+# fifth defect of a different shape passes it. This test exercises the transition
+# itself, so it fails on the behaviour rather than on a known shape.
+#
+# The "previous release" is built from the CURRENT sources with an artificially old
+# build stamp, so its NEVRAs sort below the shipped bundle's. That makes the
+# packaging half of the test real (dnf genuinely has to upgrade) without needing a
+# months-old artifact archived somewhere. Its limits are stated at the bottom of the
+# run so nobody mistakes what it covers.
+#
+# EVERY ASSERTION IS A p_* PREDICATE, on purpose. test-pfmm-negative-control sources
+# this file (PFMM_LIB_ONLY=1) and drives those same functions, breaking the thing each
+# one is supposed to catch and requiring it to go red. Controlling a *copy* of an
+# assertion proves nothing about the assertion that runs, so there is exactly one copy.
+# Keep predicates side-effect free and re-runnable, or the control harness lies.
+#
+# Requires: a built bundle (build-pfmm-airgap) and its work directory, which this
+# reuses for the source tarballs and generated specs. Builds only RPMs, into a
+# scratch topdir -- it never writes to the release bundle or to work/rpmbuild.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# BASH_SOURCE, not $0: test-pfmm-negative-control sources this file, and under
+# `source` $0 is the *caller's* name, which resolves bin_dir to the wrong directory.
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+# shellcheck source=/dev/null
+source "${bin_dir}/pfmm-airgap-vars"
+# shellcheck source=/dev/null
+source "${bin_dir}/pfmm-test-lib"
+
+PFMM_OUT=${PFMM_OUT:-${repo_dir}/build/.pfmm-airgap}
+work=${PFMM_OUT}/work
+repo_b=${1:-${PFMM_OUT}/pfmm-repo}
+container=${PFMM_TEST_CONTAINER:-pfm-upgrade-test}
+network=${PFMM_TEST_NETWORK:-pfm-airgap-net}
+keep=${PFMM_TEST_KEEP:-1}
+host_uid=$(id -u)
+host_gid=$(id -g)
+
+# Any stamp that sorts below a real one (%y%m%d%H%M, so 26.. today).
+old_stamp=${PFMM_UPGRADE_OLD_STAMP:-2501010000}
+# Stamped into a dashboard title in the previous release. The upgrade must remove
+# it; that is the end-to-end proof that packaged dashboard content reaches a
+# running install, which is exactly what defect 2 broke.
+marker="PREV-RELEASE-CANARY"
+marker_dash=dashboards/pmm-app/dist/dashboards/PostgreSQL/PostgreSQL_Instance_Summary.json
+# Grafana's search matches title substrings and returns [] on no match, which reads
+# far more reliably than digging the title out of the dashboard JSON -- that document
+# has a "title" on every panel, and the dashboard's own is not the first one.
+dash_search="https://127.0.0.1:8443/graph/api/search?query=${marker}&type=dash-db"
+
+up=${work}/upgrade
+repo_a=${up}/repo-a
+top=${up}/rpmbuild
+
+# ------------------------------------------------------------------------- helpers
+
+nevras() { inc "rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards | sort"; }
+gapi()   { inc "curl -sk -u admin:admin $1"; }
+# ClickHouse's HTTP interface wants credentials; take them from the env file
+# pfm-managed renders rather than hardcoding them here, so a changed password does
+# not silently turn these assertions into failures. --fail-with-body because curl
+# exits 0 on an HTTP 500, so without it a rejected query reads as success.
+ch()     { inc "set -a; . /run/pfm/qan-api2.env; set +a; curl -sS --fail-with-body -u \"\${PMM_CLICKHOUSE_USER}:\${PMM_CLICKHOUSE_PASSWORD}\" 'http://127.0.0.1:8123/' --data-binary \"$1\""; }
+
+# ---------------------------------------------------------------------- predicates
+# Each returns 0 when the property holds. No side effects: the negative-control
+# harness runs each one three times (pass / broken / restored).
+
+# p_no_internet, p_readyz, p_no_failed_units, p_all_units_active, p_no_pmm_packages,
+# p_no_srv_plugin_copy, p_pfm_ini_plugins, p_ch_owned_by_pfm, p_mysql_rejected and
+# p_bundle_signed are shared with test-pfmm-airgap and live in pfmm-test-lib.
+p_service_registered()  { gapi "'https://127.0.0.1:8443/v1/inventory/services'" | grep -q canary-pg; }
+p_grafana_folder()      { gapi "'https://127.0.0.1:8443/graph/api/search?query=upgrade-canary'" | grep -q upgrade-canary; }
+p_clickhouse_row()      { ch "SELECT sum(n) FROM default.pfm_upgrade_canary" 2>/dev/null | grep -q '^42$'; }
+p_metrics_at()          { inc "curl -s 'http://127.0.0.1:9090/prometheus/api/v1/query?query=pg_up&time=$1' | grep -q '\"value\"'"; }
+p_marker_served()       { gapi "'${dash_search}'" | grep -q "${marker}"; }
+p_operator_edit_kept()  { inc "grep -q '^# operator-canary' /etc/nginx/pfm.conf"; }
+p_pfm_ini_loopback()    { inc 'grep -q "^http_addr = 127.0.0.1" /etc/grafana/pfm.ini'; }
+p_grafana_not_exposed() { ! inc "ss -lntH 2>/dev/null | awk '\$4 ~ /^\\*:3000|^0\\.0\\.0\\.0:3000/' | grep -q ."; }
+p_ch_owner_reverted()   { inc 'test "$(stat -c %U /etc/clickhouse-server)" != pfm'; }
+p_ch_config_readable()  { inc 'su -s /bin/bash pfm -c "head -c 1 /etc/clickhouse-server/config.xml" >/dev/null 2>&1'; }
+
+# $1 = NEVRA listing from before the upgrade, $2 = from after.
+stuck_pkgs() {
+    local pkg
+    for pkg in pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards; do
+        if [ "$(printf '%s\n' "$1" | grep "^${pkg}-" || true)" = "$(printf '%s\n' "$2" | grep "^${pkg}-" || true)" ]; then
+            printf ' %s' "${pkg}"
+        fi
+    done
+    return 0
+}
+p_all_pkgs_upgraded()   { [ -z "$(stuck_pkgs "$1" "$2")" ]; }
+
+# ---------------------------------------------------------------- previous release
+
+build_previous_release() {
+    local commit short f name newest spec
+    commit=$(awk '/^%global commit/{print $3; exit}' "${work}/rpmbuild/SPECS/pfm-server.spec")
+    short=${commit:0:7}
+    [ -s "${work}/rpmbuild/SOURCES/pmm-${short}.tar.gz" ] \
+        || die "missing source tarball pmm-${short}.tar.gz (re-run build-pfmm-airgap rpms)"
+
+    log "building the previous release (stamp ${old_stamp}, marker in ${marker_dash##*/})"
+    rm -rf "${up}"
+    mkdir -p "${top}"/{SOURCES,SPECS,BUILD,RPMS,SRPMS} "${up}/stage" "${repo_a}"
+
+    # Unpack, mark one dashboard, repack. The marker has to be inside the package
+    # payload -- an upgrade between two byte-identical builds cannot distinguish a
+    # dashboard that propagated from one that was frozen at first boot.
+    tar xzf "${work}/rpmbuild/SOURCES/pmm-${short}.tar.gz" -C "${up}/stage"
+    MARK="${marker}" DASH="${up}/stage/pmm-${commit}/${marker_dash}" python3 - <<'PY'
+import json, os
+path = os.environ['DASH']
+with open(path) as fh:
+    d = json.load(fh)
+d['title'] = '%s [%s]' % (d['title'], os.environ['MARK'])
+with open(path, 'w') as fh:
+    json.dump(d, fh)
+PY
+    ( cd "${up}/stage" && tar -I 'gzip -1' -cf "${top}/SOURCES/pmm-${short}.tar.gz" "pmm-${commit}" )
+
+    # Everything else is byte-identical to the shipped build; hardlink it. These are
+    # only ever read, never signed or rewritten, so sharing the inode is safe.
+    for f in "${PFMM_GRAFANA_COMMIT}.tar.gz" \
+             "pfm-client-${PFMM_PMM_VERSION}.tar.gz" \
+             "grafana-clickhouse-datasource-${PFMM_CLICKHOUSE_DS_VERSION}.${PFMM_PLUGIN_ARCH}.zip" \
+             "grafana-polystat-panel-${PFMM_POLYSTAT_VERSION}.zip"; do
+        ln -f "${work}/rpmbuild/SOURCES/${f}" "${top}/SOURCES/${f}" 2>/dev/null \
+            || cp "${work}/rpmbuild/SOURCES/${f}" "${top}/SOURCES/${f}"
+    done
+
+    # The specs compute their own build_timestamp with date(1), and a %define in the
+    # spec beats a --define on the command line -- so the stamp has to be rewritten
+    # here rather than passed in.
+    for spec in pfm-managed percona-dashboards grafana pfm-server pfm-client; do
+        sed "s/^%define build_timestamp .*/%define build_timestamp ${old_stamp}/" \
+            "${work}/rpmbuild/SPECS/${spec}.spec" > "${top}/SPECS/${spec}.spec"
+        grep -q "^%define build_timestamp ${old_stamp}\$" "${top}/SPECS/${spec}.spec" \
+            || die "could not force the build stamp in ${spec}.spec"
+        printf '  %s\n' "${spec}"
+        docker run --rm -e HOME=/tmp -v "${top}":/rpmbuild -w /rpmbuild "${PFMM_RPMBUILD_IMAGE}" \
+            rpmbuild --define "_topdir /rpmbuild" \
+                     --define "version ${PFMM_PMM_VERSION}" \
+                     --define "release 1" \
+                     --define "dist ${PFMM_DIST}" \
+                     -bb "SPECS/${spec}.spec" >"${up}/rpmbuild-${spec}.log" 2>&1 \
+            || { tail -25 "${up}/rpmbuild-${spec}.log" >&2; die "rpmbuild failed for ${spec}"; }
+    done
+    docker run --rm -v "${top}":/rpmbuild "${PFMM_RPMBUILD_IMAGE}" chown -R "${host_uid}:${host_gid}" /rpmbuild
+
+    log "assembling the previous-release repo"
+    # Third-party packages are identical in both releases, so hardlink them.
+    for f in "${repo_b}"/*.rpm; do
+        case "$(basename "${f}")" in pfm-*|percona-dashboards-*) continue ;; esac
+        ln -f "${f}" "${repo_a}/$(basename "${f}")" 2>/dev/null || cp "${f}" "${repo_a}/"
+    done
+    for name in pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards; do
+        newest=$(ls -t "${top}"/RPMS/*/"${name}"-*.rpm 2>/dev/null | head -1)
+        [ -n "${newest}" ] || die "previous release is missing ${name}"
+        cp "${newest}" "${repo_a}/"
+    done
+    # Deliberately UNSIGNED: this repo is a synthetic stand-in that is never shipped,
+    # and signing it would need the release key just to run a test. The upgrade
+    # transaction -- the half that matters -- still runs against the signed bundle
+    # with gpgcheck=1.
+    docker run --rm -v "${repo_a}":/repo "${PFMM_RPMBUILD_IMAGE}" \
+        sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
+    printf '  %s packages\n' "$(ls "${repo_a}"/*.rpm | wc -l)"
+}
+
+# ------------------------------------------------------ install / seed / upgrade
+
+install_previous_release() {
+    log "installing the previous release on an isolated host"
+    start_container -v "${repo_a}":/pfmm-repo-a:ro -v "${repo_b}":/pfmm-repo-b:ro
+    p_no_internet || die "test host can reach the internet -- an offline upgrade would not be proven"
+    ok "no route to the internet"
+    inc "printf '[pfmm]\nname=PFMM\nbaseurl=file:///pfmm-repo-a\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfmm.repo"
+    inc "dnf --disablerepo='*' --enablerepo=pfmm -y install pfm-server >/tmp/install.log 2>&1" \
+        || { inc 'tail -20 /tmp/install.log' || true; die "installing the previous release failed"; }
+    inc 'systemctl start pfm.target >/tmp/start.log 2>&1' || true
+    local code; code=$(wait_readyz)
+    [ "${code}" = "200" ] && ok "previous release is up (readyz 200)" \
+        || { no "previous release never became ready (readyz ${code})"; summary; exit 1; }
+}
+
+seed_state() {
+    log "seeding state an upgrade must not lose"
+    inc "/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\$(cat /srv/.postgres_password) canary-pg >/dev/null 2>&1" || true
+    p_service_registered && ok "registered a monitored service (pfm-managed's PostgreSQL DB)" \
+        || no "could not register a service"
+    gapi "-X POST -H 'Content-Type: application/json' -d '{\"title\":\"upgrade-canary\"}' https://127.0.0.1:8443/graph/api/folders >/dev/null" || true
+    p_grafana_folder && ok "created a Grafana folder (Grafana's DB)" || no "could not create a Grafana folder"
+    ch "CREATE TABLE IF NOT EXISTS default.pfm_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n" >/dev/null || true
+    ch "INSERT INTO default.pfm_upgrade_canary VALUES (42)" >/dev/null || true
+    p_clickhouse_row && ok "wrote a ClickHouse row (QAN's store)" || no "could not write to ClickHouse"
+    # Stands in for the TLS certificate paths and tuning an operator edits by hand.
+    inc "printf '# operator-canary\n' >> /etc/nginx/pfm.conf" || true
+    p_operator_edit_kept && ok "made an operator edit to a %config(noreplace) file" \
+        || no "could not edit nginx/pfm.conf"
+}
+
+# ---------------------------------------------------------------------------- main
+
+run_upgrade_suite() {
+    # Inside the suite, not at file scope: test-pfmm-negative-control sources this
+    # file, and a top-level `die` would take the harness down with it.
+    [ -d "${repo_b}/repodata" ] || die "no yum repo at ${repo_b} (run build-pfmm-airgap first)"
+    [ -d "${work}/rpmbuild/SPECS" ] || die "no generated specs at ${work}/rpmbuild/SPECS (run build-pfmm-airgap rpms first)"
+    build_previous_release
+    install_previous_release
+
+    local before_nevra
+    before_nevra=$(nevras) || die "the previous release did not install all five pfm packages"
+    printf '%s\n' "${before_nevra}" | sed 's/^/    /'
+
+    seed_state
+
+    # Metrics need a scrape to land before there is anything to preserve.
+    local i got=no
+    for i in $(seq 1 24); do
+        if inc "curl -s 'http://127.0.0.1:9090/prometheus/api/v1/query?query=pg_up' | grep -q '\"value\"'"; then got=yes; break; fi
+        sleep 5
+    done
+    [ "${got}" = yes ] && ok "metrics are flowing (VictoriaMetrics)" || no "pg_up never appeared before the upgrade"
+    local t_before; t_before=$(inc 'date +%s')
+
+    # The marker proves the dashboard came from the package. If it is absent the
+    # upgrade assertion below would pass for the wrong reason, so check it now.
+    if p_marker_served; then
+        ok "previous release serves the marked dashboard"
+    else
+        no "marked dashboard not found before the upgrade -- the propagation check below would be meaningless"
+        summary; exit 1
+    fi
+
+    log "upgrading to the shipped bundle, following INSTALL.md"
+    inc "sed -i 's|baseurl=.*|baseurl=file:///pfmm-repo-b|' /etc/yum.repos.d/pfmm.repo"
+    if p_bundle_signed /pfmm-repo-b; then
+        inc 'rpm --import /pfmm-repo-b/RPM-GPG-KEY-postgres1st'
+        inc "sed -i 's|gpgcheck=0|gpgcheck=1\ngpgkey=file:///pfmm-repo-b/RPM-GPG-KEY-postgres1st|' /etc/yum.repos.d/pfmm.repo"
+        ok "upgrading with gpgcheck=1 against the signed bundle"
+    else
+        no "shipped bundle is UNSIGNED -- upgrading with gpgcheck=0"
+    fi
+    inc 'dnf clean all >/dev/null 2>&1' || true
+    if inc "dnf --disablerepo='*' --enablerepo=pfmm -y upgrade >/tmp/upgrade.log 2>&1"; then
+        ok "dnf upgrade completed offline"
+    else
+        inc 'tail -30 /tmp/upgrade.log' || true; no "dnf upgrade failed"; summary; exit 1
+    fi
+
+    # Defect 3: a release that never changes makes dnf skip the package with no
+    # error at all, so the operator believes they upgraded and did not.
+    local after_nevra
+    after_nevra=$(nevras) || die "a pfm package disappeared during the upgrade"
+    p_all_pkgs_upgraded "${before_nevra}" "${after_nevra}" \
+        && ok "every pfm package actually upgraded" \
+        || no "dnf silently skipped:$(stuck_pkgs "${before_nevra}" "${after_nevra}") (release string does not advance)"
+
+    # INSTALL.md tells operators dashboards need NO restart because Grafana rescans
+    # the provisioning path. Check that claim before restarting anything -- if it is
+    # wrong the documentation is wrong, which is the kind of defect an operator
+    # discovers at 2am.
+    log "dashboard propagation (no restart, as INSTALL.md promises)"
+    local propagated=no
+    for i in $(seq 1 24); do
+        p_marker_served || { propagated=yes; break; }
+        sleep 5
+    done
+    [ "${propagated}" = yes ] \
+        && ok "the new dashboard replaced the marked one without a restart" \
+        || no "dashboard still shows ${marker} after 120s -- updates do not reach an existing install"
+
+    log "restarting, as INSTALL.md says to"
+    inc 'systemctl daemon-reload'
+    inc 'systemctl restart pfm.target' || true
+    local code; code=$(wait_readyz)
+    [ "${code}" = "200" ] && ok "readyz 200 after the upgrade" || no "readyz ${code} after the upgrade"
+    p_no_failed_units  && ok "no pfm unit failed after the upgrade" || no "a pfm unit failed after the upgrade"
+    p_all_units_active && ok "all long-running pfm units active after the upgrade" || no "a long-running pfm unit is inactive"
+
+    log "state survived"
+    p_service_registered && ok "the monitored service is still registered" || no "the monitored service is gone"
+    p_grafana_folder     && ok "the Grafana folder survived" || no "the Grafana folder is gone"
+    p_clickhouse_row     && ok "the ClickHouse row survived" || no "the ClickHouse row is gone"
+    # Query at a timestamp from BEFORE the upgrade: this is history, not a fresh scrape.
+    p_metrics_at "${t_before}" && ok "metrics from before the upgrade are still queryable" \
+        || no "pre-upgrade metrics were lost"
+
+    log "the upgrade did not undo our configuration"
+    # Defect 1: pfm-grafana's own grafana.ini used to win, and grafana then fell back
+    # to a stock sqlite-in-homepath config and died on a read-only path.
+    p_pfm_ini_plugins     && ok "pfm.ini still points at the packaged dashboards" || no "pfm.ini was reverted"
+    p_pfm_ini_loopback    && ok "grafana still binds loopback only" || no "grafana's bind address was reverted"
+    p_no_srv_plugin_copy  && ok "no first-boot plugin copy appeared" || no "/srv/grafana/plugins was created"
+    p_grafana_not_exposed && ok "grafana is not exposed off-host after the upgrade" \
+        || no "grafana is listening off-host on 3000 after the upgrade"
+
+    # %config(noreplace) means an operator's edits are kept. Prove it rather than
+    # trusting the spec, because getting this wrong silently discards their TLS and
+    # tuning changes on every upgrade.
+    log "operator edits to %config(noreplace) files"
+    p_operator_edit_kept && ok "an operator edit to nginx/pfm.conf survived" \
+        || no "an operator edit to nginx/pfm.conf was overwritten"
+
+    log "the gate still holds after the upgrade"
+    p_mysql_rejected  && ok "mysql still rejected" || no "mysql was NOT rejected after the upgrade"
+    p_no_pmm_packages && ok "still no pmm-* packages" || no "a pmm-* package appeared during the upgrade"
+
+    # Defect 4, exercised rather than asserted structurally. clickhouse-server's
+    # %post runs `clickhouse install --user clickhouse`, which chowns its config,
+    # data and log directories back to clickhouse:clickhouse -- and it runs on a
+    # reinstall exactly as it does on an upgrade. So this reproduces the real defect
+    # without needing two ClickHouse versions in the bundle.
+    log "a third-party clickhouse-server transaction (the defect-4 path)"
+    inc "dnf --disablerepo='*' --enablerepo=pfmm -y reinstall clickhouse-server >/tmp/ch.log 2>&1" \
+        || { inc 'tail -20 /tmp/ch.log' || true; no "clickhouse-server reinstall failed"; }
+    p_ch_owner_reverted && ok "the reinstall did revert ownership (the defect is reproduced)" \
+        || no "ownership was NOT reverted -- this no longer tests anything; check the scriptlet"
+    inc 'systemctl restart pfm.target' || true
+    code=$(wait_readyz)
+    # NOT a discriminating check, and deliberately kept anyway. Masking the repair
+    # unit and re-running this whole sequence still yields readyz 200: ClickHouse
+    # limps rather than dying -- it serves queries while ConfigReloader and
+    # AsynchronousMetrics fail every second with Permission denied. The 504 seen
+    # when this defect first bit was one possible outcome, not the only one. So this
+    # asserts only that the transaction did not take the server down hard.
+    [ "${code}" = "200" ] && ok "the server is still serving after a clickhouse transaction" \
+        || no "readyz ${code} after a clickhouse transaction"
+    p_ch_owned_by_pfm    && ok "/etc/clickhouse-server is pfm-owned again" || no "/etc/clickhouse-server is still not pfm-owned"
+    p_ch_config_readable && ok "ClickHouse's own user can read its config again" \
+        || no "pfm cannot read /etc/clickhouse-server/config.xml -- ClickHouse is running degraded"
+
+    cat <<'EOF'
+
+What this test does NOT cover:
+  - the previous release is built from TODAY's sources with an old build stamp, so
+    it differs from the shipped bundle only in the marked dashboard. A real customer
+    upgrade spans months of content change.
+  - only forward, single-step upgrades. Skipping a release is untested.
+  - third-party packages are identical in both repos; only the clickhouse-server
+    scriptlet path is exercised, via reinstall.
+
+Every assertion above is a p_* predicate in this file, and every one that can be has
+been negative-controlled: build/scripts/test-pfmm-negative-control breaks the thing each
+predicate guards and requires it to go red. Re-run it after changing an assertion -- a
+green run here means nothing on its own.
+EOF
+    summary
+}
+
+# Sourced by test-pfmm-negative-control, which drives the predicates directly.
+[ "${PFMM_LIB_ONLY:-0}" = "1" ] || run_upgrade_suite "$@"

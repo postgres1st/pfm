@@ -16,7 +16,7 @@ ifeq ($(GOBIN),)
 endif
 
 LD_FLAGS = -ldflags " \
-			-X 'github.com/percona/pmm/version.ProjectName=pmm-admin' \
+			-X 'github.com/percona/pmm/version.ProjectName=pfm-admin' \
 			-X 'github.com/percona/pmm/version.Version=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.PMMVersion=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.Timestamp=$(PMM_RELEASE_TIMESTAMP)' \
@@ -31,7 +31,7 @@ clean:                          ## Remove generated files
 	find . -name *_reform.go -delete
 
 release:                        ## Build pmm-admin release binary
-	CGO_ENABLED=0 go build -v $(LD_FLAGS) -o $(PMM_RELEASE_PATH)/pmm-admin ./cmd/pmm-admin/
+	CGO_ENABLED=0 go build -v $(LD_FLAGS) -o $(PMM_RELEASE_PATH)/pfm-admin ./cmd/pfm-admin/
 
 install:                        ## Install pmm & pmm-admin binary
 	go build -v $(LD_FLAGS) -o $(GOBIN)/pmm-admin ./cmd/pmm-admin/

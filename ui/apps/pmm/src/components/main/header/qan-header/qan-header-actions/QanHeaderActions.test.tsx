@@ -32,7 +32,7 @@ describe('QanHeaderActions', () => {
   it('should copy link to clipboard (native ui)', () => {
     Object.defineProperty(window, 'location', {
       value: {
-        pathname: '/pmm-ui/rta',
+        pathname: '/pfm-ui/rta',
         search: '',
         hash: '',
       },
@@ -56,7 +56,7 @@ describe('QanHeaderActions', () => {
   it('should copy link to clipboard (grafana)', async () => {
     Object.defineProperty(window, 'location', {
       value: {
-        pathname: '/pmm-ui/next/graph/pmm-qan/pmm-query-analytics',
+        pathname: '/pfm-ui/next/graph/pmm-qan/pmm-query-analytics',
         search: '',
         hash: '',
       },

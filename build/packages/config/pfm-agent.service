@@ -1,0 +1,12 @@
+[Unit]
+Description=pfm-agent (Postgres1st monitoring agent)
+After=time-sync.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/pfm-agent --config-file=/opt/postgres1st/pfm/config/pfm-agent.yaml
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target

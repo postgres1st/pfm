@@ -1,0 +1,49 @@
+# pfm-agent — pfm's self-monitoring agent (was supervisord [program:pmm-agent],
+# priority=15, autostart=false). Started ON DEMAND by pmm-managed once the
+# control plane is ready (the code calls `systemctl start pfm-agent.service`,
+# see systemdUnitName), NOT auto-started by pfm.target — mirroring upstream's
+# autostart=false. Hence no [Install] section; PartOf=pfm.target still ties its
+# stop/restart to the stack lifecycle.
+#
+# Its config is created by pfm-init.sh's `pmm-agent setup` step, under /srv
+# (pfm-writable) rather than the container's root-owned /opt/postgres1st/pfm path.
+# PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
+[Unit]
+Description=pfm self-monitoring agent (pfm-agent)
+After=pfm-init.service pfm-managed.service
+Requires=pfm-init.service
+PartOf=pfm.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=pfm
+Group=pfm
+# --- least-privilege sandbox (NO egress block: pfm-agent connects to remote
+# monitored databases, so IPAddressDeny would break monitoring) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+# AF_NETLINK: pfm-agent embeds nomad + vmagent, which enumerate network interfaces
+# (socket(AF_NETLINK,…)); without it that fingerprinting fails EAFNOSUPPORT. Netlink
+# is host-local, so this does not weaken the egress posture.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ReadWritePaths=/srv/pfm-agent /srv/nomad /srv/logs
+Environment=PERCONA_TELEMETRY_DISABLE=1
+ExecStart=/usr/sbin/pfm-agent \
+    --config-file=/srv/pfm-agent/config/pfm-agent.yaml \
+    --paths-tempdir=/srv/pfm-agent/tmp
+KillSignal=SIGTERM
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal

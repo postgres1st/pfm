@@ -1,0 +1,470 @@
+#!/usr/bin/env bash
+# Build the air-gapped PFMM server bundle end to end.
+#
+#   build/scripts/build-pfmm-airgap [stage ...]
+#
+# With no arguments every stage runs in order. Named stages let you resume after
+# a failure without repeating the expensive ones (grafana-fe is the long pole):
+#
+#   grafana-fe   grafana frontend (webpack; ~10 GB heap, the long pole)
+#   grafana-be   grafana backend (go)
+#   pmm-bin      pfm-managed / pfm-agent / pfm-admin (+ the pmm UI)
+#   exporters    node/postgres/rds/azure exporters, vmagent, nomad, toolkit
+#   s3           fetch the Percona-built components we do not build
+#   rpms         build every RPM
+#   closure      resolve the full dependency closure
+#   bundle       createrepo + INSTALL.md + tarball + sha256
+#
+# Output: ${PFMM_OUT}/pfmm-server-el9-<arch>.tar.gz (+ .sha256)
+#
+# Requires: docker, curl, git, tar. Everything else runs in containers, so the
+# host needs no rpmbuild/go/node toolchain. Network IS required to build (source
+# clones, dependency resolution); the RESULT is what installs without network.
+#
+# Resources: >=16 GB RAM (grafana's webpack OOMs below ~12 GB) and >=30 GB free disk.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+bin_dir=$(cd "$(dirname "$0")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+# shellcheck source=/dev/null
+source "${bin_dir}/pfmm-airgap-vars"
+
+PFMM_OUT=${PFMM_OUT:-${repo_dir}/build/.pfmm-airgap}
+work=${PFMM_OUT}/work
+src=${work}/src
+rpmbuild=${work}/rpmbuild
+clientbin=${work}/clientbin
+repo_out=${PFMM_OUT}/pfmm-repo
+arch=${PFMM_ARCH}
+host_uid=$(id -u)
+host_gid=$(id -g)
+
+log()  { printf '\n>>> %s\n' "$*"; }
+fail() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
+
+# Containers run as root so they can overwrite artifacts from earlier runs, then
+# hand ownership back -- otherwise root-owned files accumulate in the caller's
+# tree and the next non-root run fails with EACCES (nx's cache is a repeat offender).
+docker_run() { docker run --rm -e HOME=/tmp "$@"; }
+
+preflight() {
+    command -v docker >/dev/null || fail "docker is required"
+    [ -d "${PFMM_GRAFANA_FORK}/.git" ] || fail "grafana fork not found at ${PFMM_GRAFANA_FORK} (set PFMM_GRAFANA_FORK)"
+    local have
+    have=$(cd "${PFMM_GRAFANA_FORK}" && git rev-parse HEAD)
+    if [ "${have}" != "${PFMM_GRAFANA_COMMIT}" ]; then
+        # A warning, not an error: building an older pinned commit is legitimate.
+        printf 'WARNING: grafana fork is at %s but vars pins %s\n' "${have:0:12}" "${PFMM_GRAFANA_COMMIT:0:12}" >&2
+    fi
+    # This one IS fatal. The script stages the source tarball under
+    # ${PFMM_GRAFANA_COMMIT} while grafana.spec unpacks grafana-%{commit}, so a
+    # mismatch fails deep inside rpmbuild with a missing-source error that reads
+    # like a corrupt tarball. Easy to introduce: the two live in different files
+    # and both must be bumped whenever the fork moves.
+    local spec_commit
+    spec_commit=$(awk '/^%global commit/{print $3; exit}' \
+        "${repo_dir}/build/packages/rpm/server/SPECS/grafana.spec")
+    [ "${spec_commit}" = "${PFMM_GRAFANA_COMMIT}" ] || \
+        fail "grafana.spec pins ${spec_commit:0:12} but pfmm-airgap-vars pins ${PFMM_GRAFANA_COMMIT:0:12} -- bump both"
+    local mem_gb disk_gb
+    mem_gb=$(awk '/MemTotal/ {printf "%d", $2/1048576}' /proc/meminfo 2>/dev/null || echo 0)
+    disk_gb=$(df -BG --output=avail "${repo_dir}" 2>/dev/null | tail -1 | tr -dc '0-9' || echo 0)
+    [ "${mem_gb:-0}" -ge 16 ] || printf 'WARNING: %s GB RAM; grafana webpack needs ~12 GB and will OOM below it\n' "${mem_gb}" >&2
+    [ "${disk_gb:-0}" -ge 30 ] || printf 'WARNING: only %s GB free; the bundle needs ~30 GB\n' "${disk_gb}" >&2
+    mkdir -p "${src}" "${rpmbuild}"/{SOURCES,SPECS,BUILD,RPMS,SRPMS} "${clientbin}"
+}
+
+# Clone (or update) a repo at an exact commit. Shallow-fetching the commit keeps
+# VictoriaMetrics/nomad from dragging in their full history.
+clone_at() {
+    local name=$1 url=$2 commit=$3 dir="${src}/$1"
+    if [ -d "${dir}/.git" ] && [ "$(cd "${dir}" && git rev-parse HEAD 2>/dev/null)" = "${commit}" ]; then
+        printf '  %-24s already at %s\n' "${name}" "${commit:0:12}"; return
+    fi
+    mkdir -p "${dir}"; ( cd "${dir}"
+        git init -q 2>/dev/null || true
+        git remote add origin "${url}" 2>/dev/null || git remote set-url origin "${url}"
+        git fetch -q --depth 1 origin "${commit}"
+        git checkout -q FETCH_HEAD )
+    printf '  %-24s %s\n' "${name}" "${commit:0:12}"
+}
+
+build_rpmbuilder_image() {
+    docker image inspect "${PFMM_RPMBUILD_IMAGE}" >/dev/null 2>&1 && return
+    log "building ${PFMM_RPMBUILD_IMAGE}"
+    # fontconfig: grafana.spec BuildRequires. unzip: percona-dashboards.spec %install
+    # unpacks the plugin zips. systemd-devel: pfm-client.spec BuildRequires
+    # pkgconfig(systemd). systemd-rpm-macros: %systemd_post in pfm-server.spec.
+    docker build -t "${PFMM_RPMBUILD_IMAGE}" - <<EOF
+FROM ${PFMM_EL_IMAGE}
+RUN dnf -y install rpm-build rpmdevtools createrepo_c dnf-plugins-core yum-utils \\
+    tar gzip which fontconfig unzip systemd-rpm-macros systemd systemd-devel && dnf clean all
+EOF
+}
+
+stage_grafana_fe() {
+    log "grafana frontend (webpack, ${PFMM_NODE_HEAP_MB} MB heap) -- the long pole"
+    # Run yarn from the bundled release rather than via corepack: corepack would
+    # fetch yarn from the network and .yarn/releases already pins the exact version.
+    docker_run -v "${PFMM_GRAFANA_FORK}":/grafana -w /grafana \
+        -e NODE_OPTIONS="--max-old-space-size=${PFMM_NODE_HEAP_MB}" \
+        "${PFMM_NODE_IMAGE}" sh -c "
+            set -e
+            Y='node .yarn/releases/yarn-4.11.0.cjs'
+            \$Y install --immutable || \$Y install
+            NODE_ENV=production \$Y build
+        " || { docker_run -v "${PFMM_GRAFANA_FORK}":/grafana "${PFMM_NODE_IMAGE}" \
+                 chown -R "${host_uid}:${host_gid}" /grafana; fail "grafana frontend build failed"; }
+    docker_run -v "${PFMM_GRAFANA_FORK}":/grafana "${PFMM_NODE_IMAGE}" \
+        chown -R "${host_uid}:${host_gid}" /grafana
+    [ -d "${PFMM_GRAFANA_FORK}/public/build" ] || fail "grafana public/build missing after build"
+}
+
+stage_grafana_be() {
+    log "grafana backend"
+    docker_run -v "${PFMM_GRAFANA_FORK}":/grafana -w /grafana \
+        -e GOFLAGS=-buildvcs=false -e GOCACHE=/tmp/gocache \
+        "${PFMM_GO_IMAGE}" sh -c "make build-go" \
+        || { docker_run -v "${PFMM_GRAFANA_FORK}":/grafana "${PFMM_GO_IMAGE}" \
+               chown -R "${host_uid}:${host_gid}" /grafana; fail "grafana backend build failed"; }
+    docker_run -v "${PFMM_GRAFANA_FORK}":/grafana "${PFMM_GO_IMAGE}" \
+        chown -R "${host_uid}:${host_gid}" /grafana
+}
+
+stage_pmm_bin() {
+    log "pfm-managed / pfm-agent / pfm-admin"
+    # PMM_RELEASE_VERSION must be set explicitly: a bare build stamps the version
+    # from `git describe` and pfm-managed then refuses to start ("version is not set").
+    docker_run -v "${repo_dir}":/pmm -w /pmm \
+        -e GOCACHE=/tmp/gocache -e GOFLAGS=-buildvcs=false \
+        -e PMM_RELEASE_VERSION="${PFMM_PMM_VERSION}" \
+        "${PFMM_GO_IMAGE}" sh -c '
+            set -e
+            cd /pmm/managed && PMM_RELEASE_PATH=/pmm/bin make release
+            cd /pmm/admin   && PMM_RELEASE_PATH=/pmm/bin make release
+            cd /pmm/agent   && PMM_RELEASE_PATH=/pmm/bin make release
+        ' || { docker_run -v "${repo_dir}":/pmm "${PFMM_GO_IMAGE}" \
+                 chown -R "${host_uid}:${host_gid}" /pmm/bin; fail "pmm binary build failed"; }
+    docker_run -v "${repo_dir}":/pmm "${PFMM_GO_IMAGE}" chown -R "${host_uid}:${host_gid}" /pmm/bin
+
+    log "pmm UI (yarn classic; host node 24 breaks this install, hence node 22)"
+    docker_run -v "${repo_dir}":/pmm -w /pmm/ui \
+        -e NODE_OPTIONS=--max-old-space-size=6144 \
+        "${PFMM_UI_NODE_IMAGE}" sh -c "make release" \
+        || { docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" \
+               chown -R "${host_uid}:${host_gid}" /pmm/ui; fail "pmm UI build failed"; }
+    docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" chown -R "${host_uid}:${host_gid}" /pmm/ui
+
+    local n
+    n=$(grep -c "not supported by this deployment" <(strings "${repo_dir}/bin/pfm-managed") || true)
+    [ "${n}" -ge 2 ] || fail "postgres-only gate missing from pfm-managed (found ${n} markers, expected >=2)"
+    printf '  gate verified in pfm-managed (%s markers)\n' "${n}"
+}
+
+stage_exporters() {
+    log "cloning pinned exporter sources"
+    clone_at node_exporter          "${PFMM_NODE_EXPORTER_REPO}"     "${PFMM_NODE_EXPORTER_COMMIT}"
+    clone_at postgres_exporter      "${PFMM_POSTGRES_EXPORTER_REPO}" "${PFMM_POSTGRES_EXPORTER_COMMIT}"
+    clone_at rds_exporter           "${PFMM_RDS_EXPORTER_REPO}"      "${PFMM_RDS_EXPORTER_COMMIT}"
+    clone_at azure_metrics_exporter "${PFMM_AZURE_EXPORTER_REPO}"    "${PFMM_AZURE_EXPORTER_COMMIT}"
+    clone_at percona-toolkit        "${PFMM_TOOLKIT_REPO}"           "${PFMM_TOOLKIT_COMMIT}"
+    clone_at VictoriaMetrics        "${PFMM_VMAGENT_REPO}"           "${PFMM_VMAGENT_COMMIT}"
+    clone_at nomad                  "${PFMM_NOMAD_REPO}"             "${PFMM_NOMAD_COMMIT}"
+
+    log "building exporters and tools from source"
+    # GOTOOLCHAIN=auto: these repos pin go directives newer than some base images.
+    docker_run -v "${src}":/src -v "${clientbin}":/out \
+        -e GOCACHE=/tmp/gocache -e GOFLAGS=-buildvcs=false -e GOTOOLCHAIN=auto -e CGO_ENABLED=0 \
+        "${PFMM_GO_IMAGE}" sh -c "
+            set -e
+            cd /src/node_exporter          && go build -o /out/node_exporter .
+            cd /src/postgres_exporter      && go build -o /out/postgres_exporter ./cmd/postgres_exporter
+            cd /src/rds_exporter           && go build -o /out/rds_exporter .
+            cd /src/azure_metrics_exporter && go build -o /out/azure_exporter .
+            cd /src/percona-toolkit/src/go/pt-pg-summary && go build -o /out/pt-pg-summary .
+            cd /src/VictoriaMetrics        && go build -o /out/vmagent ./app/vmagent
+            cd /src/nomad                  && go build -o /out/nomad .
+            chown -R ${host_uid}:${host_gid} /out
+        "
+    # pt-summary is a shell script, not a Go program.
+    install -m 0755 "${src}/percona-toolkit/bin/pt-summary" "${clientbin}/pt-summary"
+}
+
+stage_s3() {
+    log "fetching Percona-built components (S3 build cache)"
+    mkdir -p "${work}/s3"
+    local key name
+    for key in "${PFMM_S3_COMPONENTS[@]}"; do
+        name=$(basename "${key}")
+        if [ -s "${work}/s3/${name}" ]; then printf '  %-58s cached\n' "${name}"; continue; fi
+        curl -fsSL -o "${work}/s3/${name}" "${PFMM_S3_BASE}/${PFMM_S3_DIR}/${key}" \
+            || fail "failed to fetch ${name} from the S3 build cache"
+        printf '  %-58s ok\n' "${name}"
+    done
+}
+
+# rpmbuild consumes a source tarball, so stage exactly what each %install reads.
+stage_rpms() {
+    build_rpmbuilder_image
+    local commit shortcommit stage
+    commit=$(cd "${repo_dir}" && git rev-parse HEAD)
+    shortcommit=${commit:0:7}
+    stage=${work}/stage/pmm-${commit}
+
+    log "staging monorepo sources"
+    rm -rf "${work}/stage"; mkdir -p "${stage}"
+    ( cd "${repo_dir}"
+      cp -a bin "${stage}/"
+      mkdir -p "${stage}/api" && cp -a api/swagger "${stage}/api/"
+      mkdir -p "${stage}/ui/apps/pmm" "${stage}/ui/apps/pmm-compat"
+      cp -a ui/apps/pmm/dist "${stage}/ui/apps/pmm/"
+      cp -a ui/apps/pmm-compat/dist "${stage}/ui/apps/pmm-compat/"
+      mkdir -p "${stage}/managed" && cp -a managed/data "${stage}/managed/"
+      mkdir -p "${stage}/dashboards/pmm-app" && cp -a dashboards/pmm-app/dist "${stage}/dashboards/pmm-app/"
+      cp -a dashboards/LICENSE dashboards/README.md "${stage}/dashboards/"
+      mkdir -p "${stage}/build/packages/config" "${stage}/build/ansible/roles"
+      cp -a build/packages/config/pfm "${stage}/build/packages/config/"
+      for r in clickhouse grafana; do
+          mkdir -p "${stage}/build/ansible/roles/${r}"
+          cp -a "build/ansible/roles/${r}/files" "${stage}/build/ansible/roles/${r}/"
+      done
+      cp -a LICENSE README.md "${stage}/" )
+    ( cd "${work}/stage" && tar czf "${rpmbuild}/SOURCES/pmm-${shortcommit}.tar.gz" "pmm-${commit}" )
+
+    log "staging grafana sources"
+    # Only what grafana.spec's %install copies; bin/linux/<arch> not top-level bin/
+    # (which holds a duplicate ~430 MB binary).
+    ( cd "${PFMM_GRAFANA_FORK}" && tar -I 'gzip -1' \
+        -cf "${rpmbuild}/SOURCES/${PFMM_GRAFANA_COMMIT}.tar.gz" \
+        --transform "s|^\./|grafana-${PFMM_GRAFANA_COMMIT}/|" \
+        ./conf ./public ./tools ./bin/linux ./CHANGELOG.md ./README.md ./LICENSE )
+
+    log "staging pfm-client sources"
+    local cstage=${work}/stage-client/pfm-client-${PFMM_PMM_VERSION}
+    rm -rf "${work}/stage-client"; mkdir -p "${cstage}/bin" "${cstage}/config"
+    install -m 0755 "${repo_dir}"/bin/pfm-{agent,admin,agent-entrypoint} "${cstage}/bin/"
+    install -m 0755 "${clientbin}"/{node_exporter,postgres_exporter,rds_exporter,azure_exporter,vmagent,pt-pg-summary,pt-summary,nomad} "${cstage}/bin/"
+    install -m 0644 "${repo_dir}/build/packages/config/pfm-agent.service" "${cstage}/config/"
+    install -m 0644 "${src}/node_exporter/example.prom" "${cstage}/"
+    install -m 0644 "${src}"/postgres_exporter/{example-queries-postgres.yml,queries-postgres-uptime.yml,queries-hr.yml,queries-mr.yaml,queries-lr.yaml} "${cstage}/"
+    ( cd "${work}/stage-client" && tar czf "${rpmbuild}/SOURCES/pfm-client-${PFMM_PMM_VERSION}.tar.gz" "pfm-client-${PFMM_PMM_VERSION}" )
+
+    log "fetching grafana dashboard plugins"
+    local plugin_arch=${PFMM_PLUGIN_ARCH}
+    [ -s "${rpmbuild}/SOURCES/grafana-clickhouse-datasource-${PFMM_CLICKHOUSE_DS_VERSION}.${plugin_arch}.zip" ] || \
+        curl -fsSL -o "${rpmbuild}/SOURCES/grafana-clickhouse-datasource-${PFMM_CLICKHOUSE_DS_VERSION}.${plugin_arch}.zip" \
+            "https://github.com/grafana/clickhouse-datasource/releases/download/v${PFMM_CLICKHOUSE_DS_VERSION}/grafana-clickhouse-datasource-${PFMM_CLICKHOUSE_DS_VERSION}.${plugin_arch}.zip"
+    [ -s "${rpmbuild}/SOURCES/grafana-polystat-panel-${PFMM_POLYSTAT_VERSION}.zip" ] || \
+        curl -fsSL -o "${rpmbuild}/SOURCES/grafana-polystat-panel-${PFMM_POLYSTAT_VERSION}.zip" \
+            "https://github.com/grafana/grafana-polystat-panel/releases/download/v${PFMM_POLYSTAT_VERSION}/grafana-polystat-panel-${PFMM_POLYSTAT_VERSION}.zip"
+
+    log "generating build specs"
+    # The shipped specs describe the upstream pipeline: they fetch Source0 from
+    # GitHub and compile in %build. Here the artifacts are already built (with the
+    # exact toolchains above) and staged, so %build becomes a no-op and %prep just
+    # unpacks. %install/%files -- which decide what the RPM actually contains --
+    # are used verbatim, so the packages match the checked-in specs.
+    PFMM_COMMIT="${commit}" PFMM_GRAFANA_COMMIT="${PFMM_GRAFANA_COMMIT}" \
+    PFMM_PMM_VERSION="${PFMM_PMM_VERSION}" PFMM_SPECS_IN="${repo_dir}/build/packages/rpm" \
+    PFMM_SPECS_OUT="${rpmbuild}/SPECS" python3 - <<'PY'
+import os, re
+commit  = os.environ['PFMM_COMMIT']
+gcommit = os.environ['PFMM_GRAFANA_COMMIT']
+version = os.environ['PFMM_PMM_VERSION']
+src_dir = os.environ['PFMM_SPECS_IN']
+out_dir = os.environ['PFMM_SPECS_OUT']
+NOOP = '%build\n# Artifacts are pre-built by build-pfmm-airgap before rpmbuild runs.\n:\n\n'
+
+def emit(rel, out, transform=None):
+    s = open(os.path.join(src_dir, rel)).read()
+    s = re.sub(r'%build\n.*?(?=%install)', NOOP, s, count=1, flags=re.S)
+    if transform:
+        s = transform(s)
+    open(os.path.join(out_dir, out), 'w').write(s)
+
+def monorepo(s):
+    s = re.sub(r'%global commit\s+\S+', '%global commit          ' + commit, s, count=1)
+    return re.sub(r'%define full_pmm_version 2\.0\.0',
+                  '%define full_pmm_version ' + version, s, count=1)
+
+def dashboards(s):
+    s = re.sub(r'%global commit\s+\S+', '%global commit\t\t      ' + commit, s, count=1)
+    return re.sub(r'^BuildRequires:\tnodejs\n', '', s, flags=re.M)  # dist prebuilt
+
+def grafana(s):
+    s = re.sub(r'%global commit\s+\S+', '%global commit          ' + gcommit, s, count=1)
+    # %prep shells out to `sudo npm install -g grunt-cli`; nothing is compiled here.
+    return re.sub(r'%prep\n.*?(?=%build)', '%prep\n%setup -q -n grafana-%{commit}\n\n', s, count=1, flags=re.S)
+
+def server(s):
+    return re.sub(r'%global commit      0+', '%global commit      ' + commit, s, count=1)
+
+emit('server/SPECS/pfm-managed.spec',        'pfm-managed.spec',        monorepo)
+emit('server/SPECS/percona-dashboards.spec', 'percona-dashboards.spec', dashboards)
+emit('server/SPECS/grafana.spec',            'grafana.spec',            grafana)
+emit('server/SPECS/pfm-server.spec',         'pfm-server.spec',         server)
+emit('client/pfm-client.spec',               'pfm-client.spec')
+PY
+
+    log "building RPMs"
+    local spec
+    for spec in pfm-managed percona-dashboards grafana pfm-server pfm-client; do
+        printf '  %s\n' "${spec}"
+        docker_run -v "${rpmbuild}":/rpmbuild -w /rpmbuild "${PFMM_RPMBUILD_IMAGE}" \
+            rpmbuild --define "_topdir /rpmbuild" \
+                     --define "version ${PFMM_PMM_VERSION}" \
+                     --define "release 1" \
+                     --define "dist ${PFMM_DIST}" \
+                     -bb "SPECS/${spec}.spec" >"${work}/rpmbuild-${spec}.log" 2>&1 \
+            || { tail -25 "${work}/rpmbuild-${spec}.log" >&2; fail "rpmbuild failed for ${spec} (see ${work}/rpmbuild-${spec}.log)"; }
+    done
+    docker_run -v "${rpmbuild}":/rpmbuild "${PFMM_RPMBUILD_IMAGE}" chown -R "${host_uid}:${host_gid}" /rpmbuild
+}
+
+# Seed a local repo with our RPMs, then let dnf pull every transitive dependency
+# from the upstream repos. --alldeps includes deps already present in the build
+# container, so the result stands alone on a bare host.
+stage_closure() {
+    build_rpmbuilder_image
+    log "resolving full dependency closure"
+    local seed=${work}/seed
+    rm -rf "${seed}" "${work}/closure"; mkdir -p "${seed}" "${work}/closure"
+    # Newest build of each package only -- older ones would ship alongside.
+    local name f newest
+    for name in pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards; do
+        newest=$(ls -t "${rpmbuild}"/RPMS/*/"${name}"-*.rpm 2>/dev/null | head -1)
+        [ -n "${newest}" ] || fail "missing built RPM for ${name} (run the rpms stage)"
+        cp "${newest}" "${seed}/"
+    done
+    for f in "${work}"/s3/*.rpm; do cp "${f}" "${seed}/"; done
+
+    docker_run -v "${seed}":/seed:ro -v "${work}/closure":/out "${PFMM_EL_IMAGE}" sh -c "
+        set -e
+        dnf -y install createrepo_c dnf-plugins-core >/dev/null 2>&1
+        cp -r /seed /localrepo && createrepo_c -q /localrepo
+        printf '[pfmm-local]\nname=pfmm-local\nbaseurl=file:///localrepo\nenabled=1\ngpgcheck=0\npriority=1\n' \
+            > /etc/yum.repos.d/pfmm-local.repo
+        dnf -y install '${PFMM_PGDG_REPO_RPM}'    >/dev/null 2>&1
+        dnf -y install '${PFMM_PERCONA_REPO_RPM}' >/dev/null 2>&1
+        dnf -y install epel-release               >/dev/null 2>&1
+        printf '[clickhouse-stable]\nname=ClickHouse\nbaseurl=${PFMM_CLICKHOUSE_BASEURL}\nenabled=1\ngpgcheck=0\n' \
+            > /etc/yum.repos.d/clickhouse.repo
+        dnf -y makecache >/dev/null 2>&1 || true
+        dnf download --resolve --alldeps --destdir /out pfm-server
+        chown -R ${host_uid}:${host_gid} /out
+    "
+    printf '  %s packages resolved\n' "$(ls "${work}/closure"/*.rpm | wc -l)"
+}
+
+# Sign every RPM in the assembled repo with PFMM_SIGN_KEY and drop the public key
+# alongside them, so the customer imports one key and `gpgcheck=1` covers the whole
+# bundle. Third-party packages are re-signed on purpose: ClickHouse ships unsigned
+# RPMs, and PGDG/Rocky are signed by keys that would otherwise each need importing.
+# Contents are untouched -- only the signature header changes.
+#
+# No-ops (with a warning) when the key is absent, so a build still works on a host
+# without the signing key; INSTALL.md then has to keep gpgcheck=0.
+sign_bundle() {
+    [ -n "${PFMM_SIGN_KEY}" ] || { log "signing skipped (PFMM_SIGN_KEY empty)"; return; }
+    if ! gpg --list-secret-keys "${PFMM_SIGN_KEY}" >/dev/null 2>&1; then
+        printf 'WARNING: no secret key for %s -- shipping an UNSIGNED bundle\n' "${PFMM_SIGN_KEY}" >&2
+        return
+    fi
+    log "signing ${PFMM_SIGN_KEY}"
+    # The secret key is written to a 0700 scratch dir and removed on return, so it
+    # never lands in the build output or the tarball.
+    # Cleaned up explicitly on both paths rather than with a RETURN trap: that trap
+    # outlives the function and fires again at script exit, where ${keydir} is gone
+    # and nounset turns it into "unbound variable" after a successful build.
+    local keydir; keydir=$(mktemp -d); chmod 700 "${keydir}"
+    gpg --export-secret-keys --armor "${PFMM_SIGN_KEY}" > "${keydir}/secret.asc"
+    gpg --export --armor "${PFMM_SIGN_KEY}" > "${repo_out}/${PFMM_SIGN_KEY_FILE}"
+    docker_run -v "${keydir}":/k:ro -v "${repo_out}":/repo "${PFMM_RPMBUILD_IMAGE}" sh -c "
+        set -e
+        dnf -y install rpm-sign >/dev/null 2>&1
+        export GNUPGHOME=/tmp/gpg && mkdir -p \$GNUPGHOME && chmod 700 \$GNUPGHOME
+        gpg --batch --quiet --import /k/secret.asc
+        KEY=\$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print \$10; exit}')
+        # --pinentry-mode loopback: the key is passphrase-less for unattended signing,
+        # and without this gpg still tries to open a pinentry that does not exist here.
+        rpmsign --define \"_gpg_name \${KEY}\" \
+                --define \"_gpg_sign_cmd_extra_args --pinentry-mode loopback\" \
+                --addsign /repo/*.rpm >/dev/null
+        rpm --import /repo/${PFMM_SIGN_KEY_FILE}
+        bad=\$(for f in /repo/*.rpm; do rpm -K \"\$f\" | grep -q 'signatures OK' || echo \"\$f\"; done)
+        [ -z \"\$bad\" ] || { echo \"unverified after signing:\"; echo \"\$bad\"; exit 1; }
+        chown -R ${host_uid}:${host_gid} /repo
+    " || { rm -rf "${keydir}"; fail "signing failed"; }
+    rm -rf "${keydir}"
+    printf '  signed %s packages with %s\n' "$(ls "${repo_out}"/*.rpm | wc -l)" "${PFMM_SIGN_KEY}"
+}
+
+stage_bundle() {
+    build_rpmbuilder_image
+    log "assembling bundle"
+    # Empty the directory rather than replacing it: a running test container
+    # bind-mounts this path, and deleting the directory leaves that mount pointing
+    # at a dead inode, so dnf inside the container fails with "Couldn't open file
+    # /pfmm-repo/repodata/repomd.xml" until the container is restarted. Clearing
+    # the contents keeps the inode, so live mounts follow the new packages.
+    mkdir -p "${repo_out}"
+    find "${repo_out}" -mindepth 1 -delete
+    local f b
+    # The closure was resolved against the seed, so it already carries our RPMs;
+    # re-copy them afterwards so the shipped ones are unambiguously this build's.
+    for f in "${work}"/closure/*.rpm; do
+        b=$(basename "${f}")
+        case "${b}" in pfm-*|percona-dashboards-*) continue ;; esac
+        cp "${f}" "${repo_out}/"
+    done
+    for f in "${work}"/seed/*.rpm; do cp "${f}" "${repo_out}/"; done
+
+    # Sign before createrepo so the metadata is generated over the signed packages.
+    sign_bundle
+
+    sed "s/@ARCH@/${arch}/g" "${repo_dir}/build/packages/pfmm-airgap-INSTALL.md" > "${PFMM_OUT}/INSTALL.md"
+    docker_run -v "${repo_out}":/repo "${PFMM_RPMBUILD_IMAGE}" \
+        sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
+
+    local tarball=${PFMM_OUT}/pfmm-server-el9-${arch}.tar.gz
+    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo INSTALL.md )
+    ( cd "${PFMM_OUT}" && sha256sum "$(basename "${tarball}")" > "$(basename "${tarball}").sha256" )
+
+    log "done"
+    printf '  bundle:   %s\n' "${tarball}"
+    printf '  packages: %s\n' "$(ls "${repo_out}"/*.rpm | wc -l)"
+    printf '  size:     %s\n' "$(du -h "${tarball}" | cut -f1)"
+    printf '  sha256:   %s\n' "$(cut -d' ' -f1 < "${tarball}.sha256")"
+    # Two tests, because they cover disjoint things: a from-scratch install cannot
+    # observe an upgrade defect, and every upgrade defect so far shipped past a
+    # green from-scratch run.
+    printf '\nValidate it with: build/scripts/test-pfmm-airgap   (fresh install)\n'
+    printf '            then: build/scripts/test-pfmm-upgrade   (in-place upgrade)\n'
+    # Only needed when an assertion changes, but that is exactly when it is easiest to
+    # forget -- and an assertion nobody has seen fail is not evidence of anything.
+    printf '\nAfter changing any assertion, re-run build/scripts/test-pfmm-negative-control.\n'
+}
+
+main() {
+    preflight
+    local stages=("$@")
+    [ ${#stages[@]} -gt 0 ] || stages=(grafana-fe grafana-be pmm-bin exporters s3 rpms closure bundle)
+    local s
+    for s in "${stages[@]}"; do
+        case "${s}" in
+            grafana-fe) stage_grafana_fe ;;
+            grafana-be) stage_grafana_be ;;
+            pmm-bin)    stage_pmm_bin ;;
+            exporters)  stage_exporters ;;
+            s3)         stage_s3 ;;
+            rpms)       stage_rpms ;;
+            closure)    stage_closure ;;
+            bundle)     stage_bundle ;;
+            *) fail "unknown stage: ${s}" ;;
+        esac
+    done
+}
+
+main "$@"

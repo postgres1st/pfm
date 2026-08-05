@@ -90,7 +90,16 @@ func pfmUnitsInstalled() bool {
 // unit that replaces it: "victoriametrics" -> pfm-victoriametrics.service. The
 // redundant "pmm-" prefix is dropped so the control-plane services read
 // pfm-managed / pfm-agent (not pfm-pmm-managed), consistent with pfm-init.
+//
+// The agent is the one exception: pfm-agent.service belongs to the pfm-client
+// package (a monitored host runs it directly), so pfm-server ships its own
+// self-monitoring agent as pfm-server-agent.service and masks the client's unit
+// to stop the two competing. Mapping "pmm-agent" to pfm-agent.service here would
+// target that masked unit and the server's agent would never start.
 func systemdUnitName(name string) string {
+	if name == "pmm-agent" {
+		return "pfm-server-agent.service"
+	}
 	return "pfm-" + strings.TrimPrefix(name, "pmm-") + ".service"
 }
 

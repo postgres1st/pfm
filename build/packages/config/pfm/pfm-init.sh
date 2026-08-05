@@ -16,9 +16,9 @@ set -o pipefail
 
 readonly SRV=/srv
 readonly DIST_FILE="${SRV}/pmm-distribution"
-readonly POSTGRES_DATA_DIR="${SRV}/postgres14"
+readonly POSTGRES_DATA_DIR="${SRV}/postgres18"
 readonly POSTGRES_PASSWORD_FILE="${SRV}/.postgres_password"
-readonly PG_BIN=/usr/pgsql-14/bin
+readonly PG_BIN=/usr/pgsql-18/bin
 
 log() { echo "pfm-init: $*"; }
 
@@ -33,12 +33,15 @@ pg_cluster_exists() { [[ -s "${POSTGRES_DATA_DIR}/PG_VERSION" ]]; }
 srv_provisioned()   { [[ -f "${DIST_FILE}" ]]; }
 
 ensure_srv_dirs() {
-    mkdir -p "${SRV}"/{backup,clickhouse,grafana/plugins,logs,nginx,prometheus/rules,victoriametrics}
-    log "copying grafana plugins ..."
-    # Copy the directory contents (trailing /.) rather than a glob: an empty
-    # panels dir leaves `*` unexpanded, and under `set -e` the resulting cp error
-    # aborts the entire first-boot provision.
-    cp -r /usr/share/percona-dashboards/panels/. "${SRV}/grafana/plugins/"
+    # No grafana/plugins here on purpose. This used to copy
+    # /opt/postgres1st/pfmm/dashboards/panels into ${SRV}/grafana/plugins, and
+    # because provisioning only runs once (guarded by srv_provisioned), that copy
+    # was never refreshed: upgrading percona-dashboards or pfm-managed updated the
+    # packaged plugins while the running server kept serving the first-boot copy,
+    # so dashboard changes could never reach an existing install. grafana.ini now
+    # points paths.plugins straight at the package directory instead.
+    # grafana (without /plugins) is still needed: it is grafana's paths.data.
+    mkdir -p "${SRV}"/{backup,clickhouse,grafana,logs,nginx,prometheus/rules,victoriametrics}
 }
 
 init_postgres() {
@@ -55,6 +58,43 @@ init_postgres() {
     "${PG_BIN}/initdb" -D "${POSTGRES_DATA_DIR}" \
         --auth-host=scram-sha-256 --auth-local=scram-sha-256 \
         --username=postgres --pwfile="${POSTGRES_PASSWORD_FILE}"
+}
+
+# provision_app_db <dbname> <role> <password> — idempotently create an
+# application database and its login role, then make the role OWN the database.
+#
+# Ownership, not just GRANT: PostgreSQL 15 revoked CREATE on schema public from
+# PUBLIC, and schema public is owned by the pseudo-role pg_database_owner. So a
+# database left owned by postgres (the superuser that created it) leaves the app
+# role unable to create its own tables — both grafana's and pfm-managed's
+# migrators fail on their first CREATE TABLE with "permission denied for schema
+# public" (SQLSTATE 42501). Handing the database to the app role makes
+# pg_database_owner resolve to it, restoring CREATE on public.
+# Requires PGPASSWORD to be exported by the caller.
+provision_app_db() {
+    local db=$1 role=$2 pw=$3
+    # The names below are interpolated into SQL. Every current caller passes a
+    # literal, so nothing here is attacker-controlled today -- but this refuses
+    # anything that is not a plain identifier so that stays true if a caller ever
+    # starts deriving them from config or the environment. Quoting alone would not
+    # be enough: an embedded double quote closes the quoted identifier, and an
+    # embedded single quote closes the password literal.
+    local n
+    for n in "${db}" "${role}"; do
+        [[ ${n} =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || {
+            log "FATAL: refusing unsafe SQL identifier: ${n}" >&2; exit 1; }
+    done
+    [[ ${pw} =~ ^[A-Za-z0-9_-]+$ ]] || {
+        log "FATAL: refusing password with SQL-significant characters" >&2; exit 1; }
+    local pg=(/usr/bin/psql -U postgres -h /run/postgresql -d postgres)
+    if [ "$("${pg[@]}" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'")" != "1" ]; then
+        "${pg[@]}" -c "CREATE DATABASE \"${db}\""
+    fi
+    if [ "$("${pg[@]}" -tAc "SELECT 1 FROM pg_roles WHERE rolname='${role}'")" != "1" ]; then
+        "${pg[@]}" -c "CREATE USER \"${role}\" LOGIN PASSWORD '${pw}'"
+    fi
+    "${pg[@]}" -c "GRANT ALL PRIVILEGES ON DATABASE \"${db}\" TO \"${role}\""
+    "${pg[@]}" -c "ALTER DATABASE \"${db}\" OWNER TO \"${role}\""
 }
 
 # provision_databases brings PostgreSQL up briefly (the pg_ctl-owned instance,
@@ -76,19 +116,38 @@ provision_databases() {
     "${psql[@]}" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public'
 
     log "creating grafana database and user ..."
-    if [ "$("${psql[@]}" -tAc "SELECT 1 FROM pg_database WHERE datname='grafana'")" != "1" ]; then
-        "${psql[@]}" -c 'CREATE DATABASE grafana'
-    fi
-    if [ "$("${psql[@]}" -tAc "SELECT 1 FROM pg_roles WHERE rolname='grafana'")" != "1" ]; then
-        "${psql[@]}" -c "CREATE USER grafana LOGIN PASSWORD 'grafana'"
-    fi
-    "${psql[@]}" -c 'GRANT ALL PRIVILEGES ON DATABASE grafana TO grafana'
+    provision_app_db grafana grafana grafana
+
+    # pfm-managed creates its own DB/role on first start, but does so as the
+    # postgres superuser, which leaves the database owned by postgres — fatal on
+    # PG15+ (see provision_app_db). Pre-create them here with the right owner;
+    # pfm-managed skips creation when they already exist.
+    log "creating pfm-managed database and user ..."
+    provision_app_db pmm-managed pmm-managed pmm-managed
 }
 
 # provision_srv runs the one-time /srv provisioning, guarded so it recovers from
 # a partial previous run (see the two-phase guard note above).
 provision_srv() {
     if srv_provisioned; then
+        # A host provisioned against an older PostgreSQL major has the sentinel but
+        # no cluster at the current POSTGRES_DATA_DIR (the path carries the major:
+        # /srv/postgres14 -> /srv/postgres18). Returning here would skip initdb and
+        # leave pfm-postgresql to fail on an empty data directory, which reads like
+        # a broken package rather than a migration that was never performed. There
+        # is deliberately no automatic migration: crossing a PostgreSQL major needs
+        # pg_upgrade or dump/restore, and silently initdb'ing over a host that still
+        # holds the old cluster would strand its data.
+        if ! pg_cluster_exists; then
+            local old
+            for old in "${SRV}"/postgres[0-9]*; do
+                [ -d "${old}" ] && [ "${old}" != "${POSTGRES_DATA_DIR}" ] || continue
+                log "FATAL: ${SRV} was provisioned with $(basename "${old}") but this build expects" >&2
+                log "       $(basename "${POSTGRES_DATA_DIR}"). Migrate the cluster (pg_upgrade or" >&2
+                log "       dump/restore) into ${POSTGRES_DATA_DIR}, or start from an empty ${SRV}." >&2
+                exit 1
+            done
+        fi
         log "/srv already provisioned — skipping one-time setup."
         return
     fi
@@ -99,8 +158,8 @@ provision_srv() {
 
     # Dashboards version marker (plugins copied above); mirrors the ansible
     # dashboards role so upgrade detection has a baseline.
-    if [ -f /usr/share/percona-dashboards/VERSION ]; then
-        cp /usr/share/percona-dashboards/VERSION "${SRV}/grafana/PERCONA_DASHBOARDS_VERSION"
+    if [ -f /opt/postgres1st/pfmm/dashboards/VERSION ]; then
+        cp /opt/postgres1st/pfmm/dashboards/VERSION "${SRV}/grafana/PERCONA_DASHBOARDS_VERSION"
     fi
 
     printf '%s' "native" > "${DIST_FILE}"   # written LAST — the "done" sentinel
@@ -164,18 +223,31 @@ prepare_runtime() {
     # Native keeps it under /srv (pfm-writable, persistent) rather than the
     # container's root-owned /opt/postgres1st/pfm/config; pfm-agent.service's
     # --config-file points here to match.
-    install -d -m 770 /srv/pmm-agent/config /srv/pmm-agent/tmp /srv/nomad/data
-    local agent_cfg=/srv/pmm-agent/config/pmm-agent.yaml
+    install -d -m 770 /srv/pfm-agent/config /srv/pfm-agent/tmp /srv/nomad/data
+    local agent_cfg=/srv/pfm-agent/config/pfm-agent.yaml
     if [ ! -f "${agent_cfg}" ]; then
-        log "creating pmm-agent configuration ..."
-        /usr/sbin/pmm-agent setup \
+        log "creating pfm-agent configuration ..."
+        # node-address is only autodetected when the host has a routable
+        # (non-loopback) address; on an isolated/air-gapped host it resolves to
+        # empty and `setup` then hard-fails on the required positional arg. This
+        # agent only ever talks to the co-located server over loopback, so fall
+        # back to 127.0.0.1 rather than depending on autodetection.
+        # Use the first global-scope IPv4 rather than `route get`, which exits 2
+        # ("Network is unreachable") on a host with no default route and would
+        # trip errexit. Must not be fatal: fall back to loopback.
+        local node_addr=""
+        node_addr="$(ip -4 -o addr show scope global 2>/dev/null |
+                     awk '{split($4,a,"/"); print a[1]; exit}')" || node_addr=""
+        [ -n "${node_addr}" ] || node_addr=127.0.0.1
+        /usr/sbin/pfm-agent setup \
             --config-file="${agent_cfg}" \
             --skip-registration \
             --id=pmm-server \
-            --paths-tempdir=/srv/pmm-agent/tmp \
+            --paths-tempdir=/srv/pfm-agent/tmp \
             --paths-nomad-data-dir=/srv/nomad/data \
             --server-address=127.0.0.1:8443 \
-            --server-insecure-tls
+            --server-insecure-tls \
+            "${node_addr}"
     fi
 }
 

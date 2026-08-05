@@ -64,8 +64,11 @@ const NavigationHeading: FC<NavigationHeadingProps> = memo(
             left: sidebarOpen ? 14 : 8,
             top: sidebarOpen ? 12 : 16,
             height: sidebarOpen ? '48px' : '40px',
+            // The mark is square (48x48); it used to be a 141x48 canvas with the
+            // artwork offset inside it, which overflowed the collapsed rail and was
+            // masked with color: transparent -- so the logo simply vanished when
+            // collapsed. Square means width tracks height and no masking is needed.
             width: 'auto',
-            color: sidebarOpen ? undefined : 'transparent',
             position: 'absolute',
             ...logoMixin(theme),
           })}

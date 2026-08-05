@@ -12,19 +12,26 @@ const HighAvailabilityBadge: FC<HighAvailabilityBadgeProps> = ({
   health,
   sx,
   ...props
-}) => (
-  <Stack flex={8} alignItems="flex-start">
-    <Chip
-      data-testid="ha-badge"
-      color={HEALTH_CHIP_COLOR[health]}
-      variant="outlined"
-      label={HIGH_AVAILABILITY_BADGE_HEALTH[health]}
-      // Per-state emphasis first, then any caller sx so callers can still
-      // override without silently dropping the health font weight / border.
-      sx={[HEALTH_EMPHASIS[health], ...(Array.isArray(sx) ? sx : [sx])]}
-      {...props}
-    />
-  </Stack>
-);
+}) => {
+  // Upstream added an explicit "unknown" health that renders no badge.
+  if (health === 'unknown') {
+    return null;
+  }
+
+  return (
+    <Stack flex={8} alignItems="flex-start">
+      <Chip
+        data-testid="ha-badge"
+        color={HEALTH_CHIP_COLOR[health]}
+        variant="outlined"
+        label={HIGH_AVAILABILITY_BADGE_HEALTH[health]}
+        // Per-state emphasis first, then any caller sx so callers can still
+        // override without silently dropping the health font weight / border.
+        sx={[HEALTH_EMPHASIS[health], ...(Array.isArray(sx) ? sx : [sx])]}
+        {...props}
+      />
+    </Stack>
+  );
+};
 
 export default HighAvailabilityBadge;

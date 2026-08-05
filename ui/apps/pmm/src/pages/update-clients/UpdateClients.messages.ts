@@ -9,7 +9,7 @@ export const Messages = {
   inProgress: 'In progress',
   step: 'Step 2 of 2: Update PFMM Client instances',
   stepDescription:
-    "To complete this update, it's crucial to also update all of your PFMM Client instances. Before proceeding with the Client update process, check the instances that require updates in the list below and review the provided instructions.",
+    'PFMM server is now updated. You must update your PFMM Client instances as well to ensure compatibility and access the latest features. Track their update status in the table below.',
   howToUpdate: 'How to update PFMM Client',
   refreshList: 'Refresh list',
   refreshing: 'Refreshing...',

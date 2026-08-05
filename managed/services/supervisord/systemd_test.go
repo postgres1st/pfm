@@ -35,7 +35,9 @@ func TestSystemdUnitName(t *testing.T) {
 
 	// supervisord program names map to native pfm-*.service units; the
 	// redundant "pmm-" prefix on the control-plane services is collapsed.
-	assert.Equal(t, "pfm-agent.service", systemdUnitName("pmm-agent"))
+	// pfm-agent.service is the client package's unit (masked on a server), so the
+	// server's self-monitoring agent maps to pfm-server-agent.service instead.
+	assert.Equal(t, "pfm-server-agent.service", systemdUnitName("pmm-agent"))
 	assert.Equal(t, "pfm-managed.service", systemdUnitName("pmm-managed"))
 	assert.Equal(t, "pfm-victoriametrics.service", systemdUnitName("victoriametrics"))
 }

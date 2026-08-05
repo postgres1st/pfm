@@ -1,0 +1,544 @@
+#!/usr/bin/env bash
+# Negative control for the assertions in BOTH bundle test suites.
+#
+#   build/scripts/test-pfmm-negative-control [airgap|upgrade|both]   (default: both)
+#
+# A green test suite is not evidence. It becomes evidence once each assertion has
+# been shown to go RED when the thing it guards is actually broken. This breaks
+# them, one at a time, and requires each to notice.
+#
+# It is not hypothetical: the first control ever run here found a false pass. The
+# assertion "the repair unit brought the server back (readyz 200)" stayed green with
+# pfm-clickhouse-perms masked, because ClickHouse limps rather than dying -- it keeps
+# serving queries while ConfigReloader fails every second on a config it cannot read.
+# That assertion proved nothing and was replaced.
+#
+# Each control runs the predicate three times:
+#
+#   1. baseline  -- must be GREEN, or the control cannot say anything
+#   2. broken    -- must be RED; if it stays green the assertion is decorative
+#   3. restored  -- must be GREEN again, or the control left the host dirty
+#
+# Two classes of control, counted and printed separately because they are not equally
+# strong evidence:
+#
+#   state break      -- change the host so the guarded property is genuinely false.
+#                       Proves the assertion is wired to real state AND discriminates.
+#   [input]          -- call the same predicate with a known-bad ARGUMENT. Proves it
+#                       discriminates, but NOT that the suite aims it at the right
+#                       target. Only for properties that cannot be broken safely.
+#
+# The predicates are sourced from the suites themselves (PFMM_LIB_ONLY=1), NOT
+# reimplemented. Controlling a copy of an assertion would prove nothing about the
+# assertion that actually runs.
+#
+# The two suites describe different hosts, so each phase needs the container left
+# behind by its own suite (default PFMM_TEST_KEEP=1 does that): pfm-airgap-test from
+# test-pfmm-airgap, pfm-upgrade-test from test-pfmm-upgrade. It mutates those
+# containers and restores as it goes, so run it against throwaway hosts, never a real
+# one.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+bin_dir=$(cd "$(dirname "$0")" && pwd -P)
+scratch=$(mktemp -d)
+trap 'rm -rf "${scratch}"' EXIT
+
+# Which suite(s) to control. The two suites describe DIFFERENT hosts -- a fresh
+# install and an upgraded one -- so each phase points ${container} at its own.
+phase=${1:-both}
+# Clear positional args before sourcing: the suites read $1 as their repo path, and
+# passing "airgap" through would send them looking for a bundle called "airgap".
+set --
+
+PFMM_LIB_ONLY=1
+export PFMM_LIB_ONLY
+# shellcheck source=/dev/null
+source "${bin_dir}/test-pfmm-airgap"
+airgap_container=${container}
+# shellcheck source=/dev/null
+source "${bin_dir}/test-pfmm-upgrade"
+upgrade_container=${container}
+
+controlled=0; weak=0; skipped=0; state_broken=0; input_fed=0
+
+hdr() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+note() { printf '  \033[33mNOTE\033[0m  %s\n' "$*"; }
+skip() { printf '  \033[33mSKIP\033[0m  %s\n' "$*"; skipped=$((skipped+1)); }
+
+# ctl <label> <predicate expression> <break> <restore> [budget-seconds]
+# The predicate expression is eval'd, so "! p_foo" expresses an inverted assertion.
+#
+# POLLS rather than sleeping a fixed time and checking once. Several breaks land
+# asynchronously -- `docker network connect` installs the default route a moment after
+# the command returns, a stopped unit takes a beat to leave `active` -- and a fixed
+# sleep turns that into a race whose failure mode reads as "the assertion is not
+# discriminating". That is the most damaging wrong answer this harness can give: it
+# would send someone off to rewrite a perfectly good assertion. Waiting for the state
+# to actually change, and only then judging, keeps "could not stage the break" and
+# "assertion is decorative" as separate conclusions.
+#
+# The restore always runs, including when the assertion turns out to be weak, so one
+# bad verdict cannot leave the host dirty for every control after it.
+ctl() {
+    local label=$1 pred=$2 brk=$3 rst=$4 budget=${5:-10}
+    local i went_red=no back=no baseline=no
+    # Poll the BASELINE too, not just the broken and restored states. Missing this
+    # produced a spurious "baseline is already red": the control before it had
+    # restarted nginx, and while the cheap gate checks answer the moment nginx is
+    # back, a predicate that WRITES (registering a service) needs pfm-managed further
+    # along than readyz indicates. A single sample turned "not settled yet" into a
+    # reported failure -- the same mistake the broken/restored polling exists to avoid.
+    for ((i = 0; i < budget; i++)); do
+        if eval "${pred}" >/dev/null 2>&1; then baseline=yes; break; fi
+        sleep 1
+    done
+    if [ "${baseline}" != yes ]; then
+        no "${label}: baseline still red after ${budget}s -- cannot control it"
+        return 0
+    fi
+    eval "${brk}" >/dev/null 2>&1 || true
+    for ((i = 0; i < budget; i++)); do
+        if ! eval "${pred}" >/dev/null 2>&1; then went_red=yes; break; fi
+        sleep 1
+    done
+    eval "${rst}" >/dev/null 2>&1 || true
+    for ((i = 0; i < budget; i++)); do
+        if eval "${pred}" >/dev/null 2>&1; then back=yes; break; fi
+        sleep 1
+    done
+    if [ "${went_red}" != yes ]; then
+        no "${label}: STILL GREEN with the defect present -- not discriminating"
+        weak=$((weak+1))
+    elif [ "${back}" != yes ]; then
+        no "${label}: did not recover after restore -- the control left the host dirty"
+    else
+        ok "${label}"
+        controlled=$((controlled+1)); state_broken=$((state_broken+1))
+    fi
+}
+
+# ctl_input <label> <expression-that-should-be-green> <expression-that-should-be-red>
+#
+# For predicates whose guarded property cannot be broken safely on a live host -- a
+# read-only mount, the PostgreSQL major version -- feed the same function a known-bad
+# ARGUMENT instead. This is deliberately weaker evidence and reported as [input]: it
+# shows the predicate discriminates, but not that the suite aims it at the right
+# target. Never let it stand in for a state break where one is possible.
+ctl_input() {
+    local label=$1 good=$2 bad=$3
+    if ! eval "${good}" >/dev/null 2>&1; then
+        no "${label}: the good input is already red -- cannot control it"
+        return 0
+    fi
+    if eval "${bad}" >/dev/null 2>&1; then
+        no "${label}: STILL GREEN on a known-bad input -- not discriminating"
+        weak=$((weak+1))
+        return 0
+    fi
+    printf '  \033[32mPASS\033[0m  %s \033[33m[input]\033[0m\n' "${label}"
+    pass=$((pass+1)); controlled=$((controlled+1)); input_fed=$((input_fed+1))
+}
+
+# ------------------------------------------------------------------- canary package
+# Built once, before either phase: both need it -- the airgap phase to mix an unsigned
+# package into a directory of signed ones, the upgrade phase to make a pmm-* package
+# exist. It is deliberately never signed.
+canary_rpm=${scratch}/pmm-nc-canary-0-0.noarch.rpm
+build_canary_rpm() {
+    cat > "${scratch}/pmm-nc-canary.spec" <<'EOF'
+Name:           pmm-nc-canary
+Version:        0
+Release:        0
+Summary:        negative-control canary
+License:        AGPLv3
+BuildArch:      noarch
+%description
+Exists only so the "no pmm-* packages" assertion has something to find, and so the
+all-packages-signed assertion has an unsigned package to refuse.
+%files
+EOF
+    # chown back to the caller: rpmbuild runs as root in the container, and without
+    # this the EXIT trap cannot remove its own scratch directory.
+    docker run --rm -v "${scratch}":/s -w /s "${PFMM_RPMBUILD_IMAGE}" \
+        sh -c "rpmbuild --define '_topdir /s/top' -bb pmm-nc-canary.spec >/dev/null 2>&1 \
+               && cp /s/top/RPMS/noarch/*.rpm /s/ && chown -R ${host_uid}:${host_gid} /s" \
+        || die "could not build the pmm-* canary package"
+    [ -f "${canary_rpm}" ] || die "canary package did not appear at ${canary_rpm}"
+}
+
+# ---------------------------------------------------------------------- preflight
+
+# Point every subsequent predicate at a specific host. ${container} is what inc()
+# execs into, so reassigning it switches phases.
+require_container() {
+    container=$1
+    docker inspect "${container}" >/dev/null 2>&1 \
+        || die "no container ${container}; run $2 first (it keeps the host by default)"
+    [ "$(docker inspect -f '{{.State.Running}}' "${container}")" = true ] \
+        || die "container ${container} is not running"
+    [ "$(wait_readyz 12)" = "200" ] \
+        || die "${container} is not healthy (readyz != 200); re-run $2"
+}
+
+phase_upgrade() {
+    require_container "${upgrade_container}" build/scripts/test-pfmm-upgrade
+    printf '\nControlling test-pfmm-upgrade assertions against %s\n' "${container}"
+
+    # ------------------------------------------------------------------ pure predicate
+
+    hdr "package-upgrade comparison (no container needed)"
+    # The defect is a release string that never advances, so dnf skips the package in
+    # silence. Feed the comparison two identical listings: it must report every package
+    # as stuck, or it would report a skipped upgrade as a success.
+    same=$'pfm-client-3.9.0-1.a\npfm-grafana-1-1.a\npfm-managed-3.9.0-1.a\npfm-server-3.9.0-1.a\npercona-dashboards-3.9.0-1.a'
+    diff=$'pfm-client-3.9.0-2.b\npfm-grafana-1-2.b\npfm-managed-3.9.0-2.b\npfm-server-3.9.0-2.b\npercona-dashboards-3.9.0-2.b'
+    if p_all_pkgs_upgraded "${same}" "${same}"; then
+        no "p_all_pkgs_upgraded: reports success when nothing moved"; weak=$((weak+1))
+    elif ! p_all_pkgs_upgraded "${same}" "${diff}"; then
+        no "p_all_pkgs_upgraded: reports failure when everything moved"
+    else
+        ok "p_all_pkgs_upgraded (red on identical NEVRAs, green when all five advance)"
+        controlled=$((controlled+1)); state_broken=$((state_broken+1))
+    fi
+    # A partial skip is the realistic shape: four move, one does not.
+    partial=$'pfm-client-3.9.0-2.b\npfm-grafana-1-2.b\npfm-managed-3.9.0-2.b\npfm-server-3.9.0-1.a\npercona-dashboards-3.9.0-2.b'
+    if p_all_pkgs_upgraded "${same}" "${partial}"; then
+        no "p_all_pkgs_upgraded: misses a single skipped package"; weak=$((weak+1))
+    else
+        ok "p_all_pkgs_upgraded (red when only one package is skipped)"
+        controlled=$((controlled+1)); state_broken=$((state_broken+1))
+    fi
+
+    # --------------------------------------------------------------- host / networking
+
+    hdr "host isolation"
+    ctl "p_no_internet (attach the host to a routed network)" \
+        "p_no_internet" \
+        "docker network connect bridge ${container}" \
+        "docker network disconnect bridge ${container}" 30
+
+    # ------------------------------------------------------------------- server health
+
+    hdr "server health"
+    ctl "p_readyz (stop pfm-managed)" \
+        "p_readyz" \
+        "inc 'systemctl stop pfm-managed'" \
+        "inc 'systemctl start pfm-managed'; wait_readyz 24 >/dev/null" 120
+
+    ctl "p_no_failed_units (introduce a failing pfm unit)" \
+        "p_no_failed_units" \
+        "inc \"printf '[Unit]\nDescription=negative control\n[Service]\nType=oneshot\nExecStart=/bin/false\n' > /etc/systemd/system/pfm-nc-canary.service; systemctl daemon-reload; systemctl start pfm-nc-canary.service\"" \
+        "inc 'systemctl reset-failed pfm-nc-canary.service; rm -f /etc/systemd/system/pfm-nc-canary.service; systemctl daemon-reload'" 3
+
+    ctl "p_all_units_active (stop pfm-vmalert)" \
+        "p_all_units_active" \
+        "inc 'systemctl stop pfm-vmalert'" \
+        "inc 'systemctl start pfm-vmalert'" 30
+
+    # --------------------------------------------------------------------- data stores
+
+    hdr "data survival (one control per store)"
+    ctl "p_service_registered (deregister the monitored service)" \
+        "p_service_registered" \
+        "inc \"/usr/sbin/pfm-admin ${SRV} remove postgresql canary-pg\"" \
+        "inc \"/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\\\$(cat /srv/.postgres_password) canary-pg\"" 4
+
+    ctl "p_grafana_folder (delete the folder)" \
+        "p_grafana_folder" \
+        "inc \"uid=\\\$(curl -sk -u admin:admin 'https://127.0.0.1:8443/graph/api/search?query=upgrade-canary' | grep -o '\\\"uid\\\":\\\"[^\\\"]*\\\"' | head -1 | cut -d'\\\"' -f4); curl -sk -u admin:admin -X DELETE https://127.0.0.1:8443/graph/api/folders/\\\$uid\"" \
+        "gapi \"-X POST -H 'Content-Type: application/json' -d '{\\\"title\\\":\\\"upgrade-canary\\\"}' https://127.0.0.1:8443/graph/api/folders\"" 3
+
+    ctl "p_clickhouse_row (drop the table)" \
+        "p_clickhouse_row" \
+        "ch 'DROP TABLE default.pfm_upgrade_canary'" \
+        "ch 'CREATE TABLE IF NOT EXISTS default.pfm_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n'; ch 'INSERT INTO default.pfm_upgrade_canary VALUES (42)'" 3
+
+    # Metrics have no safe "break" -- deleting the TSDB is not reversible -- so control
+    # the predicate's sensitivity instead: it must find data at a timestamp inside the
+    # retention window and find none well before this host existed.
+    hdr "metrics history"
+    now=$(inc 'date +%s')
+    long_ago=$((now - 2592000))
+    if ! p_metrics_at "$((now - 60))"; then
+        no "p_metrics_at: no data at a timestamp inside the window -- baseline is red"
+    elif p_metrics_at "${long_ago}"; then
+        no "p_metrics_at: STILL GREEN 30 days before this host existed -- it ignores the timestamp"
+        weak=$((weak+1))
+    else
+        ok "p_metrics_at (green inside the window, red 30 days before the host existed) [input]"
+        controlled=$((controlled+1)); input_fed=$((input_fed+1))
+    fi
+
+    # ------------------------------------------------------------------- configuration
+
+    hdr "configuration was not reverted"
+    ctl "p_pfm_ini_plugins (comment out paths.plugins)" \
+        "p_pfm_ini_plugins" \
+        "inc \"sed -i 's|^plugins = |#plugins = |' /etc/grafana/pfm.ini\"" \
+        "inc \"sed -i 's|^#plugins = |plugins = |' /etc/grafana/pfm.ini\"" 2
+
+    ctl "p_pfm_ini_loopback (comment out http_addr)" \
+        "p_pfm_ini_loopback" \
+        "inc \"sed -i 's|^http_addr = |#http_addr = |' /etc/grafana/pfm.ini\"" \
+        "inc \"sed -i 's|^#http_addr = |http_addr = |' /etc/grafana/pfm.ini\"" 2
+
+    # rmdir, not rm -rf: it removes only an empty directory, so a mistake here cannot
+    # destroy anything.
+    ctl "p_no_srv_plugin_copy (create the first-boot copy directory)" \
+        "p_no_srv_plugin_copy" \
+        "inc 'mkdir -p /srv/grafana/plugins'" \
+        "inc 'rmdir /srv/grafana/plugins'" 2
+
+    ctl "p_operator_edit_kept (remove the operator's line)" \
+        "p_operator_edit_kept" \
+        "inc \"sed -i '/^# operator-canary/d' /etc/nginx/pfm.conf\"" \
+        "inc \"printf '# operator-canary\n' >> /etc/nginx/pfm.conf\"" 2
+
+    # Grafana already holds 127.0.0.1:3000, so an off-host listener cannot bind until it
+    # lets go -- hence stopping it. This is the slowest control in the set.
+    #
+    # The pattern is '[h]ttp\.server', not 'http.server': pkill -f matches against whole
+    # command lines, including the `bash -c` this very command runs in, so the plain
+    # spelling makes pkill kill its own shell before `systemctl start` executes. That
+    # happened -- grafana stayed down and every control after it inherited a broken host.
+    # The bracket makes the regex match the running python but not this command line.
+    hdr "network exposure"
+    ctl "p_grafana_not_exposed (bind 0.0.0.0:3000)" \
+        "p_grafana_not_exposed" \
+        "inc 'systemctl stop pfm-grafana; setsid nohup python3 -m http.server 3000 --bind 0.0.0.0 >/dev/null 2>&1 < /dev/null & sleep 2'" \
+        "inc \"pkill -f '[h]ttp\\.server' || true; systemctl start pfm-grafana\"; wait_readyz 36 >/dev/null" 180
+
+    # ------------------------------------------------------------------- gate / naming
+
+    hdr "gate and packaging"
+    # This controls the ASSERTION, not the gate: it proves the check reads the server's
+    # real answer rather than matching unconditionally. Proving the gate itself would
+    # need a build with the gate removed, which is a different test.
+    ctl "p_mysql_rejected (make the server unreachable so the answer changes)" \
+        "p_mysql_rejected" \
+        "inc 'systemctl stop pfm-managed'" \
+        "inc 'systemctl start pfm-managed'; wait_readyz 24 >/dev/null" 120
+    note "that controls the assertion's dependence on the response, not the gate itself"
+
+    # A package literally named pmm-* is the thing this guards against, so install one.
+    hdr "no pmm-* packages"
+    docker cp "${canary_rpm}" "${container}:/tmp/" >/dev/null
+    ctl "p_no_pmm_packages (install a package named pmm-*)" \
+        "p_no_pmm_packages" \
+        "inc 'rpm -i --nodeps /tmp/pmm-nc-canary-0-0.noarch.rpm'" \
+        "inc 'rpm -e pmm-nc-canary'" 2
+
+    # ---------------------------------------------------------------------- clickhouse
+
+    hdr "clickhouse ownership (the defect-4 assertions)"
+    ch_break="inc 'chown -R clickhouse:clickhouse /etc/clickhouse-server'"
+    ch_fix="inc 'chown -R pfm:pfm /etc/clickhouse-server; chmod -R u+rwX /etc/clickhouse-server'"
+    ctl "p_ch_owned_by_pfm (chown back to clickhouse)" "p_ch_owned_by_pfm" "${ch_break}" "${ch_fix}" 2
+    ctl "p_ch_config_readable (chown back to clickhouse)" "p_ch_config_readable" "${ch_break}" "${ch_fix}" 2
+    # The mirror image: this one asserts ownership WAS reverted, so its healthy baseline
+    # is red. Control it in the opposite direction.
+    if p_ch_owner_reverted; then
+        no "p_ch_owner_reverted: green while ownership is correct -- it would always fire"
+        weak=$((weak+1))
+    else
+        eval "${ch_break}" >/dev/null 2>&1 || true
+        sleep 2
+        if p_ch_owner_reverted; then
+            ok "p_ch_owner_reverted (red when pfm-owned, green once reverted)"
+            controlled=$((controlled+1)); state_broken=$((state_broken+1))
+        else
+            no "p_ch_owner_reverted: did not notice a real revert"
+            weak=$((weak+1))
+        fi
+        eval "${ch_fix}" >/dev/null 2>&1 || true
+    fi
+
+    # ------------------------------------------------------------------ not controlled
+
+    hdr "controlled by the upgrade run itself"
+    note "p_marker_served is asserted GREEN before the upgrade and RED after it, on the same"
+    note "predicate in the same run -- a two-sided control that needs no staging here."
+
+    hdr "not controlled, with reasons"
+    skip "'dnf upgrade completed offline' -- it IS the exit status of the operation under test; there is no state in which a failed upgrade reports success"
+    skip "'previous release is up' and 'metrics are flowing' -- same predicates as p_readyz / p_metrics_at, already controlled above"
+    skip "the seeding assertions -- they call p_service_registered / p_grafana_folder / p_clickhouse_row / p_operator_edit_kept, all controlled above"
+
+
+    hdr "leaving the host as we found it"
+    local final_bad="" q
+    for q in p_readyz p_no_failed_units p_all_units_active p_service_registered \
+             p_grafana_folder p_clickhouse_row p_pfm_ini_plugins p_pfm_ini_loopback \
+             p_no_srv_plugin_copy p_grafana_not_exposed p_operator_edit_kept \
+             p_no_pmm_packages p_ch_owned_by_pfm p_ch_config_readable; do
+        eval "${q}" >/dev/null 2>&1 || final_bad="${final_bad} ${q}"
+    done
+    [ -z "${final_bad}" ] && ok "every upgrade-host predicate green again" \
+        || no "left red on the upgrade host:${final_bad}"
+}
+
+# ============================================================== airgap suite phase
+
+phase_airgap() {
+    require_container "${airgap_container}" build/scripts/test-pfmm-airgap
+    printf '\nControlling test-pfmm-airgap assertions against %s\n' "${container}"
+
+    hdr "host realism"
+    # Disconnecting the only network removes the global-scope address entirely. The
+    # services all bind loopback, so readyz survives it.
+    ctl "p_has_nic (detach the host from its network)" \
+        "p_has_nic" \
+        "docker network disconnect ${network} ${container}" \
+        "docker network connect ${network} ${container}" 30
+
+    hdr "the gate"
+    # nginx, not pfm-managed: stopping the proxy changes pfm-admin's answer in one
+    # second and comes back in one, where a pfm-managed restart costs two minutes.
+    # Either proves the assertion reads the server's real response.
+    local nginx_break="inc 'systemctl stop pfm-nginx'"
+    local nginx_fix="inc 'systemctl start pfm-nginx'; wait_readyz 24 >/dev/null"
+    ctl "p_mongodb_rejected (stop nginx so the answer changes)" \
+        "p_mongodb_rejected" "${nginx_break}" "${nginx_fix}" 60
+    ctl "p_postgresql_accepted (stop nginx so the answer changes)" \
+        "p_postgresql_accepted" "${nginx_break}" "${nginx_fix}" 60
+    note "p_postgresql_accepted registers a uniquely-named service on each call, so"
+    note "this control leaves a few extra services behind on the throwaway host"
+
+    hdr "branding and UI"
+    ctl "p_grafana_title (stop grafana)" \
+        "p_grafana_title" \
+        "inc 'systemctl stop pfm-grafana'" \
+        "inc 'systemctl start pfm-grafana'; wait_readyz 36 >/dev/null" 180
+    ctl "p_pfmui_title (stop nginx)" \
+        "p_pfmui_title" "${nginx_break}" "${nginx_fix}" 60
+
+    hdr "data flowing"
+    ctl "p_pg_up (stop victoriametrics)" \
+        "p_pg_up" \
+        "inc 'systemctl stop pfm-victoriametrics'" \
+        "inc 'systemctl start pfm-victoriametrics'" 60
+    ctl "p_dashboards (stop grafana)" \
+        "p_dashboards" \
+        "inc 'systemctl stop pfm-grafana'" \
+        "inc 'systemctl start pfm-grafana'; wait_readyz 36 >/dev/null" 180
+    # Stopping PostgreSQL would only show the check reads live state; feeding it a
+    # major the server is not running is what proves the comparison discriminates.
+    ctl_input "p_postgres_major (expect a version the server is not running)" \
+        "p_postgres_major 18" "p_postgres_major 99"
+
+    hdr "signing"
+    ctl_input "p_bundle_signed (point at a directory with no key)" \
+        "p_bundle_signed ${bundle}" "p_bundle_signed /tmp"
+    # A directory holding one properly signed package plus an unsigned one: the
+    # all-signed check must refuse it.
+    # The canary built for the pmm-* control is never signed, which is exactly what is
+    # needed here: one properly signed package plus one unsigned one in a directory.
+    if docker cp "${canary_rpm}" "${container}:/tmp/nc-unsigned.rpm" >/dev/null 2>&1 \
+       && inc "rm -rf /tmp/nc-repo && mkdir -p /tmp/nc-repo && cp ${bundle}/pfm-server-*.rpm /tmp/nc-repo/ && cp /tmp/nc-unsigned.rpm /tmp/nc-repo/"; then
+        ctl_input "p_all_rpms_signed (a directory containing one unsigned package)" \
+            "p_all_rpms_signed ${bundle}" "p_all_rpms_signed /tmp/nc-repo"
+    else
+        skip "p_all_rpms_signed -- could not stage an unsigned package to mix in"
+    fi
+    # Two-sided by construction: the suite tampers with a copy and expects failure,
+    # which only means something if the untampered copy still verifies.
+    inc "cp ${bundle}/pfm-server-*.rpm /tmp/nc-good.rpm && cp /tmp/nc-good.rpm /tmp/nc-bad.rpm && printf '\\x00\\x00\\x00\\x00' | dd of=/tmp/nc-bad.rpm bs=1 seek=6000 conv=notrunc status=none" >/dev/null 2>&1 || true
+    ctl_input "p_rpm_verifies (a tampered copy of a signed package)" \
+        "p_rpm_verifies /tmp/nc-good.rpm" "p_rpm_verifies /tmp/nc-bad.rpm"
+
+    hdr "network exposure"
+    ctl "p_no_unexpected_listeners (bind 0.0.0.0:9999)" \
+        "p_no_unexpected_listeners" \
+        "inc 'setsid nohup python3 -m http.server 9999 --bind 0.0.0.0 >/dev/null 2>&1 </dev/null & sleep 2'" \
+        "inc \"pkill -f '[h]ttp\\.server 9999' || true\"" 30
+
+    hdr "upgrade-safety structure"
+    # Editing the unit file is enough: the predicate greps the file, so no reload or
+    # grafana restart is needed and the control stays cheap.
+    ctl "p_grafana_uses_pfm_ini (point the unit at another config)" \
+        "p_grafana_uses_pfm_ini" \
+        "inc \"sed -i 's|--config=/etc/grafana/pfm.ini|--config=/etc/grafana/nc.ini|' /usr/lib/systemd/system/pfm-grafana.service\"" \
+        "inc \"sed -i 's|--config=/etc/grafana/nc.ini|--config=/etc/grafana/pfm.ini|' /usr/lib/systemd/system/pfm-grafana.service\"" 10
+    ctl_input "p_owned_by_pfm_server (a path pfm-server does not own)" \
+        "p_owned_by_pfm_server /etc/grafana/pfm.ini" "p_owned_by_pfm_server /etc/hosts"
+    # Masking is not enough -- `systemctl cat` still prints the /dev/null link -- so
+    # the unit file has to move out of the way.
+    ctl "p_ch_perms_unit (move the unit file aside)" \
+        "p_ch_perms_unit" \
+        "inc 'mv /usr/lib/systemd/system/pfm-clickhouse-perms.service /tmp/nc-perms.service; systemctl daemon-reload'" \
+        "inc 'mv /tmp/nc-perms.service /usr/lib/systemd/system/pfm-clickhouse-perms.service; systemctl daemon-reload'" 20
+    ctl "p_ch_requires_perms (comment out the Requires= line)" \
+        "p_ch_requires_perms" \
+        "inc \"sed -i 's|^Requires=pfm-clickhouse-perms.service|#NC&|' /usr/lib/systemd/system/pfm-clickhouse.service; systemctl daemon-reload\"" \
+        "inc \"sed -i 's|^#NCRequires=pfm-clickhouse-perms.service|Requires=pfm-clickhouse-perms.service|' /usr/lib/systemd/system/pfm-clickhouse.service; systemctl daemon-reload\"" 20
+
+    hdr "build-stamped releases"
+    # A package whose Release is literally 1.el9 -- the exact shape that made dnf skip
+    # our packages in silence.
+    cat > "${scratch}/pfm-nc-static.spec" <<'EOF'
+Name:           pfm-nc-static
+Version:        0
+Release:        1%{?dist}
+Summary:        negative-control canary with a static release
+License:        AGPLv3
+BuildArch:      noarch
+%description
+Its Release is literally 1.el9, which is what dnf silently refuses to upgrade.
+%files
+EOF
+    if docker run --rm -v "${scratch}":/s -w /s "${PFMM_RPMBUILD_IMAGE}" \
+        sh -c "rpmbuild --define '_topdir /s/top2' --define 'dist .el9' -bb pfm-nc-static.spec >/dev/null 2>&1 \
+               && cp /s/top2/RPMS/noarch/*.rpm /s/ && chown -R ${host_uid}:${host_gid} /s" \
+        && docker cp "${scratch}/pfm-nc-static-0-1.el9.noarch.rpm" "${container}:/tmp/" >/dev/null 2>&1 \
+        && inc 'rpm -i --nodeps /tmp/pfm-nc-static-0-1.el9.noarch.rpm'; then
+        ctl_input "p_release_stamped (a package whose release is literally 1.el9)" \
+            "p_release_stamped pfm-server" "p_release_stamped pfm-nc-static"
+        inc 'rpm -e pfm-nc-static' >/dev/null 2>&1 || true
+    else
+        skip "p_release_stamped -- could not build/install a static-release canary"
+    fi
+
+    hdr "leaving the host as we found it"
+    local final_bad="" q
+    for q in p_readyz p_no_failed_units p_all_units_active p_has_nic p_grafana_title \
+             p_pfmui_title p_pg_up p_dashboards p_no_unexpected_listeners \
+             p_grafana_uses_pfm_ini p_ch_perms_unit p_ch_requires_perms \
+             p_no_pmm_packages p_ch_owned_by_pfm; do
+        eval "${q}" >/dev/null 2>&1 || final_bad="${final_bad} ${q}"
+    done
+    [ -z "${final_bad}" ] && ok "every airgap-host predicate green again" \
+        || no "left red on the airgap host:${final_bad}"
+}
+
+# ===================================================================== dispatcher
+
+build_canary_rpm
+
+case "${phase}" in
+    upgrade) phase_upgrade ;;
+    airgap)  phase_airgap ;;
+    both)    phase_airgap; phase_upgrade ;;
+    *)       die "usage: test-pfmm-negative-control [airgap|upgrade|both]" ;;
+esac
+
+if [ "${phase}" = airgap ]; then
+    note "only the airgap suite was controlled; the predicates shared with the upgrade"
+    note "suite (p_readyz, p_no_failed_units, p_mysql_rejected, ...) are controlled in"
+    note "the upgrade phase, so run 'both' for full coverage"
+elif [ "${phase}" = upgrade ]; then
+    note "only the upgrade suite was controlled; the airgap-specific predicates"
+    note "(branding, signing, exposure, PG major, ...) are controlled in the airgap phase"
+fi
+
+printf '\n%s controlled (%s by breaking real state, %s by known-bad input), %s not discriminating, %s skipped\n' \
+    "${controlled}" "${state_broken}" "${input_fed}" "${weak}" "${skipped}"
+# The classes must account for every control. An unclassified one silently inflates the
+# headline number while under-reporting how it was established, which is the exact
+# distinction this harness exists to make.
+if [ "$((state_broken + input_fed))" -ne "${controlled}" ]; then
+    no "tally does not reconcile: ${state_broken} state + ${input_fed} input != ${controlled} controlled"
+fi
+printf '%s passed, %s failed\n' "${pass}" "${fail}"
+[ "${fail}" -eq 0 ]

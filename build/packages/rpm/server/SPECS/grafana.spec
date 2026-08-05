@@ -1,9 +1,9 @@
 %global debug_package   %{nil}
-%global commit          24b0b104382a6d04955d1232f937645050450b7e
+%global commit          f4d9e0d87d3cd2dc315a1fa7a24482499518015c
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 %define build_timestamp %(date -u +"%y%m%d%H%M")
-%define release         116
-%define grafana_version 12.4.4
+%define release         117
+%define grafana_version 12.4.5
 %define full_pmm_version 3.0.0
 %define full_version    v%{grafana_version}-%{full_pmm_version}
 %define rpm_release     %{release}.%{build_timestamp}.%{shortcommit}%{?dist}
@@ -41,7 +41,6 @@ Graphite, InfluxDB & OpenTSDB.
 %prep
 %setup -q -n grafana-%{commit}
 rm -rf Godeps
-sed -i "s/unknown-dev/%{grafana_version}/" pkg/build/git.go
 sudo npm install -g grunt-cli
 
 %build
@@ -71,23 +70,26 @@ mv conf/ldap.toml %{buildroot}%{_sysconfdir}/grafana/
 install -d -p %{buildroot}%{_sharedstatedir}/grafana
 
 %files
-%defattr(-, pmm, root, -)
+%defattr(-, pfm, root, -)
 %{_datadir}/grafana
 %doc CHANGELOG.md README.md
 %license LICENSE
-%attr(0755, pmm, root) %{_sbindir}/grafana
-%attr(0755, pmm, root) %{_sbindir}/grafana-server
-%attr(0755, pmm, root) %{_bindir}/grafana-cli
+%attr(0755, pfm, root) %{_sbindir}/grafana
+%attr(0755, pfm, root) %{_sbindir}/grafana-server
+%attr(0755, pfm, root) %{_bindir}/grafana-cli
 %{_sysconfdir}/grafana/grafana.ini
 %{_sysconfdir}/grafana/ldap.toml
 %dir %{_sharedstatedir}/grafana
 
 %pre
-getent group pmm >/dev/null || echo "Group pmm does not exist. Please create it manually."
-getent passwd pmm >/dev/null || echo "User pmm does not exist. Please create it manually."
+getent group pfm >/dev/null || echo "Group pfm does not exist. Please create it manually."
+getent passwd pfm >/dev/null || echo "User pfm does not exist. Please create it manually."
 exit 0
 
 %changelog
+* Tue Jul 07 2026 Matej Kubinec <matej.kubinec@ext.percona.com> - 12.4.5-1
+- PMM-15190 Upgrade Grafana to v12.4.5
+
 * Tue Jun 02 2026 Matej Kubinec <matej.kubinec@ext.percona.com> - 12.4.4-1
 - PMM-14213 Upgrade Grafana to v12.4.4
 

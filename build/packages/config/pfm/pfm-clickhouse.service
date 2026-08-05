@@ -5,7 +5,10 @@
 # to <console>1</console> / journald is a T5 (logging-redirect) item, not T0.
 [Unit]
 Description=pfm ClickHouse (QAN storage)
-After=pfm-init.service
+After=pfm-init.service pfm-clickhouse-perms.service
+# Requires, not just After: if the ownership repair fails, starting
+# ClickHouse would only fail more confusingly.
+Requires=pfm-clickhouse-perms.service
 Requires=pfm-init.service
 PartOf=pfm.target
 # Match supervisord startretries=10 (systemd default is 5/10s).

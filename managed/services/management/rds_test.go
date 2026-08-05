@@ -282,6 +282,7 @@ func TestRDSService(t *testing.T) {
 			TablestatsGroupTableLimit:        0,
 			AutoDiscoveryLimit:               10,
 			MaxPostgresqlExporterConnections: 15,
+			PostgresqlDisableCollectors:      []string{"stat_database", "stat_bgwriter"},
 		}
 
 		state.On("RequestStateUpdate", ctx, "pmm-server")
@@ -330,6 +331,7 @@ func TestRDSService(t *testing.T) {
 						ServiceId:              "00000000-0000-4000-8000-000000000007",
 						Username:               "username",
 						Status:                 inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
+						DisabledCollectors:     []string{"stat_database", "stat_bgwriter"},
 						AutoDiscoveryLimit:     10,
 						MaxExporterConnections: 15,
 					},
