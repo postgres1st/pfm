@@ -13,7 +13,7 @@ export const QanHeaderActions: FC = () => {
   const handleCopy = async () => {
     try {
       const path = constructUrl(location).replace(
-        /\/pmm-ui\/(next\/)?graph\//,
+        /\/pfm-ui\/(next\/)?graph\//,
         ''
       );
       const res = location.pathname.includes('/graph')
