@@ -12,7 +12,7 @@
 # it can start cleanly (the init.yml port in pfm-init.sh — follow-on). Until
 # that lands it will fail to connect and retry (StartLimitIntervalSec=0).
 [Unit]
-Description=pfm control plane (pmm-managed)
+Description=pfm control plane (pfm-managed)
 After=pfm-init.service pfm-postgresql.service pfm-clickhouse.service pfm-victoriametrics.service pfm-nginx.service
 Requires=pfm-init.service pfm-postgresql.service
 PartOf=pfm.target
@@ -44,7 +44,7 @@ ReadWritePaths=/srv /run/pfm /etc/victoriametrics-promscrape.yml
 # backup, logs), but must NOT be able to write other services' datadirs or secrets
 # — carve those back to read-only so a compromised pmm-managed can't tamper with
 # the PG datadir, the nginx TLS private key, or the PG superuser password file.
-ReadOnlyPaths=-/srv/postgres14 -/srv/clickhouse -/srv/grafana -/srv/nginx -/srv/.postgres_password
+ReadOnlyPaths=-/srv/postgres18 -/srv/clickhouse -/srv/grafana -/srv/nginx -/srv/.postgres_password
 IPAddressDeny=any
 IPAddressAllow=localhost
 Environment=PERCONA_TELEMETRY_DISABLE=1
@@ -58,7 +58,7 @@ Environment=PMM_PROCESS_MANAGER=systemd
 # ExecStart cmdline: /proc/PID/cmdline is world-readable (0444), whereas
 # /proc/PID/environ is owner/root-only (0400).
 Environment=PMM_POSTGRES_DBPASSWORD=pmm-managed
-ExecStart=/usr/sbin/pmm-managed \
+ExecStart=/usr/sbin/pfm-managed \
     --victoriametrics-config=/etc/victoriametrics-promscrape.yml \
     --victoriametrics-url=http://127.0.0.1:9090/prometheus \
     --postgres-name=pmm-managed \

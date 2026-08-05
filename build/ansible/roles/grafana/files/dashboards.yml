@@ -6,5 +6,5 @@ providers:
     type: file
     updateIntervalSeconds: 60
     options:
-      path: /usr/share/percona-dashboards/panels/pmm-app/dist/dashboards/
+      path: /opt/postgres1st/pfmm/dashboards/panels/pmm-app/dist/dashboards/
       foldersFromFilesStructure: true

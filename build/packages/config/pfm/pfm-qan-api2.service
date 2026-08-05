@@ -7,6 +7,13 @@
 # supervisord environment= block); T3b/T7 seeds defaults for first boot.
 [Unit]
 Description=pfm qan-api2 (Query Analytics API)
+# NOTE: ordering After=pfm-managed does NOT protect the first-boot ClickHouse
+# migration and was tried and removed. pfm-managed is Type=exec, so that ordering
+# is satisfied the moment its process is exec'd -- it renders this unit's
+# EnvironmentFile about 1.5s later, which is still mid-migration. The migration is
+# instead protected by making the seeded default env byte-identical to what
+# pfm-managed renders (see defaults/qan-api2.env), so it finds nothing to change
+# and never restarts this service during first boot.
 After=pfm-init.service pfm-clickhouse.service
 Requires=pfm-init.service
 PartOf=pfm.target
@@ -34,6 +41,15 @@ ReadWritePaths=/srv/logs
 IPAddressDeny=any
 IPAddressAllow=localhost
 EnvironmentFile=/run/pfm/qan-api2.env
+# Wait for ClickHouse to actually accept connections. After= only orders against
+# pfm-clickhouse's Type=exec, which is satisfied the moment the binary is exec'd
+# -- well before port 9000 is listening. Without this gate qan-api2 starts its
+# schema migration against a not-yet-ready server, dies partway, and leaves
+# schema_migrations marked dirty ("Dirty database version N. Fix and force
+# version."), which it can NEVER recover from on its own: the unit then restart
+# loops forever and readyz stays 504. Bash's /dev/tcp is used deliberately -- the
+# sandbox permits AF_INET to localhost and it needs no extra binary in the image.
+ExecStartPre=/bin/bash -c 'until (exec 3<>/dev/tcp/127.0.0.1/9000) 2>/dev/null; do sleep 1; done'
 ExecStart=/usr/sbin/percona-qan-api2 \
     --data-retention=${QANAPI_DATA_RETENTION}
 KillSignal=SIGTERM

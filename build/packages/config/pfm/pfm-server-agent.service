@@ -9,7 +9,7 @@
 # (pfm-writable) rather than the container's root-owned /opt/postgres1st/pfm path.
 # PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
 [Unit]
-Description=pfm self-monitoring agent (pmm-agent)
+Description=pfm self-monitoring agent (pfm-agent)
 After=pfm-init.service pfm-managed.service
 Requires=pfm-init.service
 PartOf=pfm.target
@@ -36,11 +36,11 @@ CapabilityBoundingSet=
 # (socket(AF_NETLINK,…)); without it that fingerprinting fails EAFNOSUPPORT. Netlink
 # is host-local, so this does not weaken the egress posture.
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
-ReadWritePaths=/srv/pmm-agent /srv/nomad /srv/logs
+ReadWritePaths=/srv/pfm-agent /srv/nomad /srv/logs
 Environment=PERCONA_TELEMETRY_DISABLE=1
-ExecStart=/usr/sbin/pmm-agent \
-    --config-file=/srv/pmm-agent/config/pmm-agent.yaml \
-    --paths-tempdir=/srv/pmm-agent/tmp
+ExecStart=/usr/sbin/pfm-agent \
+    --config-file=/srv/pfm-agent/config/pfm-agent.yaml \
+    --paths-tempdir=/srv/pfm-agent/tmp
 KillSignal=SIGTERM
 TimeoutStopSec=10
 Restart=on-failure

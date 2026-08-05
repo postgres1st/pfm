@@ -1,0 +1,33 @@
+# pfm-clickhouse-perms — re-assert pfm ownership of ClickHouse's directories.
+#
+# pfm-clickhouse.service runs ClickHouse as `pfm`, but the clickhouse-server
+# package owns /etc/clickhouse-server, /var/lib/clickhouse and
+# /var/log/clickhouse-server and its scriptlets reset them to
+# clickhouse:clickhouse. pfm-server's %post fixes that at install time, which is
+# not enough: upgrading clickhouse-server ALONE reverts it, and ClickHouse then
+# dies with `Permission denied ["/etc/clickhouse-server/config.xml"]`, taking
+# qan-api2 (which waits on its port) and readyz down with it. Observed on a
+# 26.7.1 -> 26.7.2 upgrade.
+#
+# This cannot live in pfm-clickhouse.service itself: that unit is deliberately
+# hardened with ProtectSystem=strict, NoNewPrivileges and an empty
+# CapabilityBoundingSet, so even an `ExecStartPre=+` there has neither write
+# access to /etc nor CAP_CHOWN. It also cannot live in pfm-init.sh, which runs as
+# the pfm user. Hence a separate, unsandboxed, root oneshot ordered in front.
+[Unit]
+Description=pfm ClickHouse ownership repair
+Documentation=https://github.com/postgres1st/pfm
+After=pfm-init.service
+Before=pfm-clickhouse.service
+PartOf=pfm.target
+
+[Service]
+Type=oneshot
+# Deliberately not RemainAfterExit: it must run again on every start of the
+# target, because a clickhouse-server upgrade can happen between boots.
+ExecStart=/bin/sh -c 'for d in /etc/clickhouse-server /var/lib/clickhouse /var/log/clickhouse-server /srv/clickhouse; do [ -e "$d" ] && chown -R pfm:pfm "$d" && chmod -R u+rwX "$d"; done; :'
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfm.target
