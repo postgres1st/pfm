@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# Shared harness for the PFMM bundle tests (test-pfmm-airgap, test-pfmm-upgrade).
+#
+# Sourced, not executed. Provides the assertion counters, the throwaway systemd
+# container, and the readyz poll -- the parts both tests need to agree on. The
+# container flags in particular are not obvious and were arrived at the hard way;
+# having one copy means a fix reaches both tests.
+#
+# Callers set ${container} and ${network} before calling start_container, and
+# ${keep} before calling summary.
+
+pass=0; fail=0
+ok()   { printf '  \033[32mPASS\033[0m  %s\n' "$*"; pass=$((pass+1)); }
+no()   { printf '  \033[31mFAIL\033[0m  %s\n' "$*"; fail=$((fail+1)); }
+log()  { printf '\n>>> %s\n' "$*"; }
+die()  { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
+inc()  { docker exec "${container}" bash -c "$1"; }
+
+build_systemd_image() {
+    docker image inspect "${PFMM_SYSTEMD_IMAGE}" >/dev/null 2>&1 && return
+    log "building ${PFMM_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd)"
+    # The stock EL9 image ships no systemd and no /sbin/init; a real host always
+    # has both, so installing them here makes the test faithful, not permissive.
+    docker build -t "${PFMM_SYSTEMD_IMAGE}" - <<EOF
+FROM ${PFMM_EL_IMAGE}
+RUN dnf -y install systemd procps-ng iproute && dnf clean all && \\
+    ln -sf /usr/lib/systemd/systemd /sbin/init && \\
+    ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]
+EOF
+}
+
+# start_container [extra docker run args ...] -- e.g. the repo bind mounts.
+start_container() {
+    build_systemd_image
+    # --internal gives the container a NIC and an IP but no route off-host. Do NOT
+    # instead disconnect the bridge: that removes the interface entirely, which is
+    # stricter than a real air-gapped host and produces failures a customer never sees.
+    docker network inspect "${network}" >/dev/null 2>&1 || docker network create --internal "${network}" >/dev/null
+    docker rm -f "${container}" >/dev/null 2>&1 || true
+    # --cgroupns=host is required on cgroup v2 hosts; without it systemd exits 255
+    # with no log output at all.
+    docker run -d --name "${container}" --privileged --cgroupns=host \
+        --network "${network}" -e container=docker \
+        --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+        "$@" "${PFMM_SYSTEMD_IMAGE}" >/dev/null
+    # `systemctl is-system-running` exits non-zero when the state is "degraded",
+    # so capture the output and test it -- piping it into grep under `pipefail`
+    # fails on the exec's status even when grep matches. Degraded is the normal
+    # state here: getty@tty1 and the per-user manager cannot start in a container.
+    local i state
+    for i in $(seq 1 60); do
+        state=$(docker exec "${container}" systemctl is-system-running 2>/dev/null || true)
+        case "${state}" in running|degraded) return ;; esac
+        sleep 2
+    done
+    die "systemd did not come up in the test container (last state: ${state:-unknown})"
+}
+
+# Echo the readyz status code, polling until it is 200 or the tries run out.
+wait_readyz() {
+    local tries=${1:-120} i code=000
+    for i in $(seq 1 "${tries}"); do
+        code=$(inc "curl -sk -o /dev/null -w '%{http_code}' https://127.0.0.1:8443/v1/readyz" 2>/dev/null || echo 000)
+        [ "${code}" = "200" ] && break
+        sleep 5
+    done
+    printf '%s' "${code}"
+}
+
+# Assert no pfm unit failed and every long-running one is active. Type=oneshot
+# units are excluded from the second check on purpose: pfm-clickhouse-perms exits
+# after doing its work, and deliberately does not set RemainAfterExit -- that would
+# make systemd treat it as already-done and skip the repair on the next ClickHouse
+# start, which is the whole point of it.
+assert_units_healthy() {
+    local label=${1:-} failed notactive
+    failed=$(inc "systemctl list-units 'pfm*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)
+    [ -z "${failed}" ] && ok "no pfm unit failed${label}" || no "failed units${label}: ${failed}"
+    notactive=$(inc "for u in \$(systemctl list-units 'pfm*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
+            [ \"\$(systemctl show \$u -p Type --value)\" = oneshot ] && continue
+            [ \"\$(systemctl show \$u -p ActiveState --value)\" = active ] || echo \$u
+        done" || true)
+    [ -z "${notactive}" ] && ok "all long-running pfm units active${label}" || no "inactive units${label}: ${notactive}"
+}
+
+# ------------------------------------------------------------- shared predicates
+# Properties BOTH suites assert, so they live here rather than being written twice.
+# test-pfmm-negative-control drives these exact functions -- controlling a copy of an
+# assertion would say nothing about the assertion that runs. Keep them side-effect
+# free and re-runnable: the harness calls each one three times.
+#
+# Those taking an argument let the harness also feed a known-bad input. That is
+# weaker evidence than breaking real state -- it shows the predicate discriminates,
+# not that a suite points it at the right thing -- and the harness labels it as such.
+
+SRV=${SRV:-"--server-url=https://admin:admin@127.0.0.1:8443 --server-insecure-tls"}
+
+# `timeout 10`, not 4: a genuinely air-gapped host fails in milliseconds (DNS gives up
+# immediately with no route), so the longer limit costs nothing there. A short limit
+# is dangerous in the direction that matters -- it lets a slow-but-connected host read
+# as air-gapped, which is the false pass this assertion exists to prevent.
+p_no_internet()        { ! inc 'timeout 10 curl -sS https://download.postgresql.org >/dev/null 2>&1'; }
+p_readyz()             { [ "$(inc "curl -sk -o /dev/null -w '%{http_code}' https://127.0.0.1:8443/v1/readyz" 2>/dev/null || echo 000)" = "200" ]; }
+p_no_failed_units()    { [ -z "$(inc "systemctl list-units 'pfm*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)" ]; }
+p_all_units_active()   { [ -z "$(inc "for u in \$(systemctl list-units 'pfm*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
+                               [ \"\$(systemctl show \$u -p Type --value)\" = oneshot ] && continue
+                               [ \"\$(systemctl show \$u -p ActiveState --value)\" = active ] || echo \$u
+                           done" || true)" ]; }
+p_no_pmm_packages()    { ! inc "rpm -qa | grep -q '^pmm-'"; }
+p_no_srv_plugin_copy() { inc 'test ! -e /srv/grafana/plugins'; }
+p_pfm_ini_plugins()    { inc 'grep -q "^plugins = /opt/postgres1st/pfmm/dashboards/panels" /etc/grafana/pfm.ini'; }
+p_ch_owned_by_pfm()    { inc 'test "$(stat -c %U /etc/clickhouse-server)" = pfm'; }
+p_mysql_rejected()     { inc "/usr/sbin/pfm-admin ${SRV} add mysql --host=127.0.0.1 --port=3306 --username=root gate-mysql 2>&1 | grep -q 'not supported by this deployment'"; }
+p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
+
+summary() {
+    printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
+    if [ "${keep}" = "0" ]; then docker rm -f "${container}" >/dev/null 2>&1 || true
+    else printf 'Container %s left running (set KEEP=0 to remove).\n' "${container}"; fi
+    [ "${fail}" -eq 0 ]
+}
