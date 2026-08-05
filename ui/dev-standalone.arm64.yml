@@ -1,0 +1,36 @@
+# Standalone dev compose for verifying the UI on arm64.
+#
+# SALVAGED, NOT VERIFIED. Written 2026-07-07 on the `ui-rebranding` branch and never
+# committed there; kept when that branch was deleted (2026-08-05) because its comments
+# record traps that cost real time to find. It has NOT been run against the current
+# tree, and two things in it are known stale:
+#
+#   - `image: pmm-server-pg-arm64:3.8.1` predates the 3.9.0 forward-port.
+#   - the proxy mount maps /pmm-ui; the SPA now serves from /pfm-ui, so pmm-dev.conf
+#     needs the same rename before this works.
+#
+# Treat it as a starting point plus a list of things not to rediscover, not as a
+# working file.
+#
+# The traps, which are the reason this survives:
+#   - native arm64 pmm-server rebuild is required (the upstream dev-container is
+#     amd64-only)
+#   - run as the image's intended UID 1000 (NSS-wrapper / arbitrary-UID image)
+#   - keep ONLY the pmm-dev.conf proxy mount (/pmm-ui -> host vite:5173)
+#   - do NOT bind-mount pmm-compat: it forces /srv to be root-owned and breaks
+#     first-boot init. docker-cp it in AFTER /srv initializes.
+#   - drop mysql/watchtower (demo data + update-check; not needed for UI work)
+services:
+  pmm-server:
+    container_name: pmm-server
+    image: pmm-server-pg-arm64:3.8.1
+    ports:
+      - 80:9080
+      - 443:8443
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./pmm-dev.conf:/etc/nginx/conf.d/pmm-dev.conf:ro
+    environment:
+      - PMM_DEBUG=1
+      - GF_DEFAULT_APP_MODE=development
