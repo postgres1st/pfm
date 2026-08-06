@@ -15,9 +15,12 @@ export const PMM_HOME_URL = `${GRAFANA_SUB_PATH}/d/pmm-home`;
 export const PMM_LOGIN_URL = `${GRAFANA_SUB_PATH}/login`;
 export const PMM_SETTINGS_URL = `${PMM_BASE_PATH}/settings`;
 export const PMM_NEW_NAV_UPDATES_PATH = `${PMM_NEW_NAV_PATH}/updates`;
-export const PMM_SUPPORT_URL = 'https://docs.postgresfirst.com/pmm_documentation';
-export const PMM_DOCS_UPDATES_URL = 'https://docs.postgresfirst.com/pmm-upgrade';
-export const PMM_DOCS_UPDATE_CLIENT_URL = 'https://docs.postgresfirst.com/pmm-upgrade-agent';
+export const PMM_SUPPORT_URL =
+  'https://docs.postgresfirst.com/pmm_documentation';
+export const PMM_DOCS_UPDATES_URL =
+  'https://docs.postgresfirst.com/pmm-upgrade';
+export const PMM_DOCS_UPDATE_CLIENT_URL =
+  'https://docs.postgresfirst.com/pmm-upgrade-agent';
 export const PMM_NEW_NAV_HOME_URL = `${PMM_NEW_NAV_PATH}/graph/d/pmm-home`;
 
 export const INTERVALS_MS = {
@@ -41,17 +44,19 @@ export const ADVISOR_INTERVAL: Record<AdvisorInterval, string> = {
 
 // Maps the inventory ServiceType enum (SERVICE_TYPE_*) to the lowercase model
 // identifier the server reports in `supported_service_types` (e.g. "postgresql").
-export const SERVICE_TYPE_MODEL_ID: Record<ServiceType, ManagedServiceType | ''> =
-  {
-    [ServiceType.unspecified]: '',
-    [ServiceType.mysql]: ManagedServiceType.mysql,
-    [ServiceType.mongodb]: ManagedServiceType.mongodb,
-    [ServiceType.posgresql]: ManagedServiceType.postgresql,
-    [ServiceType.proxysql]: ManagedServiceType.proxysql,
-    [ServiceType.haproxy]: ManagedServiceType.haproxy,
-    [ServiceType.valkey]: ManagedServiceType.valkey,
-    [ServiceType.external]: ManagedServiceType.external,
-  };
+export const SERVICE_TYPE_MODEL_ID: Record<
+  ServiceType,
+  ManagedServiceType | ''
+> = {
+  [ServiceType.unspecified]: '',
+  [ServiceType.mysql]: ManagedServiceType.mysql,
+  [ServiceType.mongodb]: ManagedServiceType.mongodb,
+  [ServiceType.posgresql]: ManagedServiceType.postgresql,
+  [ServiceType.proxysql]: ManagedServiceType.proxysql,
+  [ServiceType.haproxy]: ManagedServiceType.haproxy,
+  [ServiceType.valkey]: ManagedServiceType.valkey,
+  [ServiceType.external]: ManagedServiceType.external,
+};
 
 // Fallback used only until the server settings (and their runtime
 // `supportedServiceTypes` allowlist) have loaded. Mirrors the backend's shipped

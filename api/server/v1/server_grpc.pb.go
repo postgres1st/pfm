@@ -8,6 +8,7 @@ package serverv1
 
 import (
 	context "context"
+
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -178,24 +179,31 @@ type UnimplementedServerServiceServer struct{}
 func (UnimplementedServerServiceServer) Version(context.Context, *VersionRequest) (*VersionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Version not implemented")
 }
+
 func (UnimplementedServerServiceServer) Readiness(context.Context, *ReadinessRequest) (*ReadinessResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Readiness not implemented")
 }
+
 func (UnimplementedServerServiceServer) LeaderHealthCheck(context.Context, *LeaderHealthCheckRequest) (*LeaderHealthCheckResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LeaderHealthCheck not implemented")
 }
+
 func (UnimplementedServerServiceServer) CheckUpdates(context.Context, *CheckUpdatesRequest) (*CheckUpdatesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckUpdates not implemented")
 }
+
 func (UnimplementedServerServiceServer) ListChangeLogs(context.Context, *ListChangeLogsRequest) (*ListChangeLogsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListChangeLogs not implemented")
 }
+
 func (UnimplementedServerServiceServer) GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSettings not implemented")
 }
+
 func (UnimplementedServerServiceServer) GetReadOnlySettings(context.Context, *GetReadOnlySettingsRequest) (*GetReadOnlySettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetReadOnlySettings not implemented")
 }
+
 func (UnimplementedServerServiceServer) ChangeSettings(context.Context, *ChangeSettingsRequest) (*ChangeSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ChangeSettings not implemented")
 }

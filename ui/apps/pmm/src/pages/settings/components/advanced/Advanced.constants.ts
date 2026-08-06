@@ -26,7 +26,8 @@ export const STT_CHECK_INTERVALS = [
   },
 ];
 
-export const TECHNICAL_PREVIEW_DOC_URL = 'https://docs.postgresfirst.com/pmm-feature-status';
+export const TECHNICAL_PREVIEW_DOC_URL =
+  'https://docs.postgresfirst.com/pmm-feature-status';
 
 export const FEATURE_MANAGEMENT_SETTINGS = [
   {

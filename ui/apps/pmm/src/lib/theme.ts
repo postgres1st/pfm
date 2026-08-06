@@ -69,8 +69,18 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
           // paper so Cards/Papers read as raised, consistent with light.
           { background: { default: '#1B1A1A' } }),
       primary: isLight
-        ? { main: primaryMain, light: '#62A9D5', dark: '#0A5585', contrastText: '#FFFFFF' }
-        : { main: primaryMain, light: '#8EC6E9', dark: '#4682A8', contrastText: '#000000' },
+        ? {
+            main: primaryMain,
+            light: '#62A9D5',
+            dark: '#0A5585',
+            contrastText: '#FFFFFF',
+          }
+        : {
+            main: primaryMain,
+            light: '#8EC6E9',
+            dark: '#4682A8',
+            contrastText: '#000000',
+          },
       secondary: {
         main: '#F5B94D',
         light: '#F8CE82',
@@ -94,8 +104,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
       // shade on dark) — matching the status chips.
       MuiAlert: {
         styleOverrides: {
-          root: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ({ theme, ownerState }: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          root: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
@@ -111,8 +121,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
               border: `1px solid ${alpha(pal.main, light ? 0.28 : 0.42)}`,
             };
           },
-          icon: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ({ theme, ownerState }: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          icon: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';
@@ -125,8 +135,8 @@ export const postgres1stThemeOptions = (mode: PaletteMode): ThemeOptions => {
           // The base `message` slot colors text with palette[severity].contrastText,
           // which for dark warning is a dark brown (#493408) — unreadable on the
           // soft tint. Use the same readable same-hue shade as root/icon.
-          message: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ({ theme, ownerState }: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          message: ({ theme, ownerState }: any) => {
             const sev = ownerState.color ?? ownerState.severity ?? 'info';
             const pal = theme.palette[sev] ?? theme.palette.info;
             const light = theme.palette.mode === 'light';

@@ -99,7 +99,8 @@ describe('cleanupVariables', () => {
   it('should return the url with the variables empty variables removed', () => {
     const url =
       'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-empty=&var-empty-old=None&var-value=Value';
-    const expected = 'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
+    const expected =
+      'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
     const result = cleanupVariables(url);
     expect(result).toBe(expected);
   });
@@ -107,7 +108,8 @@ describe('cleanupVariables', () => {
   it('should return the url with the variables with the All value removed', () => {
     const url =
       'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-all=$__all&val-all-old=All&var-value=Value';
-    const expected = 'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
+    const expected =
+      'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
     const result = cleanupVariables(url);
     expect(result).toBe(expected);
   });
@@ -115,7 +117,8 @@ describe('cleanupVariables', () => {
   it('should return the url with the variables with all and no value removed', () => {
     const url =
       'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-all=$__all&val-all-old=All&var-empty=&var-empty-old=None&var-value=Value';
-    const expected = 'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
+    const expected =
+      'https://postgresfirst.com/d/postgresql-instance-overview/postgresql-instances-overview?var-value=Value';
     const result = cleanupVariables(url);
     expect(result).toBe(expected);
   });

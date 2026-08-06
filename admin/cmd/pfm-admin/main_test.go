@@ -25,17 +25,17 @@ import (
 )
 
 func TestPackages(t *testing.T) {
-	cmd := exec.CommandContext(t.Context(), "pmm-admin", "-h")
+	cmd := exec.CommandContext(t.Context(), "pfm-admin", "-h")
 	b, err := cmd.CombinedOutput()
 	require.NoError(t, err, "%s", b)
 
 	out := string(b)
-	assert.NotContains(t, out, "httptest.serve", `pmm-admin should not import package "net/http/httptest"`)
-	assert.NotContains(t, out, "test.run", `pmm-admin should not import package "testing"`)
+	assert.NotContains(t, out, "httptest.serve", `pfm-admin should not import package "net/http/httptest"`)
+	assert.NotContains(t, out, "test.run", `pfm-admin should not import package "testing"`)
 }
 
 func TestVersionPlain(t *testing.T) {
-	cmd := exec.CommandContext(t.Context(), "pmm-admin", "--version")
+	cmd := exec.CommandContext(t.Context(), "pfm-admin", "--version")
 	b, err := cmd.CombinedOutput()
 	require.NoError(t, err, "%s", b)
 
@@ -44,10 +44,10 @@ func TestVersionPlain(t *testing.T) {
 }
 
 func TestNoCommandPrintsUsage(t *testing.T) {
-	// --server-url avoids the local pmm-agent lookup so the test does not depend
-	// on a running agent; with no subcommand pmm-admin must print usage instead
+	// --server-url avoids the local pfm-agent lookup so the test does not depend
+	// on a running agent; with no subcommand pfm-admin must print usage instead
 	// of panicking (PMM-15242).
-	cmd := exec.CommandContext(t.Context(), "pmm-admin", "--server-url=http://localhost/")
+	cmd := exec.CommandContext(t.Context(), "pfm-admin", "--server-url=http://localhost/")
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -56,19 +56,19 @@ func TestNoCommandPrintsUsage(t *testing.T) {
 	var exitErr *exec.ExitError
 	require.ErrorAs(t, err, &exitErr, "stdout=%q stderr=%q", stdout.String(), stderr.String())
 	assert.Equal(t, 80, exitErr.ExitCode())
-	assert.Contains(t, stdout.String(), "Usage: pmm-admin <command>")
+	assert.Contains(t, stdout.String(), "Usage: pfm-admin <command>")
 	assert.NotContains(t, stderr.String(), "panic")
 	assert.NotContains(t, stderr.String(), "SIGSEGV")
 }
 
 func TestVersionJson(t *testing.T) {
-	cmd := exec.CommandContext(t.Context(), "pmm-admin", "--version", "--json")
+	cmd := exec.CommandContext(t.Context(), "pfm-admin", "--version", "--json")
 	b, err := cmd.CombinedOutput()
 	require.NoError(t, err, "%s", b)
 
 	var jsonStruct any
 	err = json.Unmarshal(b, &jsonStruct)
 	if err != nil {
-		t.Errorf("pmm-admin --version --json produces incorrect output format")
+		t.Errorf("pfm-admin --version --json produces incorrect output format")
 	}
 }
