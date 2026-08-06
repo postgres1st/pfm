@@ -59,6 +59,14 @@ p_ch_requires_perms()  { inc 'systemctl show pfm-clickhouse.service -p Requires 
 p_release_stamped()    { inc "test \"\$(rpm -q --qf %{RELEASE} $1)\" != \"1.el9\""; }
 
 dashboard_count()      { inc "curl -sk -u admin:admin 'https://127.0.0.1:8443/graph/api/search?type=dash-db&limit=500' | grep -o '\"uid\"' | wc -l" 2>/dev/null || echo 0; }
+
+# Advisor checks are gated by family through the same allowlist as Service types. The
+# upstream set is 49 MySQL and 34 MongoDB against 26 PostgreSQL, and those 83 can never
+# produce a result here -- the gate rejects those Services at registration -- so listing
+# them advertises coverage the product does not have. Counted rather than asserted to be
+# zero-or-not, because "no advisors at all" is also wrong and would otherwise pass.
+advisor_family_count() { inc "curl -sk -u admin:admin 'https://127.0.0.1:8443/v1/advisors/checks' | grep -o 'ADVISOR_CHECK_FAMILY_${1}' | wc -l" 2>/dev/null || echo -1; }
+p_advisors_pg_only()   { [ "$(advisor_family_count MYSQL)" = "0" ] && [ "$(advisor_family_count MONGODB)" = "0" ] && [ "$(advisor_family_count POSTGRESQL)" -gt 0 ]; }
 p_dashboards()         { [ "$(dashboard_count)" -gt 0 ]; }
 
 # Only nginx should answer off-host. Grafana defaults to 0.0.0.0, which would publish
@@ -139,6 +147,9 @@ run_airgap_suite() {
     [ "${got_pg_up}" = yes ] && ok "pg_up present in VictoriaMetrics" || no "pg_up never appeared (waited 120s)"
     p_dashboards && ok "$(dashboard_count) dashboards provisioned" || no "no dashboards provisioned"
     p_postgres_major 18 && ok "PostgreSQL 18" || no "unexpected PostgreSQL version"
+    p_advisors_pg_only \
+        && ok "advisors expose PostgreSQL checks only ($(advisor_family_count POSTGRESQL) of them)" \
+        || no "advisor list includes non-PostgreSQL families (mysql=$(advisor_family_count MYSQL) mongodb=$(advisor_family_count MONGODB))"
 
     log "signing"
     if p_bundle_signed "${bundle}"; then
