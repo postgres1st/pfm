@@ -17,7 +17,6 @@ package actions
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -69,8 +68,12 @@ func TestMySQLExplain(t *testing.T) {
 		require.NoError(t, err)
 
 		actual := strings.TrimSpace(string(er.ExplainResult))
-		switch fmt.Sprintf("%s-%s", mySQLVersion, mySQLVendor) {
-		case "9.5-oracle", "9.6-oracle", "9.7-oracle":
+		switch {
+		// Compare numerically rather than enumerating releases: MySQL moved to
+		// calendar versioning after 9.x, so mysql:latest now reports 26.x and an
+		// exact-match list silently stops matching. Sibling tests in this package
+		// already use mySQLVersion.Float().
+		case mySQLVendor == version.OracleVendor && mySQLVersion.Float() >= 9.5:
 			// Explain output changed. More checks should be done. See: PMM-14426
 			assert.Contains(t, actual, "Table scan on city")
 		default:
@@ -107,8 +110,12 @@ func TestMySQLExplain(t *testing.T) {
 		m, err := objx.FromJSON(string(er.ExplainResult))
 		require.NoError(t, err)
 
-		switch fmt.Sprintf("%s-%s", mySQLVersion, mySQLVendor) {
-		case "9.5-oracle", "9.6-oracle", "9.7-oracle":
+		switch {
+		// Compare numerically rather than enumerating releases: MySQL moved to
+		// calendar versioning after 9.x, so mysql:latest now reports 26.x and an
+		// exact-match list silently stops matching. Sibling tests in this package
+		// already use mySQLVersion.Float().
+		case mySQLVendor == version.OracleVendor && mySQLVersion.Float() >= 9.5:
 			// Explain output changed. More checks should be done. See: PMM-14426
 			require.Empty(t, m.Get("warnings").InterSlice())
 		default:
@@ -167,8 +174,12 @@ func TestMySQLExplain(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, actual, 2)
 
-		switch fmt.Sprintf("%s-%s", mySQLVersion, mySQLVendor) {
-		case "9.5-oracle", "9.6-oracle", "9.7-oracle":
+		switch {
+		// Compare numerically rather than enumerating releases: MySQL moved to
+		// calendar versioning after 9.x, so mysql:latest now reports 26.x and an
+		// exact-match list silently stops matching. Sibling tests in this package
+		// already use mySQLVersion.Float().
+		case mySQLVendor == version.OracleVendor && mySQLVersion.Float() >= 9.5:
 			// Explain output changed. More checks should be done. See: PMM-14426
 		default:
 			// Check some columns names

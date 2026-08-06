@@ -286,7 +286,16 @@ func TestPerfSchema(t *testing.T) {
 	mySQLVersion, mySQLVendor, _ := version.GetMySQLVersion(t.Context(), db.WithTag("pmm-agent-tests:MySQLVersion"))
 	t.Logf("MySQL version: %s, vendor: %s", mySQLVersion, mySQLVendor)
 	var digests map[string]string // digest_text/fingerprint to digest/query_id
-	switch fmt.Sprintf("%s-%s", mySQLVersion, mySQLVendor) {
+	versionVendor := fmt.Sprintf("%s-%s", mySQLVersion, mySQLVendor)
+	// Every Oracle MySQL from 8.0 on shares one SHA-256 digest set, and the case
+	// below used to enumerate them (8.0, 8.4, 9.0 ... 9.7). MySQL then moved to
+	// calendar versioning, so mysql:latest reports 26.x, fell through to default,
+	// and the test compared against the "TODO-" placeholder digests. Collapse the
+	// whole range to one key instead of chasing each release.
+	if mySQLVendor == version.OracleVendor && mySQLVersion.Float() >= 8.0 {
+		versionVendor = "8.0+-oracle"
+	}
+	switch versionVendor {
 	case "5.6-oracle":
 		digests = map[string]string{
 			"SELECT `sleep` (?)":   "192ad18c482d389f36ebb0aa58311236",
@@ -309,7 +318,7 @@ func TestPerfSchema(t *testing.T) {
 			"SELECT * FROM `city`": "9c799bdb2460f79b3423b77cd10403da",
 		}
 
-	case "8.0-oracle", "8.0-percona", "8.4-oracle", "9.0-oracle", "9.1-oracle", "9.2-oracle", "9.3-oracle", "9.4-oracle", "9.5-oracle", "9.6-oracle", "9.7-oracle":
+	case "8.0+-oracle", "8.0-percona":
 		digests = map[string]string{
 			"SELECT `sleep` (?)":   "0b1b1c39d4ee2dda7df2a532d0a23406d86bd34e2cd7f22e3f7e9dedadff9b69",
 			"SELECT * FROM `city`": "950bdc225cf73c9096ba499351ed4376f4526abad3d8ceabc168b6b28cfc9eab",
