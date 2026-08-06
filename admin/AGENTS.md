@@ -34,7 +34,7 @@ pmm-admin
 
 ### How It Works
 
-1. User runs a command (e.g., `pmm-admin add mysql`)
+1. User runs a command (e.g., `pfm-admin add postgresql`)
 2. Kong parses flags and dispatches to the appropriate command struct
 3. The command constructs an API request using generated Swagger clients from `/api/*/json/client/`
 4. The request is sent to pmm-managed via HTTP/JSON (gRPC-Gateway)
@@ -48,8 +48,8 @@ pmm-admin uses **generated Go HTTP clients** from Swagger specs (not gRPC direct
 
 ### Management vs Inventory Commands
 
-- **Management commands** (`pmm-admin add mysql`, `remove`, etc.) are high-level: they create a node + service + agents in one operation. This is what most users use.
-- **Inventory commands** (`pmm-admin inventory add node/service/agent`) are low-level: they operate on individual entities. Used for advanced scenarios.
+- **Management commands** (`pfm-admin add postgresql`, `remove`, etc.) are high-level: they create a node + service + agents in one operation. This is what most users use.
+- **Inventory commands** (`pfm-admin inventory add node/service/agent`) are low-level: they operate on individual entities. Used for advanced scenarios.
 
 ### Command Implementation Pattern
 
@@ -100,7 +100,7 @@ pmm-admin supports multiple output formats via `commands.Result` interface:
 
 ## Key Files to Reference
 
-- `admin/cmd/pmm-admin/main.go` — entry point
+- `admin/cmd/pfm-admin/main.go` — entry point
 - `admin/commands/base.go` — shared command utilities and output formatting
 - `admin/commands/management/add_mysql.go` — reference implementation for add commands
 - `admin/commands/inventory/inventory.go` — inventory command group structure
