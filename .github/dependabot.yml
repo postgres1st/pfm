@@ -10,6 +10,17 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
+      # go.mod replaces github.com/go-openapi/spec with the Percona-Lab fork, and a
+      # `replace` is invisible to Dependabot: it resolves against upstream and cannot
+      # see that the replacement lags it. Bumping go-openapi/runtime, swag and validate
+      # (#25, #26, #27) pulled analysis v0.25.5, which calls spec APIs the pinned fork
+      # predates -- and main stopped compiling with nothing to catch it.
+      #
+      # The whole family is ignored, not just analysis: analysis is indirect, so it
+      # rides along with any direct go-openapi bump and ignoring it alone would not
+      # stop this. Update these by hand, checking Percona-Lab/spec carries the APIs the
+      # new analysis needs, and bump the replace pin in the same commit.
+      - dependency-name: "github.com/go-openapi/*"
 
   - package-ecosystem: "docker"
     directory: "/"
