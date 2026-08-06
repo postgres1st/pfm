@@ -446,6 +446,25 @@ write_install_md() {
     [ -f "${repo_out}/${PFMM_SIGN_KEY_FILE}" ] && return 0
 
     printf 'WARNING: unsigned bundle -- INSTALL.md rewritten for gpgcheck=0\n' >&2
+
+    # The rewrite below matches prose in pfmm-airgap-INSTALL.md. Edit that file so an
+    # anchor moves and awk would quietly transform less than it should, shipping
+    # signed-bundle instructions for an unsigned bundle -- the exact failure this
+    # function exists to prevent, reintroduced silently. Fail loudly instead, naming the
+    # anchor that moved, because the coupling between the two files is otherwise invisible.
+    local anchor
+    for anchor in \
+        '^## 2\. Import the signing key$' \
+        '^## 3\.' \
+        '^gpgcheck=1$' \
+        '^gpgkey=file:' \
+        '^> With `gpgcheck=1`'
+    do
+        grep -qE "${anchor}" "${out}" || fail \
+            "INSTALL.md anchor missing: ${anchor}
+   build/packages/pfmm-airgap-INSTALL.md changed; update write_install_md to match."
+    done
+
     awk '
         # Step 2 tells the operator to import a key this bundle does not contain.
         /^## 2\. Import the signing key$/ {
@@ -478,6 +497,14 @@ write_install_md() {
         inquote { inquote = 0 }
         { print }
     ' "${out}" > "${out}.tmp" && mv "${out}.tmp" "${out}"
+
+    # Post-condition, independent of the anchors above: whatever the template looks like,
+    # an unsigned bundle must not hand the operator signature-dependent instructions. The
+    # anchors say the input was shaped as expected; this says the output is actually safe.
+    local left
+    left=$(grep -cE '^gpgcheck=1$|^gpgkey=|rpm --import' "${out}" || true)
+    [ "${left}" = 0 ] || fail "unsigned INSTALL.md still carries ${left} signature-dependent line(s)"
+    grep -qE '^gpgcheck=0$' "${out}" || fail "unsigned INSTALL.md has no gpgcheck=0 line"
 }
 
 stage_bundle() {
