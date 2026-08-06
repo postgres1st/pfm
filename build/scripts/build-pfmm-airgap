@@ -417,6 +417,54 @@ sign_bundle() {
     printf '  signed %s packages with %s\n' "$(ls "${repo_out}"/*.rpm | wc -l)" "${PFMM_SIGN_KEY}"
 }
 
+# INSTALL.md is generated rather than copied, because its signing steps are only correct
+# for a signed bundle: an unsigned one ships no key to import, and the gpgcheck=1 repo
+# file it hands the operator would make dnf refuse every package in the bundle. Shipping
+# instructions that cannot work is worse than shipping none.
+#
+# sign_bundle writes the key file only when it actually signed, so its presence is the
+# signal -- the same one test-pfmm-airgap's p_bundle_signed uses, rather than a second
+# opinion that could disagree with the suite.
+write_install_md() {
+    local out=$1
+    sed "s/@ARCH@/${arch}/g" "${repo_dir}/build/packages/pfmm-airgap-INSTALL.md" > "${out}"
+    [ -f "${repo_out}/${PFMM_SIGN_KEY_FILE}" ] && return 0
+
+    printf 'WARNING: unsigned bundle -- INSTALL.md rewritten for gpgcheck=0\n' >&2
+    awk '
+        # Step 2 tells the operator to import a key this bundle does not contain.
+        /^## 2\. Import the signing key$/ {
+            print "## 2. Signature checking is DISABLED for this bundle"
+            print ""
+            print "**This bundle is UNSIGNED.** It ships no signing key, so there is nothing to"
+            print "import and `gpgcheck` must stay off -- the repository file in step 3 already"
+            print "reflects that. Nothing here proves who built these packages: verify the"
+            print "tarball `.sha256` at minimum, and prefer a signed bundle for production."
+            print ""
+            print "Disregard any later mention of importing or repointing a signing key; this"
+            print "bundle has none."
+            drop = 1; next
+        }
+        drop && /^## 3\./ { drop = 0 }
+        drop { next }
+        # The repo file has to work exactly as pasted.
+        /^gpgcheck=1$/ { print "gpgcheck=0"; next }
+        /^gpgkey=file:/ { next }
+        # The note explaining what gpgcheck=1 buys is false for this bundle; replace the
+        # whole blockquote rather than leaving a half-true claim about tamper detection.
+        /^> With `gpgcheck=1`/ {
+            print "> **Nothing is verified.** With `gpgcheck=0` dnf installs whatever sits in the"
+            print "> repository directory, so a tampered or substituted RPM is accepted silently."
+            print "> The tarball `.sha256` proves the download arrived intact; it says nothing"
+            print "> about who produced it."
+            inquote = 1; next
+        }
+        inquote && /^> / { next }
+        inquote { inquote = 0 }
+        { print }
+    ' "${out}" > "${out}.tmp" && mv "${out}.tmp" "${out}"
+}
+
 stage_bundle() {
     build_rpmbuilder_image
     log "assembling bundle"
@@ -440,7 +488,7 @@ stage_bundle() {
     # Sign before createrepo so the metadata is generated over the signed packages.
     sign_bundle
 
-    sed "s/@ARCH@/${arch}/g" "${repo_dir}/build/packages/pfmm-airgap-INSTALL.md" > "${PFMM_OUT}/INSTALL.md"
+    write_install_md "${PFMM_OUT}/INSTALL.md"
     docker_run -v "${repo_out}":/repo "${PFMM_RPMBUILD_IMAGE}" \
         sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
 

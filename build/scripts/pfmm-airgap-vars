@@ -120,10 +120,14 @@ PFMM_CLICKHOUSE_BASEURL=https://packages.clickhouse.com/rpm/stable/
 # settles on a real org key. Replacing it is a one-line change here plus a
 # re-run of the bundle stage -- nothing else references the key.
 #
-# Set PFMM_SIGN_KEY empty to build an unsigned bundle (INSTALL.md then has to keep
-# gpgcheck=0); the bundle stage skips signing rather than failing if the secret key
-# is not in the caller's keyring.
-PFMM_SIGN_KEY=${PFMM_SIGN_KEY:-contact@postgresfirst.com}
+# Set PFMM_SIGN_KEY empty to build an unsigned bundle; the bundle stage then emits an
+# INSTALL.md with gpgcheck=0 and skips signing. It also skips rather than failing when
+# the key is set but its secret half is not in the caller's keyring.
+#
+# `-` not `:-`: with `:-`, `PFMM_SIGN_KEY= build-pfmm-airgap` substitutes the default
+# rather than staying empty, so the documented unsigned path was unreachable from the
+# environment and only editing this file worked.
+PFMM_SIGN_KEY=${PFMM_SIGN_KEY-contact@postgresfirst.com}
 PFMM_SIGN_KEY_FILE=${PFMM_SIGN_KEY_FILE:-RPM-GPG-KEY-postgres1st}
 
 # --- toolchain images ---------------------------------------------------------
