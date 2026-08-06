@@ -2,7 +2,7 @@ module github.com/percona/pmm
 
 go 1.26.5
 
-replace github.com/go-openapi/spec => github.com/Percona-Lab/spec v0.0.0-20260107142235-15cbcf569b9f
+replace github.com/go-openapi/spec => github.com/Percona-Lab/spec v0.22.9-percona
 
 replace github.com/alecthomas/kingpin/v2 => github.com/Percona-Lab/kingpin/v2 v2.0.0-20251219125400-95ff74a47c0a
 
@@ -182,7 +182,6 @@ require (
 	github.com/go-openapi/swag/cmdutils v0.28.0 // indirect
 	github.com/go-openapi/swag/conv v0.28.0 // indirect
 	github.com/go-openapi/swag/fileutils v0.28.0 // indirect
-	github.com/go-openapi/swag/jsonname v0.26.0 // indirect
 	github.com/go-openapi/swag/jsonutils v0.28.0 // indirect
 	github.com/go-openapi/swag/loading v0.28.0 // indirect
 	github.com/go-openapi/swag/mangling v0.28.0 // indirect
