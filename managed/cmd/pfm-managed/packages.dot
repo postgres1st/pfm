@@ -1,11 +1,11 @@
 digraph packages {
-	"/cmd/pmm-managed-init" -> "/models";
-	"/cmd/pmm-managed-init" -> "/services/clickhouse";
-	"/cmd/pmm-managed-init" -> "/services/supervisord";
-	"/cmd/pmm-managed-starlark" -> "/pi/check";
-	"/cmd/pmm-managed-starlark" -> "/pi/starlark";
-	"/cmd/pmm-managed-starlark" -> "/services/checks";
-	"/cmd/pmm-managed-starlark.test" -> "/cmd/pmm-managed-starlark";
+	"/cmd/pfm-managed-init" -> "/models";
+	"/cmd/pfm-managed-init" -> "/services/clickhouse";
+	"/cmd/pfm-managed-init" -> "/services/supervisord";
+	"/cmd/pfm-managed-starlark" -> "/pi/check";
+	"/cmd/pfm-managed-starlark" -> "/pi/starlark";
+	"/cmd/pfm-managed-starlark" -> "/services/checks";
+	"/cmd/pfm-managed-starlark.test" -> "/cmd/pfm-managed-starlark";
 	"/models" -> "/pi/alert";
 	"/models" -> "/pi/common";
 	"/models.test" -> "/models";
