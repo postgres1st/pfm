@@ -44,6 +44,15 @@ host_gid=$(id -g)
 log()  { printf '\n>>> %s\n' "$*"; }
 fail() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
 
+# dashboards/pmm-app pulls @types/grafana over a git URL, so yarn shells out to git
+# inside the container. In a LINKED worktree ${repo_dir}/.git is a file pointing at
+# <main-repo>/.git/worktrees/<name>, which lives outside the bind mount -- yarn then
+# dies with "fatal: not a git repository", an error that names the worktree path but
+# reads like repo corruption. Fail here instead, where the cause is obvious.
+[ -d "${repo_dir}/.git" ] || fail "${repo_dir} is a linked git worktree (or not a repo).
+The dashboards build needs a real .git directory inside the mount -- run this from a
+normal clone."
+
 # Containers run as root so they can overwrite artifacts from earlier runs, then
 # hand ownership back -- otherwise root-owned files accumulate in the caller's
 # tree and the next non-root run fails with EACCES (nx's cache is a repeat offender).
