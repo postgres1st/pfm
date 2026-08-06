@@ -40,6 +40,37 @@ Each PMM component has a dedicated guide with architecture, directory structure,
 
 ---
 
+## Naming: pmm-* vs pfm-* (read before "fixing" a name)
+
+This fork ships as Postgres1st/PFMM, and the rename is **deliberately partial**. Docs
+throughout this repo still say `pmm-managed`, `pmm-agent` and `pmm-admin` as component
+names; that is usually correct, because the source tree kept those names. What changed is
+what gets *installed*.
+
+| Thing | State | Example |
+|---|---|---|
+| Go module path | **unchanged** | `github.com/percona/pmm` |
+| Source directories | **unchanged** | `managed/`, `agent/`, `admin/` |
+| `cmd/` dirs and binaries | **renamed** | `managed/cmd/pfm-managed`, `pfm-admin` |
+| systemd units | **renamed** | `pfm-managed.service`, `pfm.target` |
+| Server data directory | **moved** | `/opt/postgres1st/pfmm` |
+| UI base path | **changed** | `/pfm-ui` |
+| `PMM_*` environment variables | **unchanged** | `PMM_CLICKHOUSE_ADDR` |
+| Metric namespace (`pmm_*`) | **unchanged** | `pmm_agent_id` |
+| PostgreSQL role `pmm` | **unchanged** | — |
+
+The unchanged items are the contract shared with upstream code and with already-deployed
+agents. Renaming them means forking behaviour we still want to rebase onto `percona/pmm`,
+so they stay as they are on purpose.
+
+**Practical rule:** a *command example* or a *path* using `pmm-` is a bug -- those moved.
+A *component name* in prose is fine. Verify before changing either: `ls managed/cmd`
+settles it in one command.
+
+Note also that this build is **PostgreSQL-only**. `pfm-admin add mysql` (or mongodb,
+proxysql, valkey) is rejected with "not supported by this deployment", so examples using
+those service types are wrong regardless of the binary name.
+
 ## Product Overview
 
 Percona Monitoring and Management (PMM) is an open-source database monitoring solution for MySQL, MongoDB, PostgreSQL, ProxySQL, HAProxy, Valkey, and cloud databases (AWS RDS, Azure). It uses a **client-server architecture** where lightweight agents on monitored hosts collect metrics and query analytics data, sending them to a central server for storage, alerting, and visualization.

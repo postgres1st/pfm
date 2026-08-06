@@ -74,7 +74,7 @@ The `make env-up` command starts PMM Server but doesn't configure any database i
 2. Clone the pmm-agent [repo](https://github.com/percona/pmm-agent).
 3.  Run database instances to be monitored. You can either run your own or use the [`docker-compose.yml`](https://github.com/percona/pmm-agent/blob/master/docker-compose.yml) file provided by pmm-agent to run MySQL, PostgreSQL, and MongoDB containers using `make env-up` in the pmm-agent repo (make sure to comment out the `pmm-server` service in the docker-compose file since we are already running pmm-managed in devcontainer).
 4. Open another shell session and `cd` into the pmm-agent repo, run `make setup-dev` and `make run` to set up and run pmm-agent and connect it to pmm-managed
-5. In another shell, use pmm-admin to add agents to the database instances and start monitoring them using `pmm-admin add mysql --username=root --password=root-password`, `pmm-admin add postgresql --username=pmm-agent --password=pmm-agent-password`, and `pmm-admin add mongodb --username=root --password=root-password`.
+5. In another shell, use pfm-admin to add agents to the database instances and start monitoring them using `pfm-admin add postgresql --username=pmm-agent --password=pmm-agent-password`. Only PostgreSQL is accepted -- this build gates every other service type, so `add mysql`/`add mongodb` are rejected with "not supported by this deployment".
 6. Once pmm-managed has started monitoring the databases. Log in to the web client in your browser to verify. The number of monitored instances will have increased.
 
 ## Working with Advisors

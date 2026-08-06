@@ -34,7 +34,7 @@ func New(db *reform.DB, logger *logrus.Entry, ...) *Service {
 }
 ```
 
-All services are composed and wired in `managed/cmd/pmm-managed/main.go`.
+All services are composed and wired in `managed/cmd/pfm-managed/main.go`.
 
 ### API Layer
 
@@ -185,7 +185,7 @@ Always run `make gen` after modifying `.proto` files, reform models, or interfac
 
 ## Key Files to Reference
 
-- `managed/cmd/pmm-managed/main.go` — application bootstrap, all service wiring
+- `managed/cmd/pfm-managed/main.go` — application bootstrap, all service wiring
 - `managed/models/database.go` — database schema and migrations
 - `managed/models/node_model.go`, `service_model.go`, `agent_model.go` — core domain models
 - `managed/services/agents/registry.go` — agent registration and lifecycle

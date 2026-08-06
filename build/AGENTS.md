@@ -89,3 +89,20 @@ make rpmbuild-el9         # Build RPM build environment image
 - `build/packages/rpm/server/SPECS/` — RPM spec files for server components
 - `build/packer/pmm.json` — Machine image definitions
 - `build/scripts/` — Build scripts for all artifact types
+
+## Air-gapped PFMM bundle
+
+The offline bundle a customer installs on a network-isolated RHEL/Rocky 9 host is built
+and tested by a separate pipeline that does NOT go through the Jenkins/`pmm-submodules`
+path described above — it builds from this checkout.
+
+- `build/scripts/README.md` — **read this first**: the pipeline, the three test suites and
+  why each exists, and the traps already paid for
+- `build/scripts/build-pfmm-airgap` — the pipeline (resumable stages)
+- `build/scripts/pfmm-airgap-vars` — every input pinned to an exact commit; never branch names
+- `build/packages/pfmm-airgap-INSTALL.md` — the operator guide shipped with the bundle
+
+A fresh-install test cannot observe an upgrade defect, and a green suite is not evidence
+until its assertions have been shown to fail when what they guard is broken. Hence three
+suites, not one. Re-run `build/scripts/test-pfmm-negative-control` after changing any
+assertion.

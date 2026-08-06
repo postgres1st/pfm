@@ -43,7 +43,7 @@ PMM UI runs inside a Grafana iframe. Cross-frame communication uses `CrossFrameM
 
 ## Routing
 
-Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createBrowserRouter` with `basename: '/pmm-ui'`:
+Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createBrowserRouter` with `basename: '/pfm-ui'`:
 
 | Route              | Page                            |
 | ------------------ | ------------------------------- |
