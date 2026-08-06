@@ -8,7 +8,7 @@
 #
 #   grafana-fe   grafana frontend (webpack; ~10 GB heap, the long pole)
 #   grafana-be   grafana backend (go)
-#   pmm-bin      pfm-managed / pfm-agent / pfm-admin (+ the pmm UI)
+#   pmm-bin      pfm-managed / pfm-agent / pfm-admin (+ the pmm UI and dashboards)
 #   exporters    node/postgres/rds/azure exporters, vmagent, nomad, toolkit
 #   s3           fetch the Percona-built components we do not build
 #   rpms         build every RPM
@@ -156,6 +156,22 @@ stage_pmm_bin() {
         || { docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" \
                chown -R "${host_uid}:${host_gid}" /pmm/ui; fail "pmm UI build failed"; }
     docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" chown -R "${host_uid}:${host_gid}" /pmm/ui
+
+    # percona-dashboards.spec ships dashboards/pmm-app/dist, but no stage built it --
+    # the rpms stage only copied the directory, so a clean checkout died there with
+    # "cp: cannot stat 'dashboards/pmm-app/dist'". It went unnoticed because a dev
+    # tree already had dist/ from an earlier manual build. Same node 22 + yarn classic
+    # constraint as the pmm UI above; dashboards/Makefile's release target does
+    # yarn install --frozen-lockfile then yarn run build.
+    log "grafana dashboards app (dashboards/pmm-app)"
+    docker_run -v "${repo_dir}":/pmm -w /pmm/dashboards \
+        -e NODE_OPTIONS=--max-old-space-size=6144 \
+        "${PFMM_UI_NODE_IMAGE}" sh -c "make release" \
+        || { docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" \
+               chown -R "${host_uid}:${host_gid}" /pmm/dashboards; fail "dashboards app build failed"; }
+    docker_run -v "${repo_dir}":/pmm "${PFMM_UI_NODE_IMAGE}" \
+        chown -R "${host_uid}:${host_gid}" /pmm/dashboards
+    [ -d "${repo_dir}/dashboards/pmm-app/dist" ] || fail "dashboards/pmm-app/dist missing after build"
 
     local n
     n=$(grep -c "not supported by this deployment" <(strings "${repo_dir}/bin/pfm-managed") || true)
