@@ -86,6 +86,15 @@ nothing about the code that runs.
   run, that change removed dead entries from a dead feature. **Cheapest test: register
   a deliberately misconfigured PostgreSQL instance and see whether anything fires.**
   ~15 minutes, and it settles the largest unknown in what merged today.
+
+  **Someone already started this and the result was not written down.** A container
+  `pfm-pgtest` (`perconalab/percona-distribution-postgresql:17`, with
+  `pg_stat_statements` and `pg_stat_monitor` preloaded) was created around 13:43 by a
+  parallel session and has since been removed. No `pgtest` service is registered on any
+  of the running PFM servers, and no scratch note mentions advisors. So the outcome is
+  unknown — ask that session before redoing it, and **write the answer down this time**,
+  here or in a commit message. An experiment whose result nobody recorded costs the same
+  as one never run.
 - ~~A dirty working tree produces RPMs stamped with a clean commit.~~ **Addressed** by
   `03c219151`, which warns (deliberately not fails) at the `rpms` stage. Worth knowing it
   already bit once: the x86_64 bundle was stamped with a commit that does not compile.
@@ -180,29 +189,31 @@ Grouped by whether someone must decide, verify, or merely remember.
     container builds. Git no longer tracks it. Needs
     `sudo rm -rf /home/pgfirst/Projects/pmm/.worktree/ui-rebranding`. Disk was at 80%.
 14. **`feat/advisor-gate-and-docs` still on the remote** after merging.
-15. **`docs/scratch/` now holds 11 files**, five of them predating this work and untracked.
+15. **`260806-ci-failure-triage.md` is untracked** — it exists only in this working copy,
+    so a clean checkout elsewhere will not have it. Commit it if the CI findings matter.
+16. **`docs/scratch/` now holds 11 files**, five of them predating this work and untracked.
     Convention says clean up when work concludes; the test-suite knowledge they held has
     moved into `build/scripts/README.md`.
-16. **Four containers still running**: `pfmm-test` (28h, real metric history — the only one
+17. **Four containers still running**: `pfmm-test` (28h, real metric history — the only one
     worth keeping), `pfmm-bind`, `pfm-airgap-test`, `pfm-upgrade-test`. The last two are
     reused by the negative control and are mutated-then-restored, so not pristine.
-17. **`%post` still writes into `/etc/clickhouse-server`.** The symlinks survived a
+18. **`%post` still writes into `/etc/clickhouse-server`.** The symlinks survived a
     26.7.1 → 26.7.2 upgrade, so not an active defect, but it is the same shape as two that
     did bite.
-18. **Exporters bind `0.0.0.0:42000-42010`** unauthenticated by upstream design. Documented
+19. **Exporters bind `0.0.0.0:42000-42010`** unauthenticated by upstream design. Documented
     as a firewall requirement; push-metrics mode would bind loopback instead.
-19. **`pmm-dump` is pinned to a different commit for x86_64** than aarch64, because no
+20. **`pmm-dump` is pinned to a different commit for x86_64** than aarch64, because no
     x86_64 build exists at the aarch64 commit. Expected asymmetry, easy to misread as an
     error.
-20. **The grafana fork is private**, so `grafana.spec`'s `Source0` does not resolve
+21. **The grafana fork is private**, so `grafana.spec`'s `Source0` does not resolve
     anonymously. The pipeline reads the local clone instead and needs no credentials.
-21. **Three assertions remain uncontrolled**, with reasons printed by the run: `dnf upgrade
+22. **Three assertions remain uncontrolled**, with reasons printed by the run: `dnf upgrade
     completed` (it *is* the operation's exit status), and two pairs that reuse predicates
     controlled elsewhere.
-22. **`[input]`-class controls are weaker evidence** than state breaks and are counted
+23. **`[input]`-class controls are weaker evidence** than state breaks and are counted
     separately on purpose. Seven assertions can only be controlled that way. Never let one
     stand in for a state break that was possible.
-23. **`api/MIGRATION_EXAMPLES.md` deliberately keeps `pmm-admin` examples** — it annotates
+24. **`api/MIGRATION_EXAMPLES.md` deliberately keeps `pmm-admin` examples** — it annotates
     upstream's v2→v3 API migration with the v2 CLI of the time.
 
 ## TRAPS — paid for, do not rediscover
@@ -244,8 +255,10 @@ or more times today, and every instance produced a confident, wrong statement.
 
 ## SUGGESTED ORDER
 
-1. Commit or discard the three uncommitted changes, after building once with
-   `PFMM_SIGN_KEY=` to exercise the unsigned path they add.
+1. **Build once with `PFMM_SIGN_KEY=`** and install from the emitted INSTALL.md. The
+   four build-script commits are already in (`3f0f827a3`, `1d7c2dc8a`, `03c219151`,
+   `fb6427765`) — what is missing is that nothing exercises the unsigned path they add,
+   and both suites assume a signed bundle.
 2. Settle the advisor doubt (~15 min). It is the largest unknown in what just merged.
 3. Run the x86_64 build on `pfmm-build` under tmux, then all three suites there. This
    is the release blocker *and* the SELinux gap in one run.
