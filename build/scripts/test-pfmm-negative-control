@@ -406,6 +406,16 @@ phase_airgap() {
     note "p_postgresql_accepted registers a uniquely-named service on each call, so"
     note "this control leaves a few extra services behind on the throwaway host"
 
+    hdr "advisor family gate"
+    # A real state break using the product's own supported override: widening
+    # PFM_DB_TYPES must make the MySQL/MongoDB advisor checks reappear. That proves the
+    # advisor filter reads the same allowlist as the Service gate rather than carrying a
+    # second hardcoded copy of it.
+    ctl "p_advisors_pg_only (widen PFM_DB_TYPES to admit mysql/mongodb)" \
+        "p_advisors_pg_only" \
+        "inc \"mkdir -p /etc/systemd/system/pfm-managed.service.d && printf '[Service]\\nEnvironment=PFM_DB_TYPES=postgresql,mysql,mongodb,haproxy,external\\n' > /etc/systemd/system/pfm-managed.service.d/nc-widen.conf && systemctl daemon-reload && systemctl restart pfm-managed\"" \
+        "inc 'rm -f /etc/systemd/system/pfm-managed.service.d/nc-widen.conf; systemctl daemon-reload; systemctl restart pfm-managed'; wait_readyz 36 >/dev/null" 180
+
     hdr "branding and UI"
     ctl "p_grafana_title (stop grafana)" \
         "p_grafana_title" \
@@ -503,6 +513,7 @@ EOF
     hdr "leaving the host as we found it"
     local final_bad="" q
     for q in p_readyz p_no_failed_units p_all_units_active p_has_nic p_grafana_title \
+             p_advisors_pg_only \
              p_pfmui_title p_pg_up p_dashboards p_no_unexpected_listeners \
              p_grafana_uses_pfm_ini p_ch_perms_unit p_ch_requires_perms \
              p_no_pmm_packages p_ch_owned_by_pfm; do

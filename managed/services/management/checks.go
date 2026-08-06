@@ -29,6 +29,7 @@ import (
 
 	advisorsv1 "github.com/percona/pmm/api/advisors/v1"
 	managementv1 "github.com/percona/pmm/api/management/v1"
+	"github.com/percona/pmm/managed/models"
 	"github.com/percona/pmm/managed/pi/check"
 	"github.com/percona/pmm/managed/pi/common"
 	"github.com/percona/pmm/managed/services"
@@ -209,6 +210,9 @@ func (s *ChecksAPIService) ListAdvisorChecks(_ context.Context, _ *advisorsv1.Li
 
 	res := make([]*advisorsv1.AdvisorCheck, 0, len(checks))
 	for _, c := range checks {
+		if !isCheckFamilySupported(c.GetFamily()) {
+			continue
+		}
 		_, disabled := m[c.Name]
 		res = append(res, &advisorsv1.AdvisorCheck{
 			Name:        c.Name,
@@ -244,6 +248,9 @@ func (s *ChecksAPIService) ListAdvisors(_ context.Context, _ *advisorsv1.ListAdv
 	for _, a := range advisors {
 		checks := make([]*advisorsv1.AdvisorCheck, 0, len(a.Checks))
 		for _, c := range a.Checks {
+			if !isCheckFamilySupported(c.GetFamily()) {
+				continue
+			}
 			_, disabled := m[c.Name]
 			checks = append(checks, &advisorsv1.AdvisorCheck{
 				Name:        c.Name,
@@ -253,6 +260,12 @@ func (s *ChecksAPIService) ListAdvisors(_ context.Context, _ *advisorsv1.ListAdv
 				Description: c.Description,
 				Interval:    convertInterval(c.Interval),
 			})
+		}
+
+		// An advisor whose every check was filtered out has nothing to show; listing it
+		// would leave an empty group in the UI implying coverage that is not there.
+		if len(checks) == 0 {
+			continue
 		}
 
 		res = append(res, &advisorsv1.Advisor{
@@ -353,6 +366,36 @@ func convertInterval(interval check.Interval) advisorsv1.AdvisorCheckInterval {
 	default:
 		return advisorsv1.AdvisorCheckInterval_ADVISOR_CHECK_INTERVAL_UNSPECIFIED
 	}
+}
+
+// familyServiceType maps an advisor check family to the Service type it inspects.
+// A v2 check declares its family outright; a v1 check has it derived from the query
+// type. GetFamily handles both, so this covers every shipped check either way.
+var familyServiceType = map[check.Family]models.ServiceType{
+	check.MySQL:      models.MySQLServiceType,
+	check.PostgreSQL: models.PostgreSQLServiceType,
+	check.MongoDB:    models.MongoDBServiceType,
+}
+
+// isCheckFamilySupported reports whether checks of this family are worth showing.
+//
+// A check whose family maps to a Service type this build refuses can never produce a
+// result -- the gate rejects those Services at registration -- so listing it advertises
+// coverage the product does not have. The shipped set is 49 MySQL and 34 MongoDB against
+// 26 PostgreSQL, so without this the majority of what an operator browses is dead.
+//
+// An underivable family is allowed through, deliberately differing from the
+// deny-unknown stance of the Service type allowlist. There, an unknown type is a write
+// that could enable unsupported monitoring; here it is metadata about a read-only check
+// that can only ever run against a Service which already passed the gate, and guessing
+// "unknown means MySQL" would silently hide a legitimate check. No shipped check hits
+// this path today: all 109 resolve to a concrete family.
+func isCheckFamilySupported(family check.Family) bool {
+	serviceType, ok := familyServiceType[family]
+	if !ok {
+		return true
+	}
+	return models.IsServiceTypeSupported(serviceType)
 }
 
 // convertFamily converts check.Family type to advisorsv1.AdvisorCheckFamily.

@@ -437,3 +437,70 @@ func TestCreateComment(t *testing.T) {
 		})
 	}
 }
+
+// TestAdvisorChecksFamilyGate covers the PostgreSQL-only gate applied to advisor
+// listings. The shipped check set is 49 MySQL, 34 MongoDB and 26 PostgreSQL, all
+// families declared per check (v2) or derived from the query type (v1) -- so without
+// this filter a PostgreSQL-only
+// server advertises 83 checks for databases it refuses to monitor.
+func TestAdvisorChecksFamilyGate(t *testing.T) {
+	t.Run("ListAdvisorChecks drops unsupported families", func(t *testing.T) {
+		var checksService mockChecksService
+		checksService.On("GetDisabledChecks", mock.Anything).Return([]string{}, nil)
+		checksService.On("GetChecks", mock.Anything).
+			Return(map[string]check.Check{
+				// v2 declares family explicitly; this is the shipped shape.
+				"pg":    {Name: "pg", Version: 2, Family: check.PostgreSQL},
+				"mysql": {Name: "mysql", Version: 2, Family: check.MySQL},
+				"mongo": {Name: "mongo", Version: 2, Family: check.MongoDB},
+				// v1 has no family field and derives it from the query type.
+				"pg_v1":    {Name: "pg_v1", Version: 1, Type: check.PostgreSQLSelect},
+				"mysql_v1": {Name: "mysql_v1", Version: 1, Type: check.MySQLSelect},
+			}, nil)
+
+		s := NewChecksAPIService(&checksService)
+
+		resp, err := s.ListAdvisorChecks(t.Context(), nil)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		names := make([]string, 0, len(resp.Checks))
+		for _, c := range resp.Checks {
+			names = append(names, c.Name)
+		}
+		assert.ElementsMatch(t, []string{"pg", "pg_v1"}, names,
+			"only PostgreSQL-family checks should be exposed, for both check versions")
+	})
+
+	t.Run("ListAdvisors drops unsupported checks and now-empty advisors", func(t *testing.T) {
+		var checksService mockChecksService
+		checksService.On("GetDisabledChecks", mock.Anything).Return([]string{}, nil)
+		checksService.On("GetAdvisors", mock.Anything).
+			Return([]check.Advisor{
+				{
+					Name: "mixed", Summary: "Mixed", Category: "configuration",
+					Checks: []check.Check{
+						{Name: "pg", Version: 2, Family: check.PostgreSQL},
+						{Name: "mysql", Version: 2, Family: check.MySQL},
+					},
+				},
+				{
+					Name: "mongo_only", Summary: "Mongo only", Category: "configuration",
+					Checks: []check.Check{
+						{Name: "mongo", Version: 2, Family: check.MongoDB},
+					},
+				},
+			}, nil)
+
+		s := NewChecksAPIService(&checksService)
+
+		resp, err := s.ListAdvisors(t.Context(), nil)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		require.Len(t, resp.Advisors, 1, "an advisor left with no supported checks should be dropped entirely")
+		assert.Equal(t, "mixed", resp.Advisors[0].Name)
+		require.Len(t, resp.Advisors[0].Checks, 1)
+		assert.Equal(t, "pg", resp.Advisors[0].Checks[0].Name)
+	})
+}
