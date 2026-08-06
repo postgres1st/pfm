@@ -61,7 +61,14 @@ install-race:                   ## Install pmm-admin binary with race detector
 # TEST_PARALLEL_PACKAGES ?= foo bar
 # go test $(TEST_FLAGS) $(TEST_PARALLEL_PACKAGES) - without `-p 1`
 
-TEST_FLAGS ?= -timeout=60s
+# -timeout is a budget for the whole package binary, not per test, and
+# agents/postgres/pgstatstatements alone needs ~90s: TestPGStatStatementsQPS
+# issues 14000 sequential round-trips (7000 CREATE TABLE + 7000 INSERT, with
+# pgss.max deliberately left above that) plus 7000 DROP TABLE in cleanup. At 60s
+# it panicked with "test timed out" on the slower CI runners while passing on the
+# faster ones, and a timeout panic skips t.Cleanup, leaving 7000 tables behind to
+# break the next run against the same database.
+TEST_FLAGS ?= -timeout=180s
 
 test:                           ## Run tests
 	go test $(TEST_FLAGS) -p 1 -race ./...
