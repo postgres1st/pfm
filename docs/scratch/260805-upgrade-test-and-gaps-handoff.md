@@ -59,8 +59,9 @@ artifact to archive, no drift. The stamp must be rewritten in the generated spec
 
 ### Both suites are now negative-controlled — `test-pfmm-negative-control [airgap|upgrade|both]`
 
-**37 controlled — 30 by breaking real state, 7 by known-bad input — 0 not discriminating,
-3 skipped with reasons; 39 assertions in the harness itself, 0 failed.** The two suites
+**0 not discriminating, 3 skipped with reasons, 0 failed.** (Exact counts move whenever an
+assertion is added — as they did hours later when the advisor gate landed — so read them
+from the run rather than from here.) The two suites
 describe different hosts (fresh
 install vs upgraded), so the harness runs a phase per host and points `${container}` at
 each. Shared predicates live in `pfmm-test-lib` and are controlled once, in the upgrade
@@ -88,7 +89,7 @@ proves it reads live state, so it is now `p_postgres_major [expected]`.
 
 The airgap suite also gained an assertion: the tamper check now verifies the *untampered*
 copy still passes, because otherwise "tampering was detected" could just mean `rpm -K`
-never succeeds in that environment. 29 assertions, 0 failures.
+never succeeds in that environment. 0 failures.
 
 ### The earlier, upgrade-only pass
 
@@ -188,6 +189,22 @@ transaction — the half that matters — still runs against the signed bundle w
   succeeds. Predicates that add a service need a unique name to be re-runnable.
 
 ---
+
+## Added after this handoff was written
+
+**Advisor family gate** (`23f4b617c`). The API listed 109 advisor checks of which 83
+targeted MySQL or MongoDB — databases the gate refuses — so the product advertised
+coverage it does not have. `ListAdvisorChecks`/`ListAdvisors` now filter by family via the
+same `models.IsServiceTypeSupported` the Service gate uses, and an advisor left with no
+checks is dropped. 109 → 26. Covered by a new acceptance assertion and a negative control
+that widens `PFM_DB_TYPES` and watches the MySQL checks return.
+
+**Still open on that change:** the 26 surviving checks have never been shown to actually
+*fire*. `checks:start` returns 200 and `advisor_enabled` is true, but a healthy server
+yields no failed checks, which is indistinguishable from checks that do not execute at
+all. Registering a deliberately misconfigured PostgreSQL instance would settle it in about
+fifteen minutes, and if they never run, that is a more interesting finding than the
+filtering was.
 
 ## GAPS
 

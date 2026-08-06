@@ -129,6 +129,15 @@ $ pfm-admin add mysql ...
 Service type "mysql" is not supported by this deployment.
 ```
 
+The same restriction applies to **Advisors**: the list shows only the PostgreSQL
+checks. Upstream ships checks for MySQL and MongoDB too, but since services of those
+types cannot be registered here, those checks could never produce a result -- listing
+them would advertise coverage this build does not have.
+
+If you are comparing against upstream PMM and expect to see more advisor checks, that
+is why. Nothing is disabled or broken; the checks that cannot apply are simply not
+offered.
+
 ## Configure for production
 
 The defaults get you a running server. These four steps make it fit to expose.

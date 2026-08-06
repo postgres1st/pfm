@@ -28,15 +28,27 @@ Network is required to *build*. The **result** is what installs without network.
 ## Test — three suites, and they do not overlap
 
 ```bash
-build/scripts/test-pfmm-airgap            # fresh install, offline          (29 assertions)
-build/scripts/test-pfmm-upgrade           # in-place upgrade                (30 assertions)
-build/scripts/test-pfmm-negative-control  # proves the assertions can fail  (37 controls)
+build/scripts/test-pfmm-airgap            # fresh install, offline
+build/scripts/test-pfmm-upgrade           # in-place upgrade
+build/scripts/test-pfmm-negative-control  # proves those assertions can fail
 ```
+
+Each run prints its own tally, which is why none is quoted here: the counts in an
+earlier draft of this file were stale within hours of writing it, because adding one
+assertion changes three numbers.
 
 **`test-pfmm-airgap`** installs the bundle into a throwaway systemd container with no
 route off-host and asserts what the customer is paying for: offline install under
 `gpgcheck=1`, readyz, the PostgreSQL-only gate, branding, live metrics, that a tampered
 package is refused, and that only nginx answers off-host.
+
+The gate is asserted in two places, because it is enforced in two: services of an
+unsupported type are rejected at registration, and advisor checks of an unsupported
+family are filtered out of the API listings. The upstream check set is 49 MySQL and 34
+MongoDB against 26 PostgreSQL, so without the second the server advertises far more
+coverage than it has. Both defer to `models.IsServiceTypeSupported`, so `PFM_DB_TYPES`
+moves them together -- and the negative control proves that by widening it and watching
+the MySQL checks reappear.
 
 **`test-pfmm-upgrade`** exists because **a fresh install cannot observe an upgrade
 defect**. All four HIGH defects fixed during this workstream — Grafana config reverted on
