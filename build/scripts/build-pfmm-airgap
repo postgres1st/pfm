@@ -229,6 +229,21 @@ stage_rpms() {
     shortcommit=${commit:0:7}
     stage=${work}/stage/pmm-${commit}
 
+    # The NEVRA carries HEAD, but the tarball is built from the working tree -- so a dirty
+    # tree ships uncommitted code under a clean commit label, and the RPM cannot be
+    # reproduced from the commit it names. That is not hypothetical: the 2026-08-06 x86_64
+    # bundle went out stamped 89d2fd8, a commit that does not even compile, because the two
+    # fixes it actually contained were still uncommitted when the stage ran.
+    #
+    # A warning rather than a failure: dirty-tree builds are how the pipeline gets iterated
+    # on, and stamping a `.dirty` suffix instead would change NEVRA ordering, which
+    # test-pfmm-upgrade asserts on. Release builds should run from a clean tree.
+    if [ -n "$(cd "${repo_dir}" && git status --porcelain --untracked-files=no)" ]; then
+        printf 'WARNING: building from a DIRTY tree -- RPMs will be stamped %s but contain\n' "${shortcommit}" >&2
+        printf '         uncommitted changes, so this bundle is not reproducible from that commit:\n' >&2
+        ( cd "${repo_dir}" && git status --short --untracked-files=no | sed 's/^/           /' ) >&2
+    fi
+
     log "staging monorepo sources"
     rm -rf "${work}/stage"; mkdir -p "${stage}"
     ( cd "${repo_dir}"
