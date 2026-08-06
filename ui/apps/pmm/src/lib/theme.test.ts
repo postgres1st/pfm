@@ -21,8 +21,9 @@ describe('postgres1stThemeOptions', () => {
   });
 
   it('preserves design-system semantic colors (error) from the base theme', () => {
-    const baseError = (pmmThemeOptions('light').palette?.error as { main: string })
-      ?.main;
+    const baseError = (
+      pmmThemeOptions('light').palette?.error as { main: string }
+    )?.main;
     const brandError = (
       postgres1stThemeOptions('light').palette?.error as { main: string }
     )?.main;

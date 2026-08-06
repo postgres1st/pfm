@@ -23,7 +23,9 @@ PMM_RELEASE_PATH ?= ./bin
 run-managed-ci: release-dev-managed    ## Replace pmm-managed from build, restart (used in CI)	supervisorctl stop pmm-managed
 	supervisorctl stop pmm-managed
 	truncate -s 0 /srv/logs/pmm-managed.log
-	install -m 755 $(PMM_RELEASE_PATH)/pmm-managed /usr/sbin/
+	# The build emits pfm-managed, but supervisord inside the dev container still
+	# runs /usr/sbin/pmm-managed, so install under the name it expects.
+	install -m 755 $(PMM_RELEASE_PATH)/pfm-managed /usr/sbin/pmm-managed
 	supervisorctl start pmm-managed
 
 run-managed: run-managed-ci    		## Replace pmm-managed from build, restart and tail logs
@@ -32,7 +34,8 @@ run-managed: run-managed-ci    		## Replace pmm-managed from build, restart and 
 run-agent-ci: release-dev-agent		## Replace pmm-agent from build and restart (used in CI)
 	supervisorctl stop pmm-agent
 	truncate -s 0 /srv/logs/pmm-agent.log
-	install -m 755 $(PMM_RELEASE_PATH)/pmm-agent /usr/sbin/
+	# Same as above: the build emits pfm-agent, supervisord runs /usr/sbin/pmm-agent.
+	install -m 755 $(PMM_RELEASE_PATH)/pfm-agent /usr/sbin/pmm-agent
 	supervisorctl start pmm-agent
 
 run-agent: run-agent-ci				## Replace pmm-agent from build, restart and tail logs

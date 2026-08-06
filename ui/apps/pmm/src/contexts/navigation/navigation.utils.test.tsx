@@ -65,7 +65,10 @@ describe('filterSupportedServiceTypes', () => {
   });
 
   it('honours a runtime override that re-enables a type', () => {
-    const supported = [...DEFAULT_SUPPORTED_SERVICE_TYPES, ManagedServiceType.mysql];
+    const supported = [
+      ...DEFAULT_SUPPORTED_SERVICE_TYPES,
+      ManagedServiceType.mysql,
+    ];
 
     expect(filterSupportedServiceTypes(ALL, supported)).toContain(
       ServiceType.mysql

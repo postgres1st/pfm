@@ -445,13 +445,13 @@ func TestServiceService(t *testing.T) {
 			require.NoError(t, err)
 
 			s.vmClient.(*mockVictoriaMetricsClient).On("Query", ctx, mock.Anything, mock.Anything).Return(model.Vector{}, nil, nil).Twice()
-			s.r.(*mockAgentsRegistry).On("IsConnected", models.PMMServerAgentID).Return(true).Once() // PMM Server Agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", pmmAgent.AgentID).Return(true).Once()        // PMM Agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()           // PMM Server PostgreSQL exporter
-			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()      // PMM Server PG Stat Statements agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                    // PMM Agent 2
+			s.r.(*mockAgentsRegistry).On("IsConnected", models.PMMServerAgentID).Return(true).Once()   // PMM Server Agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", pmmAgent.AgentID).Return(true).Once()          // PMM Agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()             // PMM Server PostgreSQL exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()        // PMM Server PG Stat Statements agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                      // PMM Agent 2
 			s.r.(*mockAgentsRegistry).On("IsConnected", postgresExporter.AgentID).Return(false).Once() // PostgreSQL exporter
-			s.r.(*mockAgentsRegistry).On("IsConnected", rdsExporter.AgentID).Return(false).Once()    // RDS exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", rdsExporter.AgentID).Return(false).Once()      // RDS exporter
 
 			response, err := s.ListServices(ctx, &managementv1.ListServicesRequest{})
 
@@ -498,13 +498,13 @@ func TestServiceService(t *testing.T) {
 			require.NoError(t, err)
 
 			s.vmClient.(*mockVictoriaMetricsClient).On("Query", ctx, mock.Anything, mock.Anything).Return(model.Vector{}, nil, nil).Twice()
-			s.r.(*mockAgentsRegistry).On("IsConnected", models.PMMServerAgentID).Return(true).Once() // PMM Server Agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", pmmAgent.AgentID).Return(true).Once()        // PMM Agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()           // PMM Server PostgreSQL exporter
-			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()      // PMM Server PG Stat Statements agent
-			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                    // PMM Agent 2
+			s.r.(*mockAgentsRegistry).On("IsConnected", models.PMMServerAgentID).Return(true).Once()   // PMM Server Agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", pmmAgent.AgentID).Return(true).Once()          // PMM Agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", pgExporterID).Return(false).Once()             // PMM Server PostgreSQL exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", pgStatStatementID).Return(false).Once()        // PMM Server PG Stat Statements agent
+			s.r.(*mockAgentsRegistry).On("IsConnected", PMMAgentID).Return(false)                      // PMM Agent 2
 			s.r.(*mockAgentsRegistry).On("IsConnected", postgresExporter.AgentID).Return(false).Once() // PostgreSQL exporter
-			s.r.(*mockAgentsRegistry).On("IsConnected", azureExporter.AgentID).Return(false).Once()  // Azure exporter
+			s.r.(*mockAgentsRegistry).On("IsConnected", azureExporter.AgentID).Return(false).Once()    // Azure exporter
 
 			response, err := s.ListServices(ctx, &managementv1.ListServicesRequest{})
 

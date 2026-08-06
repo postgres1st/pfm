@@ -356,10 +356,10 @@ func TestEnvQuote(t *testing.T) {
 		in, want string
 	}{
 		{"plain", `"plain"`},
-		{`secret\`, `"secret\\"`},      // trailing backslash -> escaped, no line continuation
-		{`pa"ss`, `"pa\"ss"`},          // embedded double quote -> escaped
-		{`"lead`, `"\"lead"`},          // leading quote -> escaped, not a quote-span opener
-		{"a\nb\r\nc", `"abc"`},         // CR/LF stripped (cannot appear inside a single line)
+		{`secret\`, `"secret\\"`}, // trailing backslash -> escaped, no line continuation
+		{`pa"ss`, `"pa\"ss"`},     // embedded double quote -> escaped
+		{`"lead`, `"\"lead"`},     // leading quote -> escaped, not a quote-span opener
+		{"a\nb\r\nc", `"abc"`},    // CR/LF stripped (cannot appear inside a single line)
 		{`c:\path\to\x`, `"c:\\path\\to\\x"`},
 	} {
 		assert.Equal(t, tc.want, envQuote(tc.in), "%q", tc.in)

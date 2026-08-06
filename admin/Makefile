@@ -30,14 +30,14 @@ gen: clean                      ## Generate files
 clean:                          ## Remove generated files
 	find . -name *_reform.go -delete
 
-release:                        ## Build pmm-admin release binary
+release:                        ## Build pfm-admin release binary
 	CGO_ENABLED=0 go build -v $(LD_FLAGS) -o $(PMM_RELEASE_PATH)/pfm-admin ./cmd/pfm-admin/
 
-install:                        ## Install pmm & pmm-admin binary
-	go build -v $(LD_FLAGS) -o $(GOBIN)/pmm-admin ./cmd/pmm-admin/
+install:                        ## Install pfm-admin binary
+	go build -v $(LD_FLAGS) -o $(GOBIN)/pfm-admin ./cmd/pfm-admin/
 
-install-race:                   ## Install pmm & pmm-admin binary with race detector
-	go build -v $(LD_FLAGS) -race -o $(GOBIN)/pmm-admin ./cmd/pmm-admin/
+install-race:                   ## Install pfm-admin binary with race detector
+	go build -v $(LD_FLAGS) -race -o $(GOBIN)/pfm-admin ./cmd/pfm-admin/
 
 TEST_FLAGS ?= -timeout=20s
 
