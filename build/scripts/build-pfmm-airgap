@@ -56,7 +56,23 @@ normal clone."
 # Containers run as root so they can overwrite artifacts from earlier runs, then
 # hand ownership back -- otherwise root-owned files accumulate in the caller's
 # tree and the next non-root run fails with EACCES (nx's cache is a repeat offender).
-docker_run() { docker run --rm -e HOME=/tmp "$@"; }
+#
+# Running as root over a bind mount owned by the caller is exactly what git's
+# safe.directory check rejects: `fatal: detected dubious ownership`. The build does not
+# fail on it, which is the problem -- the Makefiles stamp the binary from `git rev-parse`
+# and quietly get an empty string, so pfm-managed shipped reporting `FullCommit:` blank.
+# yarn also shells out to git for the @types/grafana URL in the dashboards build.
+#
+# safe.directory=* rather than a path, because the mount point differs per stage (/pmm,
+# /grafana). The check guards against trusting a repo owned by another user on a shared
+# machine; these containers are --rm and exist solely to build that one mounted repo, so
+# there is nothing for it to protect. Injected via GIT_CONFIG_* env so no config file is
+# written into the caller's tree.
+docker_run() {
+    docker run --rm -e HOME=/tmp \
+        -e GIT_CONFIG_COUNT=1 -e GIT_CONFIG_KEY_0=safe.directory -e GIT_CONFIG_VALUE_0='*' \
+        "$@"
+}
 
 preflight() {
     command -v docker >/dev/null || fail "docker is required"
