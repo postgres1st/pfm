@@ -48,7 +48,27 @@ LockPersonality=yes
 # that adds a fifth capability must be caught here, not by a customer.
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_IPC_LOCK CAP_SYS_NICE
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-ReadWritePaths=/srv/clickhouse /srv/logs /run/clickhouse-server
+ReadWritePaths=/srv/clickhouse /srv/logs
+# /run/clickhouse-server is NOT in ReadWritePaths -- systemd creates it for us here,
+# on every start, and makes it writable automatically.
+#
+# It used to be listed there and created only by our tmpfiles entry, which runs at
+# boot. But /run is tmpfs and this directory is not ours alone: the distro
+# clickhouse-server.service declares RuntimeDirectory=clickhouse-server with the
+# default RuntimeDirectoryPreserve=no, so systemd DELETES /run/clickhouse-server every
+# time that unit stops. After anything cycles it, our unit could no longer start --
+# "Failed at step NAMESPACE ... No such file or directory", 226/NAMESPACE.
+#
+# The failure hid: an already-running ClickHouse kept serving, because its mount
+# namespace bound the directory at start. The host looked healthy while the service
+# had silently become unrestartable, surfacing at the next restart -- typically an
+# upgrade, which is the worst time to discover it.
+#
+# Preserve=yes so OUR stop does not delete the directory out from under the distro
+# unit -- inflicting the same bug in the opposite direction.
+RuntimeDirectory=clickhouse-server
+RuntimeDirectoryMode=0750
+RuntimeDirectoryPreserve=yes
 IPAddressDeny=any
 IPAddressAllow=localhost
 ExecStart=/usr/bin/clickhouse-server --config-file=/etc/clickhouse-server/config.xml

@@ -157,6 +157,40 @@ p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 # Not parameterised: a capless path would read as GREEN, so there is no known-bad
 # path to feed and ctl_input would be a false pass. The negative control breaks real
 # state instead (adds an uncovered capability to the binary).
+# Every /run path pfm-clickhouse needs must be one systemd creates for it.
+#
+# /run is tmpfs and its contents are not ours alone. The DISTRO
+# clickhouse-server.service declares RuntimeDirectory=clickhouse-server with
+# RuntimeDirectoryPreserve=no, so systemd DELETES /run/clickhouse-server whenever that
+# unit stops -- and our unit merely listed the path in ReadWritePaths=, relying on a
+# tmpfiles entry that only runs at boot. After anything cycles the distro unit, our
+# service can no longer start: "Failed at step NAMESPACE ... No such file or
+# directory", 226/NAMESPACE.
+#
+# The failure hides. A already-running instance keeps working because its mount
+# namespace bound the directory at start, so the host looks healthy while the service
+# has silently become unrestartable -- discovered only at the next restart, which is
+# typically an upgrade.
+#
+# Asserted statically, and unlike the SELinux and fcaps assertions this one COULD have
+# been behavioural: systemd namespaces work in a container, so this defect does
+# reproduce there. It stays static only because the lib's predicates must be
+# side-effect free and re-runnable -- the harness calls each three times, and a
+# predicate that restarts ClickHouse is not that. The negative control does the
+# breaking.
+p_ch_runtime_dir_guaranteed() {
+    inc 'u=pfm-clickhouse.service
+         rd=" $(systemctl show $u -p RuntimeDirectory --value) "
+         case "$rd" in *" clickhouse-server "*) ;; *) exit 1 ;; esac
+         # and nothing under /run may be required that systemd does not create
+         for p in $(systemctl show $u -p ReadWritePaths --value); do
+             case "$p" in
+                 /run/*) case "$rd" in *" ${p#/run/} "*) ;; *) exit 1 ;; esac ;;
+             esac
+         done
+         exit 0'
+}
+
 # The SELinux module must SHIP, and pfm-server must own it.
 #
 # Only the artifact is asserted here, not that it is loaded: these containers have no
