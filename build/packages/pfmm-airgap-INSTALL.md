@@ -24,7 +24,7 @@ for you from a connected machine.
 | Architecture | `@ARCH@` — this bundle will *not* install on another |
 | OS | RHEL 9 / Rocky Linux 9 / AlmaLinux 9, with systemd (any stock install) |
 | CPU / RAM | 2 vCPU / 4 GB minimum; 4 vCPU / 8 GB for more than a handful of instances |
-| Disk | ~2.5 GB for the packages, plus metric storage under `/srv` |
+| Disk | at least 5 GB free for the install, plus metric storage under `/srv` |
 | Privileges | root (or sudo) for the install; the services then run as the unprivileged `pfm` account |
 
 **Storage sizing.** Metrics live under `/srv` and are the only component that grows

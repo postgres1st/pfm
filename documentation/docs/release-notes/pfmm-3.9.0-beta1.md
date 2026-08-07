@@ -16,9 +16,9 @@ A monitoring server you install with `dnf` and start with `systemctl`, providing
 
 | | |
 |---|---|
-| **Dashboards** | 33 provisioned Grafana dashboards for PostgreSQL and host metrics |
+| **Dashboards** | provisioned Grafana dashboards for PostgreSQL and host metrics |
 | **Query Analytics** | per-query statistics from `pg_stat_statements` or `pg_stat_monitor` |
-| **Advisors** | 26 PostgreSQL configuration and health checks |
+| **Advisors** | PostgreSQL configuration and health checks |
 | **Metrics storage** | VictoriaMetrics, 30-day retention by default |
 | **Agents** | `pfm-client` for the monitored hosts, installed from the same bundle |
 
@@ -34,10 +34,10 @@ $ pfm-admin add mysql ...
 Service type "mysql" is not supported by this deployment.
 ```
 
-This is deliberate, and it extends to what the interface offers. Upstream PMM ships 109
-advisor checks, 83 of them for MySQL and MongoDB; those can never produce a result here,
-so they are not listed. If you are comparing against PMM and expect to see more checks,
-that is why — nothing is disabled or broken.
+This is deliberate, and it extends to what the interface offers. Upstream PMM ships
+advisor checks for MySQL and MongoDB as well as PostgreSQL; the ones that target databases
+this build refuses can never produce a result, so they are not listed. If you are comparing
+against PMM and expect to see more checks, that is why — nothing is disabled or broken.
 
 ## Installing
 
@@ -117,9 +117,10 @@ and you would import the new key at that point.
 ## Licensing
 
 PFMM is built on Percona Monitoring and Management and Grafana, and is distributed under
-the **GNU Affero General Public License, version 3**. Seven of the fifteen packages in
-this bundle are AGPLv3, including everything Postgres1st builds. The remainder are
-Apache 2.0 (ClickHouse, VictoriaMetrics) and the PostgreSQL License (PostgreSQL).
+the **GNU Affero General Public License, version 3**. Everything Postgres1st builds is
+AGPLv3, as is the Grafana it embeds. The remainder are Apache 2.0 (ClickHouse,
+VictoriaMetrics) and the PostgreSQL License (PostgreSQL). Each package declares its own
+licence — `rpm -qi <package>` reports it.
 
 The AGPL entitles you to the corresponding source for the AGPL components. Contact
 Postgres1st to obtain it.
