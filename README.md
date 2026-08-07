@@ -1,114 +1,112 @@
-# Percona Monitoring and Management
+# Postgres1st Monitoring and Management (PFMM)
 
-[![CI](https://github.com/percona/pmm/actions/workflows/main.yml/badge.svg)](https://github.com/percona/pmm/actions/workflows/main.yml)
-[![CLA assistant](https://cla-assistant.percona.com/readme/badge/percona/pmm)](https://cla-assistant.percona.com/percona/pmm)
-[![Code coverage](https://codecov.io/gh/percona/pmm/branch/main/graph/badge.svg)](https://codecov.io/gh/percona/pmm)
-[![Go Report Card](https://goreportcard.com/badge/github.com/percona/pmm)](https://goreportcard.com/report/github.com/percona/pmm)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/percona/pmm/badge)](https://scorecard.dev/viewer/?uri=github.com/percona/pmm)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9702/badge)](https://www.bestpractices.dev/projects/9702)
-[![Forum](https://img.shields.io/badge/Forum-join-brightgreen)](https://forums.percona.com/)
+PostgreSQL monitoring and query analytics, delivered as a **signed package repository**
+you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No internet access is
+required on that server, and no container runtime is involved.
 
-![PMM](documentation/docs/assets/pmm-logo.png)
+> **Status: beta.** The current release is `3.9.0~beta1`. It is complete and tested for
+> the workflow described in the installation guides; the known limitations are stated
+> plainly in the [release notes](documentation/docs/release-notes/pfmm-3.9.0-beta1.md)
+> rather than left to be discovered.
 
-## Percona Monitoring and Management
+## What this is
 
-A **single pane of glass** to easily view and monitor the performance of your MySQL, MongoDB, PostgreSQL, Valkey, and Redis databases.
+PFMM is a fork of [Percona Monitoring and Management](https://github.com/percona/pmm)
+(PMM) that does one thing instead of five. Where PMM monitors MySQL, MongoDB, PostgreSQL,
+Valkey and Redis, PFMM accepts PostgreSQL and refuses the rest — not by hiding them in the
+interface, but with an allowlist enforced in the API at service and agent registration
+(`managed/models/service_type_allowlist.go`).
 
-[Percona Monitoring and Management (PMM)](https://www.percona.com/software/database-tools/percona-monitoring-and-management) is the best-of-breed open source database monitoring solution. It helps you reduce complexity, optimize performance, and improve the security of your business-critical database environments, no matter where they are located or deployed.
-PMM helps users to:
-* Reduce Complexity
-* Optimize Database Performance
-* Improve Data Security
+Three service types are accepted:
 
+| Type | Why |
+|---|---|
+| `postgresql` | the product |
+| `haproxy` | commonly fronts a Patroni cluster; scraped natively, no exporter binary |
+| `external` | how Patroni's own `/metrics` endpoint is scraped |
 
-See the [PMM Documentation](https://docs.percona.com/percona-monitoring-and-management/3/index.html) for more information.
+Anything else is rejected as unsupported. A service type added upstream stays disabled
+until it is listed deliberately, so the gate does not quietly widen on a rebase.
 
-## Use cases
-
-* Monitor your database performance with customizable dashboards and real-time alerting.
-* Spot critical performance issues faster, understand the root cause of incidents better and troubleshoot them more efficiently.
-* Zoom-in, drill-down database performance from node to single query levels. Perform in-depth troubleshooting and performance optimization.
-* Built-in Advisors run regular checks of the databases connected to PMM. The checks identify and alert you of potential security threats, performance degradation, data loss and data corruption.
-
-## Architecture
-
-![Overall Architecture](./documentation/docs/images/arch/C_S_Architecture.jpg "Client Server Architecture")
-
-![PMM Server](./documentation/docs/images/arch/PMM-Server-Component-Based-View.jpg 'PMM Server Architecture')
-
-![PMM Client](./documentation/docs/images/arch/PMM-Client-Component-Based-View.jpg 'PMM Client Architecture')
+The other substantive difference is delivery. PMM ships primarily as a container image;
+PFMM ships as RPMs in a GPG-signed yum repository, built for air-gapped installation on a
+host you control.
 
 ## Installation
 
-There are different installation methods, please check our [About PMM installation](https://docs.percona.com/percona-monitoring-and-management/3/install-pmm/index.html) documentation page.
+Two guides, one bundle. Both ship inside the release tarball:
 
-But in a nutshell:
+- **[Server](build/packages/pfmm-airgap-INSTALL.md)** — the monitoring server, on its own
+  host.
+- **[Client](build/packages/pfmm-airgap-INSTALL-CLIENT.md)** — the agent, on each
+  PostgreSQL host you want to monitor.
 
-1. Download PMM server Docker image:
+In outline: unpack the tarball, import the signing key, point yum at the unpacked
+directory, and `dnf install pfm-server` (or `pfm-client`). Operating-system dependencies
+come from your own repositories — PFMM ships only what no EL9 repository provides
+(PostgreSQL and ClickHouse), and the bundle includes `fetch-os-dependencies.sh` for hosts
+with no repository of their own.
+
+Requirements are in the server guide; briefly, RHEL/Rocky/AlmaLinux 9 with systemd,
+2 vCPU and 4 GB RAM to start, and metric storage under `/srv`.
+
+## Building
+
 ```bash
-$ docker pull percona/pmm-server:3
+build/scripts/build-pfmm-airgap            # every stage, in order
+build/scripts/build-pfmm-airgap rpms bundle  # resume from a named stage
 ```
-2. Create the data volume container:
+
+Produces `pfmm-server-el9-<arch>.tar.gz` and its `.sha256`. Everything except docker runs
+in containers, so the host needs no rpmbuild, Go or Node toolchain — but it does need
+**≥16 GB RAM** (the Grafana webpack build OOMs below ~12 GB), ≥30 GB free disk, and
+network access. The *result* is what installs without a network.
+
+Acceptance suites live alongside it:
+
 ```bash
-$ docker volume create pmm-data
+build/scripts/test-pfmm-airgap           # installs the bundle in an air-gapped container
+build/scripts/test-pfmm-negative-control # verifies the suite's assertions can actually fail
+build/scripts/test-pfmm-upgrade          # upgrade path
 ```
-3. Run PMM Server container:
-```bash
-$ docker run --detach --restart always \
-  --publish 443:8443 \
-  --volume pmm-data:/srv \
-  --name pmm-server \
-  percona/pmm-server:3
-```
-4. Start a web browser and type the server name or IP address of the PMM server host (defaults to https://localhost).
 
-<img src="./documentation/docs/images/PMM_Login.png" width="280" alt="PMM Login Page" />
+The negative-control suite exists because a green run proves nothing on its own. Note that
+container suites cannot substitute for a native install: SELinux transitions and file
+capabilities are both inert under `docker run --privileged`, and have hidden real blockers.
 
-Enter the username and password. The defaults are username: **admin** and password: **admin**
+## Components
 
-# Need help?
+Server side, packaged as `pfm-server` and its dependencies: `pfm-managed` (the API and
+inventory), a [Grafana fork](https://github.com/postgres1st/grafana) for the interface,
+VictoriaMetrics and `vmproxy` for metrics, ClickHouse and `qan-api2` for query analytics,
+and the provisioned dashboards. Client side, `pfm-client` installs `pfm-agent` and
+`pfm-admin`.
 
-| **Commercial Support** | **Community Support** |
-|:-----------------------|:----------------------|
-| **Enterprise-grade support** for mission-critical monitoring deployments with Percona Monitoring and Management. <br/><br/>Get expert guidance for complex monitoring scenarios across hybrid environments—from cloud providers to bare metal infrastructures. | Connect with our engineers and community members to troubleshoot issues, share best practices, and discuss monitoring strategies. |
-| **[Get Percona Support](https://hubs.ly/Q02_Fs100)** | **[Visit our Forum](https://forums.percona.com/c/percona-monitoring-and-management-pmm)** |
+Some inherited components still carry upstream names in their spec files and Go module
+paths. That rebrand is deliberate remaining work, not an oversight.
 
+## Contributing
 
-## How to get involved
-
-We encourage contributions and are always looking for new members that are as dedicated to serving the community as we are.
-
-If you’re looking for information about how you can contribute, we have [contribution guidelines](CONTRIBUTING.md) across all our repositories in `CONTRIBUTING.md` files. Some of them may just link to the main project’s repository’s contribution guidelines.
-
-We're looking forward to your contributions and hope to hear from you soon on our [Forums](https://forums.percona.com).
-
-## Submitting bug reports
-
-If you find a bug in Percona Monitoring and Management  or one of the related projects, you should submit a report to that project's [JIRA](https://perconadev.atlassian.net) issue tracker. Some of related projects also have GitHub Issues enabled, so you could also submit there.
-
-Your first step should be [to search](https://perconadev.atlassian.net/issues/?jql=project=PMM) the existing set of open tickets for a similar report. If you find that someone else has already reported your problem, then you can upvote that report to increase its visibility.
-
-If there is no existing report, submit a report following these steps:
-
-1. [Sign in to Percona JIRA](https://perconadev.atlassian.net). You will need to create an account if you do not have one.
-2. From the top navigation bar, anywhere in Jira, click **Create**. 
-3. Select Percona Monitoring and Management (PMM) from the **Project** drop-down menu. 
-4. Fill in the fields of **Summary**, **Description**, **Steps To Reproduce**, and **Affects Version** to the best you can. If the bug corresponds to a crash, attach the stack trace from the logs.
-
-An excellent resource is [Elika Etemad's article on filing good bug reports](http://fantasai.inkedblade.net/style/talks/filing-good-bugs/).
-
-As a general rule of thumb, please try to create bug reports that are:
-
-- *Reproducible* - Include steps to reproduce the problem.
-- *Specific* - Include as much detail as possible: which version, what environment, etc.
-- *Unique* - Do not duplicate existing tickets.
-
+See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests go to
+[postgres1st/pfm](https://github.com/postgres1st/pfm).
 
 ## Licensing
 
-Percona is dedicated to **keeping open source open**. Wherever possible, we strive to apply a permissive license to both our software and documentation. 
+PFMM is built on Percona Monitoring and Management and Grafana, and everything Postgres1st
+builds is licensed under the **GNU Affero General Public License, version 3**.
 
-PMM components are licensed under the following open source licenses:
-- PMM Server: [GNU AGPLv3](./LICENSE)
-- PMM Client: [Apache 2.0](./agent/LICENSE)
-- PMM Documentation: [GNU AGPLv3](./documentation/LICENSE)
+| Component | Licence |
+|---|---|
+| Server | [GNU AGPLv3](LICENSE) |
+| Client agent | [Apache 2.0](agent/LICENSE) |
+| Documentation | [GNU AGPLv3](documentation/LICENSE) |
+
+Bundled third-party components keep their own licences — Apache 2.0 for ClickHouse and
+VictoriaMetrics, the PostgreSQL Licence for PostgreSQL. Each package declares its own;
+`rpm -qi <package>` reports it.
+
+## Upstream
+
+PFMM is derived from [percona/pmm](https://github.com/percona/pmm) and keeps its version
+number: PFMM 3.9.0 corresponds to PMM 3.9.0. Copyright in the inherited code remains with
+Percona LLC and the other original authors, and the AGPL headers are preserved throughout.
