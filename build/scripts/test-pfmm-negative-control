@@ -240,10 +240,19 @@ phase_upgrade() {
     # --------------------------------------------------------------------- data stores
 
     hdr "data survival (one control per store)"
+    # 20s, not 4: the RESTORE here is a write, and `pfm-admin add postgresql` does real
+    # work before the service appears in the inventory -- it probes for pg_stat_monitor,
+    # falls back to pg_stat_statements, and sets up an exporter agent. Observed failing at
+    # 4s ("did not recover after restore -- the control left the host dirty", plus a
+    # knock-on "left red on the upgrade host"), while the identical command run by hand
+    # immediately afterwards succeeded. That is the exact flake this file's own ctl header
+    # warns about: a predicate that WRITES needs pfm-managed further along than readyz
+    # indicates. Two reported failures from one under-tuned budget, and each costs someone
+    # a fresh investigation to re-discover it is not a real defect.
     ctl "p_service_registered (deregister the monitored service)" \
         "p_service_registered" \
         "inc \"/usr/sbin/pfm-admin ${SRV} remove postgresql canary-pg\"" \
-        "inc \"/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\\\$(cat /srv/.postgres_password) canary-pg\"" 4
+        "inc \"/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\\\$(cat /srv/.postgres_password) canary-pg\"" 20
 
     ctl "p_grafana_folder (delete the folder)" \
         "p_grafana_folder" \
