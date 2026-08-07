@@ -15,7 +15,16 @@
 # release is stamped with a build timestamp + commit there, like the sibling
 # specs). It is deliberately not settable here -- a variable that looked like it
 # controlled the version but was never passed to rpmbuild is worse than none.
-PFMM_PMM_VERSION=${PFMM_PMM_VERSION:-3.9.0}         # pfm-managed / pfm-client
+# `~beta1`, never `-beta1`. rpm reads a tilde as a pre-release marker, so
+# 3.9.0~beta1 sorts BELOW 3.9.0 and the beta upgrades cleanly to the release with no
+# suffix on it. The hyphen form sorts ABOVE 3.9.0 and would strand a customer on the
+# beta permanently. For the same reason the final release is plain 3.9.0, not 3.9.0-ga:
+# a -ga suffix also sorts above the bare version, so it could never be dropped again.
+#
+#   3.9.0~beta1-1  <  3.9.0~beta2-1  <  3.9.0-1  <  3.9.0-2
+#
+# Note the hyphen in a NEVRA separates Version from Release; it is not part of either.
+PFMM_PMM_VERSION=${PFMM_PMM_VERSION:-3.9.0~beta1}   # pfm-managed / pfm-client
 PFMM_GRAFANA_VERSION=${PFMM_GRAFANA_VERSION:-12.4.5}
 PFMM_DIST=${PFMM_DIST:-.el9}
 

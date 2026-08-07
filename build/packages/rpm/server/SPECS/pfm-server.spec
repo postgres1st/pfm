@@ -30,7 +30,10 @@
 # metapackage the customer actually installs look OLDER than the 3.9.0 components
 # inside it. 3.9.0 > 3.0.0, so this is a normal upgrade for anyone already on the
 # old number and needs no Epoch.
-%define full_pfm_version 3.9.0
+# `~beta1` (tilde, not hyphen): rpm reads it as a pre-release, so this sorts BELOW a
+# plain 3.9.0 and upgrades to the release cleanly. Keep in step with PFMM_PMM_VERSION in
+# build/scripts/pfmm-airgap-vars, which carries the same value for the sibling packages.
+%define full_pfm_version 3.9.0~beta1
 
 # Release carries a build timestamp and the source commit, matching the sibling
 # specs (pfm-managed, percona-dashboards, grafana). Without it every build
