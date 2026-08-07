@@ -15,7 +15,7 @@ Stages are resumable so a failure does not repeat the expensive ones
 
 `grafana-fe` → `grafana-be` → `pmm-bin` → `exporters` → `s3` → `rpms` → `closure` → `bundle`
 
-Output lands in `build/.pfmm-airgap/` (gitignored): a `pfmm-repo/` yum repo, an
+Output lands in `build/.pfmm-airgap-<arch>/` (gitignored): a `pfmm-repo/` yum repo, an
 `INSTALL.md`, and a tarball plus `.sha256`.
 
 Every input is pinned to an exact commit in **`pfmm-airgap-vars`**. Do not replace those

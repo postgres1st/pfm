@@ -49,7 +49,7 @@ source "${bin_dir}/pfmm-airgap-vars"
 # shellcheck source=/dev/null
 source "${bin_dir}/pfmm-test-lib"
 
-PFMM_OUT=${PFMM_OUT:-${repo_dir}/build/.pfmm-airgap}
+# PFMM_OUT (arch-suffixed) comes from pfmm-airgap-vars.
 work=${PFMM_OUT}/work
 repo_b=${1:-${PFMM_OUT}/pfmm-repo}
 container=${PFMM_TEST_CONTAINER:-pfm-upgrade-test}

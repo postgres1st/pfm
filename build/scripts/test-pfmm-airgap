@@ -26,7 +26,7 @@ source "${bin_dir}/pfmm-airgap-vars"
 # shellcheck source=/dev/null
 source "${bin_dir}/pfmm-test-lib"
 
-repo=${1:-${PFMM_OUT:-${repo_dir}/build/.pfmm-airgap}/pfmm-repo}
+repo=${1:-${PFMM_OUT}/pfmm-repo}
 container=${PFMM_TEST_CONTAINER:-pfm-airgap-test}
 network=${PFMM_TEST_NETWORK:-pfm-airgap-net}
 keep=${PFMM_TEST_KEEP:-1}

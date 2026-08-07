@@ -108,6 +108,25 @@ x86_64)
   ;;
 esac
 
+# --- build workspace and bundle output ----------------------------------------
+# Arch-suffixed, and defined HERE rather than in each script, for two reasons.
+#
+# Arch-suffixed: one clone can hold an aarch64 and an x86_64 build without either
+# clobbering the other. It also makes the split build safe -- building the closure on
+# an x86_64 host and running only the `bundle` stage on an aarch64 workstation (so the
+# signing key never has to leave it) then writes to .pfmm-airgap-x86_64 rather than
+# over the local aarch64 tree.
+#
+# Defined once: this default used to be duplicated as a literal in build-pfmm-airgap,
+# test-pfmm-airgap, test-pfmm-upgrade and pfmm-test-lib. Four copies of a path is four
+# chances to desync, and making the builder arch-aware while a suite kept the old
+# literal would point the suite at a directory nothing had written -- which fails
+# looking like a broken build, not a stale path. All four already source this file.
+#
+# repo_dir is set by each caller before sourcing; the fallback keeps this usable if a
+# future caller forgets.
+PFMM_OUT=${PFMM_OUT:-${repo_dir:-.}/build/.pfmm-airgap-${PFMM_ARCH}}
+
 # --- grafana dashboard plugins (percona-dashboards.spec Source1/Source2) ------
 PFMM_CLICKHOUSE_DS_VERSION=4.19.0
 PFMM_POLYSTAT_VERSION=2.1.16
