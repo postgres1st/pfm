@@ -75,13 +75,17 @@ Use the **absolute** path to the unpacked `pfmm-repo` directory, in both fields.
 
 This bundle ships PFMM, PostgreSQL and ClickHouse. It does **not** ship your
 distribution's own packages — `nginx`, `perl`, `polkit`, `openssl` and friends are the
-OS vendor's to supply, and a current EL9 host already has most of them.
+OS vendor's to supply.
 
-**If the server can reach your OS repositories** (a Satellite, a local mirror, or the
-internet), skip to step 5. `dnf` will pull what it needs from them.
+**In almost every case there is nothing to do here.** A host that runs an air-gapped
+EL9 server already has a package source — Satellite, Katello, a mirrored `reposync` —
+because without one it could not be patched or provisioned at all. Point `dnf` at it as
+usual and go to step 5.
 
-**If it cannot**, run the bundled script on an internet-connected EL9 host of the *same
-architecture*, then copy the result across:
+The rest of this step is for the exception: an evaluation box or a one-off server that
+sits outside your managed fleet and has no repository of its own. For that case, run the
+bundled script on an internet-connected EL9 host of the *same architecture* and copy the
+result across:
 
 ```bash
 ./fetch-os-dependencies.sh              # on a connected @ARCH@ host
@@ -102,13 +106,14 @@ architecture or EL version rather than producing a set that fails here.
 ## 5. Install
 
 ```bash
-sudo dnf --disablerepo='*' --enablerepo=pfmm --enablerepo=pfmm-os-deps install pfm-server
+sudo dnf --enablerepo=pfmm install pfm-server
 ```
 
-`--disablerepo='*'` guarantees nothing is pulled from the network — the install will
-fail loudly rather than silently reaching out. Drop `--enablerepo=pfmm-os-deps` if you
-skipped step 4 and are using your own OS repositories; in that case leave those enabled
-instead of disabling everything.
+`--enablerepo=pfmm` names where PFMM, PostgreSQL and ClickHouse come from — and works
+whether or not you left `enabled=1` in the repository file, so it is safe if your site
+adds repositories disabled by default. Your own repositories stay enabled, which is how
+`nginx`, `perl` and the other operating-system packages get resolved, exactly as they
+would for anything else you install on this host.
 
 ## 6. Start
 
@@ -265,7 +270,7 @@ sudo sed -i 's|baseurl=.*|baseurl=file:///opt/pfmm-new/pfmm-repo|;
 
 # 3. upgrade
 sudo dnf clean all
-sudo dnf --disablerepo='*' --enablerepo=pfmm upgrade
+sudo dnf --enablerepo=pfmm upgrade 'pfm-*' 'percona-*' vmproxy pmm-dump
 ```
 
 Then restart what changed. `dnf` does not restart these services for you:
@@ -329,7 +334,7 @@ installed instead, pass `--query-source=pgstatmonitor`.
 Use the same bundle, so the database host needs no internet either:
 
 ```bash
-sudo dnf --disablerepo='*' --enablerepo=pfmm install pfm-client
+sudo dnf --enablerepo=pfmm install pfm-client
 ```
 
 ### 3. Register the host, then the instance
