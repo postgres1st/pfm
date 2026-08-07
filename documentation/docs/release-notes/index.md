@@ -6,5 +6,5 @@ Release notes for Postgres1st Monitoring and Management (PFMM).
 
 ## Why the numbering starts at 3.9.0
 
-PFMM is derived from Percona Monitoring and Management 3.8.0/3.9.0 and keeps that version
+PFMM is derived from Percona Monitoring and Management 3.9.0 and keeps that version
 number. This is the first PFMM release.
