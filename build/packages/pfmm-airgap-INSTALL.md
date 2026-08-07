@@ -331,11 +331,52 @@ installed instead, pass `--query-source=pgstatmonitor`.
 
 ### 2. Install the client on that host
 
-Use the same bundle, so the database host needs no internet either:
+The client comes from the same bundle, so the database host needs no internet either —
+but the bundle has to get there first. Nothing on this host is set up by the server
+install; repeat on each database host you monitor.
+
+Copy the tarball across and unpack it:
+
+```bash
+tar xzf pfmm-server-el9-@ARCH@.tar.gz
+```
+
+Set up the signing key on this host exactly as you did on the server — see step 2 of the
+server installation — then point `dnf` at the repository:
+
+```bash
+sudo tee /etc/yum.repos.d/pfmm.repo >/dev/null <<'EOF'
+[pfmm]
+name=PFMM
+baseurl=file:///absolute/path/to/pfmm-repo
+enabled=1
+gpgcheck=1
+gpgkey=file:///absolute/path/to/pfmm-repo/RPM-GPG-KEY-postgres1st
+EOF
+```
+
+Then install:
 
 ```bash
 sudo dnf --enablerepo=pfmm install pfm-client
 ```
+
+The package enables and starts `pfm-agent` for you; there is nothing to start by hand.
+
+As on the server, the operating-system packages `pfm-client` depends on come from your
+own repositories. If this host has none, use `fetch-os-dependencies.sh` from the bundle
+the same way — see step 4 of the server installation.
+
+> **Firewall.** The exporters `pfm-client` runs bind **42000-42010 on all interfaces**
+> and are **not authenticated** — this is upstream behaviour and applies to every
+> monitored host. The PFMM server scrapes them over the network, so they must be
+> reachable *from the server* and firewalled off from everything else:
+>
+> ```bash
+> sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 \
+>      source address=<pfmm-server-ip> port port=42000-42010 protocol=tcp accept'
+> sudo firewall-cmd --reload
+> ```
 
 ### 3. Register the host, then the instance
 
@@ -348,9 +389,14 @@ sudo pfm-admin add postgresql --host=127.0.0.1 --port=5432 \
      --environment=production --cluster=<cluster-name> <service-name>
 ```
 
-Drop `--server-insecure-tls` once you have installed a trusted certificate.
-`--environment` and `--cluster` are optional but worth setting — the dashboards
-group by them.
+The first command registers this machine as a node; the second registers the database
+running on it. Both are needed — `pfm-admin add` fails if the node is not registered
+first.
+
+`--server-insecure-tls` is needed because first boot generates a self-signed certificate,
+which the client will otherwise refuse. Drop it once you have installed a trusted
+certificate (see *Replace the self-signed certificate*). `--environment` and `--cluster`
+are optional but worth setting — the dashboards group by them.
 
 Confirm it arrived:
 
