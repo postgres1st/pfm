@@ -30,7 +30,23 @@ ProtectControlGroups=yes
 RestrictSUIDSGID=yes
 RestrictRealtime=yes
 LockPersonality=yes
-CapabilityBoundingSet=
+# clickhouse-common-static's %post puts file capabilities on the binary:
+#   cap_net_bind_service,cap_net_admin,cap_ipc_lock,cap_sys_nice=ep
+# execve() returns EPERM when a file's PERMITTED set is not a subset of the bounding
+# set, so `CapabilityBoundingSet=` (empty) here made the binary unexecutable on a
+# native RHEL host -- 203/EXEC, and qan-api2 then hung in start-pre forever waiting
+# on port 9000. Docker tolerated it, so both container suites stayed green.
+#
+# This list is a CEILING, not a grant. NoNewPrivileges=yes above suppresses the file
+# capabilities entirely: the process runs with CapPrm=CapEff=0, and ClickHouse says
+# so itself ("no CAP_IPC_LOCK capability, binary mlock will be disabled"). Verified
+# on RHEL 9.8 -- with NoNewPrivileges=no the same unit really does gain all four.
+#
+# ---> These two directives are a PAIR. Dropping NoNewPrivileges=yes silently turns
+#      this ceiling into a real grant of CAP_NET_ADMIN and friends.
+# p_ch_caps_within_bounding_set guards the other direction: an upstream clickhouse
+# that adds a fifth capability must be caught here, not by a customer.
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN CAP_IPC_LOCK CAP_SYS_NICE
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 ReadWritePaths=/srv/clickhouse /srv/logs /run/clickhouse-server
 IPAddressDeny=any
