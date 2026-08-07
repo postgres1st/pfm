@@ -57,6 +57,12 @@ Source0:        %{repo}-%{shortcommit}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  systemd-rpm-macros
+# Builds pfm_nginx.pp. No matching runtime Requires: semodule lives in
+# policycoreutils, which a real RHEL host always has but our test containers do not
+# (verified: no semodule, no policy store). The scriptlets below are guarded so a
+# host without SELinux installs cleanly and simply runs unconfined, rather than the
+# transaction failing on a machine that never needed the policy.
+BuildRequires:  selinux-policy-devel
 
 Requires(pre):    shadow-utils
 Requires(post):   systemd
@@ -99,9 +105,15 @@ without a container.
 %setup -q -n %{repo}-%{commit}
 
 %build
-# Nothing to compile; this package only ships config, units and scripts.
+# The SELinux module is the only thing compiled here; everything else is config,
+# units and scripts. See build/packages/selinux/pfm_nginx.te for why we ship policy
+# at all -- in short, /srv is site-specific so no vendor can label it for us.
+(cd build/packages/selinux && make -f %{_datadir}/selinux/devel/Makefile pfm_nginx.pp)
 
 %install
+install -d -p %{buildroot}%{_datadir}/selinux/packages
+install -p -m 0644 build/packages/selinux/pfm_nginx.pp \
+    %{buildroot}%{_datadir}/selinux/packages/pfm_nginx.pp
 install -d -p %{buildroot}%{_unitdir}
 install -d -p %{buildroot}%{_tmpfilesdir}
 install -d -p %{buildroot}%{_sysusersdir}
@@ -197,6 +209,20 @@ getent passwd pfm >/dev/null || \
 exit 0
 
 %post
+# SELinux policy for our /srv layout, installed on every transaction so an upgraded
+# module actually takes effect. Guarded and never fatal: a host with no SELinux
+# tooling (our Rocky 9 test containers have neither semodule nor a policy store)
+# must install cleanly and run unconfined rather than fail the transaction.
+# -n defers the policy reload so we reload once, explicitly, only when enabled.
+if [ -x %{_sbindir}/semodule ]; then
+    %{_sbindir}/semodule -n -i %{_datadir}/selinux/packages/pfm_nginx.pp >/dev/null 2>&1 || :
+    if %{_sbindir}/selinuxenabled 2>/dev/null; then
+        %{_sbindir}/load_policy >/dev/null 2>&1 || :
+        # /srv is created by this scriptlet below and populated later by pfm-init,
+        # so relabel what exists now; pfm-init restorecons what it creates itself.
+        restorecon -R /srv >/dev/null 2>&1 || :
+    fi
+fi
 %systemd_post pfm.target
 if [ $1 -eq 1 ]; then
     # First install: materialize the account/runtime dirs and enable the target.
@@ -271,6 +297,12 @@ if [ $1 -eq 0 ]; then
     # pfm-client's pfm-agent.service, otherwise it stays masked forever and
     # pfm-client can never run its own agent again.
     systemctl unmask pfm-agent.service >/dev/null 2>&1 || :
+    # Same condition: only on full removal. Removing the module during an upgrade
+    # would leave the host unconfined between %postun and the new %post.
+    if [ -x %{_sbindir}/semodule ]; then
+        %{_sbindir}/semodule -n -r pfm_nginx >/dev/null 2>&1 || :
+        %{_sbindir}/selinuxenabled 2>/dev/null && %{_sbindir}/load_policy >/dev/null 2>&1 || :
+    fi
 fi
 
 %files
@@ -290,6 +322,10 @@ fi
 %{_tmpfilesdir}/pfm.conf
 %{_sysusersdir}/pfm.conf
 %dir %{_datadir}/pfm
+# Not %dir on selinux/packages: /usr/share/selinux/packages is owned by
+# selinux-policy, which is present wherever the module is usable. Claiming it here
+# would conflict.
+%{_datadir}/selinux/packages/pfm_nginx.pp
 %attr(0755, root, root) %{_datadir}/pfm/pfm-init.sh
 %{_datadir}/pfm/clickhouse
 %{_datadir}/pfm/grafana

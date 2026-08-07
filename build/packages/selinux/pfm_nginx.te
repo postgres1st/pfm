@@ -1,0 +1,27 @@
+# PFMM SELinux policy module.
+#
+# Why this exists: RHEL's targeted policy covers nginx completely -- for nginx
+# deployed the RHEL way. It cannot cover ours. Policy binds permissions to labels,
+# labels are assigned by path, and we keep nginx's TLS material and buffers under
+# /srv, which is site-specific and therefore generic var_t. No vendor can label /srv
+# on our behalf, so a product that owns a layout ships the policy describing it.
+#
+# systemd (init_t) exec's /usr/sbin/nginx, which RHEL labels httpd_exec_t, so the
+# service transitions to httpd_t regardless of User=pfm -- domain transitions are
+# computed from (source domain, exec file type), not the Unix UID. We keep that
+# confinement and teach it about our paths rather than escaping it.
+#
+# Deliberately NOT done here:
+#   - relabelling /usr/sbin/nginx: Red Hat owns that binary, and a private exec type
+#     would change the domain for any other nginx on the host, silently.
+#   - setsebool httpd_can_network_connect: global, and lets every httpd_t process on
+#     the box dial anywhere including off-host. Narrow port rules replace it.
+#
+# The filename base must equal the policy_module() name -- checkmodule rejects
+# pfm-nginx.te declaring pfm_nginx. Hence underscores, not the hyphen used in our
+# package names.
+#
+# Version 0.0.1 is intentionally empty: it proves the build, packaging and load path
+# end to end before any rule exists, so a later failure is unambiguously about a rule.
+
+policy_module(pfm_nginx, 0.0.1)

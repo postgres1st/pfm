@@ -145,7 +145,10 @@ PFMM_SIGN_KEY_FILE=${PFMM_SIGN_KEY_FILE:-RPM-GPG-KEY-postgres1st}
 PFMM_GO_IMAGE=${PFMM_GO_IMAGE:-golang:1.26.5}
 PFMM_NODE_IMAGE=${PFMM_NODE_IMAGE:-node:24}
 PFMM_UI_NODE_IMAGE=${PFMM_UI_NODE_IMAGE:-node:22}
-PFMM_RPMBUILD_IMAGE=${PFMM_RPMBUILD_IMAGE:-pfm-rpmbuilder:9}
+# Tag is bumped whenever the image's package list changes -- build_rpmbuilder_image()
+# skips the build when the tag already exists, so reusing a tag would silently keep a
+# stale image. :9.1 added selinux-policy-devel + make for pfm_nginx.pp.
+PFMM_RPMBUILD_IMAGE=${PFMM_RPMBUILD_IMAGE:-pfm-rpmbuilder:9.1}
 PFMM_EL_IMAGE=${PFMM_EL_IMAGE:-rockylinux/rockylinux:9}
 PFMM_SYSTEMD_IMAGE=${PFMM_SYSTEMD_IMAGE:-pfm-rocky9-systemd}
 
