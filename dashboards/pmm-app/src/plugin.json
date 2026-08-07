@@ -181,7 +181,7 @@
     {
       "type": "dashboard",
       "name": "HAProxy Instance Summary",
-      "path": "dashboards/MySQL/HAProxy_Instance_Summary.json"
+      "path": "dashboards/PostgreSQL/HAProxy_Instance_Summary.json"
     }
   ],
   "dependencies": {
