@@ -37,8 +37,11 @@ compose.yml
 .modules
 build.log
 build/.cache/
-# build-pfmm-airgap workspace + bundle output
-build/.pfmm-airgap/
+# build-pfmm-airgap workspace + bundle output. The glob matters: PFMM_OUT is routinely
+# overridden per architecture (build/.pfmm-airgap-aarch64, -x86_64), and those variants
+# were not ignored -- 31k untracked files and ~8 GB of grafana build output sitting one
+# `git add -A` away from the index.
+build/.pfmm-airgap*/
 packer.log
 ci.yml
 
