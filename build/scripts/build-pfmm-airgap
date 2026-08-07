@@ -627,38 +627,49 @@ sign_bundle() {
 # sign_bundle writes the key file only when it actually signed, so its presence is the
 # signal -- the same one test-pfmm-airgap's p_bundle_signed uses, rather than a second
 # opinion that could disagree with the suite.
+# Emit one installation guide, rewriting its signature-dependent parts when the bundle is
+# unsigned. Called once per guide -- the server one and the monitored-host one -- because
+# both carry an "import the signing key" step and a gpgcheck=1 repo stanza, and shipping
+# either unmodified with an unsigned bundle tells the operator to import a key that does
+# not exist.
+#
+#   write_install_md <template> <output>
 write_install_md() {
-    local out=$1
-    sed "s/@ARCH@/${arch}/g" "${repo_dir}/build/packages/pfmm-airgap-INSTALL.md" > "${out}"
+    local template=$1 out=$2 name
+    name=$(basename "${out}")
+    sed "s/@ARCH@/${arch}/g" "${template}" > "${out}"
     [ -f "${repo_out}/${PFMM_SIGN_KEY_FILE}" ] && return 0
 
-    printf 'WARNING: unsigned bundle -- INSTALL.md rewritten for gpgcheck=0\n' >&2
+    printf 'WARNING: unsigned bundle -- %s rewritten for gpgcheck=0\n' "${name}" >&2
 
-    # The rewrite below matches prose in pfmm-airgap-INSTALL.md. Edit that file so an
-    # anchor moves and awk would quietly transform less than it should, shipping
-    # signed-bundle instructions for an unsigned bundle -- the exact failure this
-    # function exists to prevent, reintroduced silently. Fail loudly instead, naming the
-    # anchor that moved, because the coupling between the two files is otherwise invisible.
+    # The rewrite matches prose in the template. Edit that file so an anchor moves and awk
+    # would quietly transform less than it should, shipping signed-bundle instructions for
+    # an unsigned bundle -- the exact failure this function exists to prevent, reintroduced
+    # silently. Fail loudly instead, naming the anchor, because the coupling between the
+    # script and the prose is otherwise invisible.
+    #
+    # The import-step heading is matched by shape rather than by number: it is step 2 in the
+    # server guide and step 3 in the client one, and hardcoding either would silently skip
+    # the other.
     local anchor
     for anchor in \
-        '^## 2\. Import the signing key$' \
-        '^## 3\.' \
+        '^## [0-9]+\. Import the signing key$' \
         '^gpgcheck=1$' \
-        '^gpgkey=file:' \
-        '^> With `gpgcheck=1`'
+        '^gpgkey=file:'
     do
         grep -qE "${anchor}" "${out}" || fail \
-            "INSTALL.md anchor missing: ${anchor}
-   build/packages/pfmm-airgap-INSTALL.md changed; update write_install_md to match."
+            "${name} anchor missing: ${anchor}
+   $(basename "${template}") changed; update write_install_md to match."
     done
 
     awk '
-        # Step 2 tells the operator to import a key this bundle does not contain.
-        /^## 2\. Import the signing key$/ {
-            print "## 2. Signature checking is DISABLED for this bundle"
+        # The import step tells the operator to import a key this bundle does not contain.
+        # Drop it through to the next heading, whatever that heading is numbered.
+        /^## [0-9]+\. Import the signing key$/ {
+            print "## Signature checking is DISABLED for this bundle"
             print ""
             print "**This bundle is UNSIGNED.** It ships no signing key, so there is nothing to"
-            print "import and `gpgcheck` must stay off -- the repository file in step 3 already"
+            print "import and `gpgcheck` must stay off -- the repository stanza below already"
             print "reflects that. Nothing here proves who built these packages: verify the"
             print "tarball `.sha256` at minimum, and prefer a signed bundle for production."
             print ""
@@ -666,13 +677,14 @@ write_install_md() {
             print "bundle has none."
             drop = 1; next
         }
-        drop && /^## 3\./ { drop = 0 }
+        drop && /^#/ { drop = 0 }
         drop { next }
         # The repo file has to work exactly as pasted.
         /^gpgcheck=1$/ { print "gpgcheck=0"; next }
         /^gpgkey=file:/ { next }
         # The note explaining what gpgcheck=1 buys is false for this bundle; replace the
         # whole blockquote rather than leaving a half-true claim about tamper detection.
+        # Only the server guide has it, so this is optional by construction.
         /^> With `gpgcheck=1`/ {
             print "> **Nothing is verified.** With `gpgcheck=0` dnf installs whatever sits in the"
             print "> repository directory, so a tampered or substituted RPM is accepted silently."
@@ -690,8 +702,8 @@ write_install_md() {
     # anchors say the input was shaped as expected; this says the output is actually safe.
     local left
     left=$(grep -cE '^gpgcheck=1$|^gpgkey=|rpm --import' "${out}" || true)
-    [ "${left}" = 0 ] || fail "unsigned INSTALL.md still carries ${left} signature-dependent line(s)"
-    grep -qE '^gpgcheck=0$' "${out}" || fail "unsigned INSTALL.md has no gpgcheck=0 line"
+    [ "${left}" = 0 ] || fail "unsigned ${name} still carries ${left} signature-dependent line(s)"
+    grep -qE '^gpgcheck=0$' "${out}" || fail "unsigned ${name} has no gpgcheck=0 line"
 }
 
 stage_bundle() {
@@ -717,7 +729,8 @@ stage_bundle() {
     # Sign before createrepo so the metadata is generated over the signed packages.
     sign_bundle
 
-    write_install_md "${PFMM_OUT}/INSTALL.md"
+    write_install_md "${repo_dir}/build/packages/pfmm-airgap-INSTALL.md"        "${PFMM_OUT}/INSTALL.md"
+    write_install_md "${repo_dir}/build/packages/pfmm-airgap-INSTALL-CLIENT.md" "${PFMM_OUT}/INSTALL-CLIENT.md"
     # Release notes live with the rest of the product documentation, one file per
     # release, prefixed pfmm- to distinguish genuine PFMM notes from the upstream Percona
     # ones inherited in the same directory. Copied verbatim -- unlike INSTALL.md they
@@ -739,7 +752,7 @@ stage_bundle() {
         sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
 
     local tarball=${PFMM_OUT}/pfmm-server-el9-${arch}.tar.gz
-    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo RELEASE_NOTES.md INSTALL.md fetch-os-dependencies.sh )
+    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo RELEASE_NOTES.md INSTALL.md INSTALL-CLIENT.md fetch-os-dependencies.sh )
     ( cd "${PFMM_OUT}" && sha256sum "$(basename "${tarball}")" > "$(basename "${tarball}").sha256" )
 
     log "done"

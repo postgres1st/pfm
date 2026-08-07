@@ -3,11 +3,13 @@
 Postgres1st Monitoring and Management (PFMM), delivered as a yum repository.
 **No internet access is required on any host.**
 
-**One bundle, two roles.** `pfmm-server-el9-@ARCH@.tar.gz` contains both the PFMM server
-and the `pfm-client` agent. Use the same tarball on the monitoring server (steps 1-7
-below) and on each PostgreSQL host you want to monitor (*Adding a monitored PostgreSQL
-instance*, near the end). The filename says `server` because the server is the larger
-part of it; there is no separate client download.
+**This document covers the monitoring server.** To monitor a PostgreSQL host, install the
+`pfm-client` agent on that host following **`INSTALL-CLIENT.md`**, which ships alongside
+this file.
+
+One bundle serves both: `pfmm-server-el9-@ARCH@.tar.gz` contains the server and the agent.
+The filename says `server` because that is the larger part of it; there is no separate
+client download.
 
 The bundle carries PFMM itself, PostgreSQL (PGDG) and ClickHouse — none of which your
 distribution provides. It does **not** carry your distribution's own packages: `nginx`,
@@ -311,114 +313,13 @@ systemctl --failed
 If `readyz` does not reach 200, start with `journalctl -u pfm-managed` and
 `journalctl -u pfm-grafana`.
 
-## Adding a monitored PostgreSQL instance
+## Monitoring a PostgreSQL host
 
-### 1. Prepare the database
+Everything above installs the monitoring server. To start monitoring a database, install
+the `pfm-client` agent on that database host — **see `INSTALL-CLIENT.md`**, which ships in
+this bundle and is written to be followed on the database host itself.
 
-Create an account for monitoring and enable the statistics extension. Run on the
-instance you want to monitor:
-
-```sql
-CREATE USER pfm WITH PASSWORD 'StrongPassword';
-GRANT pg_monitor TO pfm;                      -- PostgreSQL 10+
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
-```
-
-`pg_stat_statements` must also be loaded at startup, which needs a restart if it is
-not already there:
-
-```
-shared_preload_libraries = 'pg_stat_statements'
-```
-
-`pg_monitor` is a built-in role and is sufficient — a superuser is not required.
-Query Analytics works with `pg_stat_statements`; if you have `pg_stat_monitor`
-installed instead, pass `--query-source=pgstatmonitor`.
-
-### 2. Install the client on that host
-
-The client comes from the same bundle, so the database host needs no internet either —
-but the bundle has to get there first. Nothing on this host is set up by the server
-install; repeat on each database host you monitor.
-
-Copy the tarball across and unpack it. **This is the same file you used on the monitoring
-server** — it is named `pfmm-server-…` but contains `pfm-client` too, and you install
-only `pfm-client` here:
-
-```bash
-tar xzf pfmm-server-el9-@ARCH@.tar.gz
-```
-
-Set up the signing key on this host exactly as you did on the server — see step 2 of the
-server installation — then point `dnf` at the repository:
-
-```bash
-sudo tee /etc/yum.repos.d/pfmm.repo >/dev/null <<'EOF'
-[pfmm]
-name=PFMM
-baseurl=file:///absolute/path/to/pfmm-repo
-enabled=1
-gpgcheck=1
-gpgkey=file:///absolute/path/to/pfmm-repo/RPM-GPG-KEY-postgres1st
-EOF
-```
-
-Then install:
-
-```bash
-sudo dnf --enablerepo=pfmm install pfm-client
-```
-
-The package enables and starts `pfm-agent` for you; there is nothing to start by hand.
-
-As on the server, the operating-system packages `pfm-client` depends on come from your
-own repositories. If this host has none, use `fetch-os-dependencies.sh` from the bundle
-the same way — see step 4 of the server installation.
-
-> **Firewall.** The exporters `pfm-client` runs bind **42000-42010 on all interfaces**
-> and are **not authenticated** — this is upstream behaviour and applies to every
-> monitored host. The PFMM server scrapes them over the network, so they must be
-> reachable *from the server* and firewalled off from everything else:
->
-> ```bash
-> sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 \
->      source address=<pfmm-server-ip> port port=42000-42010 protocol=tcp accept'
-> sudo firewall-cmd --reload
-> ```
-
-### 3. Register the host, then the instance
-
-```bash
-sudo pfm-admin config --server-url=https://admin:<password>@<pfmm-host>:8443 \
-     --server-insecure-tls <this-host-address> generic <node-name>
-
-sudo pfm-admin add postgresql --host=127.0.0.1 --port=5432 \
-     --username=pfm --password=StrongPassword \
-     --environment=production --cluster=<cluster-name> <service-name>
-```
-
-The first command registers this machine as a node; the second registers the database
-running on it. Both are needed — `pfm-admin add` fails if the node is not registered
-first.
-
-`--server-insecure-tls` is needed because first boot generates a self-signed certificate,
-which the client will otherwise refuse. Drop it once you have installed a trusted
-certificate (see *Replace the self-signed certificate*). `--environment` and `--cluster`
-are optional but worth setting — the dashboards group by them.
-
-Confirm it arrived:
-
-```bash
-sudo pfm-admin list
-```
-
-The service appears in the UI within a minute or two, once the first scrape lands.
-
-### Removing an instance
-
-```bash
-sudo pfm-admin remove postgresql <service-name>
-```
+It uses the same tarball you unpacked here; there is no separate client download.
 
 ## Ports
 
