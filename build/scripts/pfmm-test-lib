@@ -157,6 +157,25 @@ p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 # Not parameterised: a capless path would read as GREEN, so there is no known-bad
 # path to feed and ctl_input would be a false pass. The negative control breaks real
 # state instead (adds an uncovered capability to the binary).
+# The SELinux module must SHIP, and pfm-server must own it.
+#
+# Only the artifact is asserted here, not that it is loaded: these containers have no
+# SELinux tooling at all -- no semodule, no policy store, no selinux-policy-targeted
+# -- so `semodule -l` cannot answer and a load assertion would be permanently
+# unrunnable, not merely weak. Whether the module loads and silences the denials is a
+# native-host property and belongs to the VM check, the same split forced by
+# p_ch_caps_within_bounding_set.
+#
+# That same absence is why pfm-server's scriptlets are guarded: an unguarded
+# `semodule -i` in %post would fail the transaction here and take the whole bundle
+# down. This assertion passing while the container has no SELinux is exactly the
+# intended behaviour, not a gap.
+p_selinux_module_shipped() {
+    inc 'pp=/usr/share/selinux/packages/pfm_nginx.pp
+         [ -s "$pp" ] || exit 1
+         rpm -qf "$pp" 2>/dev/null | grep -q "^pfm-server"'
+}
+
 p_ch_caps_within_bounding_set() {
     inc 'bin=/usr/bin/clickhouse
          # -e, not getcap'"'"'s exit status: getcap exits 0 on a missing file and only

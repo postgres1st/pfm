@@ -122,10 +122,16 @@ build_rpmbuilder_image() {
     # fontconfig: grafana.spec BuildRequires. unzip: percona-dashboards.spec %install
     # unpacks the plugin zips. systemd-devel: pfm-client.spec BuildRequires
     # pkgconfig(systemd). systemd-rpm-macros: %systemd_post in pfm-server.spec.
+    # selinux-policy-devel + make: pfm-server.spec %build compiles pfm_nginx.pp.
+    #
+    # NOTE: this function returns early when the tag already exists, so changing the
+    # package list WITHOUT bumping the tag in pfmm-airgap-vars silently reuses a
+    # stale image and the build fails on a missing BuildRequires. Bump the tag.
     docker build -t "${PFMM_RPMBUILD_IMAGE}" - <<EOF
 FROM ${PFMM_EL_IMAGE}
 RUN dnf -y install rpm-build rpmdevtools createrepo_c dnf-plugins-core yum-utils \\
-    tar gzip which fontconfig unzip systemd-rpm-macros systemd systemd-devel && dnf clean all
+    tar gzip which fontconfig unzip systemd-rpm-macros systemd systemd-devel \\
+    selinux-policy-devel make && dnf clean all
 EOF
 }
 
