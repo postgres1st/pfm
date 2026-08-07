@@ -354,6 +354,12 @@ run_upgrade_suite() {
     p_ch_owned_by_pfm    && ok "/etc/clickhouse-server is pfm-owned again" || no "/etc/clickhouse-server is still not pfm-owned"
     p_ch_config_readable && ok "ClickHouse's own user can read its config again" \
         || no "pfm cannot read /etc/clickhouse-server/config.xml -- ClickHouse is running degraded"
+    # Asserted AFTER the upgrade transaction on purpose: the clickhouse package sets
+    # its file capabilities from %post, so an upgrade is exactly when a new one can
+    # appear. A cap added upstream that we do not cover leaves the unit unstartable
+    # on a native host while this container keeps running the already-exec'd process.
+    p_ch_caps_within_bounding_set && ok "clickhouse fcaps still within CapabilityBoundingSet after upgrade" \
+        || no "the clickhouse upgrade added a file capability outside CapabilityBoundingSet -- 203/EXEC on a native host"
 
     cat <<'EOF'
 

@@ -197,6 +197,8 @@ run_airgap_suite() {
     p_ch_requires_perms && ok "clickhouse requires the ownership repair" \
         || no "clickhouse does not require the repair unit"
     p_ch_owned_by_pfm && ok "/etc/clickhouse-server is pfm-owned" || no "/etc/clickhouse-server is not pfm-owned"
+    p_ch_caps_within_bounding_set && ok "clickhouse fcaps are within the unit's CapabilityBoundingSet" \
+        || no "clickhouse carries a file capability outside CapabilityBoundingSet -- execve gives EPERM (203/EXEC) on a native host"
 
     # An unchanging NEVRA makes dnf skip the package silently: for pfm-server that
     # is every unit, pfm-init.sh and the grafana/nginx/polkit config; for

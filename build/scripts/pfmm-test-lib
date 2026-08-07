@@ -136,6 +136,42 @@ p_ch_owned_by_pfm()    { inc 'test "$(stat -c %U /etc/clickhouse-server)" = pfm'
 p_mysql_rejected()     { inc "/usr/sbin/pfm-admin ${SRV} add mysql --host=127.0.0.1 --port=3306 --username=root gate-mysql 2>&1 | grep -q 'not supported by this deployment'"; }
 p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 
+# Every file capability on the clickhouse binary must be inside pfm-clickhouse's
+# CapabilityBoundingSet. execve() fails with EPERM when a file's PERMITTED set is not
+# a subset of the process's bounding set, so `CapabilityBoundingSet=` (empty) makes a
+# capability-carrying binary unexecutable: 203/EXEC, ClickHouse never starts, and
+# qan-api2 then hangs in start-pre forever waiting on port 9000.
+#
+# Deliberately STATIC -- it compares the two declared sets rather than asking whether
+# pfm-clickhouse is running, because a container does not enforce this at all. Both
+# suites shipped this exact defect, with these four fcaps and an empty bounding set,
+# and stayed green because ClickHouse started anyway under docker. Confirmed while
+# writing this: granting the binary an extra cap in the container still leaves the
+# unit active/success, while the same state is 203/EXEC on RHEL 9.8. Any runtime
+# probe here would be decorative -- which is how this reached a customer-facing
+# install in the first place.
+#
+# No fcaps at all is a pass: nothing can then exceed the bounding set. A missing
+# binary is a fail, since getcap cannot then vouch for anything.
+#
+# Not parameterised: a capless path would read as GREEN, so there is no known-bad
+# path to feed and ctl_input would be a false pass. The negative control breaks real
+# state instead (adds an uncovered capability to the binary).
+p_ch_caps_within_bounding_set() {
+    inc 'bin=/usr/bin/clickhouse
+         # -e, not getcap'"'"'s exit status: getcap exits 0 on a missing file and only
+         # warns on stderr, so testing it would let a vanished binary read as
+         # "no capabilities, nothing to exceed" -- a pass. Caught by the control.
+         [ -e "$bin" ] || exit 1
+         caps=$(getcap "$bin" | sed "s|^[^ ]* ||; s/=.*$//; s/,/ /g")
+         [ -n "$caps" ] || exit 0
+         bnd=" $(systemctl show pfm-clickhouse.service -p CapabilityBoundingSet --value) "
+         for c in $caps; do
+             case "$bnd" in *" $c "*) ;; *) exit 1 ;; esac
+         done
+         exit 0'
+}
+
 summary() {
     printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
     if [ "${keep}" = "0" ]; then docker rm -f "${container}" >/dev/null 2>&1 || true
