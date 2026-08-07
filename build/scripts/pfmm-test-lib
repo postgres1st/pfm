@@ -34,7 +34,7 @@ build_systemd_image() {
     local osdeps deplist
     # Same default the suites use for PFMM_OUT, so a plain `test-pfmm-airgap` with no
     # environment still finds the list the build just wrote.
-    deplist=${PFMM_OUT:-${repo_dir:-.}/build/.pfmm-airgap}/os-dependencies.txt
+    deplist=${PFMM_OUT}/os-dependencies.txt
     if [ -s "${deplist}" ]; then
         osdeps=$(tr '\n' ' ' < "${deplist}")
     else

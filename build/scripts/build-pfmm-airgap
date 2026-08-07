@@ -31,7 +31,7 @@ repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
 # shellcheck source=/dev/null
 source "${bin_dir}/pfmm-airgap-vars"
 
-PFMM_OUT=${PFMM_OUT:-${repo_dir}/build/.pfmm-airgap}
+# PFMM_OUT (arch-suffixed) is defined in pfmm-airgap-vars, sourced above.
 work=${PFMM_OUT}/work
 src=${work}/src
 rpmbuild=${work}/rpmbuild
