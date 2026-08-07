@@ -107,7 +107,7 @@ link-pmm-compat:          ## Links the dist folder of pmm compat to the plugin d
 	ln -sfn $(CURDIR)/ui/apps/pmm-compat/dist /srv/grafana/plugins/pmm-compat-app
 
 grafana-be-build:
-	cd /root/go/src/github.com/percona/grafana && \
+	cd /root/go/src/github.com/postgres1st/grafana && \
 	make build-go && \
 	cp ./bin/linux/amd64/grafana /usr/sbin/grafana && \
 	supervisorctl restart grafana

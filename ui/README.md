@@ -1,8 +1,7 @@
 # Postgres1st Monitoring and Management UI
 
-The web interface for PFMM — a PostgreSQL-only fork of [Percona Monitoring and
-Management](https://github.com/percona/pmm). It is a React application served through
-Grafana by a companion plugin.
+The web interface for PFMM. It is a React application served through Grafana by a
+companion plugin.
 
 See the [repository root README](../README.md) for what PFMM is and how it is installed.
 
@@ -70,11 +69,11 @@ The devcontainer ships a prebuilt Grafana baked into the dev image named by `PMM
 
    ```yaml
    # grafana
-   - ../grafana:/root/go/src/github.com/percona/grafana
+   - ../grafana:/root/go/src/github.com/postgres1st/grafana
    - ../grafana/public:/usr/share/grafana/public
    ```
 
-   The first mount provides the Grafana source for the backend build; the second serves the fork's built frontend (`public/`). The in-container path keeps `github.com/percona/grafana` because that is still the fork's Go module path.
+   The first mount provides the Grafana source for the backend build; the second serves the fork's built frontend (`public/`). The in-container path is arbitrary — the fork builds with modules, so its location under `/root/go/src` carries no meaning; it only has to match `grafana-be-build` in `Makefile.devcontainer`.
 
 3. Recreate the container so the new mounts take effect — volume mappings are read at container create time (`make env-down` then `make env-up`, or recreate via your container tooling).
 
@@ -84,7 +83,7 @@ The devcontainer ships a prebuilt Grafana baked into the dev image named by `PMM
    make grafana-be-build
    ```
 
-   This runs `make build-go` in `/root/go/src/github.com/percona/grafana`, copies the resulting `bin/linux/amd64/grafana` binary to `/usr/sbin/grafana`, and restarts Grafana via supervisor.
+   This runs `make build-go` in `/root/go/src/github.com/postgres1st/grafana`, copies the resulting `bin/linux/amd64/grafana` binary to `/usr/sbin/grafana`, and restarts Grafana via supervisor.
 
 For frontend changes in the fork, rebuild its `public/` assets (`make build-js` inside the grafana checkout); they are served through the `../grafana/public` mount.
 

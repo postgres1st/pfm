@@ -23,9 +23,6 @@ populate. HAProxy is kept because it commonly fronts a Patroni cluster.
 
 `pmm-app/dist/` is build output — edit the sources under `dashboards/`, not there.
 
-These dashboards are part of Postgres1st Monitoring and Management (PFMM), derived from
-[Percona Monitoring and Management](https://github.com/percona/pmm).
-
 ## Contributing
 
 We welcome contributions to this repository! Detailed information in [CONTRIBUTING.md](CONTRIBUTING.md)
