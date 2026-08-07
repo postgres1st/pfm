@@ -157,6 +157,33 @@ p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 # Not parameterised: a capless path would read as GREEN, so there is no known-bad
 # path to feed and ctl_input would be a false pass. The negative control breaks real
 # state instead (adds an uncovered capability to the binary).
+# pfm-nginx must relabel /srv/nginx before it starts.
+#
+# The TLS material is pfm_cert_t, and a new file only inherits that type when it is
+# CREATED in the directory. Measured on RHEL 9.8: `install` (what INSTALL.md documents)
+# yields pfm_cert_t, but `mv` and `cp -a` from /root both preserve admin_home_t, and
+# nginx then cannot read the certificate. The failure is the one that cost a day to
+# diagnose -- "cannot load certificate ... Permission denied" with NO AVC, because
+# dontaudit suppresses it -- except it would happen on a customer's host during a cert
+# rotation rather than at install.
+#
+# Relabelling on every start makes the operator's method irrelevant. Documenting
+# restorecon in INSTALL.md helps only the operators who follow it exactly; the ones at
+# risk are those improvising, which is why this is enforced in the unit as well.
+#
+# Static, like the other SELinux assertions: containers have no restorecon and no policy
+# store, so whether the relabel actually fixes a mislabelled cert is a native-host
+# property. What IS checked here is that the step exists and cannot break startup where
+# SELinux is absent -- the `-` prefix, without which a missing restorecon would fail the
+# unit in exactly the containers these suites run in.
+p_nginx_relabels_cert_dir() {
+    inc 'e=$(systemctl show pfm-nginx.service -p ExecStartPre --value)
+         case "$e" in *restorecon*) ;; *) exit 1 ;; esac
+         case "$e" in *"/srv/nginx"*) ;; *) exit 1 ;; esac
+         # ignore-failure must be set, or a host without restorecon cannot start nginx
+         systemctl show pfm-nginx.service -p ExecStartPre | grep -q "ignore_errors=yes"'
+}
+
 # Every /run path pfm-clickhouse needs must be one systemd creates for it.
 #
 # /run is tmpfs and its contents are not ours alone. The DISTRO

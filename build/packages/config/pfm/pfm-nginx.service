@@ -43,6 +43,24 @@ ReadWritePaths=/srv/nginx /run/nginx
 LimitNOFILE=65535
 # -c /etc/nginx/pfm.conf: the base nginx package owns /etc/nginx/nginx.conf, so the
 # pfm config ships beside it as pfm.conf and is selected explicitly here.
+# Relabel the TLS material before every start.
+#
+# /srv/nginx is pfm_cert_t (see build/packages/selinux/pfm_nginx.te). A file only
+# inherits that type when it is CREATED there: measured on RHEL 9.8, `install` -- which
+# is what INSTALL.md documents -- yields pfm_cert_t, but `mv` and `cp -a` from /root both
+# preserve admin_home_t, and nginx then cannot read the certificate.
+#
+# That failure is vicious: "cannot load certificate ... Permission denied" with NO AVC in
+# the log, because the targeted policy dontaudits httpd_t reading those types. It would
+# strike during a cert rotation on a customer's host, and the same absent-AVC trail cost
+# a full day to diagnose here. Documenting restorecon in INSTALL.md only helps operators
+# who follow it exactly; the ones at risk are improvising, so fix it in the unit.
+#
+# `+` runs it as root, outside the sandbox -- relabelling is not something the confined
+# pfm user can do. `-` makes failure non-fatal: hosts with SELinux disabled have no
+# restorecon at all (our test containers included), and without this the unit would fail
+# to start there. Cheap: a no-op when the labels are already right.
+ExecStartPre=-+/usr/sbin/restorecon -R /srv/nginx
 ExecStart=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -g 'daemon off;'
 ExecReload=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -s reload
 KillSignal=SIGTERM

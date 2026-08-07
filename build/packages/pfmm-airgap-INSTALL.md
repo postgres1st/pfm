@@ -230,6 +230,18 @@ sudo systemctl restart pfm-nginx
 They must be readable by `pfm`; nginx runs as that account. `pfm-init` only generates
 a certificate when one is absent, so yours is not overwritten on restart or upgrade.
 
+`install` above is deliberate: it *creates* the destination file, which is what gives it
+the right SELinux label. `mv` and `cp -a` preserve the label the file had elsewhere, and
+nginx then cannot read it — on an enforcing host that shows up only as `cannot load
+certificate ... Permission denied`, with nothing in the audit log to explain it. If you
+place the files any other way, relabel them:
+
+```bash
+sudo restorecon -R /srv/nginx
+```
+
+`pfm-nginx` also runs this itself before every start, so a restart repairs it either way.
+
 ### Restrict what is reachable
 
 Only **8443/tcp** (HTTPS UI and API) needs to be open, and 8080/tcp if you want the

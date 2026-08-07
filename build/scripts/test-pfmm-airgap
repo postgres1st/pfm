@@ -197,6 +197,8 @@ run_airgap_suite() {
     p_ch_requires_perms && ok "clickhouse requires the ownership repair" \
         || no "clickhouse does not require the repair unit"
     p_ch_owned_by_pfm && ok "/etc/clickhouse-server is pfm-owned" || no "/etc/clickhouse-server is not pfm-owned"
+    p_nginx_relabels_cert_dir && ok "pfm-nginx relabels /srv/nginx before start" \
+        || no "pfm-nginx does not restorecon /srv/nginx -- a cert placed with mv/cp keeps the wrong label and TLS silently breaks"
     p_ch_runtime_dir_guaranteed && ok "pfm-clickhouse creates its own /run directory" \
         || no "pfm-clickhouse depends on a /run dir it does not create -- the distro unit deletes it, then 226/NAMESPACE"
     p_selinux_module_shipped && ok "pfm-server ships the SELinux policy module" \
