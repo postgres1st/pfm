@@ -118,8 +118,7 @@ server scrapes them over the network, so they must be reachable from it — and 
 nothing else:
 
 ```bash
-sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 \
-     source address=<pfmm-server-ip> port port=42000-42010 protocol=tcp accept'
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="<pfmm-server-ip>" port port="42000-42010" protocol="tcp" accept'
 sudo firewall-cmd --reload
 ```
 

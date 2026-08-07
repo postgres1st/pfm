@@ -242,8 +242,7 @@ restrict them to the PFMM server:
 
 ```bash
 sudo firewall-cmd --permanent --add-port=8443/tcp
-sudo firewall-cmd --permanent --add-rich-rule='rule family=ipv4 \
-     source address=<pfmm-server-ip> port port=42000-42010 protocol=tcp accept'
+sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address="<pfmm-server-ip>" port port="42000-42010" protocol="tcp" accept'
 sudo firewall-cmd --reload
 ```
 
