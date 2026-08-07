@@ -35,6 +35,12 @@ LockPersonality=yes
 CapabilityBoundingSet=
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 ReadWritePaths=/srv/nginx /run/nginx
+# Replaces `worker_rlimit_nofile 65535` in nginx.conf: nginx implements that with
+# setrlimit(), which our confined httpd_t domain is denied unless the global
+# httpd_setrlimit boolean is set. That denial is silent and non-fatal -- workers fall
+# back to 1024 descriptors. systemd raises the limit before exec, so nginx never calls
+# setrlimit and the boolean stays off.
+LimitNOFILE=65535
 # -c /etc/nginx/pfm.conf: the base nginx package owns /etc/nginx/nginx.conf, so the
 # pfm config ships beside it as pfm.conf and is selected explicitly here.
 ExecStart=/usr/sbin/nginx -c /etc/nginx/pfm.conf -e stderr -g 'daemon off;'

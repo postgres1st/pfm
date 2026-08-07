@@ -1,0 +1,12 @@
+# File contexts for the PFMM layout.
+#
+# restorecon picks the most specific match, not the last line, so the tmp rule below
+# wins over the broader /srv/nginx one regardless of ordering here.
+#
+# Only /srv/nginx is labelled. The rest of /srv (postgresql, clickhouse, grafana,
+# victoriametrics) is left var_t on purpose: those services run as
+# unconfined_service_t and are unaffected by SELinux, so relabelling their data would
+# be churn with no security benefit and a real risk of breaking them.
+
+/srv/nginx(/.*)?        gen_context(system_u:object_r:pfm_cert_t,s0)
+/srv/nginx/tmp(/.*)?    gen_context(system_u:object_r:pfm_nginx_tmp_t,s0)
