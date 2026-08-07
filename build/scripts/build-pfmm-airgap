@@ -122,7 +122,7 @@ build_rpmbuilder_image() {
     # fontconfig: grafana.spec BuildRequires. unzip: percona-dashboards.spec %install
     # unpacks the plugin zips. systemd-devel: pfm-client.spec BuildRequires
     # pkgconfig(systemd). systemd-rpm-macros: %systemd_post in pfm-server.spec.
-    # selinux-policy-devel + make: pfm-server.spec %build compiles pfm_nginx.pp.
+    # selinux-policy-devel + make: stage_rpms compiles pfm_nginx.pp in this image.
     #
     # NOTE: this function returns early when the tag already exists, so changing the
     # package list WITHOUT bumping the tag in pfmm-airgap-vars silently reuses a
@@ -275,6 +275,23 @@ stage_rpms() {
         ( cd "${repo_dir}" && git status --short --untracked-files=no | sed 's/^/           /' ) >&2
     fi
 
+    # The SELinux module is compiled HERE, not in pfm-server.spec's %build, because
+    # emit() rewrites %build to a no-op for every spec -- this pipeline pre-builds
+    # artifacts with pinned toolchains and rpmbuild only packages them. A %build that
+    # compiled the module was silently discarded, and %install then failed on the
+    # missing .pp. Only the compiled .pp is staged; the .te/.fc are inputs, not
+    # payload, so they never reach the source tarball.
+    log "compiling the SELinux policy module"
+    rm -rf "${work}/selinux"; mkdir -p "${work}/selinux"
+    cp "${repo_dir}"/build/packages/selinux/pfm_nginx.te \
+       "${repo_dir}"/build/packages/selinux/pfm_nginx.fc "${work}/selinux/"
+    docker_run -v "${work}/selinux":/m -w /m "${PFMM_RPMBUILD_IMAGE}" \
+        make -f /usr/share/selinux/devel/Makefile pfm_nginx.pp >/dev/null \
+        || fail "SELinux policy module failed to compile"
+    docker_run -v "${work}/selinux":/m "${PFMM_RPMBUILD_IMAGE}" \
+        chown -R "${host_uid}:${host_gid}" /m
+    [ -s "${work}/selinux/pfm_nginx.pp" ] || fail "SELinux policy module produced no pfm_nginx.pp"
+
     log "staging monorepo sources"
     rm -rf "${work}/stage"; mkdir -p "${stage}"
     ( cd "${repo_dir}"
@@ -288,6 +305,8 @@ stage_rpms() {
       cp -a dashboards/LICENSE dashboards/README.md "${stage}/dashboards/"
       mkdir -p "${stage}/build/packages/config" "${stage}/build/ansible/roles"
       cp -a build/packages/config/pfm "${stage}/build/packages/config/"
+      mkdir -p "${stage}/build/packages/selinux"
+      cp -a "${work}/selinux/pfm_nginx.pp" "${stage}/build/packages/selinux/"
       for r in clickhouse grafana; do
           mkdir -p "${stage}/build/ansible/roles/${r}"
           cp -a "build/ansible/roles/${r}/files" "${stage}/build/ansible/roles/${r}/"

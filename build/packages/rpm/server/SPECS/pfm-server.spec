@@ -57,12 +57,14 @@ Source0:        %{repo}-%{shortcommit}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  systemd-rpm-macros
-# Builds pfm_nginx.pp. No matching runtime Requires: semodule lives in
-# policycoreutils, which a real RHEL host always has but our test containers do not
-# (verified: no semodule, no policy store). The scriptlets below are guarded so a
-# host without SELinux installs cleanly and simply runs unconfined, rather than the
-# transaction failing on a machine that never needed the policy.
-BuildRequires:  selinux-policy-devel
+# No BuildRequires for the SELinux module: build-pfmm-airgap compiles pfm_nginx.pp in
+# the builder image and stages the result, so rpmbuild only packages it.
+#
+# No runtime Requires either. semodule lives in policycoreutils, which a real RHEL
+# host always has but our test containers do not (verified: no semodule, no policy
+# store, no selinux-policy-targeted). The scriptlets below are guarded so such a host
+# installs cleanly and runs unconfined, rather than failing the transaction on a
+# machine that never needed the policy.
 
 Requires(pre):    shadow-utils
 Requires(post):   systemd
@@ -105,10 +107,10 @@ without a container.
 %setup -q -n %{repo}-%{commit}
 
 %build
-# The SELinux module is the only thing compiled here; everything else is config,
-# units and scripts. See build/packages/selinux/pfm_nginx.te for why we ship policy
-# at all -- in short, /srv is site-specific so no vendor can label it for us.
-(cd build/packages/selinux && make -f %{_datadir}/selinux/devel/Makefile pfm_nginx.pp)
+# Nothing to compile; this package only ships config, units and scripts.
+# pfm_nginx.pp included: build-pfmm-airgap compiles it and stages the result, because
+# that script rewrites %build to a no-op for every spec. Do not add a compile step
+# here -- it would be silently discarded.
 
 %install
 install -d -p %{buildroot}%{_datadir}/selinux/packages
