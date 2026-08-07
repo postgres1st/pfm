@@ -18,12 +18,33 @@ inc()  { docker exec "${container}" bash -c "$1"; }
 
 build_systemd_image() {
     docker image inspect "${PFMM_SYSTEMD_IMAGE}" >/dev/null 2>&1 && return
-    log "building ${PFMM_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd)"
+    log "building ${PFMM_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd + PFMM's OS deps)"
     # The stock EL9 image ships no systemd and no /sbin/init; a real host always
     # has both, so installing them here makes the test faithful, not permissive.
+    #
+    # The OS dependencies go in for the same reason. The bundle stopped carrying the
+    # distribution's own packages, so a container with nothing but systemd can no longer
+    # install pfm-server -- and weakening the air gap to let the test reach a mirror would
+    # throw away the strongest assertion the suite makes. A current EL9 host genuinely has
+    # these; installing them here models that host, and the container stays fully offline.
+    #
+    # Read from the build's derived list when it exists so there is one source of truth.
+    # The fallback matters for a checkout with no build output: it is deliberately the
+    # top-level names only, since dnf expands them.
+    local osdeps deplist
+    # Same default the suites use for PFMM_OUT, so a plain `test-pfmm-airgap` with no
+    # environment still finds the list the build just wrote.
+    deplist=${PFMM_OUT:-${repo_dir:-.}/build/.pfmm-airgap}/os-dependencies.txt
+    if [ -s "${deplist}" ]; then
+        osdeps=$(tr '\n' ' ' < "${deplist}")
+    else
+        osdeps="nginx openssl perl-interpreter polkit shadow-utils systemd libicu liburing numactl-libs"
+    fi
+    # NOTE: the image is cached by tag. Change the dependency set and you must
+    # `docker rmi ${PFMM_SYSTEMD_IMAGE}` for the test host to pick it up.
     docker build -t "${PFMM_SYSTEMD_IMAGE}" - <<EOF
 FROM ${PFMM_EL_IMAGE}
-RUN dnf -y install systemd procps-ng iproute && dnf clean all && \\
+RUN dnf -y install systemd procps-ng iproute ${osdeps} && dnf clean all && \\
     ln -sf /usr/lib/systemd/systemd /sbin/init && \\
     ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
 STOPSIGNAL SIGRTMIN+3

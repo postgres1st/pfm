@@ -409,9 +409,171 @@ stage_closure() {
             > /etc/yum.repos.d/clickhouse.repo
         dnf -y makecache >/dev/null 2>&1 || true
         dnf download --resolve --alldeps --destdir /out pfm-server
+
+        # We are not the OS vendor. Everything the base distribution ships is the host's
+        # to provide -- the bundle carries only what a current EL9 box does not already
+        # have: our own packages, PGDG PostgreSQL (the major pfm-init expects) and
+        # ClickHouse (not in any EL repo, and clickhouse-server hard-requires the
+        # 225 MB clickhouse-common-static binary).
+        #
+        # Filtering after resolution, not before: the OS repos must be present for dnf to
+        # resolve at all. Partitioning on %{VENDOR} because it separates cleanly here --
+        # the distro packages all declare the Rocky vendor string, ours declare Postgres1st
+        # or nothing, and PGDG/ClickHouse declare their own.
+        before=\$(ls /out/*.rpm | wc -l)
+        for f in /out/*.rpm; do
+            v=\$(rpm -qp --qf '%{VENDOR}' \"\$f\" 2>/dev/null)
+            case \"\$v\" in
+                'Rocky Enterprise Software Foundation'|'CentOS'|'Red Hat, Inc.'|'AlmaLinux'|'Fedora Project')
+                    rm -f \"\$f\" ;;
+            esac
+        done
+        after=\$(ls /out/*.rpm 2>/dev/null | wc -l)
+        printf '  %s resolved, %s shipped, %s left to the host OS\n' \"\$before\" \"\$after\" \"\$((before-after))\"
         chown -R ${host_uid}:${host_gid} /out
     "
-    printf '  %s packages resolved\n' "$(ls "${work}/closure"/*.rpm | wc -l)"
+    local kept
+    kept=$(ls "${work}/closure"/*.rpm 2>/dev/null | wc -l)
+    [ "${kept}" -gt 0 ] || fail "closure filtered everything -- vendor partition is wrong"
+}
+
+# The bundle no longer carries the distro's own packages, so it has to tell the operator
+# exactly which ones the host must supply, and give them a way to fetch those without
+# hand-assembling a list. Both are generated from the assembled repo rather than
+# hand-maintained: a hardcoded list silently goes stale the first time a spec gains a
+# Requires, and the operator only finds out on the air-gapped box.
+#
+# "Top level" here means: required by one of our packages, and not provided by anything
+# in the bundle. dnf expands the rest -- the six names below pull ~177 packages of
+# transitive closure, almost all of it perl and nginx.
+write_os_deps() {
+    local out=$1
+    docker_run -v "${repo_out}":/repo:ro -v "${out}":/out "${PFMM_EL_IMAGE}" sh -c "
+        set -e
+        dnf -y install dnf-plugins-core >/dev/null 2>&1
+        dnf -y install '${PFMM_PGDG_REPO_RPM}' >/dev/null 2>&1 || true
+        cd /repo
+        # Everything the bundle provides, so we can subtract it. Includes virtual provides
+        # and sonames, not just package names -- postgresql18-libs provides libpq.so.5,
+        # and nothing should ask the host for that.
+        for f in *.rpm; do rpm -qp --provides \"\$f\" 2>/dev/null | sed 's/ .*//'; done > /tmp/provided
+        for f in *.rpm; do rpm -qp --qf '%{NAME}\n' \"\$f\" 2>/dev/null; done >> /tmp/provided
+        sort -u -o /tmp/provided /tmp/provided
+
+        # Requirements of EVERY shipped package, not just ours. postgresql18-server pulls
+        # libicu, libnuma and liburing; clickhouse has its own. Deriving from our packages
+        # alone produced a set that resolved cleanly here and then failed on the target.
+        for f in *.rpm; do rpm -qp --requires \"\$f\" 2>/dev/null | sed 's/ .*//'; done \
+            | grep -vE '^(rpmlib|config|rtld)\(' | sort -u > /tmp/needed
+        comm -23 /tmp/needed /tmp/provided > /tmp/missing
+
+        # Resolve each unmet requirement to the package that provides it. Sonames and file
+        # paths (libicuuc.so.67()(64bit), /usr/bin/bash) are real dependencies but not
+        # things an operator can install by name, so ask the repos what supplies them.
+        #
+        # -y and a warmed cache first: without them repoquery stops to ask about importing
+        # repo GPG keys, and the prompt text lands in the output as if it were a package
+        # name.
+        #
+        # -n 1, not a batch: --whatprovides takes a SINGLE spec. Passing 40 resolved only
+        # the first and silently dropped the rest, which produced a one-entry list that
+        # looked like a working derivation. One dnf call per requirement is slow (~70 of
+        # them) but correct.
+        dnf -y makecache >/dev/null 2>&1 || true
+        xargs -a /tmp/missing -r -n 1 dnf repoquery -y --qf '%{name}\n' --whatprovides 2>/dev/null \
+            | grep -E '^[a-zA-Z0-9]' | sort -u > /out/os-dependencies.txt
+        [ -s /out/os-dependencies.txt ] || { echo 'derivation produced nothing' >&2; exit 1; }
+        chown ${host_uid}:${host_gid} /out/os-dependencies.txt
+    "
+}
+
+# Emit the two things the operator needs now that the distro packages are theirs to
+# supply: a plain explanation, and a script that fetches exactly the right set so nobody
+# has to assemble it by hand. The package list is substituted from os-dependencies.txt,
+# which is derived from the assembled repo -- so both stay correct as our specs change.
+write_fetch_tooling() {
+    local out=$1 pkgs
+    pkgs=$(tr '\n' ' ' < "${out}/os-dependencies.txt" | sed 's/ *$//')
+    [ -n "${pkgs}" ] || fail "os-dependencies.txt is empty -- derivation failed"
+
+    sed -e "s/@ARCH@/${arch}/g" -e "s/@PACKAGES@/${pkgs}/g" > "${out}/fetch-os-dependencies.sh" <<'FETCH'
+#!/usr/bin/env bash
+# Fetch the operating-system packages PFMM needs.
+#
+#   ./fetch-os-dependencies.sh [output-directory]
+#
+# PFMM does not ship your distribution's own packages. Run this on an INTERNET-CONNECTED
+# EL9 host of the SAME architecture as the bundle, then copy the output directory to the
+# air-gapped server alongside pfmm-repo/.
+#
+# It downloads the full dependency closure, not just the named packages, so the result
+# installs on a host that has none of them.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+BUNDLE_ARCH="@ARCH@"
+PACKAGES="@PACKAGES@"
+OUT=${1:-$(pwd)/pfmm-os-deps}
+
+fail() { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
+
+# Both checks are fatal rather than warnings: a mismatch produces a directory that looks
+# complete and fails only on the air-gapped host, which is the worst place to find out.
+host_arch=$(uname -m)
+[ "${host_arch}" = "${BUNDLE_ARCH}" ] || fail \
+"architecture mismatch: this host is ${host_arch}, the bundle is ${BUNDLE_ARCH}.
+Run this on a ${BUNDLE_ARCH} machine -- packages downloaded here will not install."
+
+. /etc/os-release 2>/dev/null || fail "cannot read /etc/os-release; is this an EL host?"
+case "${VERSION_ID}" in
+  9*) ;;
+  *) fail "this host is ${NAME} ${VERSION_ID}; the bundle targets EL9.
+Run this on RHEL/Rocky/AlmaLinux 9 so the package versions match." ;;
+esac
+
+command -v dnf >/dev/null || fail "dnf not found"
+mkdir -p "${OUT}"
+
+echo ">>> installing helpers"
+dnf -y install dnf-plugins-core createrepo_c >/dev/null
+
+echo ">>> downloading ${BUNDLE_ARCH} packages and their full closure"
+dnf download --resolve --alldeps --destdir "${OUT}" ${PACKAGES}
+
+echo ">>> indexing"
+createrepo_c -q "${OUT}"
+
+n=$(ls "${OUT}"/*.rpm 2>/dev/null | wc -l)
+[ "${n}" -gt 0 ] || fail "nothing was downloaded"
+printf '\nDone. %s packages in %s (%s)\n' "${n}" "${OUT}" "$(du -sh "${OUT}" | cut -f1)"
+cat <<EOM
+
+Next:
+  1. Copy this directory to the air-gapped server, next to pfmm-repo/.
+  2. Add it as a repository there:
+
+     sudo tee /etc/yum.repos.d/pfmm-os-deps.repo >/dev/null <<'EOF'
+     [pfmm-os-deps]
+     name=PFMM OS dependencies
+     baseurl=file:///absolute/path/to/$(basename "${OUT}")
+     enabled=1
+     gpgcheck=0
+     EOF
+
+  3. Continue with INSTALL.md.
+
+gpgcheck=0 because these are your distribution's packages, signed by your distribution's
+key, which PFMM does not re-sign. Import your vendor key and set gpgcheck=1 if you prefer.
+EOM
+FETCH
+    chmod +x "${out}/fetch-os-dependencies.sh"
+    # Deliberately NOT shipped as a document. A written list of packages and versions goes
+    # stale the moment the distribution moves, and an operator reading a stale list has no
+    # way to tell. The script resolves against the host's own repositories at run time, so
+    # it always fetches what that host actually needs. os-dependencies.txt stays a build
+    # artifact, substituted into the script above.
+    rm -f "${out}/DEPENDENCIES.md"
 }
 
 # Sign every RPM in the assembled repo with PFMM_SIGN_KEY and drop the public key
@@ -556,11 +718,15 @@ stage_bundle() {
     sign_bundle
 
     write_install_md "${PFMM_OUT}/INSTALL.md"
+    # Derived from the assembled repo, so it must run after the packages are in place and
+    # before the tarball is rolled.
+    write_os_deps "${PFMM_OUT}"
+    write_fetch_tooling "${PFMM_OUT}"
     docker_run -v "${repo_out}":/repo "${PFMM_RPMBUILD_IMAGE}" \
         sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
 
     local tarball=${PFMM_OUT}/pfmm-server-el9-${arch}.tar.gz
-    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo INSTALL.md )
+    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo INSTALL.md fetch-os-dependencies.sh )
     ( cd "${PFMM_OUT}" && sha256sum "$(basename "${tarball}")" > "$(basename "${tarball}").sha256" )
 
     log "done"

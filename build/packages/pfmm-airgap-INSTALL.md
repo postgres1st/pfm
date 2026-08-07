@@ -1,8 +1,13 @@
 # PFMM Server — air-gapped installation (RHEL / Rocky Linux 9, @ARCH@)
 
-Postgres1st Monitoring and Management (PFMM) server, delivered as a self-contained
-yum repository. **No internet access is required at any point.** Every transitive
-dependency is bundled.
+Postgres1st Monitoring and Management (PFMM) server, delivered as a yum repository.
+**No internet access is required on the server.**
+
+The bundle carries PFMM itself, PostgreSQL (PGDG) and ClickHouse — none of which your
+distribution provides. It does **not** carry your distribution's own packages: `nginx`,
+`perl`, `polkit` and the rest are the OS vendor's to supply, and a current EL9 host
+already has them. If the server cannot reach your OS repositories, step 4 fetches them
+for you from a connected machine.
 
 ## Requirements
 
@@ -66,16 +71,46 @@ Use the **absolute** path to the unpacked `pfmm-repo` directory, in both fields.
 > Verify the tarball's `.sha256` as well; the two checks answer different questions
 > (the checksum proves the download is intact, the signature proves who built it).
 
-## 4. Install
+## 4. Make the operating-system packages available
+
+This bundle ships PFMM, PostgreSQL and ClickHouse. It does **not** ship your
+distribution's own packages — `nginx`, `perl`, `polkit`, `openssl` and friends are the
+OS vendor's to supply, and a current EL9 host already has most of them.
+
+**If the server can reach your OS repositories** (a Satellite, a local mirror, or the
+internet), skip to step 5. `dnf` will pull what it needs from them.
+
+**If it cannot**, run the bundled script on an internet-connected EL9 host of the *same
+architecture*, then copy the result across:
 
 ```bash
-sudo dnf --disablerepo='*' --enablerepo=pfmm install pfm-server
+./fetch-os-dependencies.sh              # on a connected @ARCH@ host
+# copy the resulting pfmm-os-deps/ directory to this server, then:
+sudo tee /etc/yum.repos.d/pfmm-os-deps.repo >/dev/null <<'EOF'
+[pfmm-os-deps]
+name=PFMM OS dependencies
+baseurl=file:///absolute/path/to/pfmm-os-deps
+enabled=1
+gpgcheck=0
+EOF
 ```
 
-`--disablerepo='*'` guarantees nothing is pulled from the network — the install
-will fail loudly rather than silently reaching out.
+The script downloads the full dependency closure, not just the top-level names, so the
+result installs on a host that has none of them. It refuses to run on a mismatched
+architecture or EL version rather than producing a set that fails here.
 
-## 5. Start
+## 5. Install
+
+```bash
+sudo dnf --disablerepo='*' --enablerepo=pfmm --enablerepo=pfmm-os-deps install pfm-server
+```
+
+`--disablerepo='*'` guarantees nothing is pulled from the network — the install will
+fail loudly rather than silently reaching out. Drop `--enablerepo=pfmm-os-deps` if you
+skipped step 4 and are using your own OS repositories; in that case leave those enabled
+instead of disabling everything.
+
+## 6. Start
 
 ```bash
 sudo systemctl start pfm.target
@@ -88,7 +123,7 @@ so allow a minute or two. To start automatically on boot:
 sudo systemctl enable pfm.target
 ```
 
-## 6. Verify
+## 7. Verify
 
 ```bash
 curl -sk -o /dev/null -w '%{http_code}\n' https://127.0.0.1:8443/v1/readyz   # expect 200
@@ -112,9 +147,16 @@ change them on first login).
 | `percona-victoriametrics` | metrics storage |
 | `percona-qan-api2` | Query Analytics API |
 | `vmproxy`, `pmm-dump` | metrics proxy, support-bundle export |
-| PostgreSQL 18 (PGDG) | server's own metadata store |
-| ClickHouse | Query Analytics storage |
-| nginx, polkit, openssl | TLS reverse proxy, privilege mediation |
+| PostgreSQL 18 (PGDG) | server's own metadata store — bundled; not in any EL repo |
+| ClickHouse | Query Analytics storage — bundled; not in any EL repo |
+
+Pulled from your operating system, not from this bundle:
+
+| Component | Purpose |
+|---|---|
+| nginx | TLS reverse proxy on 8443 |
+| polkit | lets the unprivileged `pfm` account drive its own systemd units |
+| openssl, perl, systemd, and their dependencies | supporting libraries and tooling |
 
 Services run as the unprivileged **`pfm`** account under full systemd hardening.
 There is no container runtime involved.
