@@ -1,29 +1,33 @@
-# pmm-agent
+# pfm-agent
 
-pmm-agent for PMM 2.x.
+The PFMM client agent. It runs on each monitored host, supervises the exporters and
+relays their metrics to the PFMM server.
 
 # Contributing notes
 
 ## Pre-requisites:
-git, make, curl, go, gcc, docker, docker-compose, pmm-server
+git, make, curl, go, gcc, docker, docker-compose, a running PFMM server
 
 ## Local setup
 Install one or more exporters:
 * node_exporter
-* mysqld_exporter
-* rds_exporter
 * postgres_exporter
-* mongodb_exporter
-* proxysql_exporter
+* rds_exporter
+* azure_metrics_exporter
 
-#### To run pmm-agent
-- Run [pmm-server docker container](https://hub.docker.com/r/percona/pmm-server) or [pmm-managed](https://github.com/percona/pmm-managed).  
-- Run `make setup-dev` to configure pmm-agent
-- Run `make run` to run pmm-agent
+These are the exporters PFMM builds and ships. The MySQL, MongoDB and ProxySQL exporters
+upstream carries are not built here — the service-type allowlist
+(`managed/models/service_type_allowlist.go`) rejects those services, so nothing would
+drive them.
+
+#### To run pfm-agent
+- Run a PFMM server, or [pfm-managed](../managed) directly.
+- Run `make setup-dev` to configure pfm-agent
+- Run `make run` to run pfm-agent
 
 
 ## Testing
-Run `make env-up` to set-up environment.    
+Run `make env-up` to set-up environment.
 Run `make test` to run tests.
 
 ## Code style

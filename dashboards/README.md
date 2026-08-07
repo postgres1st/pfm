@@ -1,78 +1,30 @@
-## Grafana dashboards for efficient database monitoring
+## Grafana dashboards for PostgreSQL monitoring
 
-The list of featured dashboards:
+The dashboards PFMM provisions into Grafana. Sources live under `dashboards/`, grouped by
+folder — the folder name is what appears in Grafana's dashboard list:
 
-- Advanced Data Exploration
-- CPU Utilization Details
-- Disk Details
-- HAProxy Instance Summary
-- Home Dashboard
-- Memory Details
-- MongoDB Cluster Summary
-- MongoDB InMemory Details
-- MongoDB Instance Summary
-- MongoDB Instances Compare
-- MongoDB Instances Overview
-- MongoDB MMAPv1 Details
-- MongoDB ReplSet Summary
-- MongoDB WiredTiger Details
-- MySQL Amazon Aurora Details
-- MySQL Command Handler Counters Compare
-- MySQL Group Replication Summary
-- MySQL InnoDB Compression Details
-- MySQL InnoDB Details
-- MySQL Instance Summary
-- MySQL Instances Compare
-- MySQL Instances Overview
-- MySQL MyISAM Aria Details
-- MySQL MyRocks Details
-- MySQL Performance Schema Details
-- MySQL Query Response Time Details
-- MySQL Replication Summary
-- MySQL Table Details
-- MySQL User Details
-- MySQL Wait Event Analyses Details
-- NUMA Details
-- Network Details
-- Node Summary
-- Node Temperature Details
-- Nodes Compare
-- Nodes Overview
-- PXC Galera Cluster Summary
-- PXC Galera Node Summary
-- PXC Galera Nodes Compare
-- PostgreSQL Instance Summary
-- PostgreSQL Instances Compare
-- PostgreSQL Instances Overview
-- Processes Details
-- Prometheus Exporter Status
-- Prometheus Exporters Overview
-- ProxySQL Instance Summary
-- VictoriaMetrics
-- VictoriaMetrics Agents Overview
-- Valkey/Redis Clients
-- Valkey/Redis Cluster Details
-- Valkey/Redis Command Detail
-- Valkey/Redis Load
-- Valkey/Redis Memory
-- Valkey/Redis Network
-- Valkey/Redis Overview
-- Valkey/Redis Persistence Details
-- Valkey/Redis Replication
-- Valkey/Redis Slowlog
+| Folder | Covers |
+|---|---|
+| `PostgreSQL` | instance summary, instance comparison and overview, replication, Patroni detail, checkpoints/buffers/WAL, top queries — and the HAProxy instance summary |
+| `OS` | CPU, memory, disk, network, NUMA, processes, node summary and comparison |
+| `Insight` | cross-cutting views — home dashboard, advanced data exploration, exporter status, VictoriaMetrics |
+| `Query Analytics` | QAN |
+| `PMM Health` | the monitoring stack's own health |
+| `Experimental`, `Kubernetes (experimental)` | not provisioned by default |
 
+The `PMM Health` folder keeps its upstream name; renaming it is part of the outstanding
+rebrand rather than something to change in this file alone, since the name is also a
+provisioning path.
 
-These dashboards are part of [Percona Monitoring and Management](https://www.percona.com/doc/percona-monitoring-and-management/2.x/index.html).
+The upstream MySQL, MongoDB, ProxySQL, PXC and Valkey/Redis dashboards are **not** in this
+repository. They were removed rather than hidden: the service-type allowlist
+(`managed/models/service_type_allowlist.go`) rejects those services, so they could never
+populate. HAProxy is kept because it commonly fronts a Patroni cluster.
 
-See a live demonstration at <https://pmmdemo.percona.com>.
+`pmm-app/dist/` is build output — edit the sources under `dashboards/`, not there.
 
-## Reusing dashboards outside of PMM
-
-Dashboards can be converted to be used on a dedicated prometheus instance.
-
-Example:
-
-- misc/convert-dash-from-PMM.py dashboards/Disk_Details.json
+These dashboards are part of Postgres1st Monitoring and Management (PFMM), derived from
+[Percona Monitoring and Management](https://github.com/percona/pmm).
 
 ## Contributing
 

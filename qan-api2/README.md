@@ -1,6 +1,6 @@
 # qan-api2
 
-QAN API for PMM 3.x.
+Query Analytics API for PFMM 3.x.
 
 ## Get Report
 

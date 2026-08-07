@@ -1,4 +1,6 @@
-# PMM 2.x APIs.
+# PFMM APIs
+
+The gRPC and REST API definitions for PFMM 3.x.
 
 All generated files (Go code, Swagger spec, documentation) are already stored in this repository.
 
