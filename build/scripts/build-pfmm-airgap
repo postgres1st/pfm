@@ -718,6 +718,19 @@ stage_bundle() {
     sign_bundle
 
     write_install_md "${PFMM_OUT}/INSTALL.md"
+    # Release notes live with the rest of the product documentation, one file per
+    # release, prefixed pfmm- to distinguish genuine PFMM notes from the upstream Percona
+    # ones inherited in the same directory. Copied verbatim -- unlike INSTALL.md they
+    # carry no @ARCH@ substitution and no signed/unsigned variation, and they ship in the
+    # tarball because the operator running dnf is the one who needs the limitations and
+    # never sees a git tag message or a GitHub release page.
+    #
+    # The path is derived from the version (tilde folded to a hyphen, since ~ in a
+    # filename is legal but awkward), and a missing file is fatal: a release that forgot
+    # to write its notes should not build a bundle that silently ships none.
+    local notes="${repo_dir}/documentation/docs/release-notes/pfmm-${PFMM_PMM_VERSION//\~/-}.md"
+    [ -f "${notes}" ] || fail "no release notes at ${notes} -- write them before building a release bundle"
+    cp "${notes}" "${PFMM_OUT}/RELEASE_NOTES.md"
     # Derived from the assembled repo, so it must run after the packages are in place and
     # before the tarball is rolled.
     write_os_deps "${PFMM_OUT}"
@@ -726,7 +739,7 @@ stage_bundle() {
         sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
 
     local tarball=${PFMM_OUT}/pfmm-server-el9-${arch}.tar.gz
-    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo INSTALL.md fetch-os-dependencies.sh )
+    ( cd "${PFMM_OUT}" && tar czf "${tarball}" pfmm-repo RELEASE_NOTES.md INSTALL.md fetch-os-dependencies.sh )
     ( cd "${PFMM_OUT}" && sha256sum "$(basename "${tarball}")" > "$(basename "${tarball}").sha256" )
 
     log "done"
