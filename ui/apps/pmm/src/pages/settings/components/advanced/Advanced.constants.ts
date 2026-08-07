@@ -1,3 +1,5 @@
+import { UPDATES_ENABLED } from 'lib/constants';
+
 import { Messages } from '../../Settings.messages';
 
 export const SECONDS = 60;
@@ -30,13 +32,25 @@ export const TECHNICAL_PREVIEW_DOC_URL =
   'https://docs.postgresfirst.com/pmm-feature-status';
 
 export const FEATURE_MANAGEMENT_SETTINGS = [
-  {
-    name: 'updates' as const,
-    label: Messages.advanced.updatesLabel,
-    tooltip: Messages.advanced.updatesTooltip,
-    link: Messages.advanced.updatesLink,
-    testId: 'advanced-updates',
-  },
+  // Gated on the same UPDATES_ENABLED flag as the /updates route, the nav entry, the
+  // polling provider and the header banner — this was the one surface it was never
+  // applied to. PFMM ships no update source, and pfm-managed.service sets
+  // PMM_ENABLE_UPDATES=false, which the settings API treats as immutable
+  // (FailedPrecondition), so the toggle could only ever return an error.
+  //
+  // Hidden rather than removed: the form still round-trips updatesEnabled unchanged,
+  // so re-enabling updates later is this flag and nothing else.
+  ...(UPDATES_ENABLED
+    ? [
+        {
+          name: 'updates' as const,
+          label: Messages.advanced.updatesLabel,
+          tooltip: Messages.advanced.updatesTooltip,
+          link: Messages.advanced.updatesLink,
+          testId: 'advanced-updates',
+        },
+      ]
+    : []),
   {
     name: 'alerting' as const,
     label: Messages.advanced.alertingLabel,
