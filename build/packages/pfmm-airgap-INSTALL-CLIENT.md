@@ -105,6 +105,11 @@ Both commands are needed and in this order: the first registers the machine as a
 the second registers the database running on it. `pfm-admin add` fails if the node is not
 registered first.
 
+Both commands take passwords as arguments, which puts them in your shell history and makes
+them briefly visible in `ps` to every local user. There is no flag that avoids this. On a
+shared host, run them in a shell with `HISTCONTROL=ignorespace` set and a leading space,
+and treat the monitoring role's password as one that local users may have seen.
+
 `--server-insecure-tls` is needed because the server's first boot generates a self-signed
 certificate, which the client would otherwise refuse. Drop it once the server has a
 trusted certificate. `--environment` and `--cluster` are optional but worth setting — the
