@@ -1,7 +1,13 @@
-# PFMM Server — air-gapped installation (RHEL / Rocky Linux 9, @ARCH@)
+# PFMM — air-gapped installation (RHEL / Rocky Linux 9, @ARCH@)
 
-Postgres1st Monitoring and Management (PFMM) server, delivered as a yum repository.
-**No internet access is required on the server.**
+Postgres1st Monitoring and Management (PFMM), delivered as a yum repository.
+**No internet access is required on any host.**
+
+**One bundle, two roles.** `pfmm-server-el9-@ARCH@.tar.gz` contains both the PFMM server
+and the `pfm-client` agent. Use the same tarball on the monitoring server (steps 1-7
+below) and on each PostgreSQL host you want to monitor (*Adding a monitored PostgreSQL
+instance*, near the end). The filename says `server` because the server is the larger
+part of it; there is no separate client download.
 
 The bundle carries PFMM itself, PostgreSQL (PGDG) and ClickHouse — none of which your
 distribution provides. It does **not** carry your distribution's own packages: `nginx`,
@@ -335,7 +341,9 @@ The client comes from the same bundle, so the database host needs no internet ei
 but the bundle has to get there first. Nothing on this host is set up by the server
 install; repeat on each database host you monitor.
 
-Copy the tarball across and unpack it:
+Copy the tarball across and unpack it. **This is the same file you used on the monitoring
+server** — it is named `pfmm-server-…` but contains `pfm-client` too, and you install
+only `pfm-client` here:
 
 ```bash
 tar xzf pfmm-server-el9-@ARCH@.tar.gz
