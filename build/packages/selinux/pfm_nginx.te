@@ -15,13 +15,86 @@
 #   - relabelling /usr/sbin/nginx: Red Hat owns that binary, and a private exec type
 #     would change the domain for any other nginx on the host, silently.
 #   - setsebool httpd_can_network_connect: global, and lets every httpd_t process on
-#     the box dial anywhere including off-host. Narrow port rules replace it.
+#     the box dial anywhere, including off-host. The port rules below replace it.
 #
 # The filename base must equal the policy_module() name -- checkmodule rejects
 # pfm-nginx.te declaring pfm_nginx. Hence underscores, not the hyphen used in our
 # package names.
-#
-# Version 0.0.1 is intentionally empty: it proves the build, packaging and load path
-# end to end before any rule exists, so a later failure is unambiguously about a rule.
 
-policy_module(pfm_nginx, 0.0.1)
+policy_module(pfm_nginx, 1.0.0)
+
+gen_require(`
+    type httpd_t;
+    # Port types our upstreams already carry; see the connect rules below.
+    type unreserved_port_t;
+    type ntop_port_t;
+    type websm_port_t;
+    type sype_transport_port_t;
+')
+
+########################################
+#
+# Our file types under /srv.
+#
+# Split read-only from writable deliberately. A single blanket type over /srv/nginx
+# would hand nginx write access to the TLS private key it only ever reads.
+
+# TLS material and nginx state: certificate.crt/.key, dhparam.pem, ca-certs.pem.
+type pfm_cert_t;
+files_type(pfm_cert_t)
+
+# Proxy/client-body/fastcgi buffers. nginx spills request and response bodies here
+# under load, so this must be writable -- and separate from the key material.
+type pfm_nginx_tmp_t;
+files_type(pfm_nginx_tmp_t)
+
+########################################
+#
+# Rules.
+#
+
+# Read the TLS material. Loaded by the nginx master at config-parse time, which is
+# where the original blocker bit: "cannot load certificate /srv/nginx/certificate.crt
+# ... Permission denied", httpd_t denied read on var_t.
+allow httpd_t pfm_cert_t:dir list_dir_perms;
+allow httpd_t pfm_cert_t:file read_file_perms;
+allow httpd_t pfm_cert_t:lnk_file read_lnk_file_perms;
+
+# Manage the buffer directories. Not observed as a denial during bring-up -- nginx
+# only spills to disk once a body exceeds the in-memory buffer -- so this is written
+# from the config's *_temp_path directives rather than from an AVC, and needs
+# exercising under load rather than at startup to confirm.
+manage_dirs_pattern(httpd_t, pfm_nginx_tmp_t, pfm_nginx_tmp_t)
+manage_files_pattern(httpd_t, pfm_nginx_tmp_t, pfm_nginx_tmp_t)
+
+# Reach the upstreams we proxy to:
+#
+#   7771 pfm-managed grpc   7772 pfm-managed json    8430 vmproxy
+#   8880 vmalert            9922 qan-api2 json       4646 nomad     -> unreserved_port_t
+#   3000 grafana -> ntop_port_t        9090 victoriametrics -> websm_port_t
+#   9911 qan-api2 grpc -> sype_transport_port_t
+#
+# We wanted our own pfm_port_t covering the six unassigned ports, which would have
+# made this rule exact. It is not possible from a loadable module: both network_port()
+# and a bare portcon are base-policy-only, and checkmodule rejects them (verified, not
+# assumed). Claiming ports needs `semanage port -a`, which would drag in
+# policycoreutils-python-utils -- the dependency shipping a module specifically avoids.
+#
+# So we allow the port types those ports already carry. Honest about the breadth:
+# unreserved_port_t covers every unassigned port above 1024, so this is wider than we
+# would like. It is still materially narrower than httpd_can_network_connect, which we
+# are avoiding: that boolean is global to every httpd_t process on the host AND
+# permits connecting to ALL port types -- ssh, postgresql, mysql, anything. These
+# rules reach no assigned port except the three our own stack listens on.
+#
+# Tightening to a dedicated port type remains open if we later accept the semanage
+# dependency; it is a security/dependency trade-off, not an oversight.
+#
+# Note also that SELinux port types do not distinguish loopback from remote, so this
+# permits reaching those ports on any host even though every upstream is 127.0.0.1.
+# Narrowing that is systemd's IPAddressAllow, not policy -- and nginx cannot use it,
+# being the ingress that must accept from anywhere.
+allow httpd_t unreserved_port_t:tcp_socket name_connect;
+allow httpd_t ntop_port_t:tcp_socket name_connect;
+allow httpd_t websm_port_t:tcp_socket name_connect;
+allow httpd_t sype_transport_port_t:tcp_socket name_connect;
