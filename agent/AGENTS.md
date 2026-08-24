@@ -3,7 +3,7 @@
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [managed/AGENTS.md](../managed/AGENTS.md) (server backend) · [api/AGENTS.md](../api/AGENTS.md) (API definitions) · [admin/AGENTS.md](../admin/AGENTS.md) (CLI)
 
-**pmm-agent** is the client-side monitoring agent for PMM. It runs on every monitored host, managing metric exporters as child processes, running built-in QAN and Real-Time Analytics (RTA) collectors in-process, executing on-demand actions (explain, PT summary), and performing backup/restore jobs. It communicates with pmm-managed on the PMM Server over a persistent bidirectional gRPC stream.
+**pmm-agent** is the client-side monitoring agent for PFMM. It runs on every monitored host, managing metric exporters as child processes, running built-in QAN and Real-Time Analytics (RTA) collectors in-process, executing on-demand actions (explain, PT summary), and performing backup/restore jobs. It communicates with pmm-managed on the PFMM Server over a persistent bidirectional gRPC stream.
 
 ## Architecture
 
@@ -17,7 +17,7 @@ The agent receives a **desired state** (`SetStateRequest`) from pmm-managed desc
 
 2. **Built-in agents** — Go code implementing the `BuiltinAgent` interface, run in-process. Includes QAN collectors (perfschema, slowlog, pg_stat_statements, pg_stat_monitor, MongoDB profiler, mongolog) and RTA agents (MongoDB realtimeanalytics).
 
-### Communication with PMM Server
+### Communication with PFMM Server
 
 The `client` package maintains a persistent bidirectional gRPC stream (`Agent.Connect`) with reconnect/backoff:
 
@@ -61,7 +61,7 @@ pmm-agent has **no direct database access**. All state comes from pmm-managed vi
 - **Sources**: YAML file (`pmm-agent.yaml`), CLI flags, environment variables (`PMM_AGENT_*`)
 - **Runtime access**: `config.Storage` provides thread-safe `Get()` and `Reload()`
 - **Key settings**:
-  - `server.address`, `server.username`, `server.password` — PMM Server connection
+  - `server.address`, `server.username`, `server.password` — PFMM Server connection
   - `paths.exporters_base` — base directory for exporter binaries
   - `paths.tempdir` — temporary directory for rendered config files
   - `ports.min`, `ports.max` — port range for exporter listen addresses

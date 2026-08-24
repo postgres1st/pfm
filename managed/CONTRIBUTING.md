@@ -1,12 +1,12 @@
 # Contributing notes
 
-**pmm-managed** is a core component of PMM Server. As such, its development and testing are best done inside a PMM Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
+**pmm-managed** is a core component of PFMM Server. As such, its development and testing are best done inside a PFMM Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
 
 # Devcontainer setup
 
 1. Install Docker and Docker Compose.
 
-2. Check out the `main` branch, which is the main branch for PMM 2.x development.
+2. Check out the `main` branch, which is where development happens.
 
 3. Run `make` to see a list of targets that can be run on host:
 
@@ -24,7 +24,7 @@ Please use `make <target>` where <target> is one of:
 
 ```
 $ make env TARGET=help
-docker exec -it --workdir=/root/go/src/github.com/percona/pmm-managed pmm-server make help
+docker exec -it --workdir=/root/go/src/github.com/percona/pmm/managed pmm-server make help
 Please use `make <target>` where <target> is one of:
   gen                       Generate files.
   install                   Install pmm-managed binary.
@@ -39,10 +39,10 @@ Alternatively, it is possible to run `make env` to get inside the devcontainer a
 
 ```
 $ make env
-docker exec -it --workdir=/root/go/src/github.com/percona/pmm-managed pmm-server make _bash
+docker exec -it --workdir=/root/go/src/github.com/percona/pmm/managed pmm-server make _bash
 /bin/bash
 [root@pmm-server pmm-managed]# make test
-make[1]: Entering directory `/root/go/src/github.com/percona/pmm-managed'
+make[1]: Entering directory `/root/go/src/github.com/percona/pmm/managed'
 go test -timeout=30s -p 1 ./...
 ...
 ```
@@ -67,7 +67,7 @@ go test -timeout=30s -p 1 ./...
 
 ## Add instances for monitoring
 
-The `make env-up` command starts PMM Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using PMM Client components:
+The `make env-up` command starts PFMM Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using PFMM Client components:
 
 
 1. Clone the pmm-admin [repo](https://github.com/percona/pmm-admin/) and install it by running `make install`.
@@ -79,41 +79,45 @@ The `make env-up` command starts PMM Server but doesn't configure any database i
 
 ## Working with Advisors
 
-Advisors are automated checks in PMM that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the PMM Server devcontainer.
+Advisors are automated checks in PFMM that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the PFMM Server devcontainer.
 
 To get started:
 
 1. Set up the devcontainer using `make env-up`.
 2. Enter the container with `make env`, then run your changes with `make run`.
 3. [Add instances for monitoring](#add-instances-for-monitoring) so Advisors have databases to check. 
-4. Verify results in the PMM dashboard. Any failed Advisor checks will appear there.
-5. [Develop or update Advisors](https://docs.percona.com/percona-monitoring-and-management/3/advisors/develop-advisor-checks.html) as needed.
+4. Verify results in the Advisors dashboard. Any failed Advisor checks will appear there.
+5. Develop or update Advisors as needed (see below).
 
 
 ## Contributing to Advisors
 
 Advisors are located in the `data/advisors` folder. If you want to change Advisor names and descriptions, make changes to the files in this folder and submit a pull request.
-You can read more about the [Advisors file format in our documentation](https://docs.percona.com/percona-monitoring-and-management/3/advisors/develop-advisor-checks.html).
+The file format is inherited from upstream and documented in [Percona's advisor-check
+guide](https://docs.percona.com/percona-monitoring-and-management/3/advisors/develop-advisor-checks.html);
+we have no equivalent of our own yet.
 
 If need to change the logic of Advisor checks (actual logic executed in advisors), then it's in the `checks` folder in `data/checks`. Please make changes to the files in this folder and submit a pull request.
 
-Changes to Advisors will be most visible in the list of all advisors by categories, such as https://pmmdemo.percona.com/graph/advisors/configuration.
+Changes to Advisors are most visible in the list of all advisors by category, at `/graph/advisors/configuration` on a running server.
 
 ![Advisors interface](../dev/docs/assets/advisors/pmm-advisor-interface.png)
 
-``advisors.summary`` = https://github.com/percona/pmm/blob/b951d3c14eb1d5e4d716a61811da599af869054b/managed/data/advisors/example.yml.example#L5
-
-``advisors.description`` = https://github.com/percona/checked/blob/223ae162ced83793bc00e5e6c29edfbf1bf5e27e/data/advisors/example.yml.example#L6
+``advisors.summary`` and ``advisors.description`` are the first two fields of
+[`managed/data/advisors/example.yml.example`](data/advisors/example.yml.example). That
+file is in this repository — read it there rather than following a pinned upstream URL,
+which drifts from what we actually ship.
 
 ### Advisor checks
 
-Advisor checks are organized into categories by topic and can be viewed in the [Advisor Insight](https://pmmdemo.percona.com/graph/advisors/configuration). Each check provides detailed information and recommendations. To see these details, expand an Advisor to open its **Insights** section:
+Advisor checks are organized into categories by topic and can be viewed at `/graph/advisors/configuration` on a running server. Each check provides detailed information and recommendations. To see these details, expand an Advisor to open its **Insights** section:
 
 
 ![Advisors by categories](../dev/docs/assets/advisors/pmm-configuration-advisors.png)
 
-``checks.summary`` = https://github.com/percona/checked/blob/223ae162ced83793bc00e5e6c29edfbf1bf5e27e/data/checks/exampleV2.yml.example#L5
-``checks.description`` = https://github.com/percona/checked/blob/223ae162ced83793bc00e5e6c29edfbf1bf5e27e/data/checks/exampleV2.yml.example#L6
+``checks.summary`` and ``checks.description`` are the first two fields of
+[`managed/data/checks/exampleV2.yml.example`](data/checks/exampleV2.yml.example), which is
+in this repository — read it there rather than following a pinned upstream URL.
 
 
 Note that here might be several results in one check file.
@@ -156,7 +160,7 @@ Devcontainer initialization code is located in `.devcontainer/setup.py`. It prov
 Before making a PR, please run these commands locally:
 - `make env TARGET=check-all` to run all checkers and linters.
 - `make env TARGET=test-race` to run tests.
-- For help, post on the [PMM 3.x Forums](https://forums.percona.com/c/percona-monitoring-and-management-pmm/pmm-3/)
+- For help, open an issue on [postgres1st/pfm](https://github.com/postgres1st/pfm)
 
 ## VSCode
 

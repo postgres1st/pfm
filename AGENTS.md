@@ -1,4 +1,4 @@
-# PMM Development Guide for AI Agents
+# PFMM Development Guide for AI Agents
 
 ## Maintaining This Document
 
@@ -18,11 +18,11 @@ Do **not** update this file for routine code changes (bug fixes, minor feature i
 
 ## How This Documentation Is Organized
 
-This file is the **single authoritative entry point** for AI agents working with PMM. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
+This file is the **single authoritative entry point** for AI agents working with PFMM. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
 
 ### Component Guides
 
-Each PMM component has a dedicated guide with architecture, directory structure, domain model, patterns, testing, and key files. When working on a specific component, read the relevant guide:
+Each component has a dedicated guide with architecture, directory structure, domain model, patterns, testing, and key files. When working on a specific component, read the relevant guide:
 
 | Component | Guide | Scope |
 |-----------|-------|-------|
@@ -73,18 +73,36 @@ those service types are wrong regardless of the binary name.
 
 ## Product Overview
 
-Percona Monitoring and Management (PMM) is an open-source database monitoring solution for MySQL, MongoDB, PostgreSQL, ProxySQL, HAProxy, Valkey, and cloud databases (AWS RDS, Azure). It uses a **client-server architecture** where lightweight agents on monitored hosts collect metrics and query analytics data, sending them to a central server for storage, alerting, and visualization.
+Postgres1st Monitoring and Management (PFMM) is an open-source **PostgreSQL** monitoring
+solution, forked from Percona Monitoring and Management. It uses a **client-server
+architecture** where lightweight agents on monitored hosts collect metrics and query
+analytics data, sending them to a central server for storage, alerting, and visualization.
 
-This is a **monorepository** containing multiple PMM components, APIs, documentation, and build scripts. Every backend component is written in Go; the UI is TypeScript/React.
+The accepted service types are `postgresql`, `haproxy` and `external` — see
+`managed/models/service_type_allowlist.go`. HAProxy and external exist to serve PostgreSQL
+deployments (HAProxy commonly fronts Patroni; Patroni's own `/metrics` is scraped as an
+external service), not as products in their own right.
+
+**Inherited code you will still find in the tree.** MySQL and MongoDB collectors
+(`agent/agents/mysql`, `agent/agents/mongodb`), their QAN sources, and the backup
+subsystem (`managed/services/backup`, `agent/runner/jobs/mysql_backup_job.go`,
+`agent/client/pbm.go`) are all still present. They are unreachable in this build: the
+allowlist rejects the service types that would drive them. Do not treat their existence as
+evidence that a feature is supported — and do not delete them casually either, because
+keeping the diff against upstream small is what makes rebasing onto `percona/pmm`
+tractable.
+
+This is a **monorepository** containing every component, the APIs, documentation, and
+build scripts. Every backend component is written in Go; the UI is TypeScript/React.
 
 ## Architecture and Data Flow
 
 ### Metrics Pipeline
 
 ```
-Exporters (node, mysqld, mongodb, postgres, proxysql, valkey, rds, azure)
+Exporters (node, postgres, rds, azure -- the only ones this build ships)
   → VMAgent (scrapes exporters)
-    → VictoriaMetrics (time-series storage on PMM Server)
+    → VictoriaMetrics (time-series storage on the server)
       → Grafana (visualization)
       → VMAlert → Alertmanager (alerting)
 ```
@@ -92,11 +110,12 @@ Exporters (node, mysqld, mongodb, postgres, proxysql, valkey, rds, azure)
 ### Query Analytics (QAN) Pipeline
 
 ```
-QAN Agents (built into pmm-agent: perfschema, slowlog, pg_stat_statements, pg_stat_monitor, MongoDB profiler/log)
+QAN Agents (built into pmm-agent: pg_stat_statements, pg_stat_monitor;
+            perfschema, slowlog and the MongoDB profiler remain in code but are unreachable)
   → pmm-managed (gRPC receiver)
     → qan-api2 (gRPC collector)
       → ClickHouse (query analytics storage)
-        → PMM UI / Grafana (visualization)
+        → UI / Grafana (visualization)
 ```
 
 ### Agent Communication
@@ -114,6 +133,10 @@ pmm-managed (orchestrator)
   → pmm-agent jobs (PBM for MongoDB, mysqldump/xtrabackup for MySQL)
     → S3/MinIO/local storage
 ```
+
+Inherited and intact, but unreachable: every job it can schedule targets a service type
+the allowlist rejects. PostgreSQL backup is not implemented upstream, so it is not
+available here either.
 
 ## Domain Model
 
@@ -141,10 +164,10 @@ Relationships:
 | `/api` | APIs | Protobuf definitions and generated gRPC/REST/Swagger clients | [api/AGENTS.md](api/AGENTS.md) |
 | `/qan-api2` | qan-api2 | Query Analytics API: ClickHouse ingestion and analytics | [qan-api2/AGENTS.md](qan-api2/AGENTS.md) |
 | `/vmproxy` | vmproxy | VictoriaMetrics reverse proxy with LBAC filtering | [vmproxy/AGENTS.md](vmproxy/AGENTS.md) |
-| `/ui` | UI | React/TypeScript PMM frontend (Vite, MUI, TanStack Query) | [ui/AGENTS.md](ui/AGENTS.md) |
+| `/ui` | UI | React/TypeScript frontend (Vite, MUI, TanStack Query) | [ui/AGENTS.md](ui/AGENTS.md) |
 | `/dashboards/dashboards` | Grafana Dashboards | Grafana dashboard JSON definitions for MySQL, MongoDB, PostgreSQL, OS, and more | [dashboards/dashboards/AGENTS.md](dashboards/dashboards/AGENTS.md) |
 | `/dashboards/pmm-app` | QAN App | Grafana application plugin bundling dashboards and the Query Analytics panel | [dashboards/pmm-app/AGENTS.md](dashboards/pmm-app/AGENTS.md) |
-| `/api-tests` | API Tests | Integration tests against live PMM Server | [api-tests/AGENTS.md](api-tests/AGENTS.md) |
+| `/api-tests` | API Tests | Integration tests against a live server | [api-tests/AGENTS.md](api-tests/AGENTS.md) |
 | `/build` | Build & Packaging | Docker, RPM/DEB, Packer, Ansible | [build/AGENTS.md](build/AGENTS.md) |
 
 ### Supporting Directories
@@ -159,25 +182,37 @@ Relationships:
 
 ### External Repositories
 
-| Repository | Purpose                                                    |
-|------------|------------------------------------------------------------|
-| [percona/grafana](https://github.com/percona/grafana) | Percona's Grafana fork with PMM customizations             |
-| [percona/node_exporter](https://github.com/percona/node_exporter) | Machine-level metrics exporter                       |
-| [percona/mysqld_exporter](https://github.com/percona/mysqld_exporter) | MySQL server metrics exporter                    |
-| [percona/mongodb_exporter](https://github.com/percona/mongodb_exporter) | MongoDB server metrics exporter                |
-| [percona/postgres_exporter](https://github.com/percona/postgres_exporter) | PostgreSQL server metrics exporter           |
-| [percona/proxysql_exporter](https://github.com/percona/proxysql_exporter) | ProxySQL server metrics exporter             |
-| [percona/rds_exporter](https://github.com/percona/rds_exporter) | AWS RDS metrics exporter                               |
-| [percona/azure_metrics_exporter](https://github.com/percona/azure_metrics_exporter) | Azure database metrics exporter    |
-| [percona/pmm-qa](https://github.com/percona/pmm-qa) | End-to-end UI tests, QA automation DB setups and CLI tests         |
-| [Percona-Lab/pmm-submodules](https://github.com/Percona-Lab/pmm-submodules) | Feature build orchestration                |
+| Repository | Purpose |
+|------------|---------|
+| [postgres1st/grafana](https://github.com/postgres1st/grafana) | Our Grafana fork — the interface |
+| `percona/node_exporter` | Machine-level metrics exporter |
+| `percona/postgres_exporter` | PostgreSQL metrics exporter |
+| `percona/rds_exporter` | AWS RDS metrics exporter |
+| `percona/azure_metrics_exporter` | Azure database metrics exporter |
+| `percona/percona-toolkit` | Command-line tools bundled with the client |
+| `hashicorp/nomad` | Orchestrates client components on monitored nodes |
+
+Those four exporters are the only ones this build ships; the mysqld, mongodb and proxysql
+exporters are not built. The pinned repository URLs and exact commits live in
+[`build/scripts/pfmm-airgap-vars`](build/scripts/pfmm-airgap-vars), which is authoritative
+— this table is orientation, not a source of truth.
+
+Two upstream repositories are deliberately **not** listed as usable here:
+
+- **`percona/pmm-qa`** — upstream's end-to-end suite. It targets MySQL and MongoDB
+  scenarios and does not run against this build. Our acceptance suites are
+  `build/scripts/test-pfmm-*`.
+- **`Percona-Lab/pmm-submodules`** — upstream's feature-build orchestration. Building
+  client packages through it yields *upstream* `pmm-agent` and `pmm-admin` binaries with
+  neither the service-type gate nor our packaging paths. The result looks correct and is
+  not. Build with `build/scripts/build-pfmm-airgap`.
 
 ## Tech Stack
 
 | Technology | Role |
 |------------|------|
 | **Go** | All backend components |
-| **TypeScript / React** | PMM UI (`/ui`) |
+| **TypeScript / React** | the UI (`/ui`) |
 | **Protobuf v3 / gRPC** | API definitions and inter-component communication |
 | **grpc-gateway** | HTTP/JSON REST API generated from gRPC definitions |
 | **PostgreSQL** | Primary data store for pmm-managed (inventory, settings, backups) |
@@ -231,8 +266,9 @@ Relationships:
 - Use `testify/assert` and `testify/require` (not testify suites)
 - Mock generation via `mockery` (config in `.mockery.yaml`)
 - Unit tests: `*_test.go` next to implementation
-- Integration tests: `/api-tests/`, run against live PMM Server
-- E2E tests: [pmm-qa](https://github.com/percona/pmm-qa)
+- Integration tests: `/api-tests/`, run against a live server
+- Acceptance suites: `build/scripts/test-pfmm-airgap`, `-negative-control`, `-upgrade`
+  (upstream's `pmm-qa` E2E suite does not apply to this build)
 
 ### Code Generation
 - Protobuf/gRPC: `make gen` from repo root
@@ -256,9 +292,9 @@ All long-running daemons expose on `127.0.0.1`:
 
 | Target | Purpose |
 |--------|---------|
-| `make env-up` | Start development container (PMM Server) |
+| `make env-up` | Start development container (the server) |
 | `make env-up-rebuild` | Rebuild development container from scratch |
-| `make run-ui` | Inside devcontainer: Vite HMR for the main PMM UI |
+| `make run-ui` | Inside devcontainer: Vite HMR for the main UI |
 | `make run-qan-ui` | Inside devcontainer: webpack + livereload for the QAN Grafana plugin |
 | `make gen` | Generate all code (protobuf, reform, mocks, format) |
 | `make check` | Run linters (buf, golangci-lint, go-sumtype) |
@@ -271,7 +307,7 @@ All long-running daemons expose on `127.0.0.1`:
 ## Key Files to Reference
 
 - `Makefile`, `Makefile.include` — build and development targets
-- `docker-compose.dev.yml` — development environment (PMM Server, renderer)
+- `docker-compose.dev.yml` — development environment (server, renderer)
 - `docker-compose.yml` — community/quickstart compose (stable image, minimal config)
 - `go.mod` — Go module definition
 - `.golangci.yml` — linter configuration

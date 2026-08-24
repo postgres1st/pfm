@@ -1,9 +1,9 @@
-# PMM API Tests Development Guidelines
+# PFMM API Tests Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [api/AGENTS.md](../api/AGENTS.md) (API definitions and generated clients used by tests) · [managed/AGENTS.md](../managed/AGENTS.md) (server-side implementation being tested)
 
-The `/api-tests` directory contains **integration tests** for PMM APIs. These tests run against a **live PMM Server** and verify end-to-end API behavior using the generated Go HTTP clients from Swagger specs.
+The `/api-tests` directory contains **integration tests** for PFMM APIs. These tests run against a **live PFMM Server** and verify end-to-end API behavior using the generated Go HTTP clients from Swagger specs.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ The `/api-tests` directory contains **integration tests** for PMM APIs. These te
 ```
 Go test binary
   → Generated Swagger HTTP clients (from /api/*/json/client/)
-    → HTTP/JSON requests to PMM Server (gRPC-Gateway)
+    → HTTP/JSON requests to PFMM Server (gRPC-Gateway)
       → pmm-managed processes request
         → Database / VictoriaMetrics / ClickHouse
 ```
@@ -37,7 +37,7 @@ Tests are grouped by API domain, mirroring the `/api` directory structure:
 ## Running Tests
 
 ### Prerequisites
-- Running PMM Server (use `make env-up` from repo root)
+- Running PFMM Server (use `make env-up` from repo root)
 - `PMM_SERVER_URL` environment variable (format: `http://USERNAME:PASSWORD@HOST`)
 
 ### Commands
@@ -75,7 +75,7 @@ docker run --network host -e PMM_SERVER_URL=http://admin:admin@127.0.0.1 pmm-api
 - Don't leave test resources behind — always clean up nodes, services, agents
 - Don't assume a specific server state — tests should be self-contained
 - Don't use gRPC directly — use the HTTP/JSON Swagger clients
-- Don't hardcode the PMM Server URL — use the `-pmm.server-url` flag
+- Don't hardcode the PFMM Server URL — use the `-pmm.server-url` flag
 
 ### Test Structure Pattern
 

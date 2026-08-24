@@ -1,9 +1,9 @@
 # QAN App (pmm-app) Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../../AGENTS.md) — product overview, architecture, domain model, global conventions
-> **Related**: [dashboards/dashboards/AGENTS.md](../dashboards/AGENTS.md) (dashboard JSON definitions bundled by this plugin) · [ui/AGENTS.md](../../ui/AGENTS.md) (main PMM frontend) · [api/AGENTS.md](../../api/AGENTS.md) (API definitions consumed by QAN) · [qan-api2/AGENTS.md](../../qan-api2/AGENTS.md) (QAN backend)
+> **Related**: [dashboards/dashboards/AGENTS.md](../dashboards/AGENTS.md) (dashboard JSON definitions bundled by this plugin) · [ui/AGENTS.md](../../ui/AGENTS.md) (main PFMM frontend) · [api/AGENTS.md](../../api/AGENTS.md) (API definitions consumed by QAN) · [qan-api2/AGENTS.md](../../qan-api2/AGENTS.md) (QAN backend)
 
-The `dashboards/pmm-app/` directory contains a **Grafana application plugin** (`type: app`, `id: pmm-app`) that bundles PMM dashboard JSON definitions and provides the custom **Query Analytics (QAN) panel** (`pmm-qan-app-panel`). It is built with TypeScript and React on top of Grafana's plugin SDK.
+The `dashboards/pmm-app/` directory contains a **Grafana application plugin** (`type: app`, `id: pmm-app`) that bundles the dashboard JSON definitions and provides the custom **Query Analytics (QAN) panel** (`pmm-qan-app-panel`). It is built with TypeScript and React on top of Grafana's plugin SDK.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ The `dashboards/pmm-app/` directory contains a **Grafana application plugin** (`
 
 The pmm-app plugin consists of two sub-plugins registered in their respective `plugin.json` manifests:
 
-1. **App plugin** (`pmm-app/src/plugin.json`) — declares the application, registers PMM dashboard JSON includes, and exposes the QAN panel.
+1. **App plugin** (`pmm-app/src/plugin.json`) — declares the application, registers the dashboard JSON includes, and exposes the QAN panel.
 2. **Panel plugin** (`pmm-app/src/pmm-qan/plugin.json`) — declares the `pmm-qan-app-panel` panel type used by `Query Analytics/pmm-qan.json`.
 
 ```
@@ -23,7 +23,7 @@ plugin.json includes[]:
   - panel: pmm-qan-app-panel
 
 Build (webpack) → dist/
-  → deployed to Grafana plugins directory on PMM Server
+  → deployed to Grafana plugins directory on PFMM Server
 ```
 
 ### Key Technology Choices
@@ -113,7 +113,7 @@ yarn lint && yarn typecheck
 
 ### Docker Development
 
-`pmm-app/docker-compose.yaml` provides a local Grafana environment that mounts `./dist` into the PMM Server plugin directory:
+`pmm-app/docker-compose.yaml` provides a local Grafana environment that mounts `./dist` into the PFMM Server plugin directory:
 
 ```bash
 cd dashboards/pmm-app

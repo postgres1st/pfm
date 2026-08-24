@@ -1,8 +1,18 @@
-# PMM Build and Packaging Guidelines
+# PFMM Build and Packaging Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 
-The `/build` directory contains everything needed to build, package, and distribute PMM Server and PMM Client as Docker images, RPM/DEB packages, and cloud machine images (AMI).
+The `/build` directory contains everything needed to build, package and distribute the
+server and client.
+
+**What actually ships is the air-gapped RPM bundle**, produced by
+`scripts/build-pfmm-airgap` and verified by `scripts/test-pfmm-airgap`,
+`scripts/test-pfmm-negative-control` and `scripts/test-pfmm-upgrade`. Start there.
+
+The Docker, DEB and AMI paths below are inherited from upstream and are **not** part of
+the shipped product. They have not been through the rebrand — their artifact names and
+image paths are still `pmm-*` — so treat a `pmm-` name in those trees as untouched
+upstream rather than as a bug to fix.
 
 ## Architecture
 
@@ -10,12 +20,12 @@ The `/build` directory contains everything needed to build, package, and distrib
 
 | Artifact | Format | Source |
 |----------|--------|--------|
-| PMM Server Docker image | Docker (EL9) | `docker/server/Dockerfile.el9` |
-| PMM Client Docker image | Docker (EL9) | `docker/client/Dockerfile.el9` |
-| PMM Server RPMs | RPM (EL9) | `packages/rpm/server/SPECS/` |
-| PMM Client RPM | RPM (EL9) | `packages/rpm/client/pmm-client.spec` |
-| PMM Client DEB | DEB | `packages/deb/` |
-| PMM Server AMI | AWS AMI | `packer/pmm.json` |
+| Server Docker image (inherited, pre-rename) | Docker (EL9) | `docker/server/Dockerfile.el9` |
+| Client Docker image (inherited, pre-rename) | Docker (EL9) | `docker/client/Dockerfile.el9` |
+| Server RPMs — **shipped** | RPM (EL9) | `packages/rpm/server/SPECS/` |
+| Client RPM — **shipped** | RPM (EL9) | `packages/rpm/client/pfm-client.spec` |
+| Client DEB (inherited, unused) | DEB | `packages/deb/` |
+| Server AMI (inherited, unused) | AWS AMI | `packer/pmm.json` |
 
 ### Build Pipeline
 
@@ -38,8 +48,8 @@ Source code (Go, TypeScript)
 | `nginx` | Configure Nginx as reverse proxy (SSL termination, routing) |
 | `postgres` | Install and configure PostgreSQL for pmm-managed |
 | `supervisord` | Configure Supervisord for process management |
-| `dashboards` | Provision PMM Grafana dashboards |
-| `initialization` | PMM Server first-run setup |
+| `dashboards` | Provision Grafana dashboards |
+| `initialization` | Server first-run setup |
 | `pmm-images` | Image metadata and version info |
 
 ### Cloud-Specific Roles
@@ -53,7 +63,7 @@ Source code (Go, TypeScript)
 
 ## Packer Templates
 
-### PMM Server Images (`packer/pmm.json`)
+### Server Images (`packer/pmm.json`)
 
 Builds machine images:
 - **amazon-ebs** — AWS AMI
@@ -68,7 +78,7 @@ make rpmbuild-el9         # Build RPM build environment image
 ## Patterns and Conventions
 
 ### Do
-- Use Ansible roles for server provisioning — they're the single source of truth for PMM Server setup
+- Use Ansible roles for server provisioning — they're the single source of truth for server setup
 - Keep Dockerfiles minimal — delegate to Ansible for complex provisioning
 - Use multi-stage Docker builds where appropriate
 - Keep RPM/DEB specs in sync with actual binary and config file paths
@@ -82,7 +92,7 @@ make rpmbuild-el9         # Build RPM build environment image
 
 ## Key Files to Reference
 
-- `build/docker/server/Dockerfile.el9` — PMM Server Docker image definition
+- `build/docker/server/Dockerfile.el9` — server Docker image definition (inherited)
 - `build/docker/server/entrypoint.sh` — Server container entrypoint
 - `build/ansible/pmm-docker/main.yml` — Docker provisioning playbook
 - `build/ansible/roles/` — All Ansible roles for server components

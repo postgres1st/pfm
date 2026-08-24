@@ -3,7 +3,7 @@
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [managed/AGENTS.md](../managed/AGENTS.md) (forwards QAN data) · [agent/AGENTS.md](../agent/AGENTS.md) (QAN collectors) · [api/AGENTS.md](../api/AGENTS.md) (QAN API definitions)
 
-**qan-api2** is the Query Analytics API service for PMM. It receives query performance data from pmm-agent (via pmm-managed), stores it in ClickHouse, and serves analytics queries (reports, filters, metrics, examples) through gRPC and REST APIs.
+**qan-api2** is the Query Analytics API service for PFMM. It receives query performance data from pmm-agent (via pmm-managed), stores it in ClickHouse, and serves analytics queries (reports, filters, metrics, examples) through gRPC and REST APIs.
 
 ## Architecture
 
@@ -16,7 +16,7 @@ pmm-agent (QAN collectors)
       → MetricsBucket (batched writer)
         → ClickHouse `metrics` table
 
-PMM UI / API clients
+PFMM UI / API clients
   → qan-api2 QANService (gRPC/REST, ports 9911/9922)
     → Reporter / Metrics models (SQL queries)
       → ClickHouse

@@ -1,9 +1,9 @@
-# PMM UI Development Guidelines
+# PFMM UI Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [api/AGENTS.md](../api/AGENTS.md) (API definitions consumed by UI) · [managed/AGENTS.md](../managed/AGENTS.md) (server backend)
 
-The `/ui` directory contains the PMM web frontend — a React/TypeScript application that provides the primary user interface for Percona Monitoring and Management. It runs inside a Grafana iframe on PMM Server and also hosts standalone pages for updates, RTA, and help.
+The `/ui` directory contains the PFMM web frontend — a React/TypeScript application that provides the primary user interface for Postgres1st Monitoring and Management. It runs inside a Grafana iframe on PFMM Server and also hosts standalone pages for updates, RTA, and help.
 
 ## Architecture
 
@@ -13,7 +13,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 | Package         | Path                  | Purpose                                                       |
 | --------------- | --------------------- | ------------------------------------------------------------- |
-| **pmm**         | `ui/apps/pmm/`        | Main PMM UI application (Vite + React)                        |
+| **pmm**         | `ui/apps/pmm/`        | Main PFMM UI application (Vite + React)                        |
 | **pmm-compat**  | `ui/apps/pmm-compat/` | Grafana plugin for PMM ↔ Grafana integration (Webpack)        |
 | **@pmm/shared** | `ui/packages/shared/` | Shared code: cross-frame messaging, types, utilities (Rollup) |
 
@@ -35,7 +35,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 ### Communication with Grafana
 
-PMM UI runs inside a Grafana iframe. Cross-frame communication uses `CrossFrameMessenger` from `@pmm/shared`:
+PFMM UI runs inside a Grafana iframe. Cross-frame communication uses `CrossFrameMessenger` from `@pmm/shared`:
 
 - Navigation events
 - Theme synchronization
@@ -48,7 +48,7 @@ Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createB
 | Route              | Page                            |
 | ------------------ | ------------------------------- |
 | `/`                | Redirects to `/graph` (Grafana) |
-| `/updates`         | PMM Server updates              |
+| `/updates`         | PFMM Server updates              |
 | `/updates/clients` | Client updates                  |
 | `/help`            | Help center                     |
 | `/rta`             | Real-Time Analytics tab         |
@@ -79,7 +79,7 @@ Providers are composed in `Providers.tsx`:
 
 - `AuthProvider` — authentication state
 - `UserProvider` — current user info
-- `SettingsProvider` — PMM Server settings
+- `SettingsProvider` — PFMM Server settings
 - `UpdatesProvider` — update availability
 - `GrafanaProvider` — Grafana integration state
 - `NavigationProvider` — sidebar navigation
@@ -137,7 +137,7 @@ make build
 make test
 ```
 
-Inside the PMM devcontainer (`make env-up` then `make env` from the repo root), `make run-ui` (main UI HMR via Vite on port 5173) and `make run-qan-ui` (QAN livereload on port 35730) replace `make dev` and wire the dev servers into the bundled Grafana automatically. See `ui/README.md` for details.
+Inside the devcontainer (`make env-up` then `make env` from the repo root), `make run-ui` (main UI HMR via Vite on port 5173) and `make run-qan-ui` (QAN livereload on port 35730) replace `make dev` and wire the dev servers into the bundled Grafana automatically. See `ui/README.md` for details.
 
 ## Key Files to Reference
 
