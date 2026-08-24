@@ -1,8 +1,15 @@
-*                                       @percona/pmm-review-be
-/dev/docs/                              @percona/pmm-review-be
-/documentation/                         @percona/pmm-docs
-/ui/                                    @percona/pmm-review-fe
-/dashboards/                            @nailya @percona/pmm-review-fe
-/api/                                   @percona/pmm-review-be
-**/go.mod                               @percona/pmm-review-be
-/.github/                               @percona/pmm-review-be
+# Intentionally empty.
+#
+# This file inherited eight rules from upstream, all assigning review to
+# @percona/pmm-review-be, @percona/pmm-review-fe, @percona/pmm-docs and an
+# individual upstream contributor. None of those teams exist in the postgres1st
+# organisation, so every rule was either inert or — with "Require review from
+# Code Owners" enabled on a branch — unsatisfiable, since GitHub cannot assign a
+# reviewer that does not exist.
+#
+# No ownership rules are defined for now. Add them when there are real teams or
+# accounts to name; a rule pointing at a non-existent team is worse than none,
+# because it looks like review is covered when nothing is.
+#
+# Syntax: <path-pattern> <owner> [<owner>...], most specific match wins.
+# Reference: https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
