@@ -132,7 +132,7 @@ func TestStarlarkSandbox(t *testing.T) { //nolint:tparallel
 			if !present {
 				releasePath = "./../../bin"
 			}
-			cmd := exec.Command(releasePath + "/pfm-managed-starlark") //nolint:gosec
+			cmd := exec.CommandContext(t.Context(), releasePath+"/pfm-managed-starlark") //nolint:gosec
 
 			var stdin, stderr bytes.Buffer
 			cmd.Stdin = &stdin
