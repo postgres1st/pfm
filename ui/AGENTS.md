@@ -13,7 +13,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 | Package         | Path                  | Purpose                                                       |
 | --------------- | --------------------- | ------------------------------------------------------------- |
-| **pmm**         | `ui/apps/pmm/`        | Main PFMM UI application (Vite + React)                        |
+| **pmm**         | `ui/apps/pmm/`        | Main PFMM UI application (Vite + React)                       |
 | **pmm-compat**  | `ui/apps/pmm-compat/` | Grafana plugin for PMM ↔ Grafana integration (Webpack)        |
 | **@pmm/shared** | `ui/packages/shared/` | Shared code: cross-frame messaging, types, utilities (Rollup) |
 
@@ -48,7 +48,7 @@ Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createB
 | Route              | Page                            |
 | ------------------ | ------------------------------- |
 | `/`                | Redirects to `/graph` (Grafana) |
-| `/updates`         | PFMM Server updates              |
+| `/updates`         | PFMM Server updates             |
 | `/updates/clients` | Client updates                  |
 | `/help`            | Help center                     |
 | `/rta`             | Real-Time Analytics tab         |
