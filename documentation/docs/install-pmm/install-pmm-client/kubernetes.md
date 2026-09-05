@@ -85,8 +85,8 @@ Choose your deployment approach:
 
         ```sh
         kubectl create secret generic pmm-secret \
-        --from-literal=PMM_AGENT_SERVER_USERNAME=admin \
-        --from-literal=PMM_AGENT_SERVER_PASSWORD=admin
+        --from-literal=PFW_AGENT_SERVER_USERNAME=admin \
+        --from-literal=PFW_AGENT_SERVER_PASSWORD=admin
         ```
 
     5. Create `pmm-client-pod.yaml` to define a Pod running PMM Client. Replace `X.X.X.X` with the IP address of your PMM Server:
@@ -110,38 +110,38 @@ Choose your deployment approach:
               initContainers:
                 - name: set-tmp-permissions
                   image: busybox
-                  command: ["sh", "-c", "chown -R 1002:0 /opt/postgres1st/pfm/tmp"]
+                  command: ["sh", "-c", "chown -R 1002:0 /opt/postgres1st/watchtower/tmp"]
                   securityContext:
                     runAsUser: 0
                   volumeMounts:
                     - name: pmm-client-storage
-                      mountPath: /opt/postgres1st/pfm/tmp            
+                      mountPath: /opt/postgres1st/watchtower/tmp            
               containers:
                 - name: pmm-client
                   image: percona/pmm-client:3
                   volumeMounts:
                     - name: pmm-client-storage
-                      mountPath: /opt/postgres1st/pfm/tmp
+                      mountPath: /opt/postgres1st/watchtower/tmp
                   env:
-                    - name: PMM_AGENT_SERVER_ADDRESS
+                    - name: PFW_AGENT_SERVER_ADDRESS
                       value: X.X.X.X:443
-                    - name: PMM_AGENT_SERVER_USERNAME
+                    - name: PFW_AGENT_SERVER_USERNAME
                       valueFrom:
                         secretKeyRef:
                           name: pmm-secret
-                          key: PMM_AGENT_SERVER_USERNAME
-                    - name: PMM_AGENT_SERVER_PASSWORD
+                          key: PFW_AGENT_SERVER_USERNAME
+                    - name: PFW_AGENT_SERVER_PASSWORD
                       valueFrom:
                         secretKeyRef:
                           name: pmm-secret
-                          key: PMM_AGENT_SERVER_PASSWORD
-                    - name: PMM_AGENT_SERVER_INSECURE_TLS
+                          key: PFW_AGENT_SERVER_PASSWORD
+                    - name: PFW_AGENT_SERVER_INSECURE_TLS
                       value: "1"
-                    - name: PMM_AGENT_CONFIG_FILE
-                      value: config/pmm-agent.yaml
-                    - name: PMM_AGENT_SETUP
+                    - name: PFW_AGENT_CONFIG_FILE
+                      value: config/pfw-agent.yaml
+                    - name: PFW_AGENT_SETUP
                       value: "1"
-                    - name: PMM_AGENT_SETUP_FORCE
+                    - name: PFW_AGENT_SETUP_FORCE
                       value: "1"
               volumes:
                 - name: pmm-client-storage
@@ -149,22 +149,22 @@ Choose your deployment approach:
                     claimName: pmm-client-pvc
         ```
         !!! warning alert alert-warning "Security and configuration"
-            - The `PMM_AGENT_SERVER_INSECURE_TLS=1` setting disables TLS certificate verification. For production environments, configure proper TLS certificates and remove this setting.
-            - If disk metrics appear missing or incorrect, your container may not expose `/proc/mounts` at the default path. Add `PMM_AGENT_SETUP_PROC_MOUNTS_PATH` to the `env` section to point PMM Client to the correct location:
+            - The `PFW_AGENT_SERVER_INSECURE_TLS=1` setting disables TLS certificate verification. For production environments, configure proper TLS certificates and remove this setting.
+            - If disk metrics appear missing or incorrect, your container may not expose `/proc/mounts` at the default path. Add `PFW_AGENT_SETUP_PROC_MOUNTS_PATH` to the `env` section to point PMM Client to the correct location:
 
             ```yaml
-            - name: PMM_AGENT_SETUP_PROC_MOUNTS_PATH
+            - name: PFW_AGENT_SETUP_PROC_MOUNTS_PATH
               value: /path/to/proc/mounts
             ```
 
-    6. Deploy PMM Client pod and configure the [pmm-agent](../../use/commands/pmm-agent.md) in Setup mode to connect to PMM Server:
+    6. Deploy PMM Client pod and configure the [pfw-agent](../../use/commands/pmm-agent.md) in Setup mode to connect to PMM Server:
 
         ```sh
         kubectl apply -f pmm-client-pod.yaml
         ```
 
     !!! hint alert-success "Important"
-        You can set the container environment variable `PMM_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PFMM for monitoring.
+        You can set the container environment variable `PFW_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PGF WatchTower for monitoring.
 
 
 === "Deploy PMM Client as a Sidecar container"
@@ -242,12 +242,12 @@ Choose your deployment approach:
         kubectl apply -f mysql-pmm-client-volume.yaml
         ```
 
-    4. Create a Secret to store the credentials for PMM Server authentication. Update `PMM_AGENT_SERVER_PASSWORD` value if you changed the default `admin` password during setup:
+    4. Create a Secret to store the credentials for PMM Server authentication. Update `PFW_AGENT_SERVER_PASSWORD` value if you changed the default `admin` password during setup:
 
         ```sh
         kubectl create secret generic pmm-secret \
-         --from-literal=PMM_AGENT_SERVER_USERNAME=admin \
-         --from-literal=PMM_AGENT_SERVER_PASSWORD=admin
+         --from-literal=PFW_AGENT_SERVER_USERNAME=admin \
+         --from-literal=PFW_AGENT_SERVER_PASSWORD=admin
         ```
 
     5. Create a Secret to store the MySQL root password:
@@ -294,35 +294,35 @@ Choose your deployment approach:
                 - name: pmm-client
                   image: percona/pmm-client:3
                   env:
-                    - name: PMM_AGENT_SERVER_ADDRESS
+                    - name: PFW_AGENT_SERVER_ADDRESS
                       value: X.X.X.X:443
-                    - name: PMM_AGENT_SERVER_USERNAME
+                    - name: PFW_AGENT_SERVER_USERNAME
                       valueFrom:
                         secretKeyRef:
                           name: pmm-secret
-                          key: PMM_AGENT_SERVER_USERNAME
-                    - name: PMM_AGENT_SERVER_PASSWORD
+                          key: PFW_AGENT_SERVER_USERNAME
+                    - name: PFW_AGENT_SERVER_PASSWORD
                       valueFrom:
                         secretKeyRef:
                           name: pmm-secret
-                          key: PMM_AGENT_SERVER_PASSWORD
+                          key: PFW_AGENT_SERVER_PASSWORD
                     - name: MYSQL_ROOT_PASSWORD
                       valueFrom:
                         secretKeyRef:
                           name: mysql-secret
                           key: MYSQL_ROOT_PASSWORD
-                    - name: PMM_AGENT_SERVER_INSECURE_TLS
+                    - name: PFW_AGENT_SERVER_INSECURE_TLS
                       value: "1"
-                    - name: PMM_AGENT_CONFIG_FILE
-                      value: config/pmm-agent.yaml
-                    - name: PMM_AGENT_SETUP
+                    - name: PFW_AGENT_CONFIG_FILE
+                      value: config/pfw-agent.yaml
+                    - name: PFW_AGENT_SETUP
                       value: "1"
-                    - name: PMM_AGENT_SETUP_FORCE
+                    - name: PFW_AGENT_SETUP_FORCE
                       value: "1"
-                    - name: PMM_AGENT_SIDECAR
+                    - name: PFW_AGENT_SIDECAR
                       value: "1"
-                    - name: PMM_AGENT_PRERUN_SCRIPT
-                      value: "pmm-admin status --wait=10s; pmm-admin add mysql --username=root --password=${MYSQL_ROOT_PASSWORD} --query-source=perfschema"
+                    - name: PFW_AGENT_PRERUN_SCRIPT
+                      value: "pfw-admin status --wait=10s; pfw-admin add mysql --username=root --password=${MYSQL_ROOT_PASSWORD} --query-source=perfschema"
               volumes:
                 - name: mysql-persistent-storage
                   persistentVolumeClaim:
@@ -333,7 +333,7 @@ Choose your deployment approach:
         ```
 
         !!! warning alert alert-warning "Security note"
-            The `PMM_AGENT_SERVER_INSECURE_TLS=1` setting disables TLS certificate verification. For production environments, configure proper TLS certificates and remove this setting.
+            The `PFW_AGENT_SERVER_INSECURE_TLS=1` setting disables TLS certificate verification. For production environments, configure proper TLS certificates and remove this setting.
 
     7. Deploy MySQL and PMM Client pod:
 
@@ -353,15 +353,15 @@ To confirm your node is being monitored:
 3. Modify the time range to view the relevant data for your selected node.
 
 !!! danger alert alert-danger "Danger"
-    `pmm-agent.yaml` contains sensitive credentials and should not be shared.
+    `pfw-agent.yaml` contains sensitive credentials and should not be shared.
 
 ## Troubleshooting
 
-### Failed to register pmm-agent on PMM Server: connection refused
+### Failed to register pfw-agent on PMM Server: connection refused
 
-If you get `Failed to register pmm-agent on PMM Server: connection refused`, this typically means that the IP address is incorrect or the PMM Server is unreachable. Verify:
+If you get `Failed to register pfw-agent on PMM Server: connection refused`, this typically means that the IP address is incorrect or the PMM Server is unreachable. Verify:
 
-- The `PMM_AGENT_SERVER_ADDRESS` value is correct
+- The `PFW_AGENT_SERVER_ADDRESS` value is correct
 - PMM Server is running and accessible
 - Firewall rules allow traffic on port `443`
 

@@ -1,10 +1,10 @@
 # Encrypt the PMM Client configuration file
 
-The PMM Client configuration file, [`pmm-agent.yaml`](../../use/commands/pmm-agent.md) contains sensitive information like PMM Server credentials and API tokens. By default, this file is stored in plain text, which means that users with read access to the filesystem can see these credentials.
+The PMM Client configuration file, [`pfw-agent.yaml`](../../use/commands/pmm-agent.md) contains sensitive information like PMM Server credentials and API tokens. By default, this file is stored in plain text, which means that users with read access to the filesystem can see these credentials.
 
 To protect this data, you can encrypt the configuration file so that its contents are unreadable on disk. 
 
-This involves generating an RSA private key and passing it to PMM Client during setup. PFMM then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
+This involves generating an RSA private key and passing it to PMM Client during setup. PGF WatchTower then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
 
 Encryption is optional. Without an encryption key, PMM Client continues to read and write the configuration file in plain text.
 
@@ -34,30 +34,30 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
         ```bash
         openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \
           -aes256 -pass env:OPENSSL_PASSWORD \
-          -out /etc/pmm-agent-key.pem
+          -out /etc/pfw-agent-key.pem
         ```
 
     === "Without password"
         ```bash
         openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \
-          -out /etc/pmm-agent-key.pem
+          -out /etc/pfw-agent-key.pem
         ```
  
 2. Set permissions on the key file:
 
     ```bash
-    chmod 600 /etc/pmm-agent-key.pem
-    chown pmm-agent:pmm-agent /etc/pmm-agent-key.pem
+    chmod 600 /etc/pfw-agent-key.pem
+    chown pfw-agent:pfw-agent /etc/pfw-agent-key.pem
     ```
 
-3. Run `pmm-agent setup` with the encryption flags:
+3. Run `pfw-agent setup` with the encryption flags:
 
     ```bash
-    pmm-agent setup \
-      --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml \
+    pfw-agent setup \
+      --config-file=/opt/postgres1st/watchtower/config/pfw-agent.yaml \
       --server-address=pmm-server.example.com:443 \
       --server-insecure-tls \
-      --config-file-key-file=/etc/pmm-agent-key.pem \
+      --config-file-key-file=/etc/pfw-agent-key.pem \
       --config-file-key-password="$OPENSSL_PASSWORD" \
       --server-username=admin \
       --server-password=admin
@@ -68,27 +68,27 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
 4. Start PMM Client with the encryption flags:
 
     ```bash
-    pmm-agent --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml \
-      --config-file-key-file=/etc/pmm-agent-key.pem \
+    pfw-agent --config-file=/opt/postgres1st/watchtower/config/pfw-agent.yaml \
+      --config-file-key-file=/etc/pfw-agent-key.pem \
       --config-file-key-password="$OPENSSL_PASSWORD"
     ```
 
 ## Encryption settings
 
-PMM Client accepts encryption settings as either command-line flags or environment variables. Use flags when running `pmm-agent` directly, and environment variables when configuring a service manager like systemd, Docker, or Kubernetes.
+PMM Client accepts encryption settings as either command-line flags or environment variables. Use flags when running `pfw-agent` directly, and environment variables when configuring a service manager like systemd, Docker, or Kubernetes.
 
 
 | Flag | Environment variable | Description |
 |------|---------------------|-------------|
-| `--config-file-key-file` | `PMM_AGENT_CONFIG_FILE_KEY_FILE` | Path to the RSA private key file. Required to enable encryption. |
-| `--config-file-key-password` | `PMM_AGENT_CONFIG_FILE_KEY_PASSWORD` | Password for the RSA private key. Only needed if the key is password-protected. | 
+| `--config-file-key-file` | `PFW_AGENT_CONFIG_FILE_KEY_FILE` | Path to the RSA private key file. Required to enable encryption. |
+| `--config-file-key-password` | `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD` | Password for the RSA private key. Only needed if the key is password-protected. | 
 
 
 ## Deployment examples
 
 === "systemd"   
 
-    Create or modify `/etc/systemd/system/pmm-agent.service`:
+    Create or modify `/etc/systemd/system/pfw-agent.service`:
 
     ```ini
     [Unit]
@@ -97,18 +97,18 @@ PMM Client accepts encryption settings as either command-line flags or environme
 
     [Service]
     Type=simple
-    User=pmm-agent
-    Group=pmm-agent
+    User=pfw-agent
+    Group=pfw-agent
 
-    Environment="PMM_AGENT_CONFIG_FILE_KEY_FILE=/etc/pmm-agent-key.pem"
+    Environment="PFW_AGENT_CONFIG_FILE_KEY_FILE=/etc/pfw-agent-key.pem"
     # For password-protected keys, use one of the following:
     # Option 1: systemd credentials (systemd 247+)
-    # LoadCredential=key_password:/etc/pmm-agent-key-password
+    # LoadCredential=key_password:/etc/pfw-agent-key-password
     # Option 2: Environment file with restricted permissions
-    # EnvironmentFile=-/etc/pmm-agent-encryption.env
+    # EnvironmentFile=-/etc/pfw-agent-encryption.env
 
-    ExecStart=/opt/postgres1st/pfm/bin/pmm-agent \
-    --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml
+    ExecStart=/opt/postgres1st/watchtower/bin/pfw-agent \
+    --config-file=/opt/postgres1st/watchtower/config/pfw-agent.yaml
 
     Restart=on-failure
     RestartSec=10s
@@ -122,13 +122,13 @@ PMM Client accepts encryption settings as either command-line flags or environme
 
     ```bash
     docker run -d \
-    --name pmm-agent \
-    -v /opt/postgres1st/pfm/config/pmm-agent.yaml:/opt/postgres1st/pfm/config/pmm-agent.yaml \
-    -v /etc/pmm-agent-key.pem:/etc/pmm-agent-key.pem:ro \
-    -e PMM_AGENT_CONFIG_FILE_KEY_FILE=/etc/pmm-agent-key.pem \
-    -e PMM_AGENT_CONFIG_FILE_KEY_PASSWORD=your-password \
+    --name pfw-agent \
+    -v /opt/postgres1st/watchtower/config/pfw-agent.yaml:/opt/postgres1st/watchtower/config/pfw-agent.yaml \
+    -v /etc/pfw-agent-key.pem:/etc/pfw-agent-key.pem:ro \
+    -e PFW_AGENT_CONFIG_FILE_KEY_FILE=/etc/pfw-agent-key.pem \
+    -e PFW_AGENT_CONFIG_FILE_KEY_PASSWORD=your-password \
     percona/pmm-client:3 \
-    --config-file=/opt/postgres1st/pfm/config/pmm-agent.yaml
+    --config-file=/opt/postgres1st/watchtower/config/pfw-agent.yaml
     ```
 
 === "Kubernetes" 
@@ -138,7 +138,7 @@ PMM Client accepts encryption settings as either command-line flags or environme
     apiVersion: v1
     kind: Secret
     metadata:
-    name: pmm-agent-encryption-key
+    name: pfw-agent-encryption-key
     type: Opaque
     data:
     key.pem: <base64-encoded-RSA-key>
@@ -147,36 +147,36 @@ PMM Client accepts encryption settings as either command-line flags or environme
     apiVersion: apps/v1
     kind: Deployment
     metadata:
-    name: pmm-agent
+    name: pfw-agent
     spec:
     template:
         spec:
         containers:
-        - name: pmm-agent
+        - name: pfw-agent
             image: percona/pmm-client:3
             env:
-            - name: PMM_AGENT_CONFIG_FILE_KEY_FILE
+            - name: PFW_AGENT_CONFIG_FILE_KEY_FILE
             value: /etc/encryption/key.pem
-            - name: PMM_AGENT_CONFIG_FILE_KEY_PASSWORD
+            - name: PFW_AGENT_CONFIG_FILE_KEY_PASSWORD
             valueFrom:
                 secretKeyRef:
-                name: pmm-agent-encryption-key
+                name: pfw-agent-encryption-key
                 key: key-password
             volumeMounts:
             - name: encryption-key
             mountPath: /etc/encryption
             readOnly: true
             - name: config
-            mountPath: /opt/postgres1st/pfm/config/pmm-agent.yaml
-            subPath: pmm-agent.yaml
+            mountPath: /opt/postgres1st/watchtower/config/pfw-agent.yaml
+            subPath: pfw-agent.yaml
         volumes:
         - name: encryption-key
             secret:
-            secretName: pmm-agent-encryption-key
+            secretName: pfw-agent-encryption-key
             defaultMode: 0600
         - name: config
             persistentVolumeClaim:
-            claimName: pmm-agent-config
+            claimName: pfw-agent-config
     ```
 
 ## Migrate from an unencrypted configuration
@@ -189,21 +189,21 @@ If PMM Client is already set up, you can enable encryption without re-registerin
     ```bash
     openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \
       -aes256 -pass env:OPENSSL_PASSWORD \
-      -out /etc/pmm-agent-key.pem
-    chmod 600 /etc/pmm-agent-key.pem
+      -out /etc/pfw-agent-key.pem
+    chmod 600 /etc/pfw-agent-key.pem
     ```
 
 2. Stop PMM Client:
 
     ```bash
-    systemctl stop pmm-agent
+    systemctl stop pfw-agent
     ```
 
 3. Add the encryption environment variables to your [systemd, Docker, or Kubernetes configuration](#deployment-examples).
 
 4. Restart PMM Client to apply the new encryption settings:
     ```bash
-    systemctl start pmm-agent
+    systemctl start pfw-agent
     ```
 
 PMM Client automatically encrypts the configuration file on the next save.
@@ -213,7 +213,7 @@ PMM Client automatically encrypts the configuration file on the next save.
 To remove encryption and store the configuration file in plain text:
 {.power-number}
 
-1. Remove the encryption environment variables (`PMM_AGENT_CONFIG_FILE_KEY_FILE` and `PMM_AGENT_CONFIG_FILE_KEY_PASSWORD`) from your [systemd, Docker, or Kubernetes configuration](#deployment-examples).
+1. Remove the encryption environment variables (`PFW_AGENT_CONFIG_FILE_KEY_FILE` and `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD`) from your [systemd, Docker, or Kubernetes configuration](#deployment-examples).
 2. Restart PMM Client so it can decrypt the file and rewrite it in plain text while the key is still in memory. If you skip this step, the file remains encrypted and PMM Client won't be able to read it on future restarts.
 
 ## Verify encryption status
@@ -222,10 +222,10 @@ Check whether a configuration file is encrypted by reading it directly:
 
 ```bash
 # Encrypted: shows binary content, not valid YAML
-cat /opt/postgres1st/pfm/config/pmm-agent.yaml
+cat /opt/postgres1st/watchtower/config/pfw-agent.yaml
 
 # You can also confirm with hexdump
-head -c 100 /opt/postgres1st/pfm/config/pmm-agent.yaml | hexdump -C
+head -c 100 /opt/postgres1st/watchtower/config/pfw-agent.yaml | hexdump -C
 ```
 
 A plain-text file shows readable YAML. An encrypted file shows binary data.
@@ -234,7 +234,7 @@ A plain-text file shows readable YAML. An encrypted file shows binary data.
 
 - **Back up keys** separately from encrypted configuration files.
 - **Use password protection** for RSA private keys.
-- **Restrict file permissions** to `0600`, owned by the `pmm-agent` user.
+- **Restrict file permissions** to `0600`, owned by the `pfw-agent` user.
 - **Store keys and configuration files in different locations** when possible.
 - **Use a secret management system** (HashiCorp Vault, AWS Secrets Manager, etc.) in production environments.
 - **Implement key rotation** based on your compliance requirements.
@@ -244,11 +244,11 @@ A plain-text file shows readable YAML. An encrypted file shows binary data.
 
 ### "unable to get RSA key from KeyFile"
 
-Check that the key file path is correct and that the file is readable by the `pmm-agent` user. Make sure the file contains a valid RSA private key in PEM format.
+Check that the key file path is correct and that the file is readable by the `pfw-agent` user. Make sure the file contains a valid RSA private key in PEM format.
 
 ### "pkcs8: incorrect password"
 
-Verify that the password is correct and that `PMM_AGENT_CONFIG_FILE_KEY_PASSWORD` (or `--config-file-key-password`) matches the password used to generate the key.
+Verify that the password is correct and that `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD` (or `--config-file-key-password`) matches the password used to generate the key.
 
 ### "unable to RSA-unwrap AES key: crypto/rsa: decryption error"
 

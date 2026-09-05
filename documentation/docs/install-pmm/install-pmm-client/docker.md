@@ -32,7 +32,7 @@ Set up PMM Client by deploying it as a Docker container and registering it with 
 
 Deploy and register PMM Client to start monitoring your node. 
 
-Registration gives PMM Server permission to collect metrics from your infrastructure and display them in monitoring dashboards. PFMM supports two authentication methods: service account tokens (recommended) and username/password credentials. 
+Registration gives PMM Server permission to collect metrics from your infrastructure and display them in monitoring dashboards. PGF WatchTower supports two authentication methods: service account tokens (recommended) and username/password credentials. 
 
 To deploy and register PMM Client using Docker:
 {.power-number}
@@ -43,23 +43,23 @@ To deploy and register PMM Client using Docker:
     docker pull percona/pmm-client:3
     ```
 
-2. Start the PMM Client container and register it with PMM Server using the [pmm-agent](../../use/commands/pmm-agent.md) Setup mode. Replace `X.X.X.X` with the external IP address of your PMM Server:
+2. Start the PMM Client container and register it with PMM Server using the [pfw-agent](../../use/commands/pmm-agent.md) Setup mode. Replace `X.X.X.X` with the external IP address of your PMM Server:
 
     !!! hint alert-success "Important"
-        Do not use the `--detach` option with this command. The pmm-agent outputs logs directly to the console, and detaching would prevent you from seeing important setup information and potential errors.
+        Do not use the `--detach` option with this command. The pfw-agent outputs logs directly to the console, and detaching would prevent you from seeing important setup information and potential errors.
    
     === "Using Service accounts (Recommended)"
    
-        [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PFMM.
+        [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PGF WatchTower.
     
         To register with service accounts, create a service account then generate an authentication token that you can use to register the PMM Client:
         {.power-number}
     
-        1. Log into PFMM web interface.
+        1. Log into PGF WatchTower web interface.
         2. Navigate to **Users and access > Service accounts**.
         3. Click **Add service account**.
-        4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that PFMM automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
-        5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PFMM](../../admin/roles/index.md).
+        4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that PGF WatchTower automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
+        5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PGF WatchTower](../../admin/roles/index.md).
         6. Click **Create > Add service account token**.
         7. (Optional) Name your token or leave blank for auto-generated name.
         8. (Optional) Set expiration date for enhanced security. Expired tokens require manual rotation. Permanent tokens remain valid until revoked.
@@ -70,29 +70,29 @@ To deploy and register PMM Client using Docker:
             ```bash
             docker run \
             --name pmm-client \
-            -e PMM_AGENT_SETUP_NODE_NAME=my_node_name \
-            -e PMM_AGENT_SETUP_NODE_TYPE=container \
-            -e PMM_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
-            -e PMM_AGENT_SERVER_USERNAME=service_token \
-            -e PMM_AGENT_SERVER_PASSWORD=YOUR_GLSA_TOKEN \
-            -e PMM_AGENT_SERVER_INSECURE_TLS=1 \
-            -e PMM_AGENT_SETUP=1 \
-            -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
-            -e PMM_AGENT_SETUP_FORCE=1 \
-            -e PMM_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
+            -e PFW_AGENT_SETUP_NODE_NAME=my_node_name \
+            -e PFW_AGENT_SETUP_NODE_TYPE=container \
+            -e PFW_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
+            -e PFW_AGENT_SERVER_USERNAME=service_token \
+            -e PFW_AGENT_SERVER_PASSWORD=YOUR_GLSA_TOKEN \
+            -e PFW_AGENT_SERVER_INSECURE_TLS=1 \
+            -e PFW_AGENT_SETUP=1 \
+            -e PFW_AGENT_CONFIG_FILE=config/pfw-agent.yaml \
+            -e PFW_AGENT_SETUP_FORCE=1 \
+            -e PFW_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
             -v ./pmm-prerun.sh:/opt/percona/pmm-prerun.sh \
             percona/pmm-client:3
             ```
     
             **Parameters explained:**
     
-            - `PMM_AGENT_SETUP_NODE_NAME` - (Optional) Descriptive name for the node
-            - `PMM_AGENT_SETUP_NODE_TYPE` - (Optional) Node type: generic, container, etc.
-            - `PMM_AGENT_SERVER_ADDRESS` - Your PMM Server’s IP address or hostname
+            - `PFW_AGENT_SETUP_NODE_NAME` - (Optional) Descriptive name for the node
+            - `PFW_AGENT_SETUP_NODE_TYPE` - (Optional) Node type: generic, container, etc.
+            - `PFW_AGENT_SERVER_ADDRESS` - Your PMM Server’s IP address or hostname
             - `service_token` - Use this exact string as the username (not a placeholder!)
             - `YOUR_GLSA_TOKEN` - The token you copied (starts with `glsa_`)
-            - `PMM_AGENT_SERVER_INSECURE_TLS` - Skip certificate validation (remove for production with valid certificates)
-            - `PMM_AGENT_PRERUN_SCRIPT` - (Optional) Path to a script inside the container that runs after registration. Mount your script using `-v ./your-script.sh:/opt/percona/pmm-prerun.sh`. See [Monitoring services](#add-monitoring-services). 
+            - `PFW_AGENT_SERVER_INSECURE_TLS` - Skip certificate validation (remove for production with valid certificates)
+            - `PFW_AGENT_PRERUN_SCRIPT` - (Optional) Path to a script inside the container that runs after registration. Mount your script using `-v ./your-script.sh:/opt/percona/pmm-prerun.sh`. See [Monitoring services](#add-monitoring-services). 
 
             You can find a complete list of compatible environment variables [here](../../use/commands/pmm-agent.md).
     
@@ -103,27 +103,27 @@ To deploy and register PMM Client using Docker:
         ```sh
         docker run \
         --name pmm-client \
-        -e PMM_AGENT_SETUP_NODE_NAME=my_node_name \
-        -e PMM_AGENT_SETUP_NODE_TYPE=container \
-        -e PMM_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
-        -e PMM_AGENT_SERVER_USERNAME=admin \
-        -e PMM_AGENT_SERVER_PASSWORD=admin \
-        -e PMM_AGENT_SERVER_INSECURE_TLS=1 \
-        -e PMM_AGENT_SETUP=1 \
-        -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
-        -e PMM_AGENT_SETUP_FORCE=1 \
-        -e PMM_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
+        -e PFW_AGENT_SETUP_NODE_NAME=my_node_name \
+        -e PFW_AGENT_SETUP_NODE_TYPE=container \
+        -e PFW_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
+        -e PFW_AGENT_SERVER_USERNAME=admin \
+        -e PFW_AGENT_SERVER_PASSWORD=admin \
+        -e PFW_AGENT_SERVER_INSECURE_TLS=1 \
+        -e PFW_AGENT_SETUP=1 \
+        -e PFW_AGENT_CONFIG_FILE=config/pfw-agent.yaml \
+        -e PFW_AGENT_SETUP_FORCE=1 \
+        -e PFW_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
         -v ./pmm-prerun.sh:/opt/percona/pmm-prerun.sh \
         percona/pmm-client:3
         ```
     
         **Parameters explained:**
    
-        - `PMM_AGENT_SETUP_NODE_NAME` - (Optional) Descriptive name for the node
-        - `PMM_AGENT_SETUP_NODE_TYPE` - (Optional) Node type: generic, container, etc.
-        - `PMM_AGENT_SERVER_ADDRESS` - Your PMM Server’s IP address or hostname
+        - `PFW_AGENT_SETUP_NODE_NAME` - (Optional) Descriptive name for the node
+        - `PFW_AGENT_SETUP_NODE_TYPE` - (Optional) Node type: generic, container, etc.
+        - `PFW_AGENT_SERVER_ADDRESS` - Your PMM Server’s IP address or hostname
         - `admin`/`admin` - Default PMM Server username and password (change this immediately after first login)
-        - `PMM_AGENT_PRERUN_SCRIPT` - (Optional) See [Monitoring services](#add-monitoring-services)
+        - `PFW_AGENT_PRERUN_SCRIPT` - (Optional) See [Monitoring services](#add-monitoring-services)
         
         You can find a complete list of compatible environment variables [here](../../use/commands/pmm-agent.md).
 
@@ -137,17 +137,17 @@ To deploy and register PMM Client using Docker:
         5. Consider restricting or disabling direct admin account usage for node registration.
 
 !!! hint alert-success "Important"
-    If you get `Failed to register pmm-agent on PMM Server: connection refused`, this typically means that the IP address is incorrect or the PMM Server is unreachable.
+    If you get `Failed to register pfw-agent on PMM Server: connection refused`, this typically means that the IP address is incorrect or the PMM Server is unreachable.
     
 ## Verify the connection
 
 Run the following command to check that PMM Client is properly connected and registered:
 
 ```bash
-docker exec -t pmm-client pmm-admin status
+docker exec -t pmm-client pfw-admin status
 ```
 
-If the connection is successful, you should also see an increased number of monitored nodes in the PFMM user interface.
+If the connection is successful, you should also see an increased number of monitored nodes in the PGF WatchTower user interface.
 
 ### View your monitored node
 To confirm your node is being monitored:
@@ -161,23 +161,23 @@ To confirm your node is being monitored:
 
 ## Add monitoring services
 
-After installing PMM Client, you add database services to monitor with the [`pmm-admin`](../../use/commands/pmm-admin/pmm-admin.md) command. 
+After installing PMM Client, you add database services to monitor with the [`pfw-admin`](../../use/commands/pmm-admin/pmm-admin.md) command. 
 
-When running PMM Client in Docker, use the `PMM_AGENT_PRERUN_SCRIPT` argument to pass a script containing any required `pmm-admin add DATABASE [FLAGS] [NAME] [ADDRESS]` commands. The `pmm-agent` runs the script automatically after registering with PMM Server. For example:
+When running PMM Client in Docker, use the `PFW_AGENT_PRERUN_SCRIPT` argument to pass a script containing any required `pfw-admin add DATABASE [FLAGS] [NAME] [ADDRESS]` commands. The `pfw-agent` runs the script automatically after registering with PMM Server. For example:
 
 ```bash
  docker run \
  --name pmm-client \
- -e PMM_AGENT_SETUP_NODE_NAME=my_node_name \
- -e PMM_AGENT_SETUP_NODE_TYPE=container \
- -e PMM_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
- -e PMM_AGENT_SERVER_USERNAME=service_token \
- -e PMM_AGENT_SERVER_PASSWORD=YOUR_GLSA_TOKEN \
- -e PMM_AGENT_SERVER_INSECURE_TLS=1 \
- -e PMM_AGENT_SETUP=1 \
- -e PMM_AGENT_CONFIG_FILE=config/pmm-agent.yaml \
- -e PMM_AGENT_SETUP_FORCE=1 \
- -e PMM_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
+ -e PFW_AGENT_SETUP_NODE_NAME=my_node_name \
+ -e PFW_AGENT_SETUP_NODE_TYPE=container \
+ -e PFW_AGENT_SERVER_ADDRESS=X.X.X.X:443 \
+ -e PFW_AGENT_SERVER_USERNAME=service_token \
+ -e PFW_AGENT_SERVER_PASSWORD=YOUR_GLSA_TOKEN \
+ -e PFW_AGENT_SERVER_INSECURE_TLS=1 \
+ -e PFW_AGENT_SETUP=1 \
+ -e PFW_AGENT_CONFIG_FILE=config/pfw-agent.yaml \
+ -e PFW_AGENT_SETUP_FORCE=1 \
+ -e PFW_AGENT_PRERUN_SCRIPT=/opt/percona/pmm-prerun.sh \
  -v ./pmm-prerun.sh:/opt/percona/pmm-prerun.sh \
  percona/pmm-client:3
 ```
@@ -185,4 +185,4 @@ When running PMM Client in Docker, use the `PMM_AGENT_PRERUN_SCRIPT` argument to
 ## Tips for Docker configuration
 
 - Ensure your host's firewall and routing rules are configured to allow Docker communications. This is crucial for Docker containers to communicate properly. For more details, see the [troubleshooting checklist](../../troubleshoot/checklist.md).
-- To view available pmm-agent command-line options, run: `docker run --rm percona/pmm-client:3 --help`
+- To view available pfw-agent command-line options, run: `docker run --rm percona/pmm-client:3 --help`

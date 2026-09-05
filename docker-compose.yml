@@ -68,15 +68,15 @@ services:
         condition: service_started
         required: false
     environment:
-      PMM_AGENT_SERVER_ADDRESS: pmm-server:8443
-      PMM_AGENT_SERVER_USERNAME: admin
-      PMM_AGENT_SERVER_PASSWORD: admin
-      PMM_AGENT_SERVER_INSECURE_TLS: 1
-      PMM_AGENT_CONFIG_FILE: config/pmm-agent.yaml
-      PMM_AGENT_SETUP: 1
-      PMM_AGENT_SETUP_FORCE: 1
-      PMM_AGENT_SIDECAR: 1
-      PMM_AGENT_PRERUN_SCRIPT: |
+      PFW_AGENT_SERVER_ADDRESS: pmm-server:8443
+      PFW_AGENT_SERVER_USERNAME: admin
+      PFW_AGENT_SERVER_PASSWORD: admin
+      PFW_AGENT_SERVER_INSECURE_TLS: 1
+      PFW_AGENT_CONFIG_FILE: config/pmm-agent.yaml
+      PFW_AGENT_SETUP: 1
+      PFW_AGENT_SETUP_FORCE: 1
+      PFW_AGENT_SIDECAR: 1
+      PFW_AGENT_PRERUN_SCRIPT: |
         pmm-admin status --wait=10s
         pmm-admin add mysql --cluster=dev-cluster --environment=dev --custom-labels='app=test-app' --username=root --password=secret --query-source=perfschema mysql-dev ps:3306
         pmm-admin add postgresql --username=postgres --password=secret postgres-dev postgres:5432 || true

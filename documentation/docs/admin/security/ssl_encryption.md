@@ -1,6 +1,6 @@
 # SSL encryption
 
-Securing your PFMM deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PMM Server and PMM Clients.
+Securing your PGF WatchTower deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PMM Server and PMM Clients.
 
 You have several certificate options:
 
@@ -10,7 +10,7 @@ You have several certificate options:
 
 ## Configure SSL encryption
 
-Configure both the Server and Client to implement SSL/TLS encryption in your PFMM environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
+Configure both the Server and Client to implement SSL/TLS encryption in your PGF WatchTower environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
 {.power-number}
 
 1. **Prepare your certificates**: Choose one method to provide certificates to PMM Server:
@@ -96,7 +96,7 @@ curl -I https://<server-hostname>:443
     Register PMM Clients using the HTTPS URL:
 
     ```sh
-    pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
+    pfw-admin config --server-url=https://<user>:<password>@<server-hostname>
     ```
 
     !!! tip "For successful connection"
@@ -130,24 +130,24 @@ curl -I https://<server-hostname>:443
 
 ## Use custom CA certificates with PMM Client
 
-The `SSL_CERT_FILE` environment variable specifies the path to a custom certificate chain file that pmm-agent uses for **all** SSL/TLS connections. This approach is ideal when:
+The `SSL_CERT_FILE` environment variable specifies the path to a custom certificate chain file that pfw-agent uses for **all** SSL/TLS connections. This approach is ideal when:
 
 - PMM Server uses certificates signed by an internal/custom certificate authority
 - You want to avoid modifying system-wide certificate settings  
 - Running in containerized or restricted environments
 - Testing with different CA configurations
 
-### Set SSL_CERT_FILE for pmm-admin commands
+### Set SSL_CERT_FILE for pfw-admin commands
 
-Export the `SSL_CERT_FILE` environment variable before running `pmm-admin` commands:
+Export the `SSL_CERT_FILE` environment variable before running `pfw-admin` commands:
 
 ```sh
 export SSL_CERT_FILE=/path/to/custom-ca-bundle.pem
-pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
+pfw-admin config --server-url=https://<user>:<password>@<server-hostname>
 ```
 
 !!! tip "Testing first"
-    Before configuring pmm-admin, test the connection with curl: `curl -v https://<server-hostname>/ping`
+    Before configuring pfw-admin, test the connection with curl: `curl -v https://<server-hostname>/ping`
 
 ### Persistent configuration
 
@@ -159,7 +159,7 @@ pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
     Then reload: `source ~/.bashrc`
 
 === "Systemd service"
-    For pmm-agent running as a systemd service:
+    For pfw-agent running as a systemd service:
     ```ini
     [Unit]
     Description=PMM Agent
@@ -167,9 +167,9 @@ pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
 
     [Service]
     Type=simple
-    User=pmm-agent
+    User=pfw-agent
     Environment="SSL_CERT_FILE=/etc/ssl/certs/custom-ca-bundle.pem"
-    ExecStart=/usr/local/bin/pmm-agent --config-file=/etc/pmm-agent.yaml
+    ExecStart=/usr/local/bin/pfw-agent --config-file=/etc/pfw-agent.yaml
     Restart=always
 
     [Install]
@@ -181,10 +181,10 @@ pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
     ```sh
     docker run \
         --rm --name pmm-client \
-        -e PMM_AGENT_SERVER_ADDRESS=<server-hostname>:443 \
-        -e PMM_AGENT_SERVER_USERNAME=admin \
-        -e PMM_AGENT_SERVER_PASSWORD=admin \
-        -e PMM_AGENT_SETUP=1 \
+        -e PFW_AGENT_SERVER_ADDRESS=<server-hostname>:443 \
+        -e PFW_AGENT_SERVER_USERNAME=admin \
+        -e PFW_AGENT_SERVER_PASSWORD=admin \
+        -e PFW_AGENT_SETUP=1 \
         -e SSL_CERT_FILE=/etc/ssl/certs/custom-ca-bundle.pem \
         -v /path/to/ca-bundle.pem:/etc/ssl/certs/custom-ca-bundle.pem:ro \
         percona/pmm-client:3
@@ -192,7 +192,7 @@ pmm-admin config --server-url=https://<user>:<password>@<server-hostname>
 
 ### Create CA bundle files
 !!! note "File permissions"
-    Ensure the CA bundle file is readable by the user running pmm-agent.
+    Ensure the CA bundle file is readable by the user running pfw-agent.
 
 The CA bundle file should contain one or more PEM-encoded certificate authority certificates:
 
@@ -224,6 +224,6 @@ openssl s_client -connect <server-hostname>:443 -CAfile /etc/ssl/certs/custom-ca
 # Test HTTP connection
 curl -v https://<server-hostname>/ping
 
-# Test pmm-admin connection
-pmm-admin status
+# Test pfw-admin connection
+pfw-admin status
 ```

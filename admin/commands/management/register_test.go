@@ -37,8 +37,8 @@ func TestRegisterResult(t *testing.T) {
 				},
 				Warning: "",
 			},
-			want: `pmm-agent registered.
-pmm-agent ID: new_id
+			want: `pfw-agent registered.
+pfw-agent ID: new_id
 Node ID     : second_id
 `,
 		},
@@ -51,8 +51,8 @@ Node ID     : second_id
 				},
 				Warning: "Couldn't create a Service Key",
 			},
-			want: `pmm-agent registered.
-pmm-agent ID: warning
+			want: `pfw-agent registered.
+pfw-agent ID: warning
 Node ID     : warning_node
 
 Warning: Couldn't create a Service Key

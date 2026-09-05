@@ -16,6 +16,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -54,7 +55,7 @@ type ConfigCommand struct {
 	Force             bool     `help:"Remove Node with that name with all dependent Services and Agents if one exist"`
 	DisableCollectors []string `help:"Comma-separated list of collector names to exclude from exporter"`
 	CustomLabels      string   `placeholder:"KEY=VALUE,KEY=VALUE,..." help:"Custom user-assigned labels"`
-	BasePath          string   `name:"paths-base" help:"Base path where all binaries, tools and collectors of PMM client are located"`
+	BasePath          string   `name:"paths-base" help:"Base path where all binaries, tools and collectors of the PGF WatchTower Agent are located"`
 	LogLinesCount     uint     `help:"Take and return N most recent log lines in logs.zip for each: server, every configured exporters and agents" default:"1024"`
 }
 
@@ -77,10 +78,11 @@ func (cmd *ConfigCommand) args(globals *flags.GlobalFlags) ([]string, bool) {
 
 	if globals.ServerURL.User != nil {
 		res = append(res, "--server-username="+globals.ServerURL.User.Username())
-		password, ok := globals.ServerURL.User.Password()
-		if ok {
-			res = append(res, "--server-password="+password)
-		}
+		// The password is deliberately NOT here. It goes to pfw-agent through its
+		// environment instead -- see serverPasswordEnv. Passing it as an argument put
+		// the PGF WatchTower admin credential into a second process's command line,
+		// and /proc/<pid>/cmdline is world-readable (0444) on a default Linux host,
+		// whereas /proc/<pid>/environ is owner-only (0400).
 	}
 
 	if globals.PMMAgentListenPort != 0 {
@@ -144,10 +146,33 @@ func (cmd *ConfigCommand) args(globals *flags.GlobalFlags) ([]string, bool) {
 	return res, switchedToTLS
 }
 
+// serverPasswordEnv returns the environment entry carrying the server password to
+// pfw-agent, or nil when no password was supplied.
+//
+// pfw-agent already accepts PFW_AGENT_SERVER_PASSWORD (agent/config/config.go), so
+// this needs no change on that side. It exists because the alternative --
+// --server-password on the child's command line -- publishes the credential to every
+// local user for the lifetime of the setup call.
+func serverPasswordEnv(globals *flags.GlobalFlags) []string {
+	if globals.ServerURL == nil || globals.ServerURL.User == nil {
+		return nil
+	}
+
+	password, ok := globals.ServerURL.User.Password()
+	if !ok || password == "" {
+		return nil
+	}
+
+	return []string{"PFW_AGENT_SERVER_PASSWORD=" + password}
+}
+
 // RunCmd runs config command.
 func (cmd *ConfigCommand) RunCmd(globals *flags.GlobalFlags) (Result, error) {
 	args, switchedToTLS := cmd.args(globals)
-	c := exec.Command("pfm-agent", args...) //nolint:gosec
+	c := exec.Command("pfw-agent", args...) //nolint:gosec
+	c.Env = append(os.Environ(), serverPasswordEnv(globals)...)
+	// c.Args is logged, not c.Env: the whole point is that the credential is no
+	// longer in the argument list, and debug logs must not put it back.
 	logrus.Debugf("Running: %s", strings.Join(c.Args, " "))
 	b, err := c.Output() // hide pmm-agent's stderr logging
 	res := &configResult{

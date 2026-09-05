@@ -1,30 +1,30 @@
-# Configure the pmm-agent daemon
+# Configure the pfw-agent daemon
 
-`pmm-agent` is the daemon process that runs on each monitored host. It manages exporters, collects metrics, and handles communication between your databases and PMM Server. 
+`pfw-agent` is the daemon process that runs on each monitored host. It manages exporters, collects metrics, and handles communication between your databases and PMM Server. 
 
-You typically don't interact with pmm-agent directly, `pmm-admin` communicates with PMM Server, which then sends commands to `pmm-agent`. 
+You typically don't interact with pfw-agent directly, `pfw-admin` communicates with PMM Server, which then sends commands to `pfw-agent`. 
 
 ## NAME
 
-`pmm-agent`: The PMM Client daemon program.
+`pfw-agent`: The PMM Client daemon program.
 
 ## Syntax
 
-`pmm-agent [command] [options]`
+`pfw-agent [command] [options]`
 
 ## Description
 
-`pmm-agent`, part of the PMM Client package, runs as a daemon process on all monitored hosts.
+`pfw-agent`, part of the PMM Client package, runs as a daemon process on all monitored hosts.
 
 ## Commands
 
-`pmm-agent run`
-: Run pmm-agent (default).
+`pfw-agent run`
+: Run pfw-agent (default).
 
-`pmm-agent setup [node-address] [node-type] [node-name]`
-: Configure local pmm-agent (requires root permissions)
+`pfw-agent setup [node-address] [node-type] [node-name]`
+: Configure local pfw-agent (requires root permissions)
 
-`pmm-agent help [command]`
+`pfw-agent help [command]`
 : Show help (for command) and exit.
 
 ## Options and environment
@@ -33,49 +33,49 @@ Most options can be set via environment variables (shown in parentheses).
 
 | Option                                 | Environment variable                | Description
 | -------------------------------------- | ----------------------------------- | -----------------------------
-| `--server-password=SERVER-PASSWORD`    | `PMM_AGENT_SERVER_PASSWORD`         | Password to connect to PMM Server.
-| `--server-username=SERVER-USERNAME`    | `PMM_AGENT_SERVER_USERNAME`         | Username to connect to PMM Server.
-| `--server-address=host:port`           | `PMM_AGENT_SERVER_ADDRESS`          | PMM Server address and port number.
-| `--server-insecure-tls`                | `PMM_AGENT_SERVER_INSECURE_TLS`     | Skip PMM Server TLS certificate validation.
-| `--az=AZ`                              | `PMM_AGENT_SETUP_AZ`                | Node availability zone.
-| `--config-file=path_to/pmm-agent.yaml` | `PMM_AGENT_CONFIG_FILE`             | Configuration file path and name.
-| `--config-file-key-file`               | `PMM_AGENT_CONFIG_FILE_KEY_FILE`    | Path to RSA private key for config file encryption. See [Encrypt the PMM Client configuration file](../../admin/security/client_config_encryption.md).
-| `--config-file-key-password`           | `PMM_AGENT_CONFIG_FILE_KEY_PASSWORD`| Password for the RSA private key (if password-protected).
-| `--container-id=CONTAINER-ID`          | `PMM_AGENT_SETUP_CONTAINER_ID`      | Container ID.
-| `--container-name=CONTAINER-NAME`      | `PMM_AGENT_SETUP_CONTAINER_NAME`    | Container name.
-| `--debug`                              | `PMM_AGENT_DEBUG`                   | Enable debug output.
-| `--distro=distro`                      | `PMM_AGENT_SETUP_DISTRO`            | Node OS distribution (default is auto-detected).
-| `--force`                              | `PMM_AGENT_SETUP_FORCE`             | Remove Node with that name and all dependent Services and Agents (if existing).
-| `--id=...`                             | `PMM_AGENT_ID`                      | ID of this pmm-agent.
-| `--listen-address=LISTEN-ADDRESS`      | `PMM_AGENT_LISTEN_ADDRESS`          | Agent local API address.
-| `--listen-port=LISTEN-PORT`            | `PMM_AGENT_LISTEN_PORT`             | Agent local API port.
-| `--machine-id=machine-id`              | `PMM_AGENT_SETUP_MACHINE_ID`        | Node machine ID (default is auto-detected).
-| `--metrics-mode=auto`                  | `PMM_AGENT_SETUP_METRICS_MODE`      | Metrics flow mode for agents node-exporter. Can be `push` (agent will push metrics), `pull` (server scrapes metrics from agent) or `auto` (chosen by server).
-| `--node-model=NODE-MODEL`              | `PMM_AGENT_SETUP_NODE_MODEL`        | Node model.
-| `--proc-mounts-path=PATH`              | `PMM_AGENT_SETUP_PROC_MOUNTS_PATH`  | Path to the `proc/mounts` file used by the `node_exporter`.
+| `--server-password=SERVER-PASSWORD`    | `PFW_AGENT_SERVER_PASSWORD`         | Password to connect to PMM Server.
+| `--server-username=SERVER-USERNAME`    | `PFW_AGENT_SERVER_USERNAME`         | Username to connect to PMM Server.
+| `--server-address=host:port`           | `PFW_AGENT_SERVER_ADDRESS`          | PMM Server address and port number.
+| `--server-insecure-tls`                | `PFW_AGENT_SERVER_INSECURE_TLS`     | Skip PMM Server TLS certificate validation.
+| `--az=AZ`                              | `PFW_AGENT_SETUP_AZ`                | Node availability zone.
+| `--config-file=path_to/pfw-agent.yaml` | `PFW_AGENT_CONFIG_FILE`             | Configuration file path and name.
+| `--config-file-key-file`               | `PFW_AGENT_CONFIG_FILE_KEY_FILE`    | Path to RSA private key for config file encryption. See [Encrypt the PMM Client configuration file](../../admin/security/client_config_encryption.md).
+| `--config-file-key-password`           | `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD`| Password for the RSA private key (if password-protected).
+| `--container-id=CONTAINER-ID`          | `PFW_AGENT_SETUP_CONTAINER_ID`      | Container ID.
+| `--container-name=CONTAINER-NAME`      | `PFW_AGENT_SETUP_CONTAINER_NAME`    | Container name.
+| `--debug`                              | `PFW_AGENT_DEBUG`                   | Enable debug output.
+| `--distro=distro`                      | `PFW_AGENT_SETUP_DISTRO`            | Node OS distribution (default is auto-detected).
+| `--force`                              | `PFW_AGENT_SETUP_FORCE`             | Remove Node with that name and all dependent Services and Agents (if existing).
+| `--id=...`                             | `PFW_AGENT_ID`                      | ID of this pfw-agent.
+| `--listen-address=LISTEN-ADDRESS`      | `PFW_AGENT_LISTEN_ADDRESS`          | Agent local API address.
+| `--listen-port=LISTEN-PORT`            | `PFW_AGENT_LISTEN_PORT`             | Agent local API port.
+| `--machine-id=machine-id`              | `PFW_AGENT_SETUP_MACHINE_ID`        | Node machine ID (default is auto-detected).
+| `--metrics-mode=auto`                  | `PFW_AGENT_SETUP_METRICS_MODE`      | Metrics flow mode for agents node-exporter. Can be `push` (agent will push metrics), `pull` (server scrapes metrics from agent) or `auto` (chosen by server).
+| `--node-model=NODE-MODEL`              | `PFW_AGENT_SETUP_NODE_MODEL`        | Node model.
+| `--proc-mounts-path=PATH`              | `PFW_AGENT_SETUP_PROC_MOUNTS_PATH`  | Path to the `proc/mounts` file used by the `node_exporter`.
 | `--expose-exporter` | | If you enable this flag, any IP address on the local network and anywhere on the internet can access node exporter endpoints. If the flag is disabled, node exporter endpoints can be accessed only locally.|
-| `--paths-base=PATH`                    | `PMM_AGENT_PATHS_BASE`              | Base path for PMM client, where all binaries, tools and collectors are located. If not set, default is `/opt/postgres1st/pfm`.
-| `--paths-exporters_base=PATH`          | `PMM_AGENT_PATHS_EXPORTERS_BASE`    | Base path for exporters to use. If not set, or set to a relative path, uses value of `--paths-base` prepended to it.
-| `--paths-mongodb_exporter=PATH`        | `PMM_AGENT_PATHS_MONGODB_EXPORTER`  | Path to `mongodb_exporter`.
-| `--paths-mysqld_exporter=PATH`         | `PMM_AGENT_PATHS_MYSQLD_EXPORTER`   | Path to `mysqld_exporter`.
-| `--paths-node_exporter=PATH`           | `PMM_AGENT_PATHS_NODE_EXPORTER`     | Path to `node_exporter`.
-| `--paths-postgres_exporter=PATH`       | `PMM_AGENT_PATHS_POSTGRES_EXPORTER` | Path to `postgres_exporter`.
-| `--paths-proxysql_exporter=PATH`       | `PMM_AGENT_PATHS_PROXYSQL_EXPORTER` | Path to `proxysql_exporter`.
-| `--paths-pt-summary=PATH`              | `PMM_AGENT_PATHS_PT_SUMMARY`        | Path to `pt-summary`.
-| `--paths-pt-mysql-summary=PATH`        | `PMM_AGENT_PATHS_PT_MYSQL_SUMMARY`  | Path to `pt-mysql-summary`.
-| `--paths-pt-pg-summary=PATH`           | `PMM_AGENT_PATHS_PT_PG_SUMMARY`     | Path to `pt-pg-summary`.
-| `--paths-tempdir=PATH`                 | `PMM_AGENT_PATHS_TEMPDIR`           | Temporary directory for exporters.
-| `--ports-max=PORTS-MAX`                | `PMM_AGENT_PORTS_MAX`               | Highest allowed port number for listening sockets.
-| `--ports-min=PORTS-MIN`                | `PMM_AGENT_PORTS_MIN`               | Lowest allowed port number for listening sockets.
-| `--region=REGION`                      | `PMM_AGENT_SETUP_REGION`            | Node region.
-| `--skip-registration`                  | `PMM_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PMM Server.
-| `--trace`                              | `PMM_AGENT_TRACE`                   | Enable trace output (implies `--debug`).
-| `--version`                            |                                     | Show application version, PFMM version, time-stamp, git commit hash and branch.
-| `-h`, `--help`                         |                                     | Show help (synonym for `pmm-agent help`).
+| `--paths-base=PATH`                    | `PFW_AGENT_PATHS_BASE`              | Base path for PMM client, where all binaries, tools and collectors are located. If not set, default is `/opt/postgres1st/watchtower`.
+| `--paths-exporters_base=PATH`          | `PFW_AGENT_PATHS_EXPORTERS_BASE`    | Base path for exporters to use. If not set, or set to a relative path, uses value of `--paths-base` prepended to it.
+| `--paths-mongodb_exporter=PATH`        | `PFW_AGENT_PATHS_MONGODB_EXPORTER`  | Path to `mongodb_exporter`.
+| `--paths-mysqld_exporter=PATH`         | `PFW_AGENT_PATHS_MYSQLD_EXPORTER`   | Path to `mysqld_exporter`.
+| `--paths-node_exporter=PATH`           | `PFW_AGENT_PATHS_NODE_EXPORTER`     | Path to `node_exporter`.
+| `--paths-postgres_exporter=PATH`       | `PFW_AGENT_PATHS_POSTGRES_EXPORTER` | Path to `postgres_exporter`.
+| `--paths-proxysql_exporter=PATH`       | `PFW_AGENT_PATHS_PROXYSQL_EXPORTER` | Path to `proxysql_exporter`.
+| `--paths-pt-summary=PATH`              | `PFW_AGENT_PATHS_PT_SUMMARY`        | Path to `pt-summary`.
+| `--paths-pt-mysql-summary=PATH`        | `PFW_AGENT_PATHS_PT_MYSQL_SUMMARY`  | Path to `pt-mysql-summary`.
+| `--paths-pt-pg-summary=PATH`           | `PFW_AGENT_PATHS_PT_PG_SUMMARY`     | Path to `pt-pg-summary`.
+| `--paths-tempdir=PATH`                 | `PFW_AGENT_PATHS_TEMPDIR`           | Temporary directory for exporters.
+| `--ports-max=PORTS-MAX`                | `PFW_AGENT_PORTS_MAX`               | Highest allowed port number for listening sockets.
+| `--ports-min=PORTS-MIN`                | `PFW_AGENT_PORTS_MIN`               | Lowest allowed port number for listening sockets.
+| `--region=REGION`                      | `PFW_AGENT_SETUP_REGION`            | Node region.
+| `--skip-registration`                  | `PFW_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PMM Server.
+| `--trace`                              | `PFW_AGENT_TRACE`                   | Enable trace output (implies `--debug`).
+| `--version`                            |                                     | Show application version, PGF WatchTower version, time-stamp, git commit hash and branch.
+| `-h`, `--help`                         |                                     | Show help (synonym for `pfw-agent help`).
 
 ## Config file
 
-PFMM manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
+PGF WatchTower manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
 
 To do this, set the username to `service_token` and add your service token as the password. For more information about service account authorization, see [Service accounts authentication](../../api/authentication.md).
 
@@ -87,14 +87,14 @@ Since 2.23.0 this flag could be used for easier setup of PMM agent. With this fl
 
 **Examples:**
 
-- **Case 1:** There are no root permissions for `/opt/postgres1st/pfm` folder or there is a need to change default folder for PFMM files.
+- **Case 1:** There are no root permissions for `/opt/postgres1st/watchtower` folder or there is a need to change default folder for PGF WatchTower files.
 Command:
 ````
-pmm-agent setup --paths-base=/home/user/custom/pmm --config-file=pmm-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
+pfw-agent setup --paths-base=/home/user/custom/pmm --config-file=pfw-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
 ````
 Config output:
 ````
-# Updated by `pmm-agent setup`.
+# Updated by `pfw-agent setup`.
 ---
 id: be568008-b1b4-4bd9-98c7-392d1f4b724e
 listen-address: 127.0.0.1
@@ -127,16 +127,16 @@ debug: false
 trace: false
 
 ````
-As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PFMM that doesn't require root access could be specified.
+As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PGF WatchTower that doesn't require root access could be specified.
 
 - **Case 2:** The older `--paths-exporters_base` flag could be passed along with the `--paths-base`
 Command:
 ````
-pmm-agent setup --paths-base=/home/user/custom/pmm --paths-exporters_base=/home/user/exporters --config-file=pmm-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
+pfw-agent setup --paths-base=/home/user/custom/pmm --paths-exporters_base=/home/user/exporters --config-file=pfw-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
 ````
 Config output:
 ````
-# Updated by `pmm-agent setup`.
+# Updated by `pfw-agent setup`.
 ---
 id: afce1917-8836-4857-b3e5-ad372c2ddbe5
 listen-address: 127.0.0.1
@@ -175,30 +175,30 @@ Flag `--paths-base` will set path for all exporters and tools, but each one coul
 
 ## LOGGING
 
-By default, pmm-agent sends messages to stderr and to the system log (`syslogd` or `journald` on Linux).
+By default, pfw-agent sends messages to stderr and to the system log (`syslogd` or `journald` on Linux).
 
-To get a separate log file, edit the `pmm-agent` start-up script.
+To get a separate log file, edit the `pfw-agent` start-up script.
 
 **`systemd`-based systems**
 
-- Script file: `/usr/lib/systemd/system/pmm-agent.service`
+- Script file: `/usr/lib/systemd/system/pfw-agent.service`
 - Parameter: `StandardError`
-- Default value: `file:/var/log/pmm-agent.log`
+- Default value: `file:/var/log/pfw-agent.log`
 
 Example:
 
 ```ini
-StandardError=file:/var/log/pmm-agent.log
+StandardError=file:/var/log/pfw-agent.log
 ```
 
 **`initd`-based systems**
 
-- Script file: `/etc/init.d/pmm-agent`
+- Script file: `/etc/init.d/pfw-agent`
 - Parameter: `pmm_log`
-- Default value: `/var/log/pmm-agent.log`
+- Default value: `/var/log/pfw-agent.log`
 
 Example:
 
 ```ini
-pmm_log="/var/log/pmm-agent.log"
+pmm_log="/var/log/pfw-agent.log"
 ```

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package config provides access to pmm-agent configuration.
+// Package config provides access to pfw-agent configuration.
 package config
 
 import (
@@ -37,13 +37,13 @@ import (
 )
 
 const (
-	pathBaseDefault = "/opt/postgres1st/pfm"
+	pathBaseDefault = "/opt/postgres1st/watchtower"
 	agentTmpPath    = "tmp" // temporary directory to keep exporters' config files, relative to pathBase
 	agentDataPath   = "data"
 	agentPrefix     = "/agent_id/"
 )
 
-// Server represents PMM Server configuration.
+// Server represents PGF WatchTower Server configuration.
 type Server struct {
 	Address     string `yaml:"address"`
 	Username    string `yaml:"username"`
@@ -53,7 +53,7 @@ type Server struct {
 	WithoutTLS bool `yaml:"without-tls,omitempty"` // for development and testing
 }
 
-// URL returns base PMM Server URL for JSON APIs.
+// URL returns base PGF WatchTower Server URL for JSON APIs.
 func (s *Server) URL() *url.URL {
 	if s.Address == "" {
 		return nil
@@ -122,7 +122,7 @@ type Ports struct {
 	Max uint16 `yaml:"max"`
 }
 
-// Setup contains `pmm-agent setup` flag and argument values.
+// Setup contains `pfw-agent setup` flag and argument values.
 // It is never stored in configuration file.
 type Setup struct {
 	NodeType          string
@@ -146,7 +146,7 @@ type Setup struct {
 	ExposeExporter   bool
 }
 
-// Config represents pmm-agent's configuration.
+// Config represents pfw-agent's configuration.
 type Config struct {
 	// no config file there
 
@@ -183,8 +183,8 @@ func (e ConfigFileDoesNotExistError) Error() string {
 }
 
 // getFromCmdLine parses command-line flags, environment variables and configuration file
-// (if --config-file/PMM_AGENT_CONFIG_FILE is defined).
-// It returns configuration, configuration file path (value of -config-file/PMM_AGENT_CONFIG_FILE, may be empty),
+// (if --config-file/PFW_AGENT_CONFIG_FILE is defined).
+// It returns configuration, configuration file path (value of -config-file/PFW_AGENT_CONFIG_FILE, may be empty),
 // and any encountered error. That error may be ConfigFileDoesNotExistError if configuration file path is not empty,
 // but file itself does not exist. Configuration from command-line flags and environment variables
 // is still returned in this case.
@@ -311,7 +311,7 @@ func get(args []string, cfg *Config, l *logrus.Entry) (string, error) { //nolint
 			if e != nil {
 				host := cfg.Server.Address
 				cfg.Server.Address = net.JoinHostPort(host, "443")
-				l.Infof("Updating PMM Server address from %q to %q.", host, cfg.Server.Address)
+				l.Infof("Updating PGF WatchTower Server address from %q to %q.", host, cfg.Server.Address)
 			}
 		}
 
@@ -356,99 +356,99 @@ func get(args []string, cfg *Config, l *logrus.Entry) (string, error) { //nolint
 }
 
 // Application returns kingpin application that will parse command-line flags and environment variables
-// (but not configuration file) into cfg except --config-file/PMM_AGENT_CONFIG_FILE that is returned separately.
+// (but not configuration file) into cfg except --config-file/PFW_AGENT_CONFIG_FILE that is returned separately.
 func Application(cfg *Config) (*kingpin.Application, *string) {
-	app := kingpin.New("pfm-agent", "Version "+version.Version)
+	app := kingpin.New("pfw-agent", "Version "+version.Version)
 	app.HelpFlag.Short('h')
 
-	app.Command("run", "Run pmm-agent (default command)").Default()
+	app.Command("run", "Run pfw-agent (default command)").Default()
 
 	// All `app` flags should be optional and should not have non-zero default values for:
-	// * `pmm-agent setup` to work;
+	// * `pfw-agent setup` to work;
 	// * correct configuration file loading.
 	// See `get` above for the actual default values.
 
-	configFileF := app.Flag("config-file", "Configuration file path [PMM_AGENT_CONFIG_FILE]").
-		Envar("PMM_AGENT_CONFIG_FILE").PlaceHolder("</path/to/pmm-agent.yaml>").String()
+	configFileF := app.Flag("config-file", "Configuration file path [PFW_AGENT_CONFIG_FILE]").
+		Envar("PFW_AGENT_CONFIG_FILE").PlaceHolder("</path/to/pfw-agent.yaml>").String()
 	app.Flag("config-file-key-file", "Path to the key file used to encrypt/decrypt the configuration file").
-		Envar("PMM_AGENT_CONFIG_FILE_KEY_FILE").StringVar(&cfg.Encryption.KeyFile)
+		Envar("PFW_AGENT_CONFIG_FILE_KEY_FILE").StringVar(&cfg.Encryption.KeyFile)
 	app.Flag("config-file-key-password", "Password for the key file (if required)").
-		Envar("PMM_AGENT_CONFIG_FILE_KEY_PASSWORD").StringVar(&cfg.Encryption.KeyFilePassword)
+		Envar("PFW_AGENT_CONFIG_FILE_KEY_PASSWORD").StringVar(&cfg.Encryption.KeyFilePassword)
 
-	app.Flag("id", "ID of this pmm-agent [PMM_AGENT_ID]").
-		Envar("PMM_AGENT_ID").StringVar(&cfg.ID)
-	app.Flag("listen-address", "Agent local API address [PMM_AGENT_LISTEN_ADDRESS]").
-		Envar("PMM_AGENT_LISTEN_ADDRESS").StringVar(&cfg.ListenAddress)
-	app.Flag("listen-port", "Agent local API port [PMM_AGENT_LISTEN_PORT]").
-		Envar("PMM_AGENT_LISTEN_PORT").Uint16Var(&cfg.ListenPort)
-	app.Flag("runner-capacity", "Agent internal actions/jobs runner capacity [PMM_AGENT_RUNNER_CAPACITY]").
-		Envar("PMM_AGENT_RUNNER_CAPACITY").Uint16Var(&cfg.RunnerCapacity)
+	app.Flag("id", "ID of this pfw-agent [PFW_AGENT_ID]").
+		Envar("PFW_AGENT_ID").StringVar(&cfg.ID)
+	app.Flag("listen-address", "Agent local API address [PFW_AGENT_LISTEN_ADDRESS]").
+		Envar("PFW_AGENT_LISTEN_ADDRESS").StringVar(&cfg.ListenAddress)
+	app.Flag("listen-port", "Agent local API port [PFW_AGENT_LISTEN_PORT]").
+		Envar("PFW_AGENT_LISTEN_PORT").Uint16Var(&cfg.ListenPort)
+	app.Flag("runner-capacity", "Agent internal actions/jobs runner capacity [PFW_AGENT_RUNNER_CAPACITY]").
+		Envar("PFW_AGENT_RUNNER_CAPACITY").Uint16Var(&cfg.RunnerCapacity)
 	app.Flag("runner-max-connections-per-service", "Agent internal action/job runner connection limit per DB instance").
-		Envar("PMM_AGENT_RUNNER_MAX_CONNECTIONS_PER_SERVICE").Uint16Var(&cfg.RunnerMaxConnectionsPerService)
+		Envar("PFW_AGENT_RUNNER_MAX_CONNECTIONS_PER_SERVICE").Uint16Var(&cfg.RunnerMaxConnectionsPerService)
 
-	app.Flag("server-address", "PMM Server address [PMM_AGENT_SERVER_ADDRESS]").
-		Envar("PMM_AGENT_SERVER_ADDRESS").PlaceHolder("<host:port>").StringVar(&cfg.Server.Address)
-	app.Flag("server-username", "Username to connect to PMM Server [PMM_AGENT_SERVER_USERNAME]").
-		Envar("PMM_AGENT_SERVER_USERNAME").StringVar(&cfg.Server.Username)
-	app.Flag("server-password", "Password to connect to PMM Server [PMM_AGENT_SERVER_PASSWORD]").
-		Envar("PMM_AGENT_SERVER_PASSWORD").StringVar(&cfg.Server.Password)
-	app.Flag("server-insecure-tls", "Skip PMM Server TLS certificate validation [PMM_AGENT_SERVER_INSECURE_TLS]").
-		Envar("PMM_AGENT_SERVER_INSECURE_TLS").BoolVar(&cfg.Server.InsecureTLS)
+	app.Flag("server-address", "PGF WatchTower Server address [PFW_AGENT_SERVER_ADDRESS]").
+		Envar("PFW_AGENT_SERVER_ADDRESS").PlaceHolder("<host:port>").StringVar(&cfg.Server.Address)
+	app.Flag("server-username", "Username to connect to PGF WatchTower Server [PFW_AGENT_SERVER_USERNAME]").
+		Envar("PFW_AGENT_SERVER_USERNAME").StringVar(&cfg.Server.Username)
+	app.Flag("server-password", "Password to connect to PGF WatchTower Server [PFW_AGENT_SERVER_PASSWORD]").
+		Envar("PFW_AGENT_SERVER_PASSWORD").StringVar(&cfg.Server.Password)
+	app.Flag("server-insecure-tls", "Skip PGF WatchTower Server TLS certificate validation [PFW_AGENT_SERVER_INSECURE_TLS]").
+		Envar("PFW_AGENT_SERVER_INSECURE_TLS").BoolVar(&cfg.Server.InsecureTLS)
 	// no flag for WithoutTLS - it is only for development and testing
 
-	app.Flag("paths-base", "Base path for exporters/collectors/tools to use [PMM_AGENT_PATHS_BASE]").
-		Envar("PMM_AGENT_PATHS_BASE").StringVar(&cfg.Paths.PathsBase)
-	app.Flag("paths-exporters_base", "Base path for exporters to use [PMM_AGENT_PATHS_EXPORTERS_BASE]").
-		Envar("PMM_AGENT_PATHS_EXPORTERS_BASE").StringVar(&cfg.Paths.ExportersBase)
-	app.Flag("paths-node_exporter", "Path to node_exporter to use [PMM_AGENT_PATHS_NODE_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_NODE_EXPORTER").StringVar(&cfg.Paths.NodeExporter)
-	app.Flag("paths-mysqld_exporter", "Path to mysqld_exporter to use [PMM_AGENT_PATHS_MYSQLD_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_MYSQLD_EXPORTER").StringVar(&cfg.Paths.MySQLdExporter)
-	app.Flag("paths-mongodb_exporter", "Path to mongodb_exporter to use [PMM_AGENT_PATHS_MONGODB_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_MONGODB_EXPORTER").StringVar(&cfg.Paths.MongoDBExporter)
-	app.Flag("paths-postgres_exporter", "Path to postgres_exporter to use [PMM_AGENT_PATHS_POSTGRES_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_POSTGRES_EXPORTER").StringVar(&cfg.Paths.PostgresExporter)
-	app.Flag("paths-proxysql_exporter", "Path to proxysql_exporter to use [PMM_AGENT_PATHS_PROXYSQL_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_PROXYSQL_EXPORTER").StringVar(&cfg.Paths.ProxySQLExporter)
-	app.Flag("paths-azure_exporter", "Path to azure_exporter to use [PMM_AGENT_PATHS_AZURE_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_AZURE_EXPORTER").StringVar(&cfg.Paths.AzureExporter)
-	app.Flag("paths-valkey-exporter", "Path to valkey_exporter to use [PMM_AGENT_PATHS_VALKEY_EXPORTER]").
-		Envar("PMM_AGENT_PATHS_VALKEY_EXPORTER").StringVar(&cfg.Paths.ValkeyExporter)
-	app.Flag("paths-pt-summary", "Path to pt summary to use [PMM_AGENT_PATHS_PT_SUMMARY]").
-		Envar("PMM_AGENT_PATHS_PT_SUMMARY").StringVar(&cfg.Paths.PTSummary)
-	app.Flag("paths-pt-pg-summary", "Path to pt-pg-summary to use [PMM_AGENT_PATHS_PT_PG_SUMMARY]").
-		Envar("PMM_AGENT_PATHS_PT_PG_SUMMARY").StringVar(&cfg.Paths.PTPGSummary)
-	app.Flag("paths-pt-mongodb-summary", "Path to pt mongodb summary to use [PMM_AGENT_PATHS_PT_MONGODB_SUMMARY]").
-		Envar("PMM_AGENT_PATHS_PT_MONGODB_SUMMARY").StringVar(&cfg.Paths.PTMongoDBSummary)
-	app.Flag("paths-pt-mysql-summary", "Path to pt my sql summary to use [PMM_AGENT_PATHS_PT_MYSQL_SUMMARY]").
-		Envar("PMM_AGENT_PATHS_PT_MYSQL_SUMMARY").StringVar(&cfg.Paths.PTMySQLSummary)
-	app.Flag("paths-nomad", "Path to nomad binary. Can be overridden using [PMM_AGENT_PATHS_NOMAD]").
-		Envar("PMM_AGENT_PATHS_NOMAD").StringVar(&cfg.Paths.Nomad)
-	app.Flag("paths-nomad-data-dir", "Nomad data directory [PMM_AGENT_PATHS_NOMAD_DATA_DIR]").
-		Envar("PMM_AGENT_PATHS_NOMAD_DATA_DIR").StringVar(&cfg.Paths.NomadDataDir)
-	app.Flag("paths-tempdir", "Temporary directory for exporters [PMM_AGENT_PATHS_TEMPDIR]").
-		Envar("PMM_AGENT_PATHS_TEMPDIR").StringVar(&cfg.Paths.TempDir)
+	app.Flag("paths-base", "Base path for exporters/collectors/tools to use [PFW_AGENT_PATHS_BASE]").
+		Envar("PFW_AGENT_PATHS_BASE").StringVar(&cfg.Paths.PathsBase)
+	app.Flag("paths-exporters_base", "Base path for exporters to use [PFW_AGENT_PATHS_EXPORTERS_BASE]").
+		Envar("PFW_AGENT_PATHS_EXPORTERS_BASE").StringVar(&cfg.Paths.ExportersBase)
+	app.Flag("paths-node_exporter", "Path to node_exporter to use [PFW_AGENT_PATHS_NODE_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_NODE_EXPORTER").StringVar(&cfg.Paths.NodeExporter)
+	app.Flag("paths-mysqld_exporter", "Path to mysqld_exporter to use [PFW_AGENT_PATHS_MYSQLD_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_MYSQLD_EXPORTER").StringVar(&cfg.Paths.MySQLdExporter)
+	app.Flag("paths-mongodb_exporter", "Path to mongodb_exporter to use [PFW_AGENT_PATHS_MONGODB_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_MONGODB_EXPORTER").StringVar(&cfg.Paths.MongoDBExporter)
+	app.Flag("paths-postgres_exporter", "Path to postgres_exporter to use [PFW_AGENT_PATHS_POSTGRES_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_POSTGRES_EXPORTER").StringVar(&cfg.Paths.PostgresExporter)
+	app.Flag("paths-proxysql_exporter", "Path to proxysql_exporter to use [PFW_AGENT_PATHS_PROXYSQL_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_PROXYSQL_EXPORTER").StringVar(&cfg.Paths.ProxySQLExporter)
+	app.Flag("paths-azure_exporter", "Path to azure_exporter to use [PFW_AGENT_PATHS_AZURE_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_AZURE_EXPORTER").StringVar(&cfg.Paths.AzureExporter)
+	app.Flag("paths-valkey-exporter", "Path to valkey_exporter to use [PFW_AGENT_PATHS_VALKEY_EXPORTER]").
+		Envar("PFW_AGENT_PATHS_VALKEY_EXPORTER").StringVar(&cfg.Paths.ValkeyExporter)
+	app.Flag("paths-pt-summary", "Path to pt summary to use [PFW_AGENT_PATHS_PT_SUMMARY]").
+		Envar("PFW_AGENT_PATHS_PT_SUMMARY").StringVar(&cfg.Paths.PTSummary)
+	app.Flag("paths-pt-pg-summary", "Path to pt-pg-summary to use [PFW_AGENT_PATHS_PT_PG_SUMMARY]").
+		Envar("PFW_AGENT_PATHS_PT_PG_SUMMARY").StringVar(&cfg.Paths.PTPGSummary)
+	app.Flag("paths-pt-mongodb-summary", "Path to pt mongodb summary to use [PFW_AGENT_PATHS_PT_MONGODB_SUMMARY]").
+		Envar("PFW_AGENT_PATHS_PT_MONGODB_SUMMARY").StringVar(&cfg.Paths.PTMongoDBSummary)
+	app.Flag("paths-pt-mysql-summary", "Path to pt my sql summary to use [PFW_AGENT_PATHS_PT_MYSQL_SUMMARY]").
+		Envar("PFW_AGENT_PATHS_PT_MYSQL_SUMMARY").StringVar(&cfg.Paths.PTMySQLSummary)
+	app.Flag("paths-nomad", "Path to nomad binary. Can be overridden using [PFW_AGENT_PATHS_NOMAD]").
+		Envar("PFW_AGENT_PATHS_NOMAD").StringVar(&cfg.Paths.Nomad)
+	app.Flag("paths-nomad-data-dir", "Nomad data directory [PFW_AGENT_PATHS_NOMAD_DATA_DIR]").
+		Envar("PFW_AGENT_PATHS_NOMAD_DATA_DIR").StringVar(&cfg.Paths.NomadDataDir)
+	app.Flag("paths-tempdir", "Temporary directory for exporters [PFW_AGENT_PATHS_TEMPDIR]").
+		Envar("PFW_AGENT_PATHS_TEMPDIR").StringVar(&cfg.Paths.TempDir)
 	// no flag for SlowLogFilePrefix - it is only for development and testing
 
-	app.Flag("ports-min", "Minimal allowed port number for listening sockets [PMM_AGENT_PORTS_MIN]").
-		Envar("PMM_AGENT_PORTS_MIN").Uint16Var(&cfg.Ports.Min)
-	app.Flag("ports-max", "Maximal allowed port number for listening sockets [PMM_AGENT_PORTS_MAX]").
-		Envar("PMM_AGENT_PORTS_MAX").Uint16Var(&cfg.Ports.Max)
+	app.Flag("ports-min", "Minimal allowed port number for listening sockets [PFW_AGENT_PORTS_MIN]").
+		Envar("PFW_AGENT_PORTS_MIN").Uint16Var(&cfg.Ports.Min)
+	app.Flag("ports-max", "Maximal allowed port number for listening sockets [PFW_AGENT_PORTS_MAX]").
+		Envar("PFW_AGENT_PORTS_MAX").Uint16Var(&cfg.Ports.Max)
 	app.Flag("window-connected-time", "Window time for which we track the status of connection between agent and server").
-		Envar("PMM_AGENT_WINDOW_CONNECTED_TIME").DurationVar(&cfg.WindowConnectedTime)
+		Envar("PFW_AGENT_WINDOW_CONNECTED_TIME").DurationVar(&cfg.WindowConnectedTime)
 
-	app.Flag("log-level", "Set logging level [PMM_AGENT_LOG_LEVEL]").
-		Envar("PMM_AGENT_LOG_LEVEL").EnumVar(&cfg.LogLevel, "debug", "info", "warn", "error", "fatal")
-	app.Flag("debug", "Enable debug output [PMM_AGENT_DEBUG]").
-		Envar("PMM_AGENT_DEBUG").BoolVar(&cfg.Debug)
-	app.Flag("trace", "Enable trace output (implies debug) [PMM_AGENT_TRACE]").
-		Envar("PMM_AGENT_TRACE").BoolVar(&cfg.Trace)
+	app.Flag("log-level", "Set logging level [PFW_AGENT_LOG_LEVEL]").
+		Envar("PFW_AGENT_LOG_LEVEL").EnumVar(&cfg.LogLevel, "debug", "info", "warn", "error", "fatal")
+	app.Flag("debug", "Enable debug output [PFW_AGENT_DEBUG]").
+		Envar("PFW_AGENT_DEBUG").BoolVar(&cfg.Debug)
+	app.Flag("trace", "Enable trace output (implies debug) [PFW_AGENT_TRACE]").
+		Envar("PFW_AGENT_TRACE").BoolVar(&cfg.Trace)
 	app.Flag("log-lines-count",
-		"Take and return N most recent log lines in logs.zip for each: server, every configured exporters and agents [PMM_AGENT_LOG_LINES_COUNT]").
-		Envar("PMM_AGENT_LOG_LINES_COUNT").Default("1024").UintVar(&cfg.LogLinesCount)
+		"Take and return N most recent log lines in logs.zip for each: server, every configured exporters and agents [PFW_AGENT_LOG_LINES_COUNT]").
+		Envar("PFW_AGENT_LOG_LINES_COUNT").Default("1024").UintVar(&cfg.LogLinesCount)
 	app.Flag("perfschema-refresh-rate",
-		"Change how often PMM scrapes data from Performance Schema (in seconds) [PMM_AGENT_PERFSCHEMA_REFRESH_RATE]").
-		Envar("PMM_AGENT_PERFSCHEMA_REFRESH_RATE").Uint16Var(&cfg.PerfschemaRefreshRate)
+		"Change how often PMM scrapes data from Performance Schema (in seconds) [PFW_AGENT_PERFSCHEMA_REFRESH_RATE]").
+		Envar("PFW_AGENT_PERFSCHEMA_REFRESH_RATE").Uint16Var(&cfg.PerfschemaRefreshRate)
 	jsonF := app.Flag("json", "Enable JSON output").Action(func(*kingpin.ParseContext) error {
 		logrus.SetFormatter(&logrus.JSONFormatter{}) // with levels and timestamps always present
 		return nil
@@ -466,17 +466,17 @@ func Application(cfg *Config) (*kingpin.Application, *string) {
 		return nil
 	}).Bool()
 
-	setupCmd := app.Command("setup", "Configure local pmm-agent")
+	setupCmd := app.Command("setup", "Configure local pfw-agent")
 	nodeinfo := nodeinfo.Get()
 
 	if nodeinfo.PublicAddress == "" {
-		help := "Node address [PMM_AGENT_SETUP_NODE_ADDRESS]"
+		help := "Node address [PFW_AGENT_SETUP_NODE_ADDRESS]"
 		setupCmd.Arg("node-address", help).Required().
-			Envar("PMM_AGENT_SETUP_NODE_ADDRESS").StringVar(&cfg.Setup.Address)
+			Envar("PFW_AGENT_SETUP_NODE_ADDRESS").StringVar(&cfg.Setup.Address)
 	} else {
-		help := fmt.Sprintf("Node address (autodetected default: %s) [PMM_AGENT_SETUP_NODE_ADDRESS]", nodeinfo.PublicAddress)
+		help := fmt.Sprintf("Node address (autodetected default: %s) [PFW_AGENT_SETUP_NODE_ADDRESS]", nodeinfo.PublicAddress)
 		setupCmd.Arg("node-address", help).Default(nodeinfo.PublicAddress).
-			Envar("PMM_AGENT_SETUP_NODE_ADDRESS").StringVar(&cfg.Setup.Address)
+			Envar("PFW_AGENT_SETUP_NODE_ADDRESS").StringVar(&cfg.Setup.Address)
 	}
 
 	nodeTypeKeys := []string{"generic", "container"}
@@ -484,51 +484,51 @@ func Application(cfg *Config) (*kingpin.Application, *string) {
 	if nodeinfo.Container {
 		nodeTypeDefault = "container"
 	}
-	nodeTypeHelp := fmt.Sprintf("Node type, one of: %s (default: %s) [PMM_AGENT_SETUP_NODE_TYPE]", strings.Join(nodeTypeKeys, ", "), nodeTypeDefault)
+	nodeTypeHelp := fmt.Sprintf("Node type, one of: %s (default: %s) [PFW_AGENT_SETUP_NODE_TYPE]", strings.Join(nodeTypeKeys, ", "), nodeTypeDefault)
 	setupCmd.Arg("node-type", nodeTypeHelp).Default(nodeTypeDefault).
-		Envar("PMM_AGENT_SETUP_NODE_TYPE").EnumVar(&cfg.Setup.NodeType, nodeTypeKeys...)
+		Envar("PFW_AGENT_SETUP_NODE_TYPE").EnumVar(&cfg.Setup.NodeType, nodeTypeKeys...)
 
 	hostname, _ := os.Hostname()
-	nodeNameHelp := fmt.Sprintf("Node name (autodetected default: %s) [PMM_AGENT_SETUP_NODE_NAME]", hostname)
+	nodeNameHelp := fmt.Sprintf("Node name (autodetected default: %s) [PFW_AGENT_SETUP_NODE_NAME]", hostname)
 	setupCmd.Arg("node-name", nodeNameHelp).Default(hostname).
-		Envar("PMM_AGENT_SETUP_NODE_NAME").StringVar(&cfg.Setup.NodeName)
+		Envar("PFW_AGENT_SETUP_NODE_NAME").StringVar(&cfg.Setup.NodeName)
 
 	var defaultMachineID string
 	if nodeinfo.MachineID != "" {
 		defaultMachineID = nodeinfo.MachineID
 	}
-	setupCmd.Flag("machine-id", "Node machine-id (default is autodetected) [PMM_AGENT_SETUP_MACHINE_ID]").Default(defaultMachineID).
-		Envar("PMM_AGENT_SETUP_MACHINE_ID").StringVar(&cfg.Setup.MachineID)
-	setupCmd.Flag("distro", "Node OS distribution (default is autodetected) [PMM_AGENT_SETUP_DISTRO]").Default(nodeinfo.Distro).
-		Envar("PMM_AGENT_SETUP_DISTRO").StringVar(&cfg.Setup.Distro)
-	setupCmd.Flag("container-id", "Container ID [PMM_AGENT_SETUP_CONTAINER_ID]").
-		Envar("PMM_AGENT_SETUP_CONTAINER_ID").StringVar(&cfg.Setup.ContainerID)
-	setupCmd.Flag("container-name", "Container name [PMM_AGENT_SETUP_CONTAINER_NAME]").
-		Envar("PMM_AGENT_SETUP_CONTAINER_NAME").StringVar(&cfg.Setup.ContainerName)
-	setupCmd.Flag("node-model", "Node model [PMM_AGENT_SETUP_NODE_MODEL]").
-		Envar("PMM_AGENT_SETUP_NODE_MODEL").StringVar(&cfg.Setup.NodeModel)
-	setupCmd.Flag("region", "Node region [PMM_AGENT_SETUP_REGION]").
-		Envar("PMM_AGENT_SETUP_REGION").StringVar(&cfg.Setup.Region)
-	setupCmd.Flag("az", "Node availability zone [PMM_AGENT_SETUP_AZ]").
-		Envar("PMM_AGENT_SETUP_AZ").StringVar(&cfg.Setup.Az)
+	setupCmd.Flag("machine-id", "Node machine-id (default is autodetected) [PFW_AGENT_SETUP_MACHINE_ID]").Default(defaultMachineID).
+		Envar("PFW_AGENT_SETUP_MACHINE_ID").StringVar(&cfg.Setup.MachineID)
+	setupCmd.Flag("distro", "Node OS distribution (default is autodetected) [PFW_AGENT_SETUP_DISTRO]").Default(nodeinfo.Distro).
+		Envar("PFW_AGENT_SETUP_DISTRO").StringVar(&cfg.Setup.Distro)
+	setupCmd.Flag("container-id", "Container ID [PFW_AGENT_SETUP_CONTAINER_ID]").
+		Envar("PFW_AGENT_SETUP_CONTAINER_ID").StringVar(&cfg.Setup.ContainerID)
+	setupCmd.Flag("container-name", "Container name [PFW_AGENT_SETUP_CONTAINER_NAME]").
+		Envar("PFW_AGENT_SETUP_CONTAINER_NAME").StringVar(&cfg.Setup.ContainerName)
+	setupCmd.Flag("node-model", "Node model [PFW_AGENT_SETUP_NODE_MODEL]").
+		Envar("PFW_AGENT_SETUP_NODE_MODEL").StringVar(&cfg.Setup.NodeModel)
+	setupCmd.Flag("region", "Node region [PFW_AGENT_SETUP_REGION]").
+		Envar("PFW_AGENT_SETUP_REGION").StringVar(&cfg.Setup.Region)
+	setupCmd.Flag("az", "Node availability zone [PFW_AGENT_SETUP_AZ]").
+		Envar("PFW_AGENT_SETUP_AZ").StringVar(&cfg.Setup.Az)
 
-	setupCmd.Flag("force", "Remove Node with that name with all dependent Services and Agents if one exist [PMM_AGENT_SETUP_FORCE]").
-		Envar("PMM_AGENT_SETUP_FORCE").BoolVar(&cfg.Setup.Force)
-	setupCmd.Flag("skip-registration", "Skip registration on PMM Server [PMM_AGENT_SETUP_SKIP_REGISTRATION]").
-		Envar("PMM_AGENT_SETUP_SKIP_REGISTRATION").BoolVar(&cfg.Setup.SkipRegistration)
+	setupCmd.Flag("force", "Remove Node with that name with all dependent Services and Agents if one exist [PFW_AGENT_SETUP_FORCE]").
+		Envar("PFW_AGENT_SETUP_FORCE").BoolVar(&cfg.Setup.Force)
+	setupCmd.Flag("skip-registration", "Skip registration on PGF WatchTower Server [PFW_AGENT_SETUP_SKIP_REGISTRATION]").
+		Envar("PFW_AGENT_SETUP_SKIP_REGISTRATION").BoolVar(&cfg.Setup.SkipRegistration)
 	setupCmd.Flag("metrics-mode", "Metrics flow mode for agents node-exporter, can be push - agent will push metrics,"+
-		"pull - server scrape metrics from agent  or auto - chosen by server. [PMM_AGENT_SETUP_METRICS_MODE]").
-		Envar("PMM_AGENT_SETUP_METRICS_MODE").Default("auto").EnumVar(&cfg.Setup.MetricsMode, "auto", "push", "pull")
-	setupCmd.Flag("disable-collectors", "Comma-separated list of collector names to exclude from exporter. [PMM_AGENT_SETUP_DISABLE_COLLECTORS]").
-		Envar("PMM_AGENT_SETUP_DISABLE_COLLECTORS").Default("").StringVar(&cfg.Setup.DisableCollectors)
-	setupCmd.Flag("custom-labels", "Custom labels [PMM_AGENT_SETUP_CUSTOM_LABELS]").
-		Envar("PMM_AGENT_SETUP_CUSTOM_LABELS").StringVar(&cfg.Setup.CustomLabels)
-	setupCmd.Flag("agent-password", "Custom password for /metrics endpoint [PMM_AGENT_SETUP_NODE_PASSWORD]").
-		Envar("PMM_AGENT_SETUP_NODE_PASSWORD").StringVar(&cfg.Setup.AgentPassword)
+		"pull - server scrape metrics from agent  or auto - chosen by server. [PFW_AGENT_SETUP_METRICS_MODE]").
+		Envar("PFW_AGENT_SETUP_METRICS_MODE").Default("auto").EnumVar(&cfg.Setup.MetricsMode, "auto", "push", "pull")
+	setupCmd.Flag("disable-collectors", "Comma-separated list of collector names to exclude from exporter. [PFW_AGENT_SETUP_DISABLE_COLLECTORS]").
+		Envar("PFW_AGENT_SETUP_DISABLE_COLLECTORS").Default("").StringVar(&cfg.Setup.DisableCollectors)
+	setupCmd.Flag("custom-labels", "Custom labels [PFW_AGENT_SETUP_CUSTOM_LABELS]").
+		Envar("PFW_AGENT_SETUP_CUSTOM_LABELS").StringVar(&cfg.Setup.CustomLabels)
+	setupCmd.Flag("agent-password", "Custom password for /metrics endpoint [PFW_AGENT_SETUP_NODE_PASSWORD]").
+		Envar("PFW_AGENT_SETUP_NODE_PASSWORD").StringVar(&cfg.Setup.AgentPassword)
 	setupCmd.Flag("expose-exporter", "Expose the address of the agent's node-exporter publicly on 0.0.0.0").
-		Envar("PMM_AGENT_EXPOSE_EXPORTER").BoolVar(&cfg.Setup.ExposeExporter)
-	setupCmd.Flag("proc-mounts-path", "Path to /proc/mounts file for the filesystem collector [PMM_AGENT_SETUP_PROC_MOUNTS_PATH]").
-		Envar("PMM_AGENT_SETUP_PROC_MOUNTS_PATH").StringVar(&cfg.Setup.ProcMountsPath)
+		Envar("PFW_AGENT_EXPOSE_EXPORTER").BoolVar(&cfg.Setup.ExposeExporter)
+	setupCmd.Flag("proc-mounts-path", "Path to /proc/mounts file for the filesystem collector [PFW_AGENT_SETUP_PROC_MOUNTS_PATH]").
+		Envar("PFW_AGENT_SETUP_PROC_MOUNTS_PATH").StringVar(&cfg.Setup.ProcMountsPath)
 
 	return app, configFileF
 }
