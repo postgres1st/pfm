@@ -1,4 +1,4 @@
-/opt/postgres1st/pfm/bin/pmm-admin /usr/bin/pmm-admin
-/opt/postgres1st/pfm/bin/pmm-admin /usr/sbin/pmm-admin
-/opt/postgres1st/pfm/bin/pmm-agent /usr/bin/pmm-agent
-/opt/postgres1st/pfm/bin/pmm-agent /usr/sbin/pmm-agent
+/opt/postgres1st/watchtower/bin/pmm-admin /usr/bin/pmm-admin
+/opt/postgres1st/watchtower/bin/pmm-admin /usr/sbin/pmm-admin
+/opt/postgres1st/watchtower/bin/pmm-agent /usr/bin/pmm-agent
+/opt/postgres1st/watchtower/bin/pmm-agent /usr/sbin/pmm-agent

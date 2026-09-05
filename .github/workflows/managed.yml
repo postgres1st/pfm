@@ -24,17 +24,15 @@ jobs:
     # This job bind-mounts our source into UPSTREAM's container
     # (perconalab/pmm-server:3-dev-latest) and runs `go test` inside it, so tests
     # execute against Percona's filesystem layout with our rebranded code. TestFiles
-    # fails on `open /opt/postgres1st/pfm/config/pfm-agent.yaml: no such file or
+    # fails on `open /opt/postgres1st/watchtower/config/pfw-agent.yaml: no such file or
     # directory` -- the image has never heard of that path.
     #
     # It is not a code defect and not a test defect; the two cannot both be right
     # inside someone else's image. The workflow is already half-adapted -- see the
-    # three `-v ./managed/data/...:/opt/postgres1st/pfmm/...` mounts below, added for
+    # three `-v ./managed/data/...:/opt/postgres1st/watchtower/...` mounts below, added for
     # the same reason -- so the narrower fix is to mount the agent config the same
-    # way, or to run against a PFM-built server image once we publish one.
+    # way, or to run against a PFW-built server image once we publish one.
     #
-    # Note also `pfmm` in those mount paths vs `pfm` in the failing one. Two
-    # conventions coexist; that wants resolving regardless of this job.
     #
     # Cost of this being off: managed/ unit tests do not run in CI at all. That is a
     # real gap, not a formality -- it is the only job executing this module's tests.
@@ -84,9 +82,9 @@ jobs:
             -v ./:/root/go/src/github.com/percona/pmm \
             -v ~/go-mod-cache:/home/pmm/.cache/go/mod \
             -v ~/go-build-cache:/home/pmm/.cache/go-build \
-            -v ./managed/data/advisors/:/opt/postgres1st/pfmm/advisors/ \
-            -v ./managed/data/checks/:/opt/postgres1st/pfmm/checks/ \
-            -v ./managed/data/alerting-templates/:/opt/postgres1st/pfmm/alerting-templates/ \
+            -v ./managed/data/advisors/:/opt/postgres1st/watchtower/advisors/ \
+            -v ./managed/data/checks/:/opt/postgres1st/watchtower/checks/ \
+            -v ./managed/data/alerting-templates/:/opt/postgres1st/watchtower/alerting-templates/ \
             -v ./Makefile.devcontainer:/root/go/src/github.com/percona/pmm/Makefile:ro \
             ${PMM_CONTAINER:-perconalab/pmm-server:3-dev-container}
           sleep 20

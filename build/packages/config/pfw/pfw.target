@@ -1,0 +1,16 @@
+# pfw — native systemd stack (path B). Groups the per-service units so the
+# whole server starts/stops as one: `systemctl start pfw.target`.
+# Static daemons + first-boot init, the dynamic services (victoriametrics,
+# vmalert, vmproxy, qan-api2), and the control plane (pmm-managed). pfw-agent is
+# deliberately NOT wanted here — pmm-managed starts it on demand once the server
+# is ready (mirrors upstream autostart=false).
+[Unit]
+Description=PGF WatchTower monitoring server
+Requires=pfw-init.service
+After=pfw-init.service
+Wants=pfw-postgresql.service pfw-clickhouse.service pfw-nginx.service pfw-grafana.service
+Wants=pfw-victoriametrics.service pfw-vmalert.service pfw-vmproxy.service pfw-qan-api2.service
+Wants=pfw-managed.service
+
+[Install]
+WantedBy=multi-user.target

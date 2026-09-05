@@ -100,11 +100,11 @@
   dnf:
     name:
       - percona-grafana
-      - percona-victoriametrics
-      - percona-qan-api2
+      - pfw-victoriametrics
+      - pfw-qan-api2
       - percona-dashboards
       - pmm-managed
-      - pmm-dump
+      - pfw-dump
       - vmproxy
     state: installed
     enablerepo: local

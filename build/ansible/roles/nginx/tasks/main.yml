@@ -85,10 +85,3 @@
     - /run/nginx.pid
     - /srv/logs/nginx.log
 
-- name: Copy local-rss.xml file
-  copy:
-    src: local-rss.xml
-    dest: /usr/share/pmm-server/static/
-    group: root
-    owner: pmm
-    mode: 0644

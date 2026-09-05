@@ -15,7 +15,7 @@ header:
       - "**/ammodels/**"
       - "qan-api2/migrations/**"
       - "managed/pi/common/severity_string.go"
-      # pfm-original files carry pfm's own copyright (see the pfm group below).
+      # pfw-original files carry pfw's own copyright (see the pfw group below).
       - "managed/services/supervisord/systemd.go"
       - "managed/services/supervisord/systemd_test.go"
     license:
@@ -23,7 +23,7 @@ header:
       copyright-owner: Percona LLC
       copyright-year: 2023
 
-  # pfm-original .go files (not derived from Percona source) — pfm authorship.
+  # pfw-original .go files (not derived from Percona source) — pfw authorship.
   - paths:
       - "managed/services/supervisord/systemd.go"
       - "managed/services/supervisord/systemd_test.go"

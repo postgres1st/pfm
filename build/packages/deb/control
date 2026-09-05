@@ -1,4 +1,4 @@
-Source: pfm-client
+Source: pfw-client
 Section: utils
 Priority: optional
 Maintainer: Postgres1st
@@ -6,11 +6,11 @@ Version: %{version}
 Homepage: https://postgresfirst.com
 Build-Depends: debhelper
 
-Package: pfm-client
+Package: pfw-client
 Architecture: any
 Description: Postgres1st Monitoring and Management Client
- Postgres1st Monitoring and Management (PFMM) is an open-source platform for managing and monitoring
+ PGF WatchTower is an open-source platform for managing and monitoring
  PostgreSQL performance.
- PFMM is a free and open-source solution that you can run in your own environment for maximum security and
+ PGF WatchTower is a free and open-source solution that you can run in your own environment for maximum security and
  reliability. It provides thorough time-based analysis for PostgreSQL servers to ensure that your data works
  as efficiently as possible.

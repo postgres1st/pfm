@@ -18,7 +18,7 @@ RUN dnf install -y \
 
 RUN groupadd -g 1002 pmm-agent && \
     useradd -u 1002 -g pmm-agent -s /sbin/nologin \
-            -d /opt/postgres1st/pfm \
+            -d /opt/postgres1st/watchtower \
             -c "PMM Client User" pmm-agent
 
 ADD pmm-client.tar.gz /tmp/
@@ -73,8 +73,8 @@ COPY --from=builder --chown=0:0 \
 COPY --from=builder --chown=0:0 /usr/share/perl5 /usr/share/perl5
 
 # Install pmm-client
-RUN install -d -o pmm-agent -g pmm-agent -m 0775 /opt/postgres1st/pfm
-COPY --from=builder /opt/postgres1st/pfm /opt/postgres1st/pfm/
+RUN install -d -o pmm-agent -g pmm-agent -m 0775 /opt/postgres1st/watchtower
+COPY --from=builder /opt/postgres1st/watchtower /opt/postgres1st/watchtower/
 
 ARG VERSION
 ARG BUILD_DATE
@@ -88,7 +88,7 @@ LABEL org.opencontainers.image.created=${BUILD_DATE} \
     org.opencontainers.image.version=${VERSION} \
     org.opencontainers.image.description="The client image for Postgres1st Monitoring and Management" \
     org.opencontainers.image.url="https://postgresfirst.com" \
-    name="postgres1st/pfm-client" \
+    name="postgres1st/pfw-client" \
     summary="Postgres1st Monitoring and Management Client" \
     description="The client image for Postgres1st Monitoring and Management" \
     vendor="Postgres1st" \
@@ -97,7 +97,7 @@ LABEL org.opencontainers.image.created=${BUILD_DATE} \
     release=${RELEASE}
 
 USER pmm-agent
-WORKDIR /opt/postgres1st/pfm/
-ENV PATH=/opt/postgres1st/pfm/bin/:$PATH
+WORKDIR /opt/postgres1st/watchtower/
+ENV PATH=/opt/postgres1st/watchtower/bin/:$PATH
 
-ENTRYPOINT ["/opt/postgres1st/pfm/bin/pmm-agent-entrypoint"]
+ENTRYPOINT ["/opt/postgres1st/watchtower/bin/pmm-agent-entrypoint"]

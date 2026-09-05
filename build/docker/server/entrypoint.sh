@@ -111,11 +111,11 @@ fi
 
 # Sync bundled Grafana plugins into /srv when the bundled set changes. 
 # This must happen before supervisord starts.
-declare PLUGINS_SRC=/opt/postgres1st/pfmm/dashboards/panels
+declare PLUGINS_SRC=/opt/postgres1st/watchtower/dashboards/panels
 declare PLUGINS_DST=/srv/grafana/plugins
 declare PLUGINS_MARKER="$PLUGINS_DST/.pmm-synced-version"
 declare BUNDLED_VERSION SYNCED_VERSION=""
-BUNDLED_VERSION=$(< /opt/postgres1st/pfmm/dashboards/VERSION)
+BUNDLED_VERSION=$(< /opt/postgres1st/watchtower/dashboards/VERSION)
 if [ -f "$PLUGINS_MARKER" ]; then
     SYNCED_VERSION=$(< "$PLUGINS_MARKER")
 fi
@@ -133,9 +133,9 @@ unset PLUGINS_SRC PLUGINS_DST PLUGINS_MARKER BUNDLED_VERSION SYNCED_VERSION
 echo "Creating nginx temp directories..."
 mkdir -p /srv/nginx/tmp/{client,proxy,fastcgi,uwsgi,scgi}
 
-if [ ! -d "/srv/pfm-agent/tmp" ]; then
+if [ ! -d "/srv/pfw-agent/tmp" ]; then
     echo "Creating pmm-agent temp directory..."
-    install -d -m 770 /srv/pfm-agent/tmp
+    install -d -m 770 /srv/pfw-agent/tmp
 fi
 
 if is_enabled "$PMM_HA_ENABLE"; then
@@ -160,16 +160,16 @@ fi
 # pmm-managed-init validates environment variables.
 pmm-managed-init
 
-declare AGENT_CONFIG_DIR="/opt/postgres1st/pfm/config"
+declare AGENT_CONFIG_DIR="/opt/postgres1st/watchtower/config"
 declare AGENT_ID=pmm-server
 
 if is_enabled "$PMM_HA_ENABLE"; then
     echo "High Availability mode is enabled."
-    if [ -f "$AGENT_CONFIG_DIR/pfm-agent.yaml" ]; then
-        rm -f "$AGENT_CONFIG_DIR/pfm-agent.yaml"
+    if [ -f "$AGENT_CONFIG_DIR/pfw-agent.yaml" ]; then
+        rm -f "$AGENT_CONFIG_DIR/pfw-agent.yaml"
     fi
 
-    AGENT_CONFIG_DIR="/srv/pfm-agent/config"
+    AGENT_CONFIG_DIR="/srv/pfw-agent/config"
     if [ ! -d "$AGENT_CONFIG_DIR" ]; then
         echo "Creating pmm-agent config directory..."
         install -d -m 770 "$AGENT_CONFIG_DIR"
@@ -178,13 +178,13 @@ if is_enabled "$PMM_HA_ENABLE"; then
     AGENT_ID="$(uuidgen)"
 fi
 
-if [ ! -f "$AGENT_CONFIG_DIR/pfm-agent.yaml" ]; then
+if [ ! -f "$AGENT_CONFIG_DIR/pfw-agent.yaml" ]; then
   echo "Creating pmm-agent configuration..."
   pmm-agent setup \
-      --config-file="$AGENT_CONFIG_DIR/pfm-agent.yaml" \
+      --config-file="$AGENT_CONFIG_DIR/pfw-agent.yaml" \
       --skip-registration \
       --id="$AGENT_ID" \
-      --paths-tempdir=/srv/pfm-agent/tmp \
+      --paths-tempdir=/srv/pfw-agent/tmp \
       --paths-nomad-data-dir=/srv/nomad/data \
       --server-address=127.0.0.1:8443 \
       --server-insecure-tls

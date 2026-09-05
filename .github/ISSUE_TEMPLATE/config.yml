@@ -1,5 +1,3 @@
 blank_issues_enabled: false
-contact_links:
-  - name: Forum
-    url: https://forums.percona.com/
-    about: Please join our forums for general questions ans discussions.
+# No contact_links: the upstream template pointed at forums.percona.com, which is not
+# our forum. Restore this block if we stand one up.

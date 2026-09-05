@@ -2,7 +2,7 @@
 # This role installs pmm-client.
 - name: Get the image version
   slurp:
-    src: /opt/postgres1st/pfmm/dashboards/VERSION
+    src: /opt/postgres1st/watchtower/dashboards/VERSION
   register: image_version_file
 
 - name: Set the PMM image version
@@ -31,7 +31,7 @@
 
 - name: Create symlinks to the binaries
   file:
-    src: /opt/postgres1st/pfm/bin/{{ item }}
+    src: /opt/postgres1st/watchtower/bin/{{ item }}
     dest: /usr/sbin/{{ item }}
     state: link
   loop:

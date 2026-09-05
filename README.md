@@ -1,4 +1,4 @@
-# Postgres1st Monitoring and Management (PFMM)
+# PGF WatchTower
 
 PostgreSQL monitoring and query analytics, delivered as a **signed package repository**
 you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No internet access is
@@ -11,9 +11,9 @@ required on that server, and no container runtime is involved.
 
 ## What this is
 
-PFMM is a fork of [Percona Monitoring and Management](https://github.com/percona/pmm)
+PGF WatchTower is a fork of [Percona Monitoring and Management](https://github.com/percona/pmm)
 (PMM) that does one thing instead of five. Where PMM monitors MySQL, MongoDB, PostgreSQL,
-Valkey and Redis, PFMM accepts PostgreSQL and refuses the rest — not by hiding them in the
+Valkey and Redis, PGF WatchTower accepts PostgreSQL and refuses the rest — not by hiding them in the
 interface, but with an allowlist enforced in the API at service and agent registration
 (`managed/models/service_type_allowlist.go`).
 
@@ -29,21 +29,21 @@ Anything else is rejected as unsupported. A service type added upstream stays di
 until it is listed deliberately, so the gate does not quietly widen on a rebase.
 
 The other substantive difference is delivery. PMM ships primarily as a container image;
-PFMM ships as RPMs in a GPG-signed yum repository, built for air-gapped installation on a
+PGF WatchTower ships as RPMs in a GPG-signed yum repository, built for air-gapped installation on a
 host you control.
 
 ## Installation
 
 Two guides, one bundle. Both ship inside the release tarball:
 
-- **[Server](build/packages/pfmm-airgap-INSTALL.md)** — the monitoring server, on its own
+- **[Server](build/packages/pfw-airgap-INSTALL.md)** — the monitoring server, on its own
   host.
-- **[Client](build/packages/pfmm-airgap-INSTALL-CLIENT.md)** — the agent, on each
+- **[Client](build/packages/pfw-airgap-INSTALL-CLIENT.md)** — the agent, on each
   PostgreSQL host you want to monitor.
 
 In outline: unpack the tarball, import the signing key, point yum at the unpacked
-directory, and `dnf install pfm-server` (or `pfm-client`). Operating-system dependencies
-come from your own repositories — PFMM ships only what no EL9 repository provides
+directory, and `dnf install pfw-server` (or `pfw-agent`). Operating-system dependencies
+come from your own repositories — PGF WatchTower ships only what no EL9 repository provides
 (PostgreSQL and ClickHouse), and the bundle includes `fetch-os-dependencies.sh` for hosts
 with no repository of their own.
 
@@ -53,11 +53,11 @@ Requirements are in the server guide; briefly, RHEL/Rocky/AlmaLinux 9 with syste
 ## Building
 
 ```bash
-build/scripts/build-pfmm-airgap            # every stage, in order
-build/scripts/build-pfmm-airgap rpms bundle  # resume from a named stage
+build/scripts/build-pfw-airgap            # every stage, in order
+build/scripts/build-pfw-airgap rpms bundle  # resume from a named stage
 ```
 
-Produces `pfmm-server-el9-<arch>.tar.gz` and its `.sha256`. Everything except docker runs
+Produces `pfw-server-el9-<arch>.tar.gz` and its `.sha256`. Everything except docker runs
 in containers, so the host needs no rpmbuild, Go or Node toolchain — but it does need
 **≥16 GB RAM** (the Grafana webpack build OOMs below ~12 GB), ≥30 GB free disk, and
 network access. The *result* is what installs without a network.
@@ -65,9 +65,9 @@ network access. The *result* is what installs without a network.
 Acceptance suites live alongside it:
 
 ```bash
-build/scripts/test-pfmm-airgap           # installs the bundle in an air-gapped container
-build/scripts/test-pfmm-negative-control # verifies the suite's assertions can actually fail
-build/scripts/test-pfmm-upgrade          # upgrade path
+build/scripts/test-pfw-airgap           # installs the bundle in an air-gapped container
+build/scripts/test-pfw-negative-control # verifies the suite's assertions can actually fail
+build/scripts/test-pfw-upgrade          # upgrade path
 ```
 
 The negative-control suite exists because a green run proves nothing on its own. Note that
@@ -76,11 +76,11 @@ capabilities are both inert under `docker run --privileged`, and have hidden rea
 
 ## Components
 
-Server side, packaged as `pfm-server` and its dependencies: `pfm-managed` (the API and
+Server side, packaged as `pfw-server` and its dependencies: `pfw-managed` (the API and
 inventory), a [Grafana fork](https://github.com/postgres1st/grafana) for the interface,
 VictoriaMetrics and `vmproxy` for metrics, ClickHouse and `qan-api2` for query analytics,
-and the provisioned dashboards. Client side, `pfm-client` installs `pfm-agent` and
-`pfm-admin`.
+and the provisioned dashboards. Client side, `pfw-agent` installs `pfw-agent` and
+`pfw-admin`.
 
 Some inherited components still carry upstream names in their spec files and Go module
 paths. That rebrand is deliberate remaining work, not an oversight.
@@ -92,7 +92,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests go to
 
 ## Licensing
 
-PFMM is built on Percona Monitoring and Management and Grafana, and everything Postgres1st
+PGF WatchTower is built on Percona Monitoring and Management and Grafana, and everything Postgres1st
 builds is licensed under the **GNU Affero General Public License, version 3**.
 
 | Component | Licence |
@@ -107,6 +107,6 @@ VictoriaMetrics, the PostgreSQL Licence for PostgreSQL. Each package declares it
 
 ## Upstream
 
-PFMM is derived from [percona/pmm](https://github.com/percona/pmm) and keeps its version
-number: PFMM 3.9.0 corresponds to PMM 3.9.0. Copyright in the inherited code remains with
+PGF WatchTower is derived from [percona/pmm](https://github.com/percona/pmm) and keeps its version
+number: PGF WatchTower 3.9.0 corresponds to PMM 3.9.0. Copyright in the inherited code remains with
 Percona LLC and the other original authors, and the AGPL headers are preserved throughout.

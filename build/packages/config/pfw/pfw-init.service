@@ -1,19 +1,19 @@
-# pfm-init — first-boot provisioning (was supervisord [program:pmm-init],
+# pfw-init — first-boot provisioning (was supervisord [program:pmm-init],
 # priority=-1). Type=oneshot + RemainAfterExit so the daemons order After= it
 # and it stays "active (exited)" once done. Idempotent: safe to re-run every
-# boot. Runs as the pfm service account (single-UID model, T1) because initdb
+# boot. Runs as the pfw service account (single-UID model, T1) because initdb
 # and pg_stat_statements setup must NOT run as root.
 [Unit]
-Description=pfm first-boot provisioning (idempotent)
+Description=PGF WatchTower first-boot provisioning (idempotent)
 After=network.target
-Before=pfm-postgresql.service pfm-clickhouse.service pfm-nginx.service pfm-grafana.service
+Before=pfw-postgresql.service pfw-clickhouse.service pfw-nginx.service pfw-grafana.service
 RequiresMountsFor=/srv
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-User=pfm
-Group=pfm
+User=pfw
+Group=pfw
 # --- least-privilege sandbox (provisioner: writes across /srv and /run) ---
 NoNewPrivileges=yes
 ProtectSystem=strict
@@ -26,22 +26,22 @@ RestrictSUIDSGID=yes
 RestrictRealtime=yes
 LockPersonality=yes
 CapabilityBoundingSet=
-# AF_NETLINK is required: pfm-init runs `pmm-agent setup`, whose node-address
+# AF_NETLINK is required: pfw-init runs `pmm-agent setup`, whose node-address
 # auto-detection enumerates interfaces via socket(AF_NETLINK); without it setup
 # fails "required argument 'node-address' not provided" and aborts first boot.
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 # /srv (provisioning target) + only the pg socket dir under /run — NOT all of /run
 # (which would expose /run/systemd, /run/dbus to the editable provisioning script).
 ReadWritePaths=/srv /run/postgresql
-# Create every provisioned file owner-only by default (single-UID pfm model), so
+# Create every provisioned file owner-only by default (single-UID pfw model), so
 # secrets written then chmod'd (the PG superuser password, the nginx TLS key) are
 # never briefly group-readable in the window before the explicit chmod.
 UMask=0077
-ExecStart=/usr/share/pfm/pfm-init.sh
+ExecStart=/usr/share/pfw/pfw-init.sh
 # /dev/stdout is not openable under a systemd unit; send everything to journald.
 StandardOutput=journal
 StandardError=journal
 TimeoutStartSec=600
 
 [Install]
-WantedBy=pfm.target
+WantedBy=pfw.target

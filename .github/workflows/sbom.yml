@@ -20,7 +20,7 @@ jobs:
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
         with:
           file: go.mod
-          artifact-name: pmm.spdx.json
+          artifact-name: pfw.spdx.json
 
       - name: Publish SBOM for PMM
         uses: anchore/sbom-action/publish-sbom@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0

@@ -1,4 +1,4 @@
-# PFMM Development Guide for AI Agents
+# PGF WatchTower Development Guide for AI Agents
 
 ## Maintaining This Document
 
@@ -18,7 +18,7 @@ Do **not** update this file for routine code changes (bug fixes, minor feature i
 
 ## How This Documentation Is Organized
 
-This file is the **single authoritative entry point** for AI agents working with PFMM. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
+This file is the **single authoritative entry point** for AI agents working with PGF WatchTower. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
 
 ### Component Guides
 
@@ -40,24 +40,31 @@ Each component has a dedicated guide with architecture, directory structure, dom
 
 ---
 
-## Naming: pmm-* vs pfm-* (read before "fixing" a name)
+## Naming: pmm-* vs pfw-* (read before "fixing" a name)
 
-This fork ships as Postgres1st/PFMM, and the rename is **deliberately partial**. Docs
-throughout this repo still say `pmm-managed`, `pmm-agent` and `pmm-admin` as component
-names; that is usually correct, because the source tree kept those names. What changed is
-what gets *installed*.
+This fork ships as **PGF WatchTower**, and the rename is **deliberately partial**. The
+authority for what may and may not be renamed is
+[`docs/pfw-identifier-map.md`](docs/pfw-identifier-map.md) — read its tier table before
+changing any name.
+
+The short version: *Go identifiers and module paths* kept the upstream `pmm` names, and
+should stay that way. But anything a **user reads or types** now says `pfw-*` — the installed
+binaries are `pfw-admin` and `pfw-agent`, so user-facing text naming `pmm-admin` or
+`pmm-agent` is a bug, not a deliberate remnant. It names commands that do not exist.
 
 | Thing | State | Example |
 |---|---|---|
 | Go module path | **unchanged** | `github.com/percona/pmm` |
 | Source directories | **unchanged** | `managed/`, `agent/`, `admin/` |
-| `cmd/` dirs and binaries | **renamed** | `managed/cmd/pfm-managed`, `pfm-admin` |
-| systemd units | **renamed** | `pfm-managed.service`, `pfm.target` |
-| Server data directory | **moved** | `/opt/postgres1st/pfmm` |
-| UI base path | **changed** | `/pfm-ui` |
+| `cmd/` dirs and binaries | **renamed** | `managed/cmd/pfw-managed`, `pfw-admin` |
+| systemd units | **renamed** | `pfw-managed.service`, `pfw.target` |
+| Server data directory | **moved** | `/opt/postgres1st/watchtower` |
+| UI base path | **changed** | `/pfw-ui` |
 | `PMM_*` environment variables | **unchanged** | `PMM_CLICKHOUSE_ADDR` |
 | Metric namespace (`pmm_*`) | **unchanged** | `pmm_agent_id` |
-| PostgreSQL role `pmm` | **unchanged** | — |
+| PostgreSQL database + role | **unchanged** | `pmm-managed` (not `pmm`) |
+| ClickHouse database | **unchanged** | `pmm` |
+| OS service accounts | **unchanged** | `pfw` (server), `pfw-agent` (client) |
 
 The unchanged items are the contract shared with upstream code and with already-deployed
 agents. Renaming them means forking behaviour we still want to rebase onto `percona/pmm`,
@@ -67,13 +74,13 @@ so they stay as they are on purpose.
 A *component name* in prose is fine. Verify before changing either: `ls managed/cmd`
 settles it in one command.
 
-Note also that this build is **PostgreSQL-only**. `pfm-admin add mysql` (or mongodb,
+Note also that this build is **PostgreSQL-only**. `pfw-admin add mysql` (or mongodb,
 proxysql, valkey) is rejected with "not supported by this deployment", so examples using
 those service types are wrong regardless of the binary name.
 
 ## Product Overview
 
-Postgres1st Monitoring and Management (PFMM) is an open-source **PostgreSQL** monitoring
+PGF WatchTower is an open-source **PostgreSQL** monitoring
 solution, forked from Percona Monitoring and Management. It uses a **client-server
 architecture** where lightweight agents on monitored hosts collect metrics and query
 analytics data, sending them to a central server for storage, alerting, and visualization.
@@ -194,18 +201,18 @@ Relationships:
 
 Those four exporters are the only ones this build ships; the mysqld, mongodb and proxysql
 exporters are not built. The pinned repository URLs and exact commits live in
-[`build/scripts/pfmm-airgap-vars`](build/scripts/pfmm-airgap-vars), which is authoritative
+[`build/scripts/pfw-airgap-vars`](build/scripts/pfw-airgap-vars), which is authoritative
 — this table is orientation, not a source of truth.
 
 Two upstream repositories are deliberately **not** listed as usable here:
 
 - **`percona/pmm-qa`** — upstream's end-to-end suite. It targets MySQL and MongoDB
   scenarios and does not run against this build. Our acceptance suites are
-  `build/scripts/test-pfmm-*`.
+  `build/scripts/test-pfw-*`.
 - **`Percona-Lab/pmm-submodules`** — upstream's feature-build orchestration. Building
   client packages through it yields *upstream* `pmm-agent` and `pmm-admin` binaries with
   neither the service-type gate nor our packaging paths. The result looks correct and is
-  not. Build with `build/scripts/build-pfmm-airgap`.
+  not. Build with `build/scripts/build-pfw-airgap`.
 
 ## Tech Stack
 
@@ -267,7 +274,7 @@ Two upstream repositories are deliberately **not** listed as usable here:
 - Mock generation via `mockery` (config in `.mockery.yaml`)
 - Unit tests: `*_test.go` next to implementation
 - Integration tests: `/api-tests/`, run against a live server
-- Acceptance suites: `build/scripts/test-pfmm-airgap`, `-negative-control`, `-upgrade`
+- Acceptance suites: `build/scripts/test-pfw-airgap`, `-negative-control`, `-upgrade`
   (upstream's `pmm-qa` E2E suite does not apply to this build)
 
 ### Code Generation

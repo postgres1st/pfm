@@ -23,9 +23,9 @@ PMM_RELEASE_PATH ?= ./bin
 run-managed-ci: release-dev-managed    ## Replace pmm-managed from build, restart (used in CI)	supervisorctl stop pmm-managed
 	supervisorctl stop pmm-managed
 	truncate -s 0 /srv/logs/pmm-managed.log
-	# The build emits pfm-managed, but supervisord inside the dev container still
+	# The build emits pfw-managed, but supervisord inside the dev container still
 	# runs /usr/sbin/pmm-managed, so install under the name it expects.
-	install -m 755 $(PMM_RELEASE_PATH)/pfm-managed /usr/sbin/pmm-managed
+	install -m 755 $(PMM_RELEASE_PATH)/pfw-managed /usr/sbin/pmm-managed
 	supervisorctl start pmm-managed
 
 run-managed: run-managed-ci    		## Replace pmm-managed from build, restart and tail logs
@@ -34,8 +34,8 @@ run-managed: run-managed-ci    		## Replace pmm-managed from build, restart and 
 run-agent-ci: release-dev-agent		## Replace pmm-agent from build and restart (used in CI)
 	supervisorctl stop pmm-agent
 	truncate -s 0 /srv/logs/pmm-agent.log
-	# Same as above: the build emits pfm-agent, supervisord runs /usr/sbin/pmm-agent.
-	install -m 755 $(PMM_RELEASE_PATH)/pfm-agent /usr/sbin/pmm-agent
+	# Same as above: the build emits pfw-agent, supervisord runs /usr/sbin/pmm-agent.
+	install -m 755 $(PMM_RELEASE_PATH)/pfw-agent /usr/sbin/pmm-agent
 	supervisorctl start pmm-agent
 
 run-agent: run-agent-ci				## Replace pmm-agent from build, restart and tail logs
@@ -52,7 +52,7 @@ run-vmproxy: run-vmproxy-ci			## Replace vmproxy from build, restart and tail lo
 
 run-qan-ci: release-qan	            ## Replace qan-api2 from build and restart (used in CI)
 	supervisorctl stop qan-api2
-	install -m 755 $(PMM_RELEASE_PATH)/qan-api2 /usr/sbin/percona-qan-api2
+	install -m 755 $(PMM_RELEASE_PATH)/qan-api2 /usr/sbin/pfw-qan-api2
 	truncate -s 0 /srv/logs/qan-api2.log
 	supervisorctl start qan-api2
 
@@ -76,10 +76,10 @@ run-ui: ui-setup setup-livereload    ## Start vite dev server for UI with HMR
 
 build-ui: ui-setup               ## Build UI and deploy to system dirs
 	cd ui && yarn build
-	rm -rf /usr/share/pfm-ui
-	cp -r ui/apps/pmm/dist /usr/share/pfm-ui
-	rm -rf /opt/postgres1st/pfmm/dashboards/panels/pmm-compat-app /srv/grafana/plugins/pmm-compat-app
-	cp -r ui/apps/pmm-compat/dist /opt/postgres1st/pfmm/dashboards/panels/pmm-compat-app
+	rm -rf /usr/share/pfw-ui
+	cp -r ui/apps/pmm/dist /usr/share/pfw-ui
+	rm -rf /opt/postgres1st/watchtower/dashboards/panels/pmm-compat-app /srv/grafana/plugins/pmm-compat-app
+	cp -r ui/apps/pmm-compat/dist /opt/postgres1st/watchtower/dashboards/panels/pmm-compat-app
 	cp -r ui/apps/pmm-compat/dist /srv/grafana/plugins/pmm-compat-app
 	supervisorctl restart grafana
 
@@ -113,8 +113,8 @@ grafana-be-build:
 	supervisorctl restart grafana
 
 reload-dashboards:
-	rm -r /opt/postgres1st/pfmm/dashboards/panels/pmm-app/dist/dashboards
-	cp -r /root/go/src/github.com/percona/pmm/dashboards/dashboards /opt/postgres1st/pfmm/dashboards/panels/pmm-app/dist/dashboards
+	rm -r /opt/postgres1st/watchtower/dashboards/panels/pmm-app/dist/dashboards
+	cp -r /root/go/src/github.com/percona/pmm/dashboards/dashboards /opt/postgres1st/watchtower/dashboards/panels/pmm-app/dist/dashboards
 	supervisorctl restart grafana
 
 # TODO https://jira.percona.com/browse/PMM-3484, see maincover_test.go
@@ -135,5 +135,5 @@ dlv/attach:                     ## Attach Delve to `pmm-managed`
 	go tool dlv --listen=:2345 --headless=true --api-version=2 --continue=true --accept-multiclient attach $(shell pgrep pmm-managed)
 
 refresh-swagger:                ## Refresh swagger files
-	cp /root/go/src/github.com/percona/pmm/api/swagger/swagger.json /usr/share/pfm-managed/swagger/swagger.json
-	cp /root/go/src/github.com/percona/pmm/api/swagger/swagger-dev.json /usr/share/pfm-managed/swagger/swagger-dev.json
+	cp /root/go/src/github.com/percona/pmm/api/swagger/swagger.json /usr/share/pfw-managed/swagger/swagger.json
+	cp /root/go/src/github.com/percona/pmm/api/swagger/swagger-dev.json /usr/share/pfw-managed/swagger/swagger-dev.json

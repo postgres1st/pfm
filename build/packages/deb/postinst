@@ -9,10 +9,10 @@ fi
 
 case "$1" in
     configure)
-        chown -R pmm-agent:pmm-agent /opt/postgres1st/pfm
-        if [ ! -f /opt/postgres1st/pfm/config/pmm-agent.yaml ]; then
-            install -d -m 0755 /opt/postgres1st/pfm/config
-            install -m 0660 -o pmm-agent -g pmm-agent /dev/null /opt/postgres1st/pfm/config/pmm-agent.yaml
+        chown -R pmm-agent:pmm-agent /opt/postgres1st/watchtower
+        if [ ! -f /opt/postgres1st/watchtower/config/pmm-agent.yaml ]; then
+            install -d -m 0755 /opt/postgres1st/watchtower/config
+            install -m 0660 -o pmm-agent -g pmm-agent /dev/null /opt/postgres1st/watchtower/config/pmm-agent.yaml
         fi
     ;;
 

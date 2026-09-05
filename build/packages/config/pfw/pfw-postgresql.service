@@ -1,4 +1,4 @@
-# pfm-postgresql — embedded PG18 (was supervisord [program:postgresql],
+# pfw-postgresql — embedded PG18 (was supervisord [program:postgresql],
 # priority=1). ExecStart transcribed verbatim from pmm.ini. stopsignal=INT
 # (PG "fast shutdown") -> KillSignal=SIGINT; stopwaitsecs=300 -> TimeoutStopSec.
 # Type=exec (not notify): the PGDG PG18 build isn't guaranteed to sd_notify,
@@ -6,18 +6,18 @@
 # match it with retry-until-up (Restart=on-failure). A readiness gate
 # (ExecStartPost=pg_isready) is a later hardening step, not T0.
 [Unit]
-Description=pfm PostgreSQL 18 (embedded)
-After=pfm-init.service
-Requires=pfm-init.service
-PartOf=pfm.target
+Description=PGF WatchTower PostgreSQL 18 (embedded)
+After=pfw-init.service
+Requires=pfw-init.service
+PartOf=pfw.target
 # Match supervisord startretries=10 (systemd default is 5/10s).
 StartLimitIntervalSec=60
 StartLimitBurst=10
 
 [Service]
 Type=exec
-User=pfm
-Group=pfm
+User=pfw
+Group=pfw
 # --- least-privilege sandbox + zero-egress (validated on the real stack) ---
 NoNewPrivileges=yes
 ProtectSystem=strict
@@ -50,4 +50,4 @@ StandardOutput=journal
 StandardError=journal
 
 [Install]
-WantedBy=pfm.target
+WantedBy=pfw.target
