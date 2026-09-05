@@ -32,6 +32,7 @@ import (
 )
 
 func TestAddValkey(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "valkey")
 	t.Parallel()
 
 	t.Run("Basic", func(t *testing.T) {
@@ -400,6 +401,7 @@ func TestAddValkey(t *testing.T) {
 }
 
 func TestRemoveValkey(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "valkey")
 	t.Parallel()
 
 	addValkey := func(t *testing.T, serviceName, nodeName string) (serviceID string) {

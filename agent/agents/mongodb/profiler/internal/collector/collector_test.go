@@ -31,6 +31,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"github.com/percona/pmm/agent/utils/mongofix"
+	"github.com/percona/pmm/agent/utils/tests"
 )
 
 const (
@@ -115,6 +116,7 @@ func BenchmarkCollector(b *testing.B) {
 }
 
 func TestCollector(t *testing.T) {
+	tests.SkipIfUnreachable(t, "127.0.0.1:27017", "MongoDB")
 	maxLoops := 3
 	maxDocs := 100
 

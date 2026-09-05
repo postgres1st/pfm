@@ -61,6 +61,7 @@ func TestRDSDiscovery(t *testing.T) {
 }
 
 func TestAddRds(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 
 	t.Run("BasicAddRDS", func(t *testing.T) {

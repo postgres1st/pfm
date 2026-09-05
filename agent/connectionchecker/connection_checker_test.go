@@ -240,6 +240,12 @@ func TestConnectionChecker(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
+			// Every case but the PostgreSQL ones needs a service container. Skip
+			// rather than fail when it is absent -- see tests.SkipIfUnreachable.
+			if tt.req.Type != inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE {
+				tests.SkipIfDSNUnreachable(t, tt.req.Dsn, tt.name)
+			}
+
 			cfgStorage := config.NewStorage(&config.Config{
 				Paths: config.Paths{TempDir: t.TempDir()},
 			})

@@ -89,7 +89,7 @@ func TestClient(t *testing.T) {
 		client := New(cfgStorage, nil, nil, nil, nil, nil, nil, nil)
 		cancel()
 		err := client.Run(ctx)
-		require.EqualError(t, err, "missing PMM Server address: context canceled")
+		require.EqualError(t, err, "missing PGF WatchTower Server address: context canceled")
 	})
 
 	t.Run("NoAgentID", func(t *testing.T) {

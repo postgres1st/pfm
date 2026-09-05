@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Negative control for the assertions in BOTH bundle test suites.
 #
-#   build/scripts/test-pfmm-negative-control [airgap|upgrade|both]   (default: both)
+#   build/scripts/test-pfw-negative-control [airgap|upgrade|both]   (default: both)
 #
 # A green test suite is not evidence. It becomes evidence once each assertion has
 # been shown to go RED when the thing it guards is actually broken. This breaks
@@ -9,7 +9,7 @@
 #
 # It is not hypothetical: the first control ever run here found a false pass. The
 # assertion "the repair unit brought the server back (readyz 200)" stayed green with
-# pfm-clickhouse-perms masked, because ClickHouse limps rather than dying -- it keeps
+# pfw-clickhouse-perms masked, because ClickHouse limps rather than dying -- it keeps
 # serving queries while ConfigReloader fails every second on a config it cannot read.
 # That assertion proved nothing and was replaced.
 #
@@ -28,13 +28,13 @@
 #                       discriminates, but NOT that the suite aims it at the right
 #                       target. Only for properties that cannot be broken safely.
 #
-# The predicates are sourced from the suites themselves (PFMM_LIB_ONLY=1), NOT
+# The predicates are sourced from the suites themselves (PFW_LIB_ONLY=1), NOT
 # reimplemented. Controlling a copy of an assertion would prove nothing about the
 # assertion that actually runs.
 #
 # The two suites describe different hosts, so each phase needs the container left
-# behind by its own suite (default PFMM_TEST_KEEP=1 does that): pfm-airgap-test from
-# test-pfmm-airgap, pfm-upgrade-test from test-pfmm-upgrade. It mutates those
+# behind by its own suite (default PFW_TEST_KEEP=1 does that): pfw-airgap-test from
+# test-pfw-airgap, pfw-upgrade-test from test-pfw-upgrade. It mutates those
 # containers and restores as it goes, so run it against throwaway hosts, never a real
 # one.
 set -o errexit
@@ -52,13 +52,13 @@ phase=${1:-both}
 # passing "airgap" through would send them looking for a bundle called "airgap".
 set --
 
-PFMM_LIB_ONLY=1
-export PFMM_LIB_ONLY
+PFW_LIB_ONLY=1
+export PFW_LIB_ONLY
 # shellcheck source=/dev/null
-source "${bin_dir}/test-pfmm-airgap"
+source "${bin_dir}/test-pfw-airgap"
 airgap_container=${container}
 # shellcheck source=/dev/null
-source "${bin_dir}/test-pfmm-upgrade"
+source "${bin_dir}/test-pfw-upgrade"
 upgrade_container=${container}
 
 controlled=0; weak=0; skipped=0; state_broken=0; input_fed=0
@@ -87,9 +87,15 @@ ctl() {
     # Poll the BASELINE too, not just the broken and restored states. Missing this
     # produced a spurious "baseline is already red": the control before it had
     # restarted nginx, and while the cheap gate checks answer the moment nginx is
-    # back, a predicate that WRITES (registering a service) needs pfm-managed further
+    # back, a predicate that WRITES (registering a service) needs pfw-managed further
     # along than readyz indicates. A single sample turned "not settled yet" into a
     # reported failure -- the same mistake the broken/restored polling exists to avoid.
+    # Let the SERVER settle before judging the baseline. Every entry here can restart
+    # pfw-managed, and a restore that returns before the API is serving leaves the next
+    # entry's baseline red through no fault of its own -- one slow recovery then cascades
+    # into "baseline still red, cannot control it" for everything after it. Waiting for
+    # readyz turns that cascade back into a single slow entry.
+    wait_readyz 24 >/dev/null 2>&1 || true
     for ((i = 0; i < budget; i++)); do
         if eval "${pred}" >/dev/null 2>&1; then baseline=yes; break; fi
         sleep 1
@@ -98,11 +104,27 @@ ctl() {
         no "${label}: baseline still red after ${budget}s -- cannot control it"
         return 0
     fi
-    eval "${brk}" >/dev/null 2>&1 || true
+    # Keep the break's exit status. It used to be discarded with `|| true`, so a break
+    # that FAILED to introduce the defect was indistinguishable from a predicate that
+    # could not see it -- and the run blamed the predicate: "STILL GREEN with the defect
+    # present -- not discriminating". That accusation sends someone to rewrite a working
+    # assertion. A break that cannot run is a broken CONTROL, and says so now.
+    # Keep the break's OUTPUT, not just its status. Running it under >/dev/null 2>&1
+    # meant a failing break told us only "exit 1", which is not enough to fix anything --
+    # the whole point of distinguishing a broken control from a weak predicate is being
+    # able to act on it.
+    local brk_rc=0 brk_out
+    brk_out=$(eval "${brk}" 2>&1) || brk_rc=$?
     for ((i = 0; i < budget; i++)); do
         if ! eval "${pred}" >/dev/null 2>&1; then went_red=yes; break; fi
         sleep 1
     done
+    if [ "${went_red}" != yes ] && [ "${brk_rc}" -ne 0 ]; then
+        eval "${rst}" >/dev/null 2>&1 || true
+        no "${label}: the BREAK command failed (exit ${brk_rc}) -- the control is broken, not the predicate"
+        printf '        %s\n' "$(printf '%s' "${brk_out}" | tail -3)" >&2
+        return 0
+    fi
     eval "${rst}" >/dev/null 2>&1 || true
     for ((i = 0; i < budget; i++)); do
         if eval "${pred}" >/dev/null 2>&1; then back=yes; break; fi
@@ -141,6 +163,35 @@ ctl_input() {
     pass=$((pass+1)); controlled=$((controlled+1)); input_fed=$((input_fed+1))
 }
 
+# ---------------------------------------------------------------- break helpers
+# Two breaks need quoting three layers deep -- ctl evals the string, inc hands it to
+# `bash -c` inside the container, and the command itself then parses SQL or a shell
+# assignment. Written inline in a ctl argument, each escape level is a place to get it
+# silently wrong, and a break that fails is reported as "the assertion is not
+# discriminating", which is the most damaging wrong answer this harness can give.
+
+# `grafana cli` opens Grafana's database ITSELF, using --config=/etc/grafana/pfw.ini,
+# whose [database] password the RPM ships empty -- the real value reaches Grafana as
+# GF_DATABASE_PASSWORD from pfw-grafana.service. `docker exec` starts a bare shell with
+# none of that unit's environment, so the credential has to be supplied here or every
+# admin-password break and restore fails to connect.
+set_grafana_admin_pw() {
+    inc "GF_DATABASE_PASSWORD=\$(sed -n 's/^GF_DATABASE_PASSWORD=//p' /srv/.pfw-secrets/grafana.env) /usr/sbin/grafana cli --config=/etc/grafana/pfw.ini --homepath /usr/share/grafana admin reset-admin-password $1"
+    # Clear Grafana's brute-force lockout. Controlling p_generated_admin_works means
+    # deliberately authenticating with a wrong password, and after five such attempts
+    # Grafana locks the admin account for its lockout window. The restore then sets the
+    # RIGHT password and still gets 401, so the suite reported "left red on the airgap
+    # host" and every later probe -- including api-tests against the same server -- kept
+    # failing on a password that was, in fact, correct. Resetting the password does not
+    # clear the counter; only this does.
+    inc "PGPASSWORD=\$(cat /srv/.postgres_password) psql -U postgres -h /run/postgresql -d grafana -c 'DELETE FROM login_attempt' >/dev/null"
+}
+
+# Repoint the pmm-managed role's password as the postgres superuser.
+set_managed_role_pw() {
+    inc "PGPASSWORD=\$(cat /srv/.postgres_password) psql -U postgres -h /run/postgresql -d postgres -c \"ALTER USER \\\"pmm-managed\\\" WITH PASSWORD '$1'\""
+}
+
 # ------------------------------------------------------------------- canary package
 # Built once, before either phase: both need it -- the airgap phase to mix an unsigned
 # package into a directory of signed ones, the upgrade phase to make a pmm-* package
@@ -161,7 +212,7 @@ all-packages-signed assertion has an unsigned package to refuse.
 EOF
     # chown back to the caller: rpmbuild runs as root in the container, and without
     # this the EXIT trap cannot remove its own scratch directory.
-    docker run --rm -v "${scratch}":/s -w /s "${PFMM_RPMBUILD_IMAGE}" \
+    docker run --rm -v "${scratch}":/s -w /s "${PFW_RPMBUILD_IMAGE}" \
         sh -c "rpmbuild --define '_topdir /s/top' -bb pmm-nc-canary.spec >/dev/null 2>&1 \
                && cp /s/top/RPMS/noarch/*.rpm /s/ && chown -R ${host_uid}:${host_gid} /s" \
         || die "could not build the pmm-* canary package"
@@ -183,8 +234,18 @@ require_container() {
 }
 
 phase_upgrade() {
-    require_container "${upgrade_container}" build/scripts/test-pfmm-upgrade
-    printf '\nControlling test-pfmm-upgrade assertions against %s\n' "${container}"
+    require_container "${upgrade_container}" build/scripts/test-pfw-upgrade
+    printf '\nControlling test-pfw-upgrade assertions against %s\n' "${container}"
+
+    # Re-assert the UPGRADE host's credential. SRV and ADMIN_PW are globals, and in
+    # `both` mode phase_airgap runs first and calls set_srv_from_secrets, which points
+    # them at the AIRGAP host's generated password. Everything here then authenticates to
+    # the upgrade host with the wrong host's credential and gets 401 -- which surfaced as
+    # "the BREAK command failed", one line of stderr saying "Invalid username or
+    # password". admin:admin is correct here because relocation does not rotate the
+    # Grafana admin user, exactly as pfw-test-lib documents.
+    SRV="--server-url=https://admin:admin@127.0.0.1:8443 --server-insecure-tls"
+    ADMIN_PW=admin
 
     # ------------------------------------------------------------------ pure predicate
 
@@ -192,8 +253,17 @@ phase_upgrade() {
     # The defect is a release string that never advances, so dnf skips the package in
     # silence. Feed the comparison two identical listings: it must report every package
     # as stuck, or it would report a skipped upgrade as a success.
-    same=$'pfm-client-3.9.0-1.a\npfm-grafana-1-1.a\npfm-managed-3.9.0-1.a\npfm-server-3.9.0-1.a\npercona-dashboards-3.9.0-1.a'
-    diff=$'pfm-client-3.9.0-2.b\npfm-grafana-1-2.b\npfm-managed-3.9.0-2.b\npfm-server-3.9.0-2.b\npercona-dashboards-3.9.0-2.b'
+    # CURRENT package names. These fixtures still said pfw-client, pfm-grafana,
+    # pfm-managed, pfm-server and percona-dashboards -- all renamed. stuck_pkgs compares
+    # per package, so names that no longer exist matched nothing and the control could
+    # not tell "everything moved" from "nothing moved": it reported the predicate broken
+    # while the predicate was fine.
+    # ALL EIGHT packages stuck_pkgs iterates. A package absent from both fixtures reads
+    # as "did not move" -- correctly, because that strictness is what caught pfw-dump
+    # never being installed at all. So the fixtures have to be complete, not the
+    # predicate loosened.
+    same=$'pfw-agent-3.9.0-1.a\npfw-grafana-1-1.a\npfw-managed-3.9.0-1.a\npfw-server-3.9.0-1.a\npfw-dashboards-3.9.0-1.a\npfw-qan-api2-3.9.0-1.a\npfw-vmproxy-3.9.0-1.a\npfw-dump-3.9.0-1.a'
+    diff=$'pfw-agent-3.9.0-2.b\npfw-grafana-1-2.b\npfw-managed-3.9.0-2.b\npfw-server-3.9.0-2.b\npfw-dashboards-3.9.0-2.b\npfw-qan-api2-3.9.0-2.b\npfw-vmproxy-3.9.0-2.b\npfw-dump-3.9.0-2.b'
     if p_all_pkgs_upgraded "${same}" "${same}"; then
         no "p_all_pkgs_upgraded: reports success when nothing moved"; weak=$((weak+1))
     elif ! p_all_pkgs_upgraded "${same}" "${diff}"; then
@@ -203,13 +273,41 @@ phase_upgrade() {
         controlled=$((controlled+1)); state_broken=$((state_broken+1))
     fi
     # A partial skip is the realistic shape: four move, one does not.
-    partial=$'pfm-client-3.9.0-2.b\npfm-grafana-1-2.b\npfm-managed-3.9.0-2.b\npfm-server-3.9.0-1.a\npercona-dashboards-3.9.0-2.b'
+    partial=$'pfw-agent-3.9.0-2.b\npfw-grafana-1-2.b\npfw-managed-3.9.0-2.b\npfw-server-3.9.0-1.a\npfw-dashboards-3.9.0-2.b\npfw-qan-api2-3.9.0-2.b\npfw-vmproxy-3.9.0-2.b\npfw-dump-3.9.0-2.b'
     if p_all_pkgs_upgraded "${same}" "${partial}"; then
         no "p_all_pkgs_upgraded: misses a single skipped package"; weak=$((weak+1))
     else
         ok "p_all_pkgs_upgraded (red when only one package is skipped)"
         controlled=$((controlled+1)); state_broken=$((state_broken+1))
     fi
+
+    # ------------------------------------------------------------- credential relocation
+
+    hdr "credential relocation"
+    # Restore what was actually there, read off the host before the break. The value IS
+    # "pmm-managed" on an upgraded host today, but a hardcoded restore plants that
+    # constant the moment relocation ever preserves anything else -- and it would do so
+    # while reporting a pass.
+    local relocated_pw
+    relocated_pw=$(secret_val /srv/.pfw-secrets/managed-db.env PMM_POSTGRES_DBPASSWORD)
+    if [ -z "${relocated_pw}" ]; then
+        skip "p_secrets_relocated -- cannot read the pre-break value, refusing to restore a guess"
+    else
+        # EMPTY the file rather than rewrite its value. p_secrets_relocated asserts the
+        # property -- a non-empty 0600 secret -- not a particular password, because on a
+        # supported upgrade the password is generated. Writing a different value leaves
+        # the property intact, so that break would not go red and the control would
+        # report a passing predicate it never actually falsified.
+        ctl "p_secrets_relocated (empty the secret file)" \
+            "p_secrets_relocated" \
+            "inc \": > /srv/.pfw-secrets/managed-db.env\"" \
+            "inc \"printf 'PMM_POSTGRES_DBPASSWORD=${relocated_pw}\\n' > /srv/.pfw-secrets/managed-db.env; chmod 600 /srv/.pfw-secrets/managed-db.env\"" 3
+    fi
+
+    ctl "p_upgraded_unit_clean (put a literal back in the unit)" \
+        "p_upgraded_unit_clean" \
+        "inc \"printf 'Environment=PMM_POSTGRES_DBPASSWORD=pmm-managed\\n' >> /usr/lib/systemd/system/pfw-managed.service\"" \
+        "inc \"sed -i '/^Environment=PMM_POSTGRES_DBPASSWORD=/d' /usr/lib/systemd/system/pfw-managed.service\"" 3
 
     # --------------------------------------------------------------- host / networking
 
@@ -222,37 +320,37 @@ phase_upgrade() {
     # ------------------------------------------------------------------- server health
 
     hdr "server health"
-    ctl "p_readyz (stop pfm-managed)" \
+    ctl "p_readyz (stop pfw-managed)" \
         "p_readyz" \
-        "inc 'systemctl stop pfm-managed'" \
-        "inc 'systemctl start pfm-managed'; wait_readyz 24 >/dev/null" 120
+        "inc 'systemctl stop pfw-managed'" \
+        "inc 'systemctl start pfw-managed'; wait_readyz 24 >/dev/null" 120
 
-    ctl "p_no_failed_units (introduce a failing pfm unit)" \
+    ctl "p_no_failed_units (introduce a failing pfw unit)" \
         "p_no_failed_units" \
-        "inc \"printf '[Unit]\nDescription=negative control\n[Service]\nType=oneshot\nExecStart=/bin/false\n' > /etc/systemd/system/pfm-nc-canary.service; systemctl daemon-reload; systemctl start pfm-nc-canary.service\"" \
-        "inc 'systemctl reset-failed pfm-nc-canary.service; rm -f /etc/systemd/system/pfm-nc-canary.service; systemctl daemon-reload'" 3
+        "inc \"printf '[Unit]\nDescription=negative control\n[Service]\nType=oneshot\nExecStart=/bin/false\n' > /etc/systemd/system/pfw-nc-canary.service; systemctl daemon-reload; systemctl start pfw-nc-canary.service\"" \
+        "inc 'systemctl reset-failed pfw-nc-canary.service; rm -f /etc/systemd/system/pfw-nc-canary.service; systemctl daemon-reload'" 3
 
-    ctl "p_all_units_active (stop pfm-vmalert)" \
+    ctl "p_all_units_active (stop pfw-vmalert)" \
         "p_all_units_active" \
-        "inc 'systemctl stop pfm-vmalert'" \
-        "inc 'systemctl start pfm-vmalert'" 30
+        "inc 'systemctl stop pfw-vmalert'" \
+        "inc 'systemctl start pfw-vmalert'" 30
 
     # --------------------------------------------------------------------- data stores
 
     hdr "data survival (one control per store)"
-    # 20s, not 4: the RESTORE here is a write, and `pfm-admin add postgresql` does real
+    # 20s, not 4: the RESTORE here is a write, and `pfw-admin add postgresql` does real
     # work before the service appears in the inventory -- it probes for pg_stat_monitor,
     # falls back to pg_stat_statements, and sets up an exporter agent. Observed failing at
     # 4s ("did not recover after restore -- the control left the host dirty", plus a
     # knock-on "left red on the upgrade host"), while the identical command run by hand
     # immediately afterwards succeeded. That is the exact flake this file's own ctl header
-    # warns about: a predicate that WRITES needs pfm-managed further along than readyz
+    # warns about: a predicate that WRITES needs pfw-managed further along than readyz
     # indicates. Two reported failures from one under-tuned budget, and each costs someone
     # a fresh investigation to re-discover it is not a real defect.
     ctl "p_service_registered (deregister the monitored service)" \
         "p_service_registered" \
-        "inc \"/usr/sbin/pfm-admin ${SRV} remove postgresql canary-pg\"" \
-        "inc \"/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\\\$(cat /srv/.postgres_password) canary-pg\"" 20
+        "inc \"/usr/sbin/pfw-admin ${SRV} remove postgresql canary-pg\"" \
+        "inc \"/usr/sbin/pfw-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\\\$(cat /srv/.postgres_password) canary-pg\"" 20
 
     ctl "p_grafana_folder (delete the folder)" \
         "p_grafana_folder" \
@@ -261,8 +359,8 @@ phase_upgrade() {
 
     ctl "p_clickhouse_row (drop the table)" \
         "p_clickhouse_row" \
-        "ch 'DROP TABLE default.pfm_upgrade_canary'" \
-        "ch 'CREATE TABLE IF NOT EXISTS default.pfm_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n'; ch 'INSERT INTO default.pfm_upgrade_canary VALUES (42)'" 3
+        "ch 'DROP TABLE default.pfw_upgrade_canary'" \
+        "ch 'CREATE TABLE IF NOT EXISTS default.pfw_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n'; ch 'INSERT INTO default.pfw_upgrade_canary VALUES (42)'" 3
 
     # Metrics have no safe "break" -- deleting the TSDB is not reversible -- so control
     # the predicate's sensitivity instead: it must find data at a timestamp inside the
@@ -285,13 +383,13 @@ phase_upgrade() {
     hdr "configuration was not reverted"
     ctl "p_pfm_ini_plugins (comment out paths.plugins)" \
         "p_pfm_ini_plugins" \
-        "inc \"sed -i 's|^plugins = |#plugins = |' /etc/grafana/pfm.ini\"" \
-        "inc \"sed -i 's|^#plugins = |plugins = |' /etc/grafana/pfm.ini\"" 2
+        "inc \"sed -i 's|^plugins = |#plugins = |' /etc/grafana/pfw.ini\"" \
+        "inc \"sed -i 's|^#plugins = |plugins = |' /etc/grafana/pfw.ini\"" 2
 
     ctl "p_pfm_ini_loopback (comment out http_addr)" \
         "p_pfm_ini_loopback" \
-        "inc \"sed -i 's|^http_addr = |#http_addr = |' /etc/grafana/pfm.ini\"" \
-        "inc \"sed -i 's|^#http_addr = |http_addr = |' /etc/grafana/pfm.ini\"" 2
+        "inc \"sed -i 's|^http_addr = |#http_addr = |' /etc/grafana/pfw.ini\"" \
+        "inc \"sed -i 's|^#http_addr = |http_addr = |' /etc/grafana/pfw.ini\"" 2
 
     # rmdir, not rm -rf: it removes only an empty directory, so a mistake here cannot
     # destroy anything.
@@ -302,8 +400,8 @@ phase_upgrade() {
 
     ctl "p_operator_edit_kept (remove the operator's line)" \
         "p_operator_edit_kept" \
-        "inc \"sed -i '/^# operator-canary/d' /etc/nginx/pfm.conf\"" \
-        "inc \"printf '# operator-canary\n' >> /etc/nginx/pfm.conf\"" 2
+        "inc \"sed -i '/^# operator-canary/d' /etc/nginx/pfw.conf\"" \
+        "inc \"printf '# operator-canary\n' >> /etc/nginx/pfw.conf\"" 2
 
     # Grafana already holds 127.0.0.1:3000, so an off-host listener cannot bind until it
     # lets go -- hence stopping it. This is the slowest control in the set.
@@ -316,8 +414,8 @@ phase_upgrade() {
     hdr "network exposure"
     ctl "p_grafana_not_exposed (bind 0.0.0.0:3000)" \
         "p_grafana_not_exposed" \
-        "inc 'systemctl stop pfm-grafana; setsid nohup python3 -m http.server 3000 --bind 0.0.0.0 >/dev/null 2>&1 < /dev/null & sleep 2'" \
-        "inc \"pkill -f '[h]ttp\\.server' || true; systemctl start pfm-grafana\"; wait_readyz 36 >/dev/null" 180
+        "inc 'systemctl stop pfw-grafana; setsid nohup python3 -m http.server 3000 --bind 0.0.0.0 >/dev/null 2>&1 < /dev/null & sleep 2'" \
+        "inc \"pkill -f '[h]ttp\\.server' || true; systemctl start pfw-grafana\"; wait_readyz 36 >/dev/null" 180
 
     # ------------------------------------------------------------------- gate / naming
 
@@ -327,8 +425,8 @@ phase_upgrade() {
     # need a build with the gate removed, which is a different test.
     ctl "p_mysql_rejected (make the server unreachable so the answer changes)" \
         "p_mysql_rejected" \
-        "inc 'systemctl stop pfm-managed'" \
-        "inc 'systemctl start pfm-managed'; wait_readyz 24 >/dev/null" 120
+        "inc 'systemctl stop pfw-managed'" \
+        "inc 'systemctl start pfw-managed'; wait_readyz 24 >/dev/null" 120
     note "that controls the assertion's dependence on the response, not the gate itself"
 
     # A package literally named pmm-* is the thing this guards against, so install one.
@@ -343,7 +441,7 @@ phase_upgrade() {
 
     hdr "clickhouse ownership (the defect-4 assertions)"
     ch_break="inc 'chown -R clickhouse:clickhouse /etc/clickhouse-server'"
-    ch_fix="inc 'chown -R pfm:pfm /etc/clickhouse-server; chmod -R u+rwX /etc/clickhouse-server'"
+    ch_fix="inc 'chown -R pfw:pfw /etc/clickhouse-server; chmod -R u+rwX /etc/clickhouse-server'"
     ctl "p_ch_owned_by_pfm (chown back to clickhouse)" "p_ch_owned_by_pfm" "${ch_break}" "${ch_fix}" 2
     ctl "p_ch_config_readable (chown back to clickhouse)" "p_ch_config_readable" "${ch_break}" "${ch_fix}" 2
     # The mirror image: this one asserts ownership WAS reverted, so its healthy baseline
@@ -355,7 +453,7 @@ phase_upgrade() {
         eval "${ch_break}" >/dev/null 2>&1 || true
         sleep 2
         if p_ch_owner_reverted; then
-            ok "p_ch_owner_reverted (red when pfm-owned, green once reverted)"
+            ok "p_ch_owner_reverted (red when pfw-owned, green once reverted)"
             controlled=$((controlled+1)); state_broken=$((state_broken+1))
         else
             no "p_ch_owner_reverted: did not notice a real revert"
@@ -391,8 +489,9 @@ phase_upgrade() {
 # ============================================================== airgap suite phase
 
 phase_airgap() {
-    require_container "${airgap_container}" build/scripts/test-pfmm-airgap
-    printf '\nControlling test-pfmm-airgap assertions against %s\n' "${container}"
+    require_container "${airgap_container}" build/scripts/test-pfw-airgap
+    printf '\nControlling test-pfw-airgap assertions against %s\n' "${container}"
+    set_srv_from_secrets
 
     hdr "host realism"
     # Disconnecting the only network removes the global-scope address entirely. The
@@ -403,11 +502,11 @@ phase_airgap() {
         "docker network connect ${network} ${container}" 30
 
     hdr "the gate"
-    # nginx, not pfm-managed: stopping the proxy changes pfm-admin's answer in one
-    # second and comes back in one, where a pfm-managed restart costs two minutes.
+    # nginx, not pfw-managed: stopping the proxy changes pfw-admin's answer in one
+    # second and comes back in one, where a pfw-managed restart costs two minutes.
     # Either proves the assertion reads the server's real response.
-    local nginx_break="inc 'systemctl stop pfm-nginx'"
-    local nginx_fix="inc 'systemctl start pfm-nginx'; wait_readyz 24 >/dev/null"
+    local nginx_break="inc 'systemctl stop pfw-nginx'"
+    local nginx_fix="inc 'systemctl start pfw-nginx'; wait_readyz 24 >/dev/null"
     ctl "p_mongodb_rejected (stop nginx so the answer changes)" \
         "p_mongodb_rejected" "${nginx_break}" "${nginx_fix}" 60
     ctl "p_postgresql_accepted (stop nginx so the answer changes)" \
@@ -417,31 +516,31 @@ phase_airgap() {
 
     hdr "advisor family gate"
     # A real state break using the product's own supported override: widening
-    # PFM_DB_TYPES must make the MySQL/MongoDB advisor checks reappear. That proves the
+    # PFW_DB_TYPES must make the MySQL/MongoDB advisor checks reappear. That proves the
     # advisor filter reads the same allowlist as the Service gate rather than carrying a
     # second hardcoded copy of it.
-    ctl "p_advisors_pg_only (widen PFM_DB_TYPES to admit mysql/mongodb)" \
+    ctl "p_advisors_pg_only (widen PFW_DB_TYPES to admit mysql/mongodb)" \
         "p_advisors_pg_only" \
-        "inc \"mkdir -p /etc/systemd/system/pfm-managed.service.d && printf '[Service]\\nEnvironment=PFM_DB_TYPES=postgresql,mysql,mongodb,haproxy,external\\n' > /etc/systemd/system/pfm-managed.service.d/nc-widen.conf && systemctl daemon-reload && systemctl restart pfm-managed\"" \
-        "inc 'rm -f /etc/systemd/system/pfm-managed.service.d/nc-widen.conf; systemctl daemon-reload; systemctl restart pfm-managed'; wait_readyz 36 >/dev/null" 180
+        "inc \"mkdir -p /etc/systemd/system/pfw-managed.service.d && printf '[Service]\\nEnvironment=PFW_DB_TYPES=postgresql,mysql,mongodb,haproxy,external\\n' > /etc/systemd/system/pfw-managed.service.d/nc-widen.conf && systemctl daemon-reload && systemctl restart pfw-managed\"" \
+        "inc 'rm -f /etc/systemd/system/pfw-managed.service.d/nc-widen.conf; systemctl daemon-reload; systemctl restart pfw-managed'; wait_readyz 36 >/dev/null" 180
 
     hdr "branding and UI"
     ctl "p_grafana_title (stop grafana)" \
         "p_grafana_title" \
-        "inc 'systemctl stop pfm-grafana'" \
-        "inc 'systemctl start pfm-grafana'; wait_readyz 36 >/dev/null" 180
+        "inc 'systemctl stop pfw-grafana'" \
+        "inc 'systemctl start pfw-grafana'; wait_readyz 36 >/dev/null" 180
     ctl "p_pfmui_title (stop nginx)" \
         "p_pfmui_title" "${nginx_break}" "${nginx_fix}" 60
 
     hdr "data flowing"
     ctl "p_pg_up (stop victoriametrics)" \
         "p_pg_up" \
-        "inc 'systemctl stop pfm-victoriametrics'" \
-        "inc 'systemctl start pfm-victoriametrics'" 60
+        "inc 'systemctl stop pfw-victoriametrics'" \
+        "inc 'systemctl start pfw-victoriametrics'" 60
     ctl "p_dashboards (stop grafana)" \
         "p_dashboards" \
-        "inc 'systemctl stop pfm-grafana'" \
-        "inc 'systemctl start pfm-grafana'; wait_readyz 36 >/dev/null" 180
+        "inc 'systemctl stop pfw-grafana'" \
+        "inc 'systemctl start pfw-grafana'; wait_readyz 36 >/dev/null" 180
     # Stopping PostgreSQL would only show the check reads live state; feeding it a
     # major the server is not running is what proves the comparison discriminates.
     ctl_input "p_postgres_major (expect a version the server is not running)" \
@@ -455,7 +554,7 @@ phase_airgap() {
     # The canary built for the pmm-* control is never signed, which is exactly what is
     # needed here: one properly signed package plus one unsigned one in a directory.
     if docker cp "${canary_rpm}" "${container}:/tmp/nc-unsigned.rpm" >/dev/null 2>&1 \
-       && inc "rm -rf /tmp/nc-repo && mkdir -p /tmp/nc-repo && cp ${bundle}/pfm-server-*.rpm /tmp/nc-repo/ && cp /tmp/nc-unsigned.rpm /tmp/nc-repo/"; then
+       && inc "rm -rf /tmp/nc-repo && mkdir -p /tmp/nc-repo && cp ${bundle}/pfw-server-*.rpm /tmp/nc-repo/ && cp /tmp/nc-unsigned.rpm /tmp/nc-repo/"; then
         ctl_input "p_all_rpms_signed (a directory containing one unsigned package)" \
             "p_all_rpms_signed ${bundle}" "p_all_rpms_signed /tmp/nc-repo"
     else
@@ -463,7 +562,7 @@ phase_airgap() {
     fi
     # Two-sided by construction: the suite tampers with a copy and expects failure,
     # which only means something if the untampered copy still verifies.
-    inc "cp ${bundle}/pfm-server-*.rpm /tmp/nc-good.rpm && cp /tmp/nc-good.rpm /tmp/nc-bad.rpm && printf '\\x00\\x00\\x00\\x00' | dd of=/tmp/nc-bad.rpm bs=1 seek=6000 conv=notrunc status=none" >/dev/null 2>&1 || true
+    inc "cp ${bundle}/pfw-server-*.rpm /tmp/nc-good.rpm && cp /tmp/nc-good.rpm /tmp/nc-bad.rpm && printf '\\x00\\x00\\x00\\x00' | dd of=/tmp/nc-bad.rpm bs=1 seek=6000 conv=notrunc status=none" >/dev/null 2>&1 || true
     ctl_input "p_rpm_verifies (a tampered copy of a signed package)" \
         "p_rpm_verifies /tmp/nc-good.rpm" "p_rpm_verifies /tmp/nc-bad.rpm"
 
@@ -478,39 +577,39 @@ phase_airgap() {
     # grafana restart is needed and the control stays cheap.
     ctl "p_grafana_uses_pfm_ini (point the unit at another config)" \
         "p_grafana_uses_pfm_ini" \
-        "inc \"sed -i 's|--config=/etc/grafana/pfm.ini|--config=/etc/grafana/nc.ini|' /usr/lib/systemd/system/pfm-grafana.service\"" \
-        "inc \"sed -i 's|--config=/etc/grafana/nc.ini|--config=/etc/grafana/pfm.ini|' /usr/lib/systemd/system/pfm-grafana.service\"" 10
-    ctl_input "p_owned_by_pfm_server (a path pfm-server does not own)" \
-        "p_owned_by_pfm_server /etc/grafana/pfm.ini" "p_owned_by_pfm_server /etc/hosts"
+        "inc \"sed -i 's|--config=/etc/grafana/pfw.ini|--config=/etc/grafana/nc.ini|' /usr/lib/systemd/system/pfw-grafana.service\"" \
+        "inc \"sed -i 's|--config=/etc/grafana/nc.ini|--config=/etc/grafana/pfw.ini|' /usr/lib/systemd/system/pfw-grafana.service\"" 10
+    ctl_input "p_owned_by_pfm_server (a path pfw-server does not own)" \
+        "p_owned_by_pfm_server /etc/grafana/pfw.ini" "p_owned_by_pfm_server /etc/hosts"
     # Masking is not enough -- `systemctl cat` still prints the /dev/null link -- so
     # the unit file has to move out of the way.
     ctl "p_ch_perms_unit (move the unit file aside)" \
         "p_ch_perms_unit" \
-        "inc 'mv /usr/lib/systemd/system/pfm-clickhouse-perms.service /tmp/nc-perms.service; systemctl daemon-reload'" \
-        "inc 'mv /tmp/nc-perms.service /usr/lib/systemd/system/pfm-clickhouse-perms.service; systemctl daemon-reload'" 20
+        "inc 'mv /usr/lib/systemd/system/pfw-clickhouse-perms.service /tmp/nc-perms.service; systemctl daemon-reload'" \
+        "inc 'mv /tmp/nc-perms.service /usr/lib/systemd/system/pfw-clickhouse-perms.service; systemctl daemon-reload'" 20
     ctl "p_ch_requires_perms (comment out the Requires= line)" \
         "p_ch_requires_perms" \
-        "inc \"sed -i 's|^Requires=pfm-clickhouse-perms.service|#NC&|' /usr/lib/systemd/system/pfm-clickhouse.service; systemctl daemon-reload\"" \
-        "inc \"sed -i 's|^#NCRequires=pfm-clickhouse-perms.service|Requires=pfm-clickhouse-perms.service|' /usr/lib/systemd/system/pfm-clickhouse.service; systemctl daemon-reload\"" 20
+        "inc \"sed -i 's|^Requires=pfw-clickhouse-perms.service|#NC&|' /usr/lib/systemd/system/pfw-clickhouse.service; systemctl daemon-reload\"" \
+        "inc \"sed -i 's|^#NCRequires=pfw-clickhouse-perms.service|Requires=pfw-clickhouse-perms.service|' /usr/lib/systemd/system/pfw-clickhouse.service; systemctl daemon-reload\"" 20
     # Drop the ExecStartPre via a drop-in. An empty ExecStartPre= resets the list, which
     # is exactly how someone would accidentally remove it.
     ctl "p_nginx_relabels_cert_dir (drop the restorecon ExecStartPre)" \
         "p_nginx_relabels_cert_dir" \
-        "inc 'mkdir -p /etc/systemd/system/pfm-nginx.service.d; printf \"[Service]\\nExecStartPre=\\n\" > /etc/systemd/system/pfm-nginx.service.d/99-nc.conf; systemctl daemon-reload'" \
-        "inc 'rm -rf /etc/systemd/system/pfm-nginx.service.d; systemctl daemon-reload'" 10
+        "inc 'mkdir -p /etc/systemd/system/pfw-nginx.service.d; printf \"[Service]\\nExecStartPre=\\n\" > /etc/systemd/system/pfw-nginx.service.d/99-nc.conf; systemctl daemon-reload'" \
+        "inc 'rm -rf /etc/systemd/system/pfw-nginx.service.d; systemctl daemon-reload'" 10
     # Drop RuntimeDirectory via a drop-in. Deleting /run/clickhouse-server instead
     # would NOT go red: the predicate asserts the unit's declaration, which is the
     # property that makes the deletion survivable.
     ctl "p_ch_runtime_dir_guaranteed (drop RuntimeDirectory= from the unit)" \
         "p_ch_runtime_dir_guaranteed" \
-        "inc 'mkdir -p /etc/systemd/system/pfm-clickhouse.service.d; printf \"[Service]\\nRuntimeDirectory=\\n\" > /etc/systemd/system/pfm-clickhouse.service.d/99-nc.conf; systemctl daemon-reload'" \
-        "inc 'rm -rf /etc/systemd/system/pfm-clickhouse.service.d; systemctl daemon-reload'" 10
+        "inc 'mkdir -p /etc/systemd/system/pfw-clickhouse.service.d; printf \"[Service]\\nRuntimeDirectory=\\n\" > /etc/systemd/system/pfw-clickhouse.service.d/99-nc.conf; systemctl daemon-reload'" \
+        "inc 'rm -rf /etc/systemd/system/pfw-clickhouse.service.d; systemctl daemon-reload'" 10
     # Move the module aside rather than truncating it: the predicate tests -s, so an
     # empty file would also go red and would not prove it checks the right path.
     ctl "p_selinux_module_shipped (move the .pp aside)" \
         "p_selinux_module_shipped" \
-        "inc 'mv /usr/share/selinux/packages/pfm_nginx.pp /tmp/nc-pfm_nginx.pp'" \
-        "inc 'mv /tmp/nc-pfm_nginx.pp /usr/share/selinux/packages/pfm_nginx.pp'" 5
+        "inc 'mv /usr/share/selinux/packages/pfw_nginx.pp /tmp/nc-pfw_nginx.pp'" \
+        "inc 'mv /tmp/nc-pfw_nginx.pp /usr/share/selinux/packages/pfw_nginx.pp'" 5
     # Break it the way reality would: an upstream clickhouse %post that grants one more
     # capability than our unit covers. Breaking the binary rather than the unit is the
     # faithful direction -- the unit is ours to keep correct, the binary is not.
@@ -522,8 +621,8 @@ phase_airgap() {
     hdr "build-stamped releases"
     # A package whose Release is literally 1.el9 -- the exact shape that made dnf skip
     # our packages in silence.
-    cat > "${scratch}/pfm-nc-static.spec" <<'EOF'
-Name:           pfm-nc-static
+    cat > "${scratch}/pfw-nc-static.spec" <<'EOF'
+Name:           pfw-nc-static
 Version:        0
 Release:        1%{?dist}
 Summary:        negative-control canary with a static release
@@ -533,22 +632,110 @@ BuildArch:      noarch
 Its Release is literally 1.el9, which is what dnf silently refuses to upgrade.
 %files
 EOF
-    if docker run --rm -v "${scratch}":/s -w /s "${PFMM_RPMBUILD_IMAGE}" \
-        sh -c "rpmbuild --define '_topdir /s/top2' --define 'dist .el9' -bb pfm-nc-static.spec >/dev/null 2>&1 \
+    if docker run --rm -v "${scratch}":/s -w /s "${PFW_RPMBUILD_IMAGE}" \
+        sh -c "rpmbuild --define '_topdir /s/top2' --define 'dist .el9' -bb pfw-nc-static.spec >/dev/null 2>&1 \
                && cp /s/top2/RPMS/noarch/*.rpm /s/ && chown -R ${host_uid}:${host_gid} /s" \
-        && docker cp "${scratch}/pfm-nc-static-0-1.el9.noarch.rpm" "${container}:/tmp/" >/dev/null 2>&1 \
-        && inc 'rpm -i --nodeps /tmp/pfm-nc-static-0-1.el9.noarch.rpm'; then
+        && docker cp "${scratch}/pfw-nc-static-0-1.el9.noarch.rpm" "${container}:/tmp/" >/dev/null 2>&1 \
+        && inc 'rpm -i --nodeps /tmp/pfw-nc-static-0-1.el9.noarch.rpm'; then
         ctl_input "p_release_stamped (a package whose release is literally 1.el9)" \
-            "p_release_stamped pfm-server" "p_release_stamped pfm-nc-static"
-        inc 'rpm -e pfm-nc-static' >/dev/null 2>&1 || true
+            "p_release_stamped pfw-server" "p_release_stamped pfw-nc-static"
+        inc 'rpm -e pfw-nc-static' >/dev/null 2>&1 || true
     else
         skip "p_release_stamped -- could not build/install a static-release canary"
     fi
+
+    hdr "bootstrap credentials"
+    ctl "p_secrets_dir_perms (widen the directory)" \
+        "p_secrets_dir_perms" \
+        "inc 'chmod 755 /srv/.pfw-secrets'" \
+        "inc 'chmod 700 /srv/.pfw-secrets'" 3
+
+    ctl "p_secret_files_0600 (widen a secret file)" \
+        "p_secret_files_0600" \
+        "inc 'chmod 644 /srv/.pfw-secrets/managed-db.env'" \
+        "inc 'chmod 600 /srv/.pfw-secrets/managed-db.env'" 3
+
+    ctl "p_no_secret_in_units (put a literal back in a unit)" \
+        "p_no_secret_in_units" \
+        "inc \"printf 'Environment=PMM_POSTGRES_DBPASSWORD=pmm-managed\\n' >> /usr/lib/systemd/system/pfw-managed.service\"" \
+        "inc \"sed -i '/^Environment=PMM_POSTGRES_DBPASSWORD=/d' /usr/lib/systemd/system/pfw-managed.service\"" 3
+
+    ctl_input "p_managed_pw_generated (feed it the value that IS in the file)" \
+        "p_managed_pw_generated" \
+        "p_managed_pw_generated \"\$(secret_val /srv/.pfw-secrets/managed-db.env PMM_POSTGRES_DBPASSWORD)\""
+
+    # The marker is what makes losing /srv/.pfw-secrets fatal instead of silently
+    # repaired with the shipped constant, so its absence has to be visible.
+    ctl "p_secrets_marker (remove the generation marker)" \
+        "p_secrets_marker" \
+        "inc 'mv /srv/pfw-secrets-generated /srv/pfw-secrets-generated.nc'" \
+        "inc 'mv /srv/pfw-secrets-generated.nc /srv/pfw-secrets-generated'" 3
+
+    # A real state break for the pair that guards the DATABASE credential: put the
+    # legacy password back on the role and require both halves to notice -- the
+    # rejection must go red, and so must the acceptance of the generated value. The
+    # generated password is read ONCE, up front: if it cannot be read there is nothing
+    # to restore the role to, and an ALTER we cannot undo would leave the host wedged.
+    local gen_db_pw
+    gen_db_pw=$(secret_val /srv/.pfw-secrets/managed-db.env PMM_POSTGRES_DBPASSWORD)
+    if [ -z "${gen_db_pw}" ]; then
+        skip "p_legacy_db_rejected / p_generated_db_works -- cannot read the generated password, refusing an ALTER I cannot undo"
+    else
+        ctl "p_legacy_db_rejected (put the legacy password back on the role)" \
+            "p_legacy_db_rejected" \
+            "set_managed_role_pw pmm-managed" \
+            "set_managed_role_pw '${gen_db_pw}'" 10
+        ctl "p_generated_db_works (take the generated password off the role)" \
+            "p_generated_db_works" \
+            "set_managed_role_pw pmm-managed" \
+            "set_managed_role_pw '${gen_db_pw}'" 10
+    fi
+
+    # Same symmetric treatment for the ADMIN credential. Both halves run through
+    # set_grafana_admin_pw, which supplies the DB password `grafana cli` needs: without
+    # it the break and the restore both fail to connect, ctl swallows them (they run
+    # under `|| true`) and reports "STILL GREEN with the defect present -- not
+    # discriminating" -- the exact false verdict this harness exists to prevent, aimed
+    # at a perfectly good assertion.
+    local gen_admin_pw
+    gen_admin_pw=$(secret_val /srv/.pfw-secrets/grafana.env GF_SECURITY_ADMIN_PASSWORD)
+    if [ -z "${gen_admin_pw}" ]; then
+        skip "p_admin_admin_rejected / p_generated_admin_works -- cannot read the generated admin password"
+    else
+        ctl "p_admin_admin_rejected (reset the admin password back to admin)" \
+            "p_admin_admin_rejected" \
+            "set_grafana_admin_pw admin" \
+            "set_grafana_admin_pw '${gen_admin_pw}'" 10
+        ctl "p_generated_admin_works (change the admin password out from under it)" \
+            "p_generated_admin_works" \
+            "set_grafana_admin_pw nc-not-the-generated-password" \
+            "set_grafana_admin_pw '${gen_admin_pw}'" 10
+    fi
+
+    ctl_input "p_grafana_pw_generated (feed it the value that IS in the file)" \
+        "p_grafana_pw_generated" \
+        "p_grafana_pw_generated \"\$(secret_val /srv/.pfw-secrets/grafana.env GF_DATABASE_PASSWORD)\""
+
+    # The two "no shipped file carries a password" assertions. Both are `!`-inverted or
+    # match-a-blank-line, so both pass vacuously on a file that is missing or shaped
+    # differently; putting the credential back is the only way to show they look at it.
+    ctl "p_no_pw_in_grafana_ini (write a password back into pfw.ini)" \
+        "p_no_pw_in_grafana_ini" \
+        "inc \"sed -i 's/^password *= *\$/password = grafana/' /etc/grafana/pfw.ini\"" \
+        "inc \"sed -i 's/^password = grafana\$/password =/' /etc/grafana/pfw.ini\"" 3
+
+    ctl "p_no_pw_in_env_seed (put the constant back in the packaged seed)" \
+        "p_no_pw_in_env_seed" \
+        "inc \"printf 'PMM_POSTGRES_DBPASSWORD=pmm-managed\\n' >> /usr/lib/pfw/defaults/grafana.env\"" \
+        "inc \"sed -i '/^PMM_POSTGRES_DBPASSWORD=pmm-managed\$/d' /usr/lib/pfw/defaults/grafana.env\"" 3
 
     hdr "leaving the host as we found it"
     local final_bad="" q
     for q in p_readyz p_no_failed_units p_all_units_active p_has_nic p_grafana_title \
              p_advisors_pg_only \
+             p_secrets_marker p_legacy_db_rejected p_generated_db_works \
+             p_admin_admin_rejected p_generated_admin_works \
+             p_no_pw_in_grafana_ini p_no_pw_in_env_seed \
              p_pfmui_title p_pg_up p_dashboards p_no_unexpected_listeners \
              p_grafana_uses_pfm_ini p_ch_perms_unit p_ch_requires_perms \
              p_no_pmm_packages p_ch_owned_by_pfm p_ch_caps_within_bounding_set \
@@ -568,7 +755,7 @@ case "${phase}" in
     upgrade) phase_upgrade ;;
     airgap)  phase_airgap ;;
     both)    phase_airgap; phase_upgrade ;;
-    *)       die "usage: test-pfmm-negative-control [airgap|upgrade|both]" ;;
+    *)       die "usage: test-pfw-negative-control [airgap|upgrade|both]" ;;
 esac
 
 if [ "${phase}" = airgap ]; then

@@ -17,10 +17,12 @@
 package server
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
 
 	pmmapitests "github.com/percona/pmm/api-tests"
 	advisorsv1 "github.com/percona/pmm/api/advisors/v1"
@@ -34,31 +36,66 @@ import (
 func RestoreSettingsDefaults(t *testing.T) {
 	t.Helper()
 
-	res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-		Body: server.ChangeSettingsBody{
-			EnableAdvisor:   new(true),
-			EnableTelemetry: new(true),
-			EnableAlerting:  new(true),
-			EnableUpdates:   new(true),
-			MetricsResolutions: &server.ChangeSettingsParamsBodyMetricsResolutions{
-				Hr: "5s",
-				Mr: "10s",
-				Lr: "60s",
-			},
-			AdvisorRunIntervals: &server.ChangeSettingsParamsBodyAdvisorRunIntervals{
-				FrequentInterval: "14400s",
-				StandardInterval: "86400s",
-				RareInterval:     "280800s",
-			},
-			DataRetention: "2592000s",
-			AWSPartitions: &server.ChangeSettingsParamsBodyAWSPartitions{
-				Values: []string{"aws"},
-			},
+	// Some deployments configure individual settings through the ENVIRONMENT --
+	// PMM_ENABLE_TELEMETRY and PMM_ENABLE_UPDATES in the native install -- and the server
+	// then rejects the whole ChangeSettings call naming the variable. Because this helper
+	// is the deferred restore for most of the settings suite, one such field meant
+	// NOTHING was restored: settings leaked between tests and later runs failed asserting
+	// defaults the server no longer held. A dozen unrelated-looking failures, one cause.
+	//
+	// So it drops whichever field the server objects to and retries, rather than hardcoding
+	// a list that would be wrong on the other deployment. Everything else still gets
+	// restored, which is the point.
+	body := server.ChangeSettingsBody{
+		EnableAdvisor:  new(true),
+		EnableAlerting: new(true),
+		// Telemetry and updates are deliberately NOT requested. This product ships them
+		// force-disabled -- telemetry reports to a third party, and there is no
+		// auto-update or version-broadcast feature -- so a test helper must never ask
+		// for them to be ON. Asking and backing off when refused still leaves the
+		// request on any deployment that does not happen to refuse it.
+		MetricsResolutions: &server.ChangeSettingsParamsBodyMetricsResolutions{
+			Hr: "5s",
+			Mr: "10s",
+			Lr: "60s",
 		},
-		Context: pmmapitests.Context,
-	})
+		AdvisorRunIntervals: &server.ChangeSettingsParamsBodyAdvisorRunIntervals{
+			FrequentInterval: "14400s",
+			StandardInterval: "86400s",
+			RareInterval:     "280800s",
+		},
+		DataRetention: "2592000s",
+		AWSPartitions: &server.ChangeSettingsParamsBodyAWSPartitions{
+			Values: []string{"aws"},
+		},
+	}
+
+	var res *server.ChangeSettingsOK
+	var err error
+	// At most one retry per env-managed field, plus one final attempt.
+	for range 4 {
+		res, err = serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
+			Body:    body,
+			Context: pmmapitests.Context,
+		})
+		if err == nil {
+			break
+		}
+		msg := err.Error()
+		switch {
+		case strings.Contains(msg, "PMM_ENABLE_ALERTING") && body.EnableAlerting != nil:
+			body.EnableAlerting = nil
+		case strings.Contains(msg, "PMM_ENABLE_ADVISOR") && body.EnableAdvisor != nil:
+			body.EnableAdvisor = nil
+		default:
+			// Not an environment-managed field: a real failure, report it.
+			require.NoError(t, err)
+		}
+	}
 	require.NoError(t, err)
-	assert.True(t, res.Payload.Settings.TelemetryEnabled)
+	// Telemetry is deliberately not requested above, so it must not be asserted here
+	// either: this product ships it force-disabled, and demanding it be ON would make
+	// the restore fail on every install that honours that.
 	assert.True(t, res.Payload.Settings.AdvisorEnabled)
 	expectedResolutions := &server.ChangeSettingsOKBodySettingsMetricsResolutions{
 		Hr: "5s",
@@ -101,4 +138,44 @@ func restoreCheckIntervalDefaults(t *testing.T) {
 		_, err = advisorClient.Default.AdvisorService.ChangeAdvisorChecks(params)
 		require.NoError(t, err)
 	}
+}
+
+// AssertEnvOwnedChangeIsRefused sends body -- which must try to switch telemetry or
+// updates ON -- and asserts the server REFUSES it with exactly wantMsg.
+//
+// This is deliberately an assertion and not a skip. The product ships both
+// force-disabled: telemetry reports to a third party, and there is no auto-update or
+// version-broadcast feature. "The API cannot switch these back on" is a guarantee the
+// product makes, so the upstream tests that proved the capability now prove its removal.
+//
+// The distinction matters for a privacy guarantee. A skip records that we could not
+// check. This records that we checked and telemetry is unreachable -- and if it ever
+// fails, including on a deployment that forgot to set the variable, that is a real
+// finding about that deployment rather than a quirk of the test.
+//
+// It also asserts the refusal is ATOMIC. A body that switches telemetry on AND changes
+// advisors must change NOTHING: a server that applied the rest of the body and silently
+// dropped only the telemetry field would leave the caller believing the whole write
+// landed.
+func AssertEnvOwnedChangeIsRefused(t *testing.T, wantMsg string, body server.ChangeSettingsBody) {
+	t.Helper()
+
+	before, err := serverClient.Default.ServerService.GetSettings(nil)
+	require.NoError(t, err)
+
+	_, err = serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
+		Body:    body,
+		Context: pmmapitests.Context,
+	})
+	// Pinned to the exact code and message, not merely "an error happened": a 401 from a
+	// lost session or a 500 from a broken server would otherwise read as the guarantee
+	// holding, which is the one way this assertion could reassure us while being blind.
+	pmmapitests.AssertAPIErrorf(t, err, 400, codes.FailedPrecondition, "%s", wantMsg)
+
+	after, err := serverClient.Default.ServerService.GetSettings(nil)
+	require.NoError(t, err)
+	assert.False(t, after.Payload.Settings.TelemetryEnabled, "telemetry must stay off")
+	assert.False(t, after.Payload.Settings.UpdatesEnabled, "updates must stay off")
+	assert.Equal(t, before.Payload.Settings.AdvisorEnabled, after.Payload.Settings.AdvisorEnabled,
+		"a refused change must be atomic: no other field in the body may be applied")
 }

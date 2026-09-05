@@ -1,0 +1,964 @@
+#!/usr/bin/env bash
+# Guards the identifiers the PGF WatchTower rename must NOT touch.
+#
+#   build/scripts/test-frozen-identifiers [/path/to/pfw-repo]
+#
+# WHY THIS EXISTS
+#
+# The rebrand is deliberately partial. docs/pfw-identifier-map.md sorts every naming
+# surface into three tiers: A is user-visible and renames freely, B is a contract a
+# human types and renames only behind an alias, and C is wire or stored state that
+# does not move at all.
+#
+# Tier C is the dangerous one, because breaking it is silent. Rename the ClickHouse
+# database and existing query metrics stop being found. Rename a Grafana plugin id and
+# stored dashboards stop resolving. Rename the exporter auth username and every running
+# agent fails to scrape. None of that fails a build; it fails in the field.
+#
+# Two rounds of review during the rename found strings that had been swept by accident
+# or were about to be, so this asserts the frozen set directly. It is a source-tree
+# check: no container, no build, no network. Run it before and after any renaming pass.
+#
+# It is deliberately literal. Every assertion greps for an exact string that must still
+# be present, so a sweep that rewrites it turns this red without anyone having to
+# predict which sweep would do it.
+
+set -uo pipefail
+
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=${1:-$(cd "${bin_dir}/../.." && pwd -P)}
+cd "${repo_dir}" || { printf 'ERROR: not a repo: %s\n' "${repo_dir}" >&2; exit 1; }
+
+pass=0; fail=0
+ok()  { printf '  \033[32mPASS\033[0m  %s\n' "$*"; pass=$((pass+1)); }
+no()  { printf '  \033[31mFAIL\033[0m  %s\n' "$*"; fail=$((fail+1)); }
+log() { printf '\n>>> %s\n' "$*"; }
+
+# present <description> <literal> [pathspec...]
+# Asserts the literal still occurs at least once. Uses git grep so untracked build
+# output and node_modules cannot make a missing identifier look present.
+present() {
+    local desc=$1 lit=$2; shift 2
+    if git grep -q -F -- "${lit}" "$@" 2>/dev/null; then
+        ok "${desc}"
+    else
+        no "${desc} -- '${lit}' is gone"
+    fi
+}
+
+# in_each <description> <literal> <file>...
+# Stronger than `present` where the identifier must appear in EVERY known site: a
+# sweep that rewrites one file is caught, whereas "at least one hit anywhere" is not.
+in_each() {
+    local desc=$1 lit=$2; shift 2
+    local f missing=""
+    for f in "$@"; do
+        git grep -q -F -- "${lit}" -- "${f}" 2>/dev/null || missing="${missing} ${f}"
+    done
+    if [ -z "${missing}" ]; then ok "${desc}"; else
+        no "${desc} -- '${lit}' missing from:${missing}"
+    fi
+}
+
+# at_least <description> <count> <literal> [pathspec...]
+# For identifiers with many sites, where enumerating every file is churn. The count is
+# a floor observed at the time of writing, not a target.
+at_least() {
+    local desc=$1 want=$2 lit=$3; shift 3
+    local got
+    got=$(git grep -l -F -- "${lit}" "$@" 2>/dev/null | wc -l)
+    if [ "${got}" -ge "${want}" ]; then ok "${desc} (${got} files)"; else
+        no "${desc} -- ${got} files carry '${lit}', expected at least ${want}"
+    fi
+}
+
+# absent <description> <pattern> [pathspec...]
+# -I skips binary files: these assert things about source text, and a PNG whose
+# compressed bytes happen to contain the pattern is not a finding.
+absent() {
+    local desc=$1 pat=$2; shift 2
+    local hits
+    hits=$(git grep -n -I -E -- "${pat}" "$@" 2>/dev/null || true)
+    if [ -z "${hits}" ]; then ok "${desc}"; else
+        no "${desc}"; printf '        %s\n' "${hits}" | head -5
+    fi
+}
+
+log "Tier C: wire and stored identifiers that must not move"
+
+present "Go module path unchanged" \
+        "module github.com/percona/pmm" -- go.mod
+
+# P0.4 consolidated this into one helper; it was inlined in three files before.
+# The username itself is still tier C and must not move.
+in_each "exporter auth username unchanged" 'HTTP_AUTH=pmm:' \
+        managed/services/agents/agents.go
+
+present "ClickHouse database name unchanged" \
+        'Default("pmm")' -- qan-api2/main.go
+
+present "internal PostgreSQL database and role unchanged" \
+        "provision_app_db pmm-managed pmm-managed" -- build/packages/config/
+
+in_each "Prometheus metric namespace unchanged at every site" \
+        'prometheusNamespace = "pmm_agent"' \
+        agent/agents/cache/metrics.go \
+        agent/client/channel/channel.go
+
+present "agent JSON field name unchanged" \
+        "missing pmm_agent" -- agent/commands/
+
+for id in pmm-app pmm-qan-app-panel pmm-compat-app; do
+    present "Grafana plugin id ${id} unchanged" "\"${id}\"" -- '*/plugin.json'
+done
+
+at_least "SQL query tag unchanged" 11 '/* pmm-agent */' -- agent/runner/actions/
+
+present "container entrypoint flag names unchanged" \
+        'kingpin.Flag("pmm-agent-setup"' -- agent/cmd/
+
+# The accounts DID move (pfm -> pfw) with the rest of the rename, so a literal
+# "unchanged" assertion would be wrong here. The invariant that survives the rename is
+# the one that actually protects us: whatever the units reference, the package must
+# create. A half-applied sweep leaves User=pfm against a sysusers file creating pfw,
+# and every unit then fails to start on a real host -- at install time, on the
+# customer's machine, which is the worst place to find out.
+account_consistent() {
+    local declared refd
+    declared=$(sed -nE 's/^u ([a-z-]+) .*/\1/p' build/packages/config/pfw/pfw-sysusers.conf | head -1)
+    refd=$(git grep -hoE '^(User|Group)=[a-z-]+' -- 'build/packages/config/pfw/*.service' \
+           | cut -d= -f2 | sort -u)
+    if [ -z "${declared}" ]; then
+        no "server account: sysusers.conf declares no user"; return
+    fi
+    if [ "${refd}" = "${declared}" ]; then
+        ok "every unit's User=/Group= is the account sysusers creates (${declared})"
+    else
+        no "unit User=/Group= ($(echo ${refd} | tr '\n' ' ')) != sysusers account (${declared})"
+    fi
+}
+account_consistent
+
+# The useradd fallbacks in the specs run on hosts without systemd-sysusers, so they
+# must create the same account the sysusers file does, or the two paths diverge.
+useradd_matches_sysusers() {
+    local declared bad=""
+    declared=$(sed -nE 's/^u ([a-z-]+) .*/\1/p' build/packages/config/pfw/pfw-sysusers.conf | head -1)
+    for s in build/packages/rpm/server/SPECS/pfw-server.spec \
+             build/packages/rpm/server/SPECS/pfw-managed.spec; do
+        git grep -qE "useradd .* ${declared}\$" -- "${s}" || bad="${bad} ${s}"
+    done
+    if [ -z "${bad}" ]; then ok "spec useradd fallbacks create '${declared}' too"; else
+        no "useradd fallback does not create '${declared}' in:${bad}"
+    fi
+}
+useradd_matches_sysusers
+
+# Bug B was in a spec the sweep never opened: its only stale token was "%attr(-,pfm,"
+# and the file-selection pattern lacked a comma, so the file was never a candidate
+# even though the replacement would have fixed it. Enumerating specs by name has the
+# same blind spot, so this scans every spec in the tree for account tokens and checks
+# each against the accounts we actually create.
+every_spec_account_known() {
+    local server client bad=""
+    server=$(sed -nE 's/^u ([a-z-]+) .*/\1/p' build/packages/config/pfw/pfw-sysusers.conf | head -1)
+    client=$(git grep -hoE 'useradd -M -r -g [a-z-]+' -- build/packages/rpm/client/ | awk '{print $NF}' | head -1)
+    local acct
+    for acct in $(git grep -hoE '%attr\([^)]*\)|useradd [^|;]*|chown -R [a-z-]+:[a-z-]+' -- '*.spec' \
+                  | grep -oE '\b(pfw|pfm|pgf)[a-z-]*' | sort -u); do
+        case "${acct}" in
+            "${server}"|"${client}") ;;
+            *) bad="${bad} ${acct}" ;;
+        esac
+    done
+    if [ -z "${bad}" ]; then
+        ok "every account named in a .spec is one we create (${server}, ${client})"
+    else
+        no "specs name accounts that are never created:${bad}"
+    fi
+}
+every_spec_account_known
+
+# The abandoned middle prefix. Everything went pmm -> pfm -> pgf -> pfw, so a stray
+# "pgf" is always a half-applied sweep. Bug A was exactly this: a systemctl glob
+# 'pgf*.service' that matched none of the 12 shipped units, so the loop body never ran
+# and the health check reported every unit active unconditionally -- a test that
+# passes by doing nothing. Only the display name legitimately contains PGF.
+# Filenames are a separate surface from file contents: a sweep that rewrites every
+# line inside a script still leaves the script itself called test-pfm-init-secrets.
+# Nothing in the content checks can see that.
+filenames_clean() {
+    local bad
+    # pfmm is matched too, now that the PFMM-era filenames are renamed. The beta1
+    # release note is the one legitimate exception: it records the release that
+    # actually shipped under that product name, so it keeps it.
+    bad=$(git ls-files \
+          | grep -E "(^|/)[^/]*(\bpfm[-_.]|\bpfmm|\bpgf)" \
+          | grep -vx 'documentation/docs/release-notes/pfmm-3\.9\.0-beta1\.md' || true)
+    if [ -z "${bad}" ]; then ok "no tracked filename carries an abandoned prefix"; else
+        no "filenames still carry an abandoned prefix:"; printf '        %s\n' "${bad}"
+    fi
+}
+filenames_clean
+
+# Everything went pmm -> pfm -> pgf -> pfw, so a stray "pgf" is normally a
+# half-applied sweep -- this is the assertion that found a dead 'pgf*.service' glob in
+# one grep. The exception is text derived from the DISPLAY name, "PGF WatchTower",
+# which legitimately keeps PGF: the analytics tag pgf-watchtower-support is one such,
+# chosen deliberately. Filtering the sanctioned spelling rather than excluding the
+# whole file keeps any other pgf in it visible.
+no_abandoned_pgf() {
+    local hits
+    hits=$(git grep -n -I -E -- '\bpgf' -- . \
+             ':!docs/pfw-identifier-map.md' \
+             ':!build/scripts/test-frozen-identifiers' 2>/dev/null \
+           | grep -v 'pgf-watchtower-support' || true)
+    if [ -z "${hits}" ]; then ok "no abandoned pgf- prefix survives anywhere"; else
+        no "abandoned pgf- prefix survives:"; printf '        %s\n' "${hits}" | head -5
+    fi
+}
+no_abandoned_pgf
+
+# pfm is abandoned too -- the chain was pmm -> pfm -> pgf -> pfw -- but only pgf was ever
+# asserted, and the gap was not theoretical: it let `%define full_pfm_version` survive in
+# pfw-server.spec, `function pfmUnit()` survive in the SHIPPED polkit rules, and four
+# pfm-prefixed identifiers survive in managed/services/supervisord. A guard that covers
+# one abandoned prefix and not its sibling reads as coverage while providing none.
+#
+# The exemptions are documents that must SAY "pfm" to be accurate: beta1 shipped under
+# that prefix, so its release notes, the handoff, the map and the comments explaining the
+# chain all name it deliberately. Note the repo itself is still github.com/postgres1st/pfm,
+# so URLs naming it are correct, not stale.
+no_abandoned_pfm() {
+    local hits
+    hits=$(git grep -n -I -E -- '\bpfm[-_.]|\bpfm[A-Z]|full_pfm_version' -- . \
+             ':!docs/scratch' \
+             ':!docs/pfw-identifier-map.md' \
+             ':!docs/p0-blockers-handoff.md' \
+             ':!docs/beta2-release-readiness.md' \
+             ':!docs/deferred-container-path.md' \
+             ':!docs/deferred-documentation-rebrand.md' \
+             ':!documentation/docs/release-notes' \
+             ':!build/scripts/test-frozen-identifiers' \
+             ':!build/scripts/test-pfw-negative-control' \
+             ':!build/scripts/check-release-claims' \
+             ':!build/scripts/pfw-airgap-vars' \
+             ':!*/Makefile' ':!README.md' ':!documentation/mkdocs-base.yml' 2>/dev/null || true)
+    if [ -z "${hits}" ]; then ok "no abandoned pfm- prefix survives in live code"; else
+        no "abandoned pfm- prefix survives:"; printf '        %s\n' "${hits}" | head -5
+    fi
+}
+no_abandoned_pfm
+
+# The client account is separate from the server's and is referenced by %attr lines
+# that RPM resolves at build time -- a mismatch there fails the build, not the install,
+# but only once someone builds. Assert it directly.
+in_each "client account consistent between useradd and %attr" 'pfw-agent' \
+        build/packages/rpm/client/pfw-agent.spec
+
+# nginx loads its site config through a glob. Rename a conf.d file without updating
+# the glob and nginx still starts, still reports a valid config, and serves nothing --
+# there is no error anywhere, because an include matching zero files is legal. This
+# asserts every conf.d file the spec installs is matched by the glob nginx.conf uses.
+glob_matches_installed() {
+    local glob bad=""
+    glob=$(sed -nE 's#.*include /etc/nginx/conf\.d/([^;]+);.*#\1#p' \
+           build/packages/config/pfw/nginx/nginx.conf | head -1)
+    if [ -z "${glob}" ]; then no "nginx.conf has no conf.d include"; return; fi
+    local f
+    for f in $(sed -nE 's#.*%\{_sysconfdir\}/nginx/conf\.d/(.+)$#\1#p' \
+               build/packages/rpm/server/SPECS/pfw-server.spec | sort -u); do
+        # shellcheck disable=SC2254
+        case "${f}" in ${glob}) ;; *) bad="${bad} ${f}" ;; esac
+    done
+    if [ -z "${bad}" ]; then ok "nginx include glob '${glob}' matches every installed conf.d file"; else
+        no "nginx glob '${glob}' does not match:${bad} -- nginx would serve nothing"
+    fi
+}
+glob_matches_installed
+
+# Removed with the rebrand because it reached percona.com from a product documented
+# as needing no internet, and its /pmm-static fallback pointed at a tree the RPM never
+# creates. Assert it stays gone rather than trusting nobody restores it from upstream.
+# ^[^#]* keeps this to real directives: the character class cannot cross a '#', so
+# the comment above explaining the removal does not trip it.
+absent "no outbound third-party proxy in the shipped nginx config" \
+       '^[^#]*(percona-blog|percona\.com)' -- 'build/packages/config/pfw/nginx/conf.d/'
+
+log "Tier C: surfaces that were already neutral and must stay so"
+
+absent "no proto package carries a product name" \
+       '^package .*(pmm|pfm|pgf|pfw)' -- '*.proto'
+
+# Positive form: a blanket "no PFW_* variable exists" check would fire on
+# PFW_DB_TYPES, which is fork-added and legitimate. Assert instead that the
+# upstream PMM_* names are still present - that is what a sweep would break.
+in_each "upstream PMM_* environment variables not renamed" 'PMM_CLICKHOUSE_ADDR' \
+        managed/utils/envvars/parser.go
+# P0.3b moved this out of the unit's Environment= into a 0600 secrets file, so the
+# unit no longer carries it. The variable NAME is what must not change.
+in_each "PMM_POSTGRES_* still read at every site" 'PMM_POSTGRES_DBPASSWORD' \
+        managed/utils/envvars/parser.go \
+        build/packages/config/pfw/pfw-init.sh \
+        build/packages/config/pfw/defaults/grafana.env
+
+# The server runs zero-egress on purpose: grafana.ini sets news_feed_enabled = false
+# and grafana.env sets GF_NEWS_NEWS_FEED_ENABLED=false, both to stop the grafana.com
+# fetch on UI load. A Grafana "news" panel re-opens exactly that hole from the
+# dashboard side, where those settings do not reach it. One shipped dashboard had one,
+# pointed at /postgresfirst-blog/feed -- a path nginx never served, so it had been
+# rendering an error since the UI rebrand renamed the feedUrl without touching nginx.
+absent "no dashboard carries an auto-fetching news panel" \
+       '"type": "news"|"feedUrl"' -- 'dashboards/dashboards/*'
+
+# The paired settings above are what make the dashboard rule meaningful; assert they
+# are still set, or the panel guard is guarding nothing.
+in_each "grafana news feed stays disabled" 'GF_NEWS_NEWS_FEED_ENABLED=false' \
+        build/packages/config/pfw/defaults/grafana.env
+
+# The percona.com -> postgresfirst.com rebrand swapped the HOST and kept the PATH, so
+# it produced URLs like www.postgresfirst.com/blog/2018/.../percona-monitoring-... for
+# content we do not host. Shipped dashboards must link to neither: not percona.com,
+# whose content is a third party's, nor our own blog/forum paths, which do not exist.
+# Genuine upstream references (prometheus.io, postgresql.org, VictoriaMetrics) are
+# fine and deliberately not matched here.
+absent "shipped dashboards do not link to percona.com" \
+       'percona\.com' -- 'dashboards/dashboards/*'
+absent "shipped dashboards do not link to blog or forum paths we do not host" \
+       'postgresfirst\.com/(blog|c)/|forums\.postgresfirst\.com' -- 'dashboards/dashboards/*'
+
+# rpm expands macros inside comments, so a comment line whose first token is a section
+# macro is parsed as that section -- "# %install in every version." became a second
+# %install and failed the build with a line number pointing at prose. It survived
+# because the rpms stage had not run since the comment was added. Mid-sentence macros
+# are fine; only the leading position triggers it. Escape as %%install.
+absent "no spec comment starts with a section macro" \
+       '^[[:space:]]*#[[:space:]]*%(install|build|prep|files|post|preun|postun|package|changelog|description)\b' \
+       -- '*.spec'
+
+# The section-macro rule above is not the whole story: it only covers the leading
+# position. A macro that TAKES ARGUMENTS breaks anywhere in a comment, because rpm
+# expands it and then rejects the empty argument list -- "%systemd_postun_with_restart
+# requires some arguments", from prose explaining which macro the spec deliberately does
+# NOT use. Escape those as %%systemd_... too.
+absent "no unescaped systemd macro inside a spec comment" \
+       '^[[:space:]]*#.*[^%]%systemd_[a-z_]+' -- '*.spec'
+
+# The nginx conf filenames live in two places that no build step compares: the spec
+# installs them, and managed/services/server/logs.go reads them back for logs.zip.
+# Renaming conf.d/pmm.conf to pfw.conf updated the spec and left the collector reading
+# files that no longer exist -- silently, because a missing file there is not fatal.
+# Only TestFiles noticed, and only once the suite could run at all.
+nginx_conf_names_agree() {
+    local installed collected
+    installed=$(git grep -hoE "conf\.d/[a-z-]+\.conf" -- build/packages/rpm/server/SPECS/pfw-server.spec \
+                | sed 's#.*/##' | sort -u)
+    collected=$(git grep -hoE '"/etc/nginx/conf\.d/[a-z-]+\.conf"' -- managed/services/server/logs.go \
+                | tr -d '"' | sed 's#.*/##' | sort -u)
+    if [ "${installed}" = "${collected}" ]; then
+        ok "nginx conf.d filenames agree between the spec and the log collector"
+    else
+        no "spec installs [$(echo ${installed} | tr '\n' ' ')] but logs.go collects [$(echo ${collected} | tr '\n' ' ')]"
+    fi
+}
+nginx_conf_names_agree
+
+# emit() writes a spec into SPECS/ and a separate loop then builds it by name. The two
+# lists are ~70 lines apart and share nothing, so renaming a spec in one and not the
+# other fails deep in the stage with "failed to stat SPECS/<name>.spec" -- after the
+# earlier packages have already built. Assert they are the same set.
+emit_matches_build_loop() {
+    local emitted built missing extra
+    emitted=$(grep -oE "emit\('[^']+',[[:space:]]*'[^']+\.spec'" build/scripts/build-pfw-airgap \
+              | sed -E "s/.*'([^']+)\.spec'\$/\1/" | sort -u)
+    built=$(sed -nE 's/.*for spec in ([a-z0-9 -]+); do.*/\1/p' build/scripts/build-pfw-airgap \
+            | tr ' ' '\n' | grep -v '^$' | sort -u)
+    missing=$(comm -13 <(printf '%s\n' "${emitted}") <(printf '%s\n' "${built}"))
+    extra=$(comm -23 <(printf '%s\n' "${emitted}") <(printf '%s\n' "${built}"))
+    if [ -z "${missing}" ] && [ -z "${extra}" ]; then
+        ok "every emitted spec is built, and every built spec is emitted"
+    else
+        no "emit/build mismatch -- built but not emitted:$(echo ${missing}); emitted but not built:$(echo ${extra})"
+    fi
+}
+emit_matches_build_loop
+
+# The closure stage seeds a local repo from a hardcoded package list, then lets dnf pull
+# the dependency tree. Anything pfw-server Requires: that is not seeded is simply absent
+# from the bundle -- and that surfaces as an unresolvable dependency on the customer's
+# air-gapped host, which is the worst place to find out. This list used to name five
+# packages and take the rest from the S3 fetch that no longer exists.
+closure_seeds_every_requirement() {
+    local seeded required missing
+    # Strip the line continuation and the trailing '; do' before splitting, or the last
+    # name on the last line arrives as "vmproxy;" and never matches.
+    seeded=$(sed -nE '/for name in pfw-server/,/; do/p' build/scripts/build-pfw-airgap \
+             | tr -d '\\' | sed 's/; *do.*//' | tr ' \n' '\n\n' \
+             | grep -E '^(pfw-[a-z0-9-]+)$' | sort -u)
+    required=$(grep -oE '^Requires:[[:space:]]+(pfw-[a-z0-9-]+)' \
+               build/packages/rpm/server/SPECS/pfw-server.spec \
+               | awk '{print $2}' | sort -u)
+    missing=$(comm -13 <(printf '%s\n' "${seeded}") <(printf '%s\n' "${required}"))
+    if [ -z "${missing}" ]; then
+        ok "the closure seeds every package pfw-server requires"
+    else
+        no "pfw-server requires packages the closure never seeds:$(echo ${missing})"
+    fi
+}
+closure_seeds_every_requirement
+
+# pfw-server.spec keeps its own %define of the version, and the build overwrites it from
+# PFW_VERSION. If the two drift, the metapackage the customer installs carries a
+# different version from the components it Requires: -- which is what happened at beta2,
+# where every package moved but pfw-server built as beta1.
+server_version_tracks_vars() {
+    local vars spec
+    vars=$(sed -nE 's/^PFW_VERSION=\$\{PFW_VERSION:-([^}]+)\}.*/\1/p' \
+           build/scripts/pfw-airgap-vars | head -1)
+    spec=$(sed -nE 's/^%define full_pfw_version (\S+).*/\1/p' \
+           build/packages/rpm/server/SPECS/pfw-server.spec | head -1)
+    if [ -z "${vars}" ] || [ -z "${spec}" ]; then
+        no "could not read the version from pfw-airgap-vars (${vars:-?}) or pfw-server.spec (${spec:-?})"
+    elif [ "${vars}" = "${spec}" ]; then
+        ok "pfw-server.spec version matches PFW_VERSION (${vars})"
+    else
+        no "pfw-server.spec says ${spec} but PFW_VERSION is ${vars} -- the metapackage would ship the wrong version"
+    fi
+}
+server_version_tracks_vars
+
+# The negative control drives p_all_pkgs_upgraded with synthetic NEVRA fixtures. They
+# were still written with pre-rename package names, so stuck_pkgs matched nothing and
+# the control could not distinguish "everything moved" from "nothing moved" -- it
+# reported a working predicate as broken. Nothing else compares these to reality.
+absent "no negative-control fixture uses a pre-rename package name" \
+       '(pfw-client|pfm-grafana|pfm-managed|pfm-server|percona-dashboards)-[0-9]' \
+       -- build/scripts/test-pfw-negative-control
+
+# The operator guide ships INSIDE the bundle and is the first thing a customer reads. It
+# listed `percona-dashboards`, a package that has not existed since the rename, and
+# `pfw-dump` alongside packages that install automatically when it does not. Both are
+# silent until someone follows the instructions. Assert every pfw-*/vmproxy package the
+# guide names is one a spec actually produces.
+guide_names_real_packages() {
+    local produced named bad=""
+    produced=$(grep -h '^Name:' build/packages/rpm/server/SPECS/*.spec build/packages/rpm/client/*.spec \
+               | awk '{print $2}' | sort -u)
+    named=$(grep -oE '`(pfw-[a-z0-9-]+|percona-[a-z0-9-]+)`' build/packages/pfw-airgap-INSTALL.md \
+            | tr -d '`' | sort -u)
+    local n
+    for n in ${named}; do
+        # not packages: the bundle tarball, the repo dir, and the yum repo id
+        # Not packages: the bundle tarball, paths, the yum repo id, and systemd UNITS --
+        # pfw-init and pfw-nginx are units shipped BY pfw-server, a different namespace
+        # that this assertion has no business policing.
+        case "${n}" in
+            pfw-server-el9*|pfw-repo|pfw-secrets|pfw-srv|pfw-host|pfw-new|pfw-os-deps|pfw-server-ip) continue ;;
+        esac
+        [ -f "build/packages/config/pfw/${n}.service" ] && continue
+        printf '%s\n' "${produced}" | grep -qx "${n}" || bad="${bad} ${n}"
+    done
+    if [ -z "${bad}" ]; then
+        ok "every package the operator guide names is one we build"
+    else
+        no "the operator guide names packages no spec produces:${bad}"
+    fi
+}
+guide_names_real_packages
+
+# Two stored-state paths were renamed with the rebrand, and BOTH are load-bearing in a
+# way a plain rename would break silently:
+#
+#   /srv/pfw-encryption.key   -- encryption.New() GENERATES a key when it finds none, so
+#                                a host whose key is only at the old path would be
+#                                re-keyed and everything already encrypted lost.
+#   /srv/pfw-distribution     -- the sentinel that stops provision_srv() re-running
+#                                initdb over a real cluster. Absent reads as "never
+#                                provisioned".
+#
+# Neither failure announces itself. Assert the legacy path is still consulted.
+in_each "the pre-rebrand encryption key is still adopted" 'LegacyEncryptionKeyPath' \
+        managed/utils/encryption/encryption.go
+in_each "the pre-rebrand distribution sentinel is still accepted" 'LEGACY_DIST_FILE' \
+        build/packages/config/pfw/pfw-init.sh
+in_each "pfw-managed still falls back to the old distribution path" \
+        'legacyDistributionInfoFilePath' \
+        managed/cmd/pfw-managed/main.go
+
+# The Grafana fork is a SEPARATE repo, so no sweep in this tree ever reached it -- which
+# is how pfm-* assets survived every rename pass and shipped to
+# /usr/share/grafana/.../img/pfm-logo.svg. The pin is the only thing this tree controls,
+# and preflight already fails when the two pin sites disagree; this catches the other
+# direction, a pin moved back to a commit from the pfm era.
+absent "the grafana pin is not the pre-rename fork commit" \
+       '5e90e44438dee9d8b904e00aa2e1c8cc849d0be0' \
+       -- build/scripts/pfw-airgap-vars build/packages/rpm/server/SPECS/grafana.spec
+
+# Two files now name the fork REPOSITORY as well as the commit: PFW_GRAFANA_REPO, which
+# the build clones when no local clone is supplied, and grafana.spec's Source0. Point
+# them at different forks and the build is silently reproducible from the wrong tree --
+# the commit check above still passes, because the same sha can exist in both. Compare
+# owner/repo rather than the whole URL: one is a .git clone URL, the other an archive URL.
+grafana_fork_repos_agree() {
+    local desc="the fork the build clones is the fork grafana.spec names"
+    local from_vars from_spec
+    from_vars=$(sed -n 's|.*github\.com/\([^/]*/[^/.]*\)\(\.git\)\?}\?$|\1|p' \
+        <(grep '^PFW_GRAFANA_REPO=' build/scripts/pfw-airgap-vars))
+    from_spec=$(sed -n 's|^Source0:.*github\.com/\([^/]*/[^/]*\)/archive/.*|\1|p' \
+        build/packages/rpm/server/SPECS/grafana.spec)
+    if [ -n "${from_vars}" ] && [ "${from_vars}" = "${from_spec}" ]; then
+        ok "${desc} (${from_vars})"
+    else
+        no "${desc} -- vars says '${from_vars:-<unparsed>}', spec says '${from_spec:-<unparsed>}'"
+    fi
+}
+grafana_fork_repos_agree
+
+# The identifier map is the authority for what may be renamed, so a stale claim in it is
+# worse than no claim: a reader takes "still outstanding" as a task and redoes finished
+# work, or takes a fixed defect as live. It went stale in four places at once because
+# nothing compared it to the tree. These assert the two rows that name a CONCRETE tree
+# state, so the map cannot drift back without a failure here.
+map_claims_match_tree() {
+    local desc bad=""
+    # vmproxy is the one B.1 row still outstanding. When someone renames it, this fails
+    # and the map must be updated in the same commit.
+    if grep -q '^Name:[[:space:]]*pfw-vmproxy' build/packages/rpm/server/SPECS/vmproxy.spec 2>/dev/null; then
+        grep -q 'still outstanding' docs/pfw-identifier-map.md && bad="vmproxy renamed but the map still calls it outstanding"
+    fi
+    # A.5's two correctness bugs are fixed and guarded below; the map must not call them
+    # shipped defects again.
+    grep -q 'pmm-admin config' admin/commands/base/setup.go 2>/dev/null && \
+        bad="${bad}; setup.go regressed to pmm-admin config"
+    desc="the identifier map's concrete claims still match the tree"
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- ${bad#; }"; fi
+}
+map_claims_match_tree
+
+# /usr/sbin is a namespace shared with every other package on the host. A binary we
+# ship under an unqualified name -- vmproxy, vmalert -- conflicts with any package that
+# ships the same path, and RPM refuses to install both. The failure is at the customer's
+# dnf transaction, not in our build, so nothing here would otherwise catch it.
+#
+# The grafana fork is the deliberate exception: it REPLACES upstream grafana and must
+# own those paths for the drop-in to work.
+sbin_names_are_namespaced() {
+    local desc="every binary we install is prefixed or a declared exception" bad
+    bad=$(grep -rhoE "%\{_s?bindir\}/[A-Za-z0-9_.-]+" \
+              build/packages/rpm/*/SPECS/*.spec build/packages/rpm/client/*.spec 2>/dev/null \
+          | sed 's|.*/||' | sort -u \
+          | grep -vE '^(pfw-[a-z0-9-]+|grafana|grafana-server|grafana-cli|semodule|selinuxenabled|load_policy)$' \
+          | tr '\n' ' ')
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- unqualified: ${bad}"; fi
+}
+sbin_names_are_namespaced
+
+# ValidateAlertingRules execs its binary by BARE NAME from PATH, so it is coupled to
+# what victoriametrics.spec installs, in a different file, with nothing checking. Rename
+# either alone and rule validation fails at runtime with "executable file not found" --
+# on the customer's server, not in our build.
+# Go code execs several of these binaries BY BARE NAME from PATH, which couples it to
+# what the specs install -- across files, with nothing checking. Renaming the installed
+# binary without the exec leaves the caller failing at runtime on the customer's server
+# and nothing failing here.
+#
+# The first version of this guard hardcoded the ONE pair I knew about (vmalert) and so
+# missed victoriametrics, which is exec'd twice from managed/services/victoriametrics.
+# That shipped: pfw-managed retried "can't validate VictoriaMetrics configuration"
+# forever, no scrape config was ever written, no metrics flowed, and the airgap suite
+# failed on a symptom three steps downstream (pg_up never appeared). So this now derives
+# the set instead of listing it: every bare-name exec of a binary any spec installs must
+# name the installed path.
+execs_match_installed_binaries() {
+    local desc="every bare-name exec names a binary the specs install" bad="" installed execd
+    installed=$(grep -rhoE "%\{_s?bindir\}/[A-Za-z0-9_.-]+" \
+                build/packages/rpm/*/SPECS/*.spec build/packages/rpm/client/*.spec 2>/dev/null \
+                | sed 's|.*/||' | sort -u)
+    # Bare-name execs of anything that looks like one of our components.
+    for execd in $(git grep -hoE 'exec\.Command(Context)?\([^,]+,\s*"[a-z][a-z0-9_-]*"' -- '*.go' \
+                   | grep -oE '"[a-z][a-z0-9_-]*"$' | tr -d '"' | sort -u); do
+        case "${execd}" in
+            # Not ours: system tools and shells the code legitimately calls.
+            sh|bash|systemctl|supervisorctl|pg_dump|psql|docker|tar|gzip|rm|cp|mv|iptables) continue ;;
+        esac
+        printf '%s\n' "${installed}" | grep -qx "${execd}" || {
+            # Only flag names that collide with something we DO install under another
+            # spelling -- an unrelated third-party tool on PATH is not our problem.
+            printf '%s\n' "${installed}" | grep -qx "pfw-${execd}" && bad="${bad} ${execd}(installed as pfw-${execd})"
+        }
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else
+        no "${desc} -- exec'd by bare name but installed differently:${bad}"
+    fi
+}
+execs_match_installed_binaries
+
+# PMM_AGENT_* -> PFW_AGENT_* was a HARD cut: the agent reads only the new name, so a
+# file left behind does not degrade, it silently stops configuring anything. The two
+# historical documents are exempt on purpose -- upstream's 3.7.1 release note and our
+# own beta1 handoff describe what those releases did, and rewriting them would falsify
+# a record rather than fix a defect.
+agent_env_prefix_is_cut() {
+    local desc="no live file still sets PMM_AGENT_*" stale
+    stale=$(git grep -lE 'PMM_AGENT_' \
+            | grep -vE '^(docs/p0-blockers-handoff\.md|docs/pfw-identifier-map\.md|documentation/docs/release-notes/([0-9]|pfmm-)|build/scripts/test-frozen-identifiers$)' \
+            | tr '\n' ' ')
+    if [ -z "${stale}" ]; then ok "${desc}"; else no "${desc} -- still set in: ${stale}"; fi
+}
+agent_env_prefix_is_cut
+
+# The shipped documentation embedded THIRD-PARTY scripts: a kapa.ai assistant branded
+# "Percona AI Assistant" with Percona's website id, and Percona's Typeform lead-capture
+# form on 107 advisor pages plus the support page. Both loaded remote JS into our docs
+# and sent whatever a reader typed to a vendor that is not us. Neither is a broken link,
+# so no link checker would ever flag them.
+absent "the docs embed no third-party script or lead-capture form" \
+       'data-tf-live|embed\.typeform\.com|widget\.kapa\.ai' -- 'documentation/docs/*.md'
+
+# Worse than a dead link: the rebrand renamed the LABEL and kept the HREF, so our own
+# docs offered Percona's forum, demo site and Trust Center as ours -- "PGF WatchTower
+# Community Forum" pointing at forums.percona.com. Naming Percona's property is fine when
+# it is ATTRIBUTED to them; claiming it is not.
+absent "no doc presents a Percona property as ours" \
+       'PGF WatchTower Community Forum|\[PGF WatchTower Demo\]|our \[Trust Center' \
+       -- 'documentation/docs/*.md'
+
+# A release note that ships but is linked from nowhere is invisible: beta2's notes were
+# written, shipped, and absent from BOTH the nav and the release-notes index, so the
+# current release had no reachable notes at all. Found only while deleting the upstream
+# ones. Every note file must be reachable from the index.
+release_notes_reachable() {
+    local desc="every shipped release note is linked from the index" f base bad=""
+    for f in documentation/docs/release-notes/*.md; do
+        base=$(basename "${f}")
+        [ "${base}" = "index.md" ] && continue
+        grep -qF "${base}" documentation/docs/release-notes/index.md || bad="${bad} ${base}"
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- unreferenced:${bad}"; fi
+}
+release_notes_reachable
+
+# Percona's PMM release notes (3.0.0-3.8.1) were dropped: a different product under a
+# different name, carrying ~220 links to an issue tracker that is not ours. Ours start
+# at 3.9.0.
+upstream_notes_gone() {
+    local desc="no upstream PMM release notes are shipped" found
+    found=$(git ls-files 'documentation/docs/release-notes/3.*.md' | tr '\n' ' ')
+    if [ -z "${found}" ]; then ok "${desc}"; else no "${desc} -- found: ${found}"; fi
+}
+upstream_notes_gone
+
+# The label/href defect at its most literal: a sweep substituted the product DISPLAY name
+# into a URL path, producing jira.percona.com/projects/PGF WatchTower -- a link with a
+# space in it, which cannot resolve. A URL containing a space is always broken, whatever
+# produced it, so assert the shape rather than the one string.
+absent "no shipped doc contains a URL with a space in it" \
+       '\]\(https?://[^) ]* [^)]*\)' -- 'documentation/docs/*.md'
+
+# Our customers must not be sent to Percona's issue tracker or forum to report problems
+# with THIS product. Citing an upstream PMM ticket by its PMM-NNNNN id is fine -- that is
+# attribution. Offering their tracker as the place to file OUR bugs is not.
+absent "no doc sends bug reports to Percona's tracker or forum" \
+       '\[(Report bugs[^]]*|[^]]*Community Forums?)\]\((https://(per\.co\.na|forums\.percona\.com|jira\.percona\.com|perconadev\.atlassian\.net))' \
+       -- 'documentation/docs/*.md'
+
+# The shipped dashboards resolve four panel types by id, and only ONE of them is declared
+# in this repo -- pmm-check-panel, pmm-update-panel and pmm-pt-summary-panel live in the
+# Grafana fork. That makes it a cross-REPO frozen contract: rename an id on either side
+# and the panel renders as "plugin not found" on a dashboard the customer opens, with
+# nothing failing at build time. The fork is not always on disk here, so assert the half
+# this repo controls -- the exact set the dashboards may reference.
+dashboard_panel_ids_frozen() {
+    local desc="shipped dashboards reference only the frozen panel plugin ids" got want stray
+    want="pmm-check-panel pmm-pt-summary-panel pmm-qan-app-panel pmm-update-panel"
+    got=$(git grep -ohE '"type": *"pmm-[a-z-]+"' -- dashboards/dashboards \
+          | grep -oE 'pmm-[a-z-]+' | sort -u | tr '\n' ' ' | sed 's/ $//')
+    # Two checks, because the set comparison alone is not enough: renaming ONE occurrence
+    # of an id that other dashboards still use leaves the set unchanged, so it passes
+    # while shipping a broken panel. Verified by negative control -- the set check alone
+    # did exactly that. The second check catches the renamed occurrence directly.
+    stray=$(git grep -ohE '"type": *"(pfw|pgf|pfm)-[a-z-]+"' -- dashboards/dashboards \
+            | grep -oE '(pfw|pgf|pfm)-[a-z-]+' | sort -u | tr '\n' ' ')
+    if [ -n "${stray}" ]; then
+        no "${desc} -- panel id(s) renamed to our prefix, which no plugin declares: ${stray}"
+    elif [ "${got}" = "${want}" ]; then ok "${desc}"; else
+        no "${desc} -- referenced: ${got:-<none>}; frozen set: ${want}"
+    fi
+}
+dashboard_panel_ids_frozen
+
+# API doc titles are tier A -- a customer browsing the generated API reference reads them.
+# They live in TWO places: header.json is the source, and v1.json is produced from it by
+# `swagger mixin`. Edit one and `make gen` silently reverts or diverges the other, so
+# assert the pair agrees and that neither has slipped back to the old brand.
+api_titles_rebranded() {
+    local desc="API doc titles are rebranded and source matches generated" stale bad=""
+    stale=$(git grep -l '"title": "PMM' -- api 2>/dev/null | tr '\n' ' ')
+    if [ -n "${stale}" ]; then
+        no "${desc} -- still 'PMM ... API' in: ${stale}"; return
+    fi
+    local h g d
+    for h in $(git ls-files 'api/*/json/header.json'); do
+        d=$(dirname "${h}")
+        g="${d}/$(basename "$(dirname "${d}")").json"
+        [ -f "${g}" ] || continue
+        if [ "$(grep -om1 '"title": "[^"]*"' "${h}")" != "$(grep -om1 '"title": "[^"]*"' "${g}")" ]; then
+            bad="${bad} ${g}"
+        fi
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else
+        no "${desc} -- header/generated title mismatch:${bad}"
+    fi
+}
+api_titles_rebranded
+
+# The RPM URL:/%description and a unit's Documentation= named
+# github.com/postgres1st/pfw -- a repository that DOES NOT EXIST. A customer running
+# `rpm -qi pfw-server` or `systemctl status` got a 404. It resolved for nobody and broke
+# nothing at build time, which is why seven copies of it survived every review.
+#
+# Asserts two things offline: every postgres1st URL in the shipped packaging names the
+# SAME repo (grafana is legitimately separate), and where a git remote for that org
+# exists, the packaging agrees with it. Rename the repo and this fails until the seven
+# references follow.
+packaging_repo_url_real() {
+    local desc="shipped packaging names one real postgres1st repo" names remote
+    names=$(git grep -ohE 'github\.com/postgres1st/[a-z-]+' -- build/packages \
+            | sed 's|.*/||' | grep -v '^grafana$' | sort -u | tr '\n' ' ' | sed 's/ $//')
+    if [ -z "${names}" ]; then no "${desc} -- no postgres1st URL found at all"; return; fi
+    if [ "$(printf '%s' "${names}" | wc -w)" -ne 1 ]; then
+        no "${desc} -- packaging names more than one: ${names}"; return
+    fi
+    remote=$(git remote -v 2>/dev/null | grep -oE 'github\.com[:/]postgres1st/[a-z-]+' \
+             | sed 's|.*/||; s|\.git$||' | grep -v '^grafana$' | sort -u | head -1)
+    if [ -n "${remote}" ] && [ "${remote}" != "${names}" ]; then
+        no "${desc} -- packaging says '${names}' but the git remote is '${remote}'"
+    else
+        ok "${desc} (${names})"
+    fi
+}
+packaging_repo_url_real
+
+# Proto files carry BOTH kinds of identifier, inches apart, and the rename had to move one
+# while leaving the other untouched: comments and openapi `description:` strings are tier A
+# display text a customer reads in the API reference, while pmm_agent_id and friends are
+# tier C wire that every deployed agent depends on. Hyphens and spaces are illegal in proto
+# identifiers, which is what makes the two mechanically separable -- "pmm-agent" can only
+# ever be prose, "pmm_agent_id" can only ever be a field.
+#
+# Asserted from both sides, because either mistake is silent: a missed comment ships old
+# branding, and a swept field name breaks every agent in the field with nothing failing here.
+proto_branding_and_wire() {
+    local desc="proto display text is rebranded and wire fields are not" text wire
+    text=$(git grep -ohE 'PMM Server|PMM Client|PMM Agent|pmm-agent|pmm-admin' -- '*.proto' | wc -l)
+    wire=$(git grep -ohE '\bpmm_(agent_id|agent|public_address)\b' -- '*.proto' | wc -l)
+    if [ "${text}" -ne 0 ]; then
+        no "${desc} -- ${text} un-rebranded display string(s) remain in protos"
+    elif [ "${wire}" -lt 86 ]; then
+        no "${desc} -- only ${wire} wire identifiers left in protos, expected >= 86; a sweep hit field names"
+    else
+        ok "${desc} (${wire} wire identifiers intact)"
+    fi
+}
+proto_branding_and_wire
+
+# The agent suite skips MySQL/MongoDB/Valkey tests when those services are absent,
+# because they cover code paths the postgres-only gate refuses in production and a wall
+# of "connection refused" buried real regressions -- 35 packages red, none a defect.
+#
+# PostgreSQL must NEVER join that list. It is the database this product exists to
+# monitor, so an absent PostgreSQL is a broken environment worth failing on. Extending
+# the skip to it would turn the one suite that matters into a green no-op, which is a
+# far worse outcome than the noise this fixed.
+postgres_tests_never_skipped() {
+    local desc="PostgreSQL tests are never skipped for an absent service" bad=""
+    grep -q 'SkipIfUnreachable' agent/utils/tests/postgresql.go 2>/dev/null && \
+        bad="the PostgreSQL DSN helper skips on an unreachable service"
+    # The table-driven suites must guard the skip on NOT-postgres. If a "!=" flips to
+    # "==" or the condition is dropped, the postgres cases start skipping too.
+    local f
+    for f in agent/connectionchecker/connection_checker_test.go \
+             agent/serviceinfobroker/service_info_broker_test.go; do
+        if grep -q 'SkipIfDSNUnreachable' "${f}" 2>/dev/null; then
+            grep -q '!= inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE' "${f}" \
+                || bad="${bad}; ${f} skips without excluding PostgreSQL"
+        fi
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- ${bad#; }"; fi
+}
+postgres_tests_never_skipped
+
+# Spec FILENAMES and package NAMES diverge for three of ours -- grafana.spec builds
+# pfw-grafana, percona-dashboards.spec builds pfw-dashboards, vmproxy.spec builds
+# pfw-vmproxy -- and the build and upgrade scripts each carry lists of BOTH kinds. A
+# blanket rename of the package lists caught a spec-filename list too, and the upgrade
+# suite died on "can't read .../SPECS/pfw-vmproxy.spec" after building a whole bundle.
+# Assert every name in a SPECS/ path resolves to a spec that exists.
+spec_filename_lists_resolve() {
+    local desc="every spec filename the scripts reference exists" bad="" f n
+    for f in build/scripts/build-pfw-airgap build/scripts/test-pfw-upgrade; do
+        for n in $(grep -oE 'SPECS/\$\{[a-z_]+\}\.spec' "${f}" >/dev/null 2>&1 && \
+                   awk '/for (spec|s) in /{p=1} p{print} /; do/{p=0}' "${f}" \
+                   | tr ' \\\\' '\n\n' | grep -E '^[a-z][a-z0-9-]+$' \
+                   | grep -vE '^(for|in|do|spec|s)$' | sort -u); do
+            [ -f "build/packages/rpm/server/SPECS/${n}.spec" ] || \
+            [ -f "build/packages/rpm/client/${n}.spec" ] || bad="${bad} ${f}:${n}"
+        done
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else
+        no "${desc} -- no such spec:${bad}"
+    fi
+}
+spec_filename_lists_resolve
+
+# The negative-control fixtures hand p_all_pkgs_upgraded a synthetic package list. They
+# must name the SAME packages the predicate checks, or the control fails for a reason
+# that has nothing to do with the predicate -- which is what happened when vmproxy became
+# pfw-vmproxy: the fixtures still said vmproxy, the predicate looked for pfw-vmproxy, and
+# the suite reported "reports failure when everything moved".
+#
+# The existing guard only looked for PRE-RENAME names (pfm-*), so a rename to a NEW name
+# slipped straight past it. This compares the two lists directly.
+control_fixtures_match_predicate() {
+    local desc="negative-control fixtures name the packages the upgrade predicate checks" bad=""
+    local pkgs pkg
+    pkgs=$(sed -n 's/^nevras() *{ *inc "rpm -q --qf .*RELEASE}\\n. //p' build/scripts/test-pfw-upgrade \
+           | sed 's/ *| *sort.*//' | tr ' ' '\n' | grep -E '^pfw-' | sort -u)
+    [ -n "${pkgs}" ] || { no "${desc} -- could not parse the package list"; return; }
+    for pkg in ${pkgs}; do
+        grep -q "${pkg}-3\.9\.0\|${pkg}-1-" build/scripts/test-pfw-negative-control || bad="${bad} ${pkg}"
+    done
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- missing from fixtures:${bad}"; fi
+}
+control_fixtures_match_predicate
+
+# PFW_PROCESS_MANAGER selects the process-control backend, and it is set in TWO places
+# that must agree: the constant the code reads, and Environment= in the shipped
+# pfw-managed unit. Rename one and the server silently falls back to auto-detection --
+# which on a native host still resolves to systemd, so nothing fails loudly and the
+# explicit override is simply not honoured.
+process_manager_env_agrees() {
+    local desc="PFW_PROCESS_MANAGER matches between the code and the shipped unit" code unit
+    code=$(sed -nE 's/.*processManagerEnv[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' \
+           managed/services/supervisord/systemd.go | head -1)
+    unit=$(sed -nE 's/^Environment=([A-Z_]+)=systemd$/\1/p' \
+           build/packages/config/pfw/pfw-managed.service | head -1)
+    if [ -n "${code}" ] && [ "${code}" = "${unit}" ]; then
+        ok "${desc} (${code})"
+    else
+        no "${desc} -- code says '${code:-<unparsed>}', unit says '${unit:-<unparsed>}'"
+    fi
+}
+process_manager_env_agrees
+
+# A skip must not become permanent silence. TestDevContainer skips when supervisorctl is
+# absent, which is correct on a systemd-native host -- but the supervisord backend is
+# LIVE code we ship (the container image uses it, PFW_PROCESS_MANAGER can select it), so
+# skipping it everywhere would mean half of selectProcessManager is exercised nowhere.
+# That is the difference from the MySQL/MongoDB skips, which cover paths the
+# postgres-only gate refuses in production.
+#
+# The skip is therefore paired with a runner that provides the missing environment.
+# Assert both halves exist: delete the runner and the skip silently stops being covered.
+supervisord_skip_has_a_runner() {
+    local desc="the supervisord-backend skip is paired with a runner that exercises it" bad=""
+    grep -q 'supervisorctl is not installed' managed/services/supervisord/devcontainer_test.go 2>/dev/null \
+        || bad="the skip is gone from devcontainer_test.go"
+    [ -x build/scripts/test-supervisord-backend ] \
+        || bad="${bad}; build/scripts/test-supervisord-backend is missing or not executable"
+    grep -q 'TestDevContainer' build/scripts/test-supervisord-backend 2>/dev/null \
+        || bad="${bad}; the runner does not run TestDevContainer"
+    if [ -z "${bad}" ]; then ok "${desc}"; else no "${desc} -- ${bad#; }"; fi
+}
+supervisord_skip_has_a_runner
+
+# Telemetry reports to a THIRD PARTY, and this product has no auto-update or
+# version-broadcast feature. Both are forced off in the shipped unit, and the server then
+# refuses to change either through the API -- but nothing asserted that, so a dropped
+# Environment= line would silently start reporting to Percona on every customer install.
+#
+# PERCONA_TELEMETRY_DISABLE covers the toolkit's own reporting, which is separate from
+# PMM_ENABLE_TELEMETRY and would otherwise survive it being off.
+in_each "telemetry is forced off in the shipped unit" 'PMM_ENABLE_TELEMETRY=false' \
+        build/packages/config/pfw/pfw-managed.service
+in_each "the third-party telemetry toolkit is disabled too" 'PERCONA_TELEMETRY_DISABLE=1' \
+        build/packages/config/pfw/pfw-managed.service
+in_each "auto-update and version broadcast are forced off" 'PMM_ENABLE_UPDATES=false' \
+        build/packages/config/pfw/pfw-managed.service
+
+# And nothing in the tests may ask for either to be switched ON. The restore helper used
+# to request EnableTelemetry: true and back off only when the server refused -- which
+# still enables it on any deployment that does not refuse.
+#
+# The one legitimate reason to write the request is to prove the server REFUSES it, so
+# the sole exemption is a request passed to AssertEnvOwnedChangeIsRefused. That is
+# narrower than the skip it replaced: a skip recorded that we could not check, whereas
+# the assertion records that we checked and telemetry is unreachable. Anything else --
+# a request that expects success, or one merely sitting in the same file as the helper --
+# fails here.
+telemetry_never_requested_on() {
+    local desc="tests may request telemetry/updates ON only to assert the refusal" bad
+    # api-tests only. managed/models tests drive the model layer against a throwaway
+    # database -- they set a struct field and cannot report anything anywhere, so they
+    # are not a route to enabling telemetry on a real deployment. The protection that
+    # matters for a customer is the shipped unit, asserted above.
+    #
+    # A request counts as exempt when it appears within the argument list of an
+    # AssertEnvOwnedChangeIsRefused call. gofmt keeps that call to a handful of lines, so
+    # an 8-line window covers it without reaching the next statement.
+    bad=$(git grep -n --no-color -E 'EnableTelemetry:[[:space:]]*new\(true\)|EnableUpdates:[[:space:]]*new\(true\)' \
+          -- 'api-tests/*' 2>/dev/null | grep -v '^api-tests/server/helpers.go:' || true)
+    local f line offending=""
+    for f in $(printf '%s\n' "${bad}" | grep -v '^$' | cut -d: -f1 | sort -u); do
+        while read -r line; do
+            awk -v n="${line}" '
+                NR >= n-8 && NR < n && /AssertEnvOwnedChangeIsRefused\(/ { found=1 }
+                NR == n { exit !found }
+            ' "${f}" || offending="${offending} ${f}:${line}"
+        done < <(printf '%s\n' "${bad}" | grep "^${f}:" | cut -d: -f2)
+    done
+    if [ -n "${offending}" ]; then
+        no "${desc} --${offending} requests it outside an assert-refused call"
+        return
+    fi
+
+    # The exemption is only worth anything if the helper really asserts a refusal. Pin
+    # it: a gutted helper would silently re-permit every site that leans on it.
+    grep -q 'AssertAPIErrorf(t, err, 400, codes.FailedPrecondition' api-tests/server/helpers.go || {
+        no "${desc} -- AssertEnvOwnedChangeIsRefused no longer asserts a FailedPrecondition refusal"
+        return
+    }
+    ok "${desc}"
+}
+telemetry_never_requested_on
+
+log "Regression guards for defects already fixed once"
+
+# The pmm-* to pfw-* rename left user-facing text naming binaries that no longer
+# existed. The two worst were instructions that resolve to "command not found", so they
+# are asserted directly: a regex cannot catch them reliably because the string sits on a
+# continuation line, with fmt.Errorf( on the line above.
+in_each "the 'run pfw-admin config' instructions still name a real binary" \
+        'pfw-admin config' \
+        admin/commands/base/setup.go \
+        admin/commands/status.go
+
+# Secondary net for single-line cases the direct assertions above do not cover.
+absent "no single-line user-facing text names a non-existent pmm-* binary" \
+       '(help:"[^"]*|fmt\.Print[^)]*|errors\.New[^)]*)\bpmm-(agent|admin)\b' \
+       -- admin/ agent/ ':!*_test.go' ':!agent/cmd/'
+
+# Dashboards must match BOTH annotation tags: the server writes pfw_annotation, but
+# annotations already stored in Grafana carry pmm_annotation. Dropping either makes
+# history silently stop rendering.
+present "annotation writer emits the new tag" \
+        'pfw_annotation' -- managed/services/management/annotation.go
+
+# Floors, not targets: 27 dashboards filter the new tag and 26 also filter the old one.
+# The odd one out is Query Analytics, whose query uses AND semantics, so a second tag
+# there would match nothing. Dropping the old tag anywhere else hides stored history.
+at_least "dashboards filter the new annotation tag" 27 'pfw_annotation' -- 'dashboards/dashboards/*.json'
+at_least "dashboards still also filter the old tag" 26 'pmm_annotation'  -- 'dashboards/dashboards/*.json' 
+
+printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
+[ "${fail}" -eq 0 ]

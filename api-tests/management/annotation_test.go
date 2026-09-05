@@ -31,6 +31,7 @@ import (
 )
 
 func TestAddAnnotation(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 
 	t.Run("Add Basic Annotation", func(t *testing.T) {

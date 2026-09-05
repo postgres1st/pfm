@@ -30,6 +30,7 @@ import (
 )
 
 func TestMongoRun(t *testing.T) {
+	tests.SkipIfUnreachable(t, "127.0.0.1:27017", "MongoDB")
 	testdata, err := filepath.Abs("../../../testdata/mongo")
 	require.NoError(t, err)
 	sslDSNTemplate, files := tests.GetTestMongoDBWithSSLDSN(t, "../../..")

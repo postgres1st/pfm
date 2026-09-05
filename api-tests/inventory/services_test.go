@@ -31,6 +31,7 @@ import (
 )
 
 func TestServices(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 	t.Run("List", func(t *testing.T) {
 		t.Parallel()
@@ -193,6 +194,7 @@ func TestGetService(t *testing.T) {
 }
 
 func TestRemoveService(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()

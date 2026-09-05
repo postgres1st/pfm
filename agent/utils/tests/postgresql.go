@@ -19,6 +19,7 @@ import (
 	"net"
 	"net/url"
 	"strconv"
+	"strings"
 	"testing"
 
 	_ "github.com/lib/pq" // register SQL driver
@@ -72,6 +73,28 @@ func OpenTestPostgreSQL(tb testing.TB) *sql.DB {
 // PostgreSQLVersion returns PostgreSQL version components as major and minor/patch.
 // For versions before 10, this is major and minor (e.g. "9" and "6").
 // For versions 10 and above, this is major and patch level according to PostgreSQL's versioning scheme
+// IsPerconaPostgreSQL reports whether the server is a Percona distribution rather than
+// a stock PostgreSQL.
+//
+// It matters because Percona's build reports a different shared-buffer hit count for the
+// same query -- 32 where stock reports 33 -- so tests asserting that metric need to know
+// which they are talking to.
+//
+// This asks the SERVER, deliberately. The previous check read the POSTGRES_IMAGE env var
+// and matched the string "perconalab", which fails two ways that both look like a code
+// defect: the variable is unset unless the runner threads it through, and Percona also
+// publishes under the "percona" org, which "perconalab" does not match. Either way the
+// test expected 33, got 32, and blamed the wrong thing.
+func IsPerconaPostgreSQL(tb testing.TB, db *sql.DB) bool {
+	tb.Helper()
+
+	var v string
+	err := db.QueryRow("SELECT /* pmm-agent-tests:IsPerconaPostgreSQL */ version()").Scan(&v)
+	require.NoError(tb, err)
+
+	return strings.Contains(v, "Percona")
+}
+
 // (e.g. "10" and "", "18" and "2" for PostgreSQL 18.2).
 func PostgreSQLVersion(tb testing.TB, db *sql.DB) (string, string) {
 	tb.Helper()

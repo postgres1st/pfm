@@ -132,23 +132,29 @@ func TestNodeHelpers(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			structs, err := q.SelectAllFrom(models.NodeTable, "WHERE machine_id = $1 ORDER BY node_id", machineID)
+			// ORDER BY node_name, not node_id. The node created above gets a random
+			// uuid, while the fixture's id is the literal "GenericNode" -- so ordering
+			// by id sorts a random hex string against "G" and the two rows swap places
+			// whenever the uuid happens to start with a-f rather than 0-9. That is 6 of
+			// 16 first characters, and the test failed about one run in four for years.
+			// The names are fixed, so ordering by them is stable.
+			structs, err := q.SelectAllFrom(models.NodeTable, "WHERE machine_id = $1 ORDER BY node_name", machineID)
 			require.NoError(t, err)
 			require.Len(t, structs, 2)
 			expected := &models.Node{
-				NodeID:    structs[0].(*models.Node).NodeID,
+				NodeID:    "GenericNode",
 				NodeType:  models.GenericNodeType,
-				NodeName:  t.Name(),
-				MachineID: &machineID,
+				NodeName:  "Node for Agents",
+				MachineID: &machineID, // \n trimmed
 				CreatedAt: now,
 				UpdatedAt: now,
 			}
 			assert.Equal(t, expected, structs[0])
 			expected = &models.Node{
-				NodeID:    "GenericNode",
+				NodeID:    structs[1].(*models.Node).NodeID,
 				NodeType:  models.GenericNodeType,
-				NodeName:  "Node for Agents",
-				MachineID: &machineID, // \n trimmed
+				NodeName:  t.Name(),
+				MachineID: &machineID,
 				CreatedAt: now,
 				UpdatedAt: now,
 			}

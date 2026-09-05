@@ -29,6 +29,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/percona/pmm/managed/utils/tests"
 	stringsgen "github.com/percona/pmm/utils/strings"
 )
 
@@ -485,7 +486,7 @@ func TestClient(t *testing.T) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/dummy", nil)
 	require.NoError(t, err)
-	req.SetBasicAuth("admin", "admin")
+	req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 	authHeaders := req.Header
 
 	t.Run("getRole", func(t *testing.T) {
@@ -601,7 +602,7 @@ func TestClient(t *testing.T) {
 	t.Run("CreateAnnotation", func(t *testing.T) {
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/dummy", nil)
 		require.NoError(t, err)
-		req.SetBasicAuth("admin", "admin")
+		req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 		authorization := req.Header.Get("Authorization")
 
 		t.Run("Normal", func(t *testing.T) {

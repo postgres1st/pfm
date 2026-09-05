@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -113,9 +112,12 @@ func TestPGStatStatementsQAN(t *testing.T) {
 		"$321, $322, $323, $324, $325, $326, $327, $328, $329, $330, $331, $332, $333, $334, $335, $336, $337, $338, $339, $340, " +
 		"$341, $342, $343, $3 ..."
 
-	// Need to detect vendor because result for mSharedBlksReadSum are different for different images for postgres.
+	// Percona's build reports a different shared-buffer hit count than stock for the same
+	// query. Ask the server rather than the POSTGRES_IMAGE env var: that variable is unset
+	// unless the runner threads it through, and it matched only the "perconalab" org while
+	// Percona also publishes under "percona" -- both misdetections read as a code defect.
 	mSharedBlksHitSum := float32(33)
-	isPercona := strings.Contains(os.Getenv("POSTGRES_IMAGE"), "perconalab")
+	isPercona := tests.IsPerconaPostgreSQL(t, sqlDB)
 	if isPercona {
 		mSharedBlksHitSum = 32
 	}

@@ -18,6 +18,7 @@ package supervisord
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/percona/pmm/managed/models"
+	"github.com/percona/pmm/managed/utils/dbsecret"
 )
 
 func TestConfig(t *testing.T) {
@@ -62,7 +64,16 @@ func TestConfig(t *testing.T) {
 			require.NoError(t, err)
 			actual, err := s.marshalConfig(tmpl, settings)
 			require.NoError(t, err)
-			assert.Equal(t, string(expected), string(actual))
+			// The rendered config embeds the LIVE ClickHouse credential, which is
+			// generated per install. The golden files hold the legacy constant, so on a
+			// provisioned host every template with that variable mismatched -- the test
+			// failed exactly where the credential work was doing its job. Substitute the
+			// live value into the golden rather than pinning a password that is, by
+			// design, different on every host.
+			want := strings.ReplaceAll(string(expected),
+				`PMM_CLICKHOUSE_PASSWORD="`+dbsecret.ClickhouseLegacy+`"`,
+				`PMM_CLICKHOUSE_PASSWORD="`+dbsecret.ClickhousePassword()+`"`)
+			assert.Equal(t, want, string(actual))
 		})
 	}
 }

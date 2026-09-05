@@ -39,6 +39,7 @@ var AgentStatusUnknown = inventoryv1.AgentStatus_name[int32(inventoryv1.AgentSta
 var AgentStatusDone = inventoryv1.AgentStatus_name[int32(inventoryv1.AgentStatus_AGENT_STATUS_DONE)]
 
 func TestAgents(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 	t.Parallel()
 	t.Run("List", func(t *testing.T) {
 		t.Parallel()
@@ -297,6 +298,7 @@ func TestPMMAgent(t *testing.T) {
 	})
 
 	t.Run("Remove pmm-agent with agents", func(t *testing.T) {
+		pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 		t.Parallel()
 
 		nodeID := pmmapitests.AddGenericNode(t, pmmapitests.TestString(t, "Generic node for PMM-agent")).NodeID
@@ -457,6 +459,7 @@ func TestPMMAgent(t *testing.T) {
 func TestQanAgentExporter(t *testing.T) {
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
+		pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 		t.Parallel()
 
 		genericNodeID := pmmapitests.AddGenericNode(t, pmmapitests.TestString(t, "Test Generic Node for Qan Agent")).NodeID
@@ -603,6 +606,7 @@ func TestQanAgentExporter(t *testing.T) {
 	})
 
 	t.Run("AddPMMAgentIDEmpty", func(t *testing.T) {
+		pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 		t.Parallel()
 
 		genericNodeID := pmmapitests.AddGenericNode(t, pmmapitests.TestString(t, "Test Generic Node for Qan Agent")).NodeID
@@ -639,6 +643,7 @@ func TestQanAgentExporter(t *testing.T) {
 	})
 
 	t.Run("NotExistServiceID", func(t *testing.T) {
+		pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 		t.Parallel()
 
 		genericNodeID := pmmapitests.AddGenericNode(t, pmmapitests.TestString(t, "Test Generic Node for Qan Agent")).NodeID
@@ -664,6 +669,7 @@ func TestQanAgentExporter(t *testing.T) {
 	})
 
 	t.Run("NotExistPMMAgentID", func(t *testing.T) {
+		pmmapitests.SkipIfServiceTypeUnsupported(t, "mysql")
 		t.Parallel()
 
 		genericNodeID := pmmapitests.AddGenericNode(t, pmmapitests.TestString(t, "Test Generic Node for Qan Agent")).NodeID

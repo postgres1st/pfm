@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Runs the tests that cover the SUPERVISORD process-control backend.
+#
+#   build/scripts/test-supervisord-backend
+#
+# WHY THIS EXISTS
+#
+# The product supports two process managers and picks one at runtime
+# (selectProcessManager). Our native RPM install runs on systemd and ships no
+# supervisorctl, so the supervisord-backend tests cannot run there -- and skipping them
+# on the native host means that half of the abstraction is exercised NOWHERE. It is
+# still live code: the container image uses it, and PFW_PROCESS_MANAGER can select it.
+#
+# That is the difference between this and the MySQL/MongoDB skips. Those cover code
+# paths the postgres-only gate refuses in production, so not running them costs nothing.
+# This covers code we ship and a customer can run.
+#
+# So the tests are not skipped away -- they run here instead, on a container that has
+# supervisorctl and a live supervisord, which is the environment they were written for.
+
+set -euo pipefail
+
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+cd "${repo_dir}"
+
+CACHE=${CACHE:-/tmp/pfw-cache}
+IMAGE=${IMAGE:-pfw-supervisord-test:latest}
+work=$(mktemp -d)
+trap 'rm -rf "${work}"' EXIT
+
+mkdir -p "${CACHE}"
+
+printf '>>> building %s\n' "${IMAGE}"
+cat > "${work}/Dockerfile" <<'DOCKER'
+FROM golang:1.26
+RUN apt-get update -qq && apt-get install -y -qq supervisor && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /etc/supervisord.d /srv/logs /var/log/supervisor
+DOCKER
+docker build -q -t "${IMAGE}" "${work}" >/dev/null
+
+# A minimal supervisord: a unix socket, no auth, and an include of the directory the
+# tests write into. Deliberately NOT the shipped pmm.ini set -- those declare an
+# authenticated inet server, and supervisorctl then fails the handshake with a 401
+# before any test runs.
+cat > "${work}/supervisord.conf" <<'CONF'
+[supervisord]
+nodaemon=false
+logfile=/var/log/supervisor/supervisord.log
+pidfile=/var/run/supervisord.pid
+[unix_http_server]
+file=/var/run/supervisor.sock
+chmod=0700
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+[supervisorctl]
+serverurl=unix:///var/run/supervisor.sock
+[include]
+files = /etc/supervisord.d/*.ini
+CONF
+
+printf '>>> running the supervisord-backend tests\n'
+docker run --rm \
+    -v "${repo_dir}":/src -w /src \
+    -v "${CACHE}":/gocache \
+    -v "${work}/supervisord.conf":/etc/supervisord.conf:ro \
+    --user 0:0 -e HOME=/tmp -e GOFLAGS=-mod=mod \
+    -e GOCACHE=/gocache/build -e GOMODCACHE=/gocache/mod \
+    "${IMAGE}" sh -c '
+        git config --global --add safe.directory "*"
+        supervisord -c /etc/supervisord.conf
+        # supervisord forks; give it a moment to bind the socket before supervisorctl
+        # is used, or the first call races it and the tests report a false failure.
+        for i in $(seq 1 10); do
+            supervisorctl -c /etc/supervisord.conf status >/dev/null 2>&1 && break
+            sleep 1
+        done
+        # -v, and a SKIP is a failure.
+        #
+        # A skipped test and a passed test both end in "ok", and the whole reason this
+        # script exists is that the test must NOT skip. If supervisorctl went missing from
+        # the image, or the socket never came up, the test would quietly opt out and this
+        # script would report success while covering nothing.
+        out=$(go test -v -count=1 -run "TestDevContainer" ./managed/services/supervisord/... 2>&1)
+        status=$?
+        printf "%s\n" "${out}" | grep -E "^(=== RUN|--- (PASS|SKIP|FAIL)|ok |FAIL)" || true
+        if [ ${status} -ne 0 ]; then
+            printf "\n>>> the supervisord-backend tests FAILED\n"
+            printf "%s\n" "${out}" | tail -40
+            exit 1
+        fi
+        if printf "%s\n" "${out}" | grep -q -- "--- SKIP"; then
+            printf "\n>>> a supervisord-backend test SKIPPED, which defeats the point of this script.\n"
+            printf ">>> supervisorctl or the supervisord socket is not available in the container.\n"
+            exit 1
+        fi
+    '

@@ -175,6 +175,12 @@ func TestServiceInfoBroker(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
+			// Skip rather than fail when the service container is absent; the
+			// PostgreSQL cases are left to fail, being the ones that matter here.
+			if tt.req.Type != inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE {
+				tests.SkipIfDSNUnreachable(t, tt.req.Dsn, tt.name)
+			}
+
 			cfgStorage := config.NewStorage(&config.Config{
 				Paths: config.Paths{TempDir: t.TempDir()},
 			})
@@ -199,6 +205,9 @@ func TestServiceInfoBroker(t *testing.T) {
 	}
 
 	t.Run("TableCount", func(t *testing.T) {
+		// A MySQL case sitting outside the table loop, so the loop's skip misses it.
+		tests.SkipIfUnreachable(t, "127.0.0.1:3306", "MySQL")
+
 		cfgStorage := config.NewStorage(&config.Config{
 			Paths: config.Paths{TempDir: t.TempDir()},
 		})
@@ -295,6 +304,12 @@ func TestServiceInfoBrokerMongoDB(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
+			// Skip rather than fail when the service container is absent; the
+			// PostgreSQL cases are left to fail, being the ones that matter here.
+			if tt.req.Type != inventoryv1.ServiceType_SERVICE_TYPE_POSTGRESQL_SERVICE {
+				tests.SkipIfDSNUnreachable(t, tt.req.Dsn, tt.name)
+			}
+
 			cfgStorage := config.NewStorage(&config.Config{
 				Paths: config.Paths{TempDir: t.TempDir()},
 			})
@@ -319,6 +334,9 @@ func TestServiceInfoBrokerMongoDB(t *testing.T) {
 	}
 
 	t.Run("MongoDB no params", func(t *testing.T) {
+		// Likewise: a MongoDB case outside the loop.
+		tests.SkipIfUnreachable(t, "127.0.0.1:27017", "MongoDB")
+
 		cfgStorage := config.NewStorage(&config.Config{
 			Paths: config.Paths{TempDir: t.TempDir()},
 		})

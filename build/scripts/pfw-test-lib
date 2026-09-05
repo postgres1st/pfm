@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared harness for the PFMM bundle tests (test-pfmm-airgap, test-pfmm-upgrade).
+# Shared harness for the PGF WatchTower bundle tests (test-pfw-airgap, test-pfw-upgrade).
 #
 # Sourced, not executed. Provides the assertion counters, the throwaway systemd
 # container, and the readyz poll -- the parts both tests need to agree on. The
@@ -17,14 +17,14 @@ die()  { printf '\nERROR: %s\n' "$*" >&2; exit 1; }
 inc()  { docker exec "${container}" bash -c "$1"; }
 
 build_systemd_image() {
-    docker image inspect "${PFMM_SYSTEMD_IMAGE}" >/dev/null 2>&1 && return
-    log "building ${PFMM_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd + PFMM's OS deps)"
+    docker image inspect "${PFW_SYSTEMD_IMAGE}" >/dev/null 2>&1 && return
+    log "building ${PFW_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd + PGF WatchTower's OS deps)"
     # The stock EL9 image ships no systemd and no /sbin/init; a real host always
     # has both, so installing them here makes the test faithful, not permissive.
     #
     # The OS dependencies go in for the same reason. The bundle stopped carrying the
     # distribution's own packages, so a container with nothing but systemd can no longer
-    # install pfm-server -- and weakening the air gap to let the test reach a mirror would
+    # install pfw-server -- and weakening the air gap to let the test reach a mirror would
     # throw away the strongest assertion the suite makes. A current EL9 host genuinely has
     # these; installing them here models that host, and the container stays fully offline.
     #
@@ -32,18 +32,18 @@ build_systemd_image() {
     # The fallback matters for a checkout with no build output: it is deliberately the
     # top-level names only, since dnf expands them.
     local osdeps deplist
-    # Same default the suites use for PFMM_OUT, so a plain `test-pfmm-airgap` with no
+    # Same default the suites use for PFW_OUT, so a plain `test-pfw-airgap` with no
     # environment still finds the list the build just wrote.
-    deplist=${PFMM_OUT}/os-dependencies.txt
+    deplist=${PFW_OUT}/os-dependencies.txt
     if [ -s "${deplist}" ]; then
         osdeps=$(tr '\n' ' ' < "${deplist}")
     else
         osdeps="nginx openssl perl-interpreter polkit shadow-utils systemd libicu liburing numactl-libs"
     fi
     # NOTE: the image is cached by tag. Change the dependency set and you must
-    # `docker rmi ${PFMM_SYSTEMD_IMAGE}` for the test host to pick it up.
-    docker build -t "${PFMM_SYSTEMD_IMAGE}" - <<EOF
-FROM ${PFMM_EL_IMAGE}
+    # `docker rmi ${PFW_SYSTEMD_IMAGE}` for the test host to pick it up.
+    docker build -t "${PFW_SYSTEMD_IMAGE}" - <<EOF
+FROM ${PFW_EL_IMAGE}
 RUN dnf -y install systemd procps-ng iproute ${osdeps} && dnf clean all && \\
     ln -sf /usr/lib/systemd/systemd /sbin/init && \\
     ln -sf /lib/systemd/system/multi-user.target /etc/systemd/system/default.target
@@ -65,7 +65,7 @@ start_container() {
     docker run -d --name "${container}" --privileged --cgroupns=host \
         --network "${network}" -e container=docker \
         --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
-        "$@" "${PFMM_SYSTEMD_IMAGE}" >/dev/null
+        "$@" "${PFW_SYSTEMD_IMAGE}" >/dev/null
     # `systemctl is-system-running` exits non-zero when the state is "degraded",
     # so capture the output and test it -- piping it into grep under `pipefail`
     # fails on the exec's status even when grep matches. Degraded is the normal
@@ -80,6 +80,21 @@ start_container() {
 }
 
 # Echo the readyz status code, polling until it is 200 or the tries run out.
+# wait_active <unit> [tries]
+# `systemctl restart` returns once the process is spawned, not once the service is up,
+# so a bare `is-active` immediately after can sample the activating state and read as a
+# failure. That is what made the upgrade seed report "pfw-grafana did not come back up"
+# for a Grafana that was starting normally and reached active a moment later.
+wait_active() {
+    local unit=$1 tries=${2:-60} i state=unknown
+    for i in $(seq 1 "${tries}"); do
+        state=$(inc "systemctl is-active ${unit}" 2>/dev/null || true)
+        case "${state}" in active) return 0 ;; failed) return 1 ;; esac
+        sleep 2
+    done
+    return 1
+}
+
 wait_readyz() {
     local tries=${1:-120} i code=000
     for i in $(seq 1 "${tries}"); do
@@ -90,25 +105,25 @@ wait_readyz() {
     printf '%s' "${code}"
 }
 
-# Assert no pfm unit failed and every long-running one is active. Type=oneshot
-# units are excluded from the second check on purpose: pfm-clickhouse-perms exits
+# Assert no pfw unit failed and every long-running one is active. Type=oneshot
+# units are excluded from the second check on purpose: pfw-clickhouse-perms exits
 # after doing its work, and deliberately does not set RemainAfterExit -- that would
 # make systemd treat it as already-done and skip the repair on the next ClickHouse
 # start, which is the whole point of it.
 assert_units_healthy() {
     local label=${1:-} failed notactive
-    failed=$(inc "systemctl list-units 'pfm*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)
-    [ -z "${failed}" ] && ok "no pfm unit failed${label}" || no "failed units${label}: ${failed}"
-    notactive=$(inc "for u in \$(systemctl list-units 'pfm*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
+    failed=$(inc "systemctl list-units 'pfw*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)
+    [ -z "${failed}" ] && ok "no pfw unit failed${label}" || no "failed units${label}: ${failed}"
+    notactive=$(inc "for u in \$(systemctl list-units 'pfw*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
             [ \"\$(systemctl show \$u -p Type --value)\" = oneshot ] && continue
             [ \"\$(systemctl show \$u -p ActiveState --value)\" = active ] || echo \$u
         done" || true)
-    [ -z "${notactive}" ] && ok "all long-running pfm units active${label}" || no "inactive units${label}: ${notactive}"
+    [ -z "${notactive}" ] && ok "all long-running pfw units active${label}" || no "inactive units${label}: ${notactive}"
 }
 
 # ------------------------------------------------------------- shared predicates
 # Properties BOTH suites assert, so they live here rather than being written twice.
-# test-pfmm-negative-control drives these exact functions -- controlling a copy of an
+# test-pfw-negative-control drives these exact functions -- controlling a copy of an
 # assertion would say nothing about the assertion that runs. Keep them side-effect
 # free and re-runnable: the harness calls each one three times.
 #
@@ -118,32 +133,50 @@ assert_units_healthy() {
 
 SRV=${SRV:-"--server-url=https://admin:admin@127.0.0.1:8443 --server-insecure-tls"}
 
+# Read one KEY=value out of a secret file on the test host. The bootstrap
+# credentials are generated at first boot, so no suite may hardcode them.
+secret_val() { inc "sed -n 's/^$2=//p' $1" 2>/dev/null | tr -d '\r'; }
+
+# Point the suite at the generated admin credential. Deliberately fatal when the
+# file is absent: falling back to admin/admin would let a build that never
+# generated a password sail through the very assertions that prove it did.
+set_srv_from_secrets() {
+    ADMIN_PW=$(secret_val /srv/.pfw-secrets/grafana.env GF_SECURITY_ADMIN_PASSWORD)
+    [ -n "${ADMIN_PW}" ] || die "no GF_SECURITY_ADMIN_PASSWORD in /srv/.pfw-secrets/grafana.env"
+    SRV="--server-url=https://admin:${ADMIN_PW}@127.0.0.1:8443 --server-insecure-tls"
+}
+# admin:admin remains correct for an UPGRADED host -- relocation does not rotate the
+# Grafana admin user, which already exists. test-pfw-airgap and the airgap phase of
+# test-pfw-negative-control both call set_srv_from_secrets, because both drive a
+# fresh install; the upgrade-path callers keep admin:admin for that reason.
+gauth() { printf 'admin:%s' "${ADMIN_PW:-admin}"; }
+
 # `timeout 10`, not 4: a genuinely air-gapped host fails in milliseconds (DNS gives up
 # immediately with no route), so the longer limit costs nothing there. A short limit
 # is dangerous in the direction that matters -- it lets a slow-but-connected host read
 # as air-gapped, which is the false pass this assertion exists to prevent.
 p_no_internet()        { ! inc 'timeout 10 curl -sS https://download.postgresql.org >/dev/null 2>&1'; }
 p_readyz()             { [ "$(inc "curl -sk -o /dev/null -w '%{http_code}' https://127.0.0.1:8443/v1/readyz" 2>/dev/null || echo 000)" = "200" ]; }
-p_no_failed_units()    { [ -z "$(inc "systemctl list-units 'pfm*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)" ]; }
-p_all_units_active()   { [ -z "$(inc "for u in \$(systemctl list-units 'pfm*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
+p_no_failed_units()    { [ -z "$(inc "systemctl list-units 'pfw*' --state=failed --no-legend --no-pager | awk '{print \$1}'" || true)" ]; }
+p_all_units_active()   { [ -z "$(inc "for u in \$(systemctl list-units 'pfw*.service' --all --no-legend --no-pager | awk '{print \$1}'); do
                                [ \"\$(systemctl show \$u -p Type --value)\" = oneshot ] && continue
                                [ \"\$(systemctl show \$u -p ActiveState --value)\" = active ] || echo \$u
                            done" || true)" ]; }
 p_no_pmm_packages()    { ! inc "rpm -qa | grep -q '^pmm-'"; }
 p_no_srv_plugin_copy() { inc 'test ! -e /srv/grafana/plugins'; }
-p_pfm_ini_plugins()    { inc 'grep -q "^plugins = /opt/postgres1st/pfmm/dashboards/panels" /etc/grafana/pfm.ini'; }
-p_ch_owned_by_pfm()    { inc 'test "$(stat -c %U /etc/clickhouse-server)" = pfm'; }
-p_mysql_rejected()     { inc "/usr/sbin/pfm-admin ${SRV} add mysql --host=127.0.0.1 --port=3306 --username=root gate-mysql 2>&1 | grep -q 'not supported by this deployment'"; }
+p_pfm_ini_plugins()    { inc 'grep -q "^plugins = /opt/postgres1st/watchtower/dashboards/panels" /etc/grafana/pfw.ini'; }
+p_ch_owned_by_pfm()    { inc 'test "$(stat -c %U /etc/clickhouse-server)" = pfw'; }
+p_mysql_rejected()     { inc "/usr/sbin/pfw-admin ${SRV} add mysql --host=127.0.0.1 --port=3306 --username=root gate-mysql 2>&1 | grep -q 'not supported by this deployment'"; }
 p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 
-# Every file capability on the clickhouse binary must be inside pfm-clickhouse's
+# Every file capability on the clickhouse binary must be inside pfw-clickhouse's
 # CapabilityBoundingSet. execve() fails with EPERM when a file's PERMITTED set is not
 # a subset of the process's bounding set, so `CapabilityBoundingSet=` (empty) makes a
 # capability-carrying binary unexecutable: 203/EXEC, ClickHouse never starts, and
 # qan-api2 then hangs in start-pre forever waiting on port 9000.
 #
 # Deliberately STATIC -- it compares the two declared sets rather than asking whether
-# pfm-clickhouse is running, because a container does not enforce this at all. Both
+# pfw-clickhouse is running, because a container does not enforce this at all. Both
 # suites shipped this exact defect, with these four fcaps and an empty bounding set,
 # and stayed green because ClickHouse started anyway under docker. Confirmed while
 # writing this: granting the binary an extra cap in the container still leaves the
@@ -157,11 +190,11 @@ p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 # Not parameterised: a capless path would read as GREEN, so there is no known-bad
 # path to feed and ctl_input would be a false pass. The negative control breaks real
 # state instead (adds an uncovered capability to the binary).
-# pfm-nginx must relabel /srv/nginx before it starts.
+# pfw-nginx must relabel /srv/nginx before it starts.
 #
-# The TLS material is pfm_cert_t, and a new file only inherits that type when it is
+# The TLS material is pfw_cert_t, and a new file only inherits that type when it is
 # CREATED in the directory. Measured on RHEL 9.8: `install` (what INSTALL.md documents)
-# yields pfm_cert_t, but `mv` and `cp -a` from /root both preserve admin_home_t, and
+# yields pfw_cert_t, but `mv` and `cp -a` from /root both preserve admin_home_t, and
 # nginx then cannot read the certificate. The failure is the one that cost a day to
 # diagnose -- "cannot load certificate ... Permission denied" with NO AVC, because
 # dontaudit suppresses it -- except it would happen on a customer's host during a cert
@@ -177,14 +210,14 @@ p_bundle_signed()      { inc "test -f ${1}/RPM-GPG-KEY-postgres1st"; }
 # SELinux is absent -- the `-` prefix, without which a missing restorecon would fail the
 # unit in exactly the containers these suites run in.
 p_nginx_relabels_cert_dir() {
-    inc 'e=$(systemctl show pfm-nginx.service -p ExecStartPre --value)
+    inc 'e=$(systemctl show pfw-nginx.service -p ExecStartPre --value)
          case "$e" in *restorecon*) ;; *) exit 1 ;; esac
          case "$e" in *"/srv/nginx"*) ;; *) exit 1 ;; esac
          # ignore-failure must be set, or a host without restorecon cannot start nginx
-         systemctl show pfm-nginx.service -p ExecStartPre | grep -q "ignore_errors=yes"'
+         systemctl show pfw-nginx.service -p ExecStartPre | grep -q "ignore_errors=yes"'
 }
 
-# Every /run path pfm-clickhouse needs must be one systemd creates for it.
+# Every /run path pfw-clickhouse needs must be one systemd creates for it.
 #
 # /run is tmpfs and its contents are not ours alone. The DISTRO
 # clickhouse-server.service declares RuntimeDirectory=clickhouse-server with
@@ -206,7 +239,7 @@ p_nginx_relabels_cert_dir() {
 # predicate that restarts ClickHouse is not that. The negative control does the
 # breaking.
 p_ch_runtime_dir_guaranteed() {
-    inc 'u=pfm-clickhouse.service
+    inc 'u=pfw-clickhouse.service
          rd=" $(systemctl show $u -p RuntimeDirectory --value) "
          case "$rd" in *" clickhouse-server "*) ;; *) exit 1 ;; esac
          # and nothing under /run may be required that systemd does not create
@@ -218,7 +251,7 @@ p_ch_runtime_dir_guaranteed() {
          exit 0'
 }
 
-# The SELinux module must SHIP, and pfm-server must own it.
+# The SELinux module must SHIP, and pfw-server must own it.
 #
 # Only the artifact is asserted here, not that it is loaded: these containers have no
 # SELinux tooling at all -- no semodule, no policy store, no selinux-policy-targeted
@@ -227,14 +260,14 @@ p_ch_runtime_dir_guaranteed() {
 # native-host property and belongs to the VM check, the same split forced by
 # p_ch_caps_within_bounding_set.
 #
-# That same absence is why pfm-server's scriptlets are guarded: an unguarded
+# That same absence is why pfw-server's scriptlets are guarded: an unguarded
 # `semodule -i` in %post would fail the transaction here and take the whole bundle
 # down. This assertion passing while the container has no SELinux is exactly the
 # intended behaviour, not a gap.
 p_selinux_module_shipped() {
-    inc 'pp=/usr/share/selinux/packages/pfm_nginx.pp
+    inc 'pp=/usr/share/selinux/packages/pfw_nginx.pp
          [ -s "$pp" ] || exit 1
-         rpm -qf "$pp" 2>/dev/null | grep -q "^pfm-server"'
+         rpm -qf "$pp" 2>/dev/null | grep -q "^pfw-server"'
 }
 
 p_ch_caps_within_bounding_set() {
@@ -245,7 +278,7 @@ p_ch_caps_within_bounding_set() {
          [ -e "$bin" ] || exit 1
          caps=$(getcap "$bin" | sed "s|^[^ ]* ||; s/=.*$//; s/,/ /g")
          [ -n "$caps" ] || exit 0
-         bnd=" $(systemctl show pfm-clickhouse.service -p CapabilityBoundingSet --value) "
+         bnd=" $(systemctl show pfw-clickhouse.service -p CapabilityBoundingSet --value) "
          for c in $caps; do
              case "$bnd" in *" $c "*) ;; *) exit 1 ;; esac
          done

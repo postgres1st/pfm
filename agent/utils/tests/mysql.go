@@ -34,6 +34,7 @@ func GetTestMySQLDSN(tb testing.TB) string {
 	if testing.Short() {
 		tb.Skip("-short flag is passed, skipping test with real database.")
 	}
+	SkipIfUnreachable(tb, "127.0.0.1:3306", "MySQL")
 
 	cfg := mysql.NewConfig()
 	cfg.User = "root"

@@ -32,6 +32,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"github.com/percona/pmm/agent/utils/mongofix"
+	"github.com/percona/pmm/agent/utils/tests"
 )
 
 const (
@@ -85,6 +86,7 @@ func createSession(dsn string, agentID string) (*mongo.Client, error) {
 }
 
 func TestProfilerFingerprinter(t *testing.T) {
+	tests.SkipIfUnreachable(t, "127.0.0.1:27017", "MongoDB")
 	t.Run("CheckWithRealDB", func(t *testing.T) {
 		url := "mongodb://root:root-password@127.0.0.1:27017"
 		dbName := "test_fingerprint"

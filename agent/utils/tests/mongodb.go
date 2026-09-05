@@ -35,6 +35,7 @@ func GetTestMongoDBDSN(tb testing.TB) string {
 	if testing.Short() {
 		tb.Skip("-short flag is passed, skipping test with real database.")
 	}
+	SkipIfUnreachable(tb, "localhost:27017", "MongoDB")
 	return "mongodb://root:root-password@localhost:27017/admin"
 }
 
@@ -44,6 +45,7 @@ func GetTestMongoDBReplicatedDSN(tb testing.TB) string {
 	if testing.Short() {
 		tb.Skip("-short flag is passed, skipping test with real database.")
 	}
+	SkipIfUnreachable(tb, "127.0.0.1:27020", "MongoDB")
 	return "mongodb://127.0.0.1:27020,127.0.0.1:27021/admin?replicaSet=rs0"
 }
 
@@ -56,6 +58,7 @@ func GetTestMongoDBWithSSLDSN(tb testing.TB, pathToRoot string) (string, *agentv
 		tb.Skip("-short flag is passed, skipping test with real database.")
 	}
 
+	SkipIfUnreachable(tb, "localhost:27018", "MongoDB")
 	dsn := "mongodb://localhost:27018/admin/?tls=true&tlsCaFile={{.TextFiles.caFilePlaceholder}}&tlsCertificateKeyFile={{.TextFiles.certificateKeyFilePlaceholder}}"
 
 	caFile, err := os.ReadFile(filepath.Join(pathToRoot, "utils/tests/testdata/", "mongodb/", "ca.crt")) //nolint:gosec
@@ -82,6 +85,7 @@ func GetTestMongoDBReplicatedWithSSLDSN(tb testing.TB, pathToRoot string) (strin
 		tb.Skip("-short flag is passed, skipping test with real database.")
 	}
 
+	SkipIfUnreachable(tb, "localhost:27022", "MongoDB")
 	dsn := "mongodb://localhost:27022,localhost:27023/admin/?tls=true&tlsCaFile=" +
 		"{{.TextFiles.caFilePlaceholder}}&tlsCertificateKeyFile={{.TextFiles.certificateKeyFilePlaceholder}}"
 

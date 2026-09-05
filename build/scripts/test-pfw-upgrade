@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# In-place upgrade test for the air-gapped PFMM bundle.
+# In-place upgrade test for the air-gapped PGF WatchTower bundle.
 #
-#   build/scripts/test-pfmm-upgrade [/path/to/pfmm-repo]
+#   build/scripts/test-pfw-upgrade [/path/to/pfw-repo]
 #
 # Installs a synthesised PREVIOUS release, boots it, puts real state into all four
 # data stores, then upgrades to the shipped bundle exactly the way INSTALL.md tells
 # an operator to -- and asserts the server comes back with its data intact.
 #
-# WHY THIS EXISTS, SEPARATELY FROM test-pfmm-airgap
+# WHY THIS EXISTS, SEPARATELY FROM test-pfw-airgap
 #
 # A from-scratch install cannot observe an upgrade defect. Every one of these
 # shipped, and every one was found by upgrading a running server by hand:
 #
-#   1. pfm-grafana's upgrade reverted our config    -> server dead on restart
+#   1. pfw-grafana's upgrade reverted our config    -> server dead on restart
 #   2. dashboards were copied at first boot         -> no update ever reached an install
-#   3. pfm-server/pfm-client had static NEVRAs      -> dnf upgrade skipped them silently
+#   3. pfw-server/pfw-client had static NEVRAs      -> dnf upgrade skipped them silently
 #   4. a clickhouse-server upgrade reset ownership  -> readyz 504
 #
-# test-pfmm-airgap asserts the four mechanisms structurally, which is a proxy: a
+# test-pfw-airgap asserts the four mechanisms structurally, which is a proxy: a
 # fifth defect of a different shape passes it. This test exercises the transition
 # itself, so it fails on the behaviour rather than on a known shape.
 #
@@ -27,39 +27,39 @@
 # months-old artifact archived somewhere. Its limits are stated at the bottom of the
 # run so nobody mistakes what it covers.
 #
-# EVERY ASSERTION IS A p_* PREDICATE, on purpose. test-pfmm-negative-control sources
-# this file (PFMM_LIB_ONLY=1) and drives those same functions, breaking the thing each
+# EVERY ASSERTION IS A p_* PREDICATE, on purpose. test-pfw-negative-control sources
+# this file (PFW_LIB_ONLY=1) and drives those same functions, breaking the thing each
 # one is supposed to catch and requiring it to go red. Controlling a *copy* of an
 # assertion proves nothing about the assertion that runs, so there is exactly one copy.
 # Keep predicates side-effect free and re-runnable, or the control harness lies.
 #
-# Requires: a built bundle (build-pfmm-airgap) and its work directory, which this
+# Requires: a built bundle (build-pfw-airgap) and its work directory, which this
 # reuses for the source tarballs and generated specs. Builds only RPMs, into a
 # scratch topdir -- it never writes to the release bundle or to work/rpmbuild.
 set -o errexit
 set -o nounset
 set -o pipefail
 
-# BASH_SOURCE, not $0: test-pfmm-negative-control sources this file, and under
+# BASH_SOURCE, not $0: test-pfw-negative-control sources this file, and under
 # `source` $0 is the *caller's* name, which resolves bin_dir to the wrong directory.
 bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
 # shellcheck source=/dev/null
-source "${bin_dir}/pfmm-airgap-vars"
+source "${bin_dir}/pfw-airgap-vars"
 # shellcheck source=/dev/null
-source "${bin_dir}/pfmm-test-lib"
+source "${bin_dir}/pfw-test-lib"
 
-# PFMM_OUT (arch-suffixed) comes from pfmm-airgap-vars.
-work=${PFMM_OUT}/work
-repo_b=${1:-${PFMM_OUT}/pfmm-repo}
-container=${PFMM_TEST_CONTAINER:-pfm-upgrade-test}
-network=${PFMM_TEST_NETWORK:-pfm-airgap-net}
-keep=${PFMM_TEST_KEEP:-1}
+# PFW_OUT (arch-suffixed) comes from pfw-airgap-vars.
+work=${PFW_OUT}/work
+repo_b=${1:-${PFW_OUT}/pfw-repo}
+container=${PFW_TEST_CONTAINER:-pfw-upgrade-test}
+network=${PFW_TEST_NETWORK:-pfw-airgap-net}
+keep=${PFW_TEST_KEEP:-1}
 host_uid=$(id -u)
 host_gid=$(id -g)
 
 # Any stamp that sorts below a real one (%y%m%d%H%M, so 26.. today).
-old_stamp=${PFMM_UPGRADE_OLD_STAMP:-2501010000}
+old_stamp=${PFW_UPGRADE_OLD_STAMP:-2501010000}
 # Stamped into a dashboard title in the previous release. The upgrade must remove
 # it; that is the end-to-end proof that packaged dashboard content reaches a
 # running install, which is exactly what defect 2 broke.
@@ -76,13 +76,18 @@ top=${up}/rpmbuild
 
 # ------------------------------------------------------------------------- helpers
 
-nevras() { inc "rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards | sort"; }
+nevras() { inc "rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' pfw-server pfw-managed pfw-agent pfw-grafana pfw-dashboards pfw-qan-api2 pfw-vmproxy pfw-dump | sort"; }
 gapi()   { inc "curl -sk -u admin:admin $1"; }
 # ClickHouse's HTTP interface wants credentials; take them from the env file
-# pfm-managed renders rather than hardcoding them here, so a changed password does
+# pfw-managed renders rather than hardcoding them here, so a changed password does
 # not silently turn these assertions into failures. --fail-with-body because curl
 # exits 0 on an HTTP 500, so without it a rejected query reads as success.
-ch()     { inc "set -a; . /run/pfm/qan-api2.env; set +a; curl -sS --fail-with-body -u \"\${PMM_CLICKHOUSE_USER}:\${PMM_CLICKHOUSE_PASSWORD}\" 'http://127.0.0.1:8123/' --data-binary \"$1\""; }
+# Sources BOTH files the qan-api2 unit does. The address, database and user come from
+# the rendered /run/pfw/qan-api2.env, but the password moved into the 0600 secret store
+# with the credential work -- so sourcing only the first left PMM_CLICKHOUSE_PASSWORD
+# empty and every ClickHouse assertion failed on authentication while the server was
+# healthy. Mirror the unit rather than assume where the value lives.
+ch()     { inc "set -a; . /run/pfw/qan-api2.env; . /srv/.pfw-secrets/clickhouse.env; set +a; curl -sS --fail-with-body -u \"\${PMM_CLICKHOUSE_USER}:\${PMM_CLICKHOUSE_PASSWORD}\" 'http://127.0.0.1:8123/' --data-binary \"$1\""; }
 
 # ---------------------------------------------------------------------- predicates
 # Each returns 0 when the property holds. No side effects: the negative-control
@@ -90,22 +95,38 @@ ch()     { inc "set -a; . /run/pfm/qan-api2.env; set +a; curl -sS --fail-with-bo
 
 # p_no_internet, p_readyz, p_no_failed_units, p_all_units_active, p_no_pmm_packages,
 # p_no_srv_plugin_copy, p_pfm_ini_plugins, p_ch_owned_by_pfm, p_mysql_rejected and
-# p_bundle_signed are shared with test-pfmm-airgap and live in pfmm-test-lib.
-p_service_registered()  { gapi "'https://127.0.0.1:8443/v1/inventory/services'" | grep -q canary-pg; }
+# p_bundle_signed are shared with test-pfw-airgap and live in pfw-test-lib.
+# Matches the service_name FIELD, not the substring anywhere in the response. A bare
+# grep would also match an agent, node or error message that happened to mention the
+# name, and would then stay green after the service itself was removed -- reporting
+# survival of a thing that is gone. The trailing quote pins it to a whole value, so
+# canary-pg-replica cannot satisfy it either.
+p_service_registered()  { gapi "'https://127.0.0.1:8443/v1/inventory/services'" \
+                            | grep -q '"service_name"[[:space:]]*:[[:space:]]*"canary-pg"'; }
 p_grafana_folder()      { gapi "'https://127.0.0.1:8443/graph/api/search?query=upgrade-canary'" | grep -q upgrade-canary; }
-p_clickhouse_row()      { ch "SELECT sum(n) FROM default.pfm_upgrade_canary" 2>/dev/null | grep -q '^42$'; }
+p_clickhouse_row()      { ch "SELECT sum(n) FROM default.pfw_upgrade_canary" 2>/dev/null | grep -q '^42$'; }
 p_metrics_at()          { inc "curl -s 'http://127.0.0.1:9090/prometheus/api/v1/query?query=pg_up&time=$1' | grep -q '\"value\"'"; }
 p_marker_served()       { gapi "'${dash_search}'" | grep -q "${marker}"; }
-p_operator_edit_kept()  { inc "grep -q '^# operator-canary' /etc/nginx/pfm.conf"; }
-p_pfm_ini_loopback()    { inc 'grep -q "^http_addr = 127.0.0.1" /etc/grafana/pfm.ini'; }
+p_operator_edit_kept()  { inc "grep -q '^# operator-canary' /etc/nginx/pfw.conf"; }
+p_pfm_ini_loopback()    { inc 'grep -q "^http_addr = 127.0.0.1" /etc/grafana/pfw.ini'; }
 p_grafana_not_exposed() { ! inc "ss -lntH 2>/dev/null | awk '\$4 ~ /^\\*:3000|^0\\.0\\.0\\.0:3000/' | grep -q ."; }
-p_ch_owner_reverted()   { inc 'test "$(stat -c %U /etc/clickhouse-server)" != pfm'; }
-p_ch_config_readable()  { inc 'su -s /bin/bash pfm -c "head -c 1 /etc/clickhouse-server/config.xml" >/dev/null 2>&1'; }
+# Asserts the PROPERTY, not a literal: the credential lives in a 0600 file in the secret
+# store and the store is not world-readable. It used to require the value
+# 'pmm-managed' -- the beta1 constant -- which only held after the legacy seed below
+# manufactured a pre-secret-store host. On a supported upgrade the password is generated,
+# so that form could never pass.
+p_secrets_relocated()   { inc "test -s /srv/.pfw-secrets/managed-db.env \
+                                && grep -q '^PMM_POSTGRES_DBPASSWORD=.' /srv/.pfw-secrets/managed-db.env \
+                                && [ \"\$(stat -c %a /srv/.pfw-secrets/managed-db.env)\" = 600 ]"; }
+p_upgraded_unit_clean() { ! inc "grep -q '^Environment=PMM_POSTGRES_DBPASSWORD=' /usr/lib/systemd/system/pfw-managed.service"; }
+p_ch_owner_reverted()   { inc 'test "$(stat -c %U /etc/clickhouse-server)" != pfw'; }
+p_ch_config_readable()  { inc 'su -s /bin/bash pfw -c "head -c 1 /etc/clickhouse-server/config.xml" >/dev/null 2>&1'; }
 
 # $1 = NEVRA listing from before the upgrade, $2 = from after.
 stuck_pkgs() {
     local pkg
-    for pkg in pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards; do
+    for pkg in pfw-server pfw-managed pfw-agent pfw-grafana pfw-dashboards \
+               pfw-qan-api2 pfw-vmproxy pfw-dump; do
         if [ "$(printf '%s\n' "$1" | grep "^${pkg}-" || true)" = "$(printf '%s\n' "$2" | grep "^${pkg}-" || true)" ]; then
             printf ' %s' "${pkg}"
         fi
@@ -118,12 +139,26 @@ p_all_pkgs_upgraded()   { [ -z "$(stuck_pkgs "$1" "$2")" ]; }
 
 build_previous_release() {
     local commit short f name newest spec
-    commit=$(awk '/^%global commit/{print $3; exit}' "${work}/rpmbuild/SPECS/pfm-server.spec")
+    commit=$(awk '/^%global commit/{print $3; exit}' "${work}/rpmbuild/SPECS/pfw-server.spec")
     short=${commit:0:7}
     [ -s "${work}/rpmbuild/SOURCES/pmm-${short}.tar.gz" ] \
-        || die "missing source tarball pmm-${short}.tar.gz (re-run build-pfmm-airgap rpms)"
+        || die "missing source tarball pmm-${short}.tar.gz (re-run build-pfw-airgap rpms)"
 
     log "building the previous release (stamp ${old_stamp}, marker in ${marker_dash##*/})"
+    # Reclaim ownership BEFORE removing. rpmbuild runs as root in a container, so a run
+    # that was interrupted rather than failed -- Ctrl-C, a killed terminal, a reboot --
+    # leaves root-owned files here and this rm dies in thousands of "Permission denied"
+    # lines. The damage surfaces on the NEXT run, looks nothing like the interruption
+    # that caused it, and wedges every run until someone reclaims by hand.
+    #
+    # The chowns further down cannot cover this: they run when rpmbuild FAILS, not when
+    # this script is killed while rpmbuild is still going.
+    if [ -d "${up}" ] && find "${up}" ! -user "${host_uid}" -print -quit | grep -q .; then
+        log "reclaiming root-owned files from an interrupted earlier run"
+        docker run --rm -v "${up}":/up "${PFW_RPMBUILD_IMAGE}" \
+            chown -R "${host_uid}:${host_gid}" /up >/dev/null 2>&1 \
+            || die "could not reclaim ${up}; remove it from a container and re-run"
+    fi
     rm -rf "${up}"
     mkdir -p "${top}"/{SOURCES,SPECS,BUILD,RPMS,SRPMS} "${up}/stage" "${repo_a}"
 
@@ -144,10 +179,11 @@ PY
 
     # Everything else is byte-identical to the shipped build; hardlink it. These are
     # only ever read, never signed or rewritten, so sharing the inode is safe.
-    for f in "${PFMM_GRAFANA_COMMIT}.tar.gz" \
-             "pfm-client-${PFMM_PMM_VERSION}.tar.gz" \
-             "grafana-clickhouse-datasource-${PFMM_CLICKHOUSE_DS_VERSION}.${PFMM_PLUGIN_ARCH}.zip" \
-             "grafana-polystat-panel-${PFMM_POLYSTAT_VERSION}.zip"; do
+    for f in "${PFW_GRAFANA_COMMIT}.tar.gz" \
+             "pfw-client-${PFW_VERSION}.tar.gz" \
+             "${PFW_PMM_DUMP_COMMIT}.tar.gz" \
+             "grafana-clickhouse-datasource-${PFW_CLICKHOUSE_DS_VERSION}.${PFW_PLUGIN_ARCH}.zip" \
+             "grafana-polystat-panel-${PFW_POLYSTAT_VERSION}.zip"; do
         ln -f "${work}/rpmbuild/SOURCES/${f}" "${top}/SOURCES/${f}" 2>/dev/null \
             || cp "${work}/rpmbuild/SOURCES/${f}" "${top}/SOURCES/${f}"
     done
@@ -155,29 +191,53 @@ PY
     # The specs compute their own build_timestamp with date(1), and a %define in the
     # spec beats a --define on the command line -- so the stamp has to be rewritten
     # here rather than passed in.
-    for spec in pfm-managed percona-dashboards grafana pfm-server pfm-client; do
+    # Every spec that carries a build_timestamp, so each gets an older NEVRA and dnf
+    # genuinely has to upgrade it. victoriametrics is absent on purpose: its Release is
+    # a bare 1%{?dist} with no stamp, so a "previous" build would be byte-identical --
+    # it is hardlinked from the shipped repo below, which models a component whose
+    # version did not move between releases.
+    # SPEC FILENAMES, not package names: grafana.spec builds pfw-grafana,
+    # percona-dashboards.spec builds pfw-dashboards, vmproxy.spec builds pfw-vmproxy.
+    for spec in pfw-managed percona-dashboards grafana pfw-server pfw-agent \
+                pfw-qan-api2 vmproxy pfw-dump; do
         sed "s/^%define build_timestamp .*/%define build_timestamp ${old_stamp}/" \
             "${work}/rpmbuild/SPECS/${spec}.spec" > "${top}/SPECS/${spec}.spec"
         grep -q "^%define build_timestamp ${old_stamp}\$" "${top}/SPECS/${spec}.spec" \
             || die "could not force the build stamp in ${spec}.spec"
         printf '  %s\n' "${spec}"
-        docker run --rm -e HOME=/tmp -v "${top}":/rpmbuild -w /rpmbuild "${PFMM_RPMBUILD_IMAGE}" \
+        docker run --rm -e HOME=/tmp -v "${top}":/rpmbuild -w /rpmbuild "${PFW_RPMBUILD_IMAGE}" \
             rpmbuild --define "_topdir /rpmbuild" \
-                     --define "version ${PFMM_PMM_VERSION}" \
+                     --define "version ${PFW_VERSION}" \
                      --define "release 1" \
-                     --define "dist ${PFMM_DIST}" \
+                     --define "dist ${PFW_DIST}" \
                      -bb "SPECS/${spec}.spec" >"${up}/rpmbuild-${spec}.log" 2>&1 \
-            || { tail -25 "${up}/rpmbuild-${spec}.log" >&2; die "rpmbuild failed for ${spec}"; }
+            || { tail -25 "${up}/rpmbuild-${spec}.log" >&2
+                 # Hand ownership back before dying: rpmbuild runs as root in the
+                 # container, so bailing here leaves root-owned files under work/upgrade
+                 # and the NEXT run's `rm -rf` fails with Permission denied -- a failure
+                 # that looks unrelated and outlives the one that caused it.
+                 docker run --rm -v "${top}":/rpmbuild "${PFW_RPMBUILD_IMAGE}" \
+                     chown -R "${host_uid}:${host_gid}" /rpmbuild >/dev/null 2>&1 || true
+                 die "rpmbuild failed for ${spec}"; }
     done
-    docker run --rm -v "${top}":/rpmbuild "${PFMM_RPMBUILD_IMAGE}" chown -R "${host_uid}:${host_gid}" /rpmbuild
+    docker run --rm -v "${top}":/rpmbuild "${PFW_RPMBUILD_IMAGE}" chown -R "${host_uid}:${host_gid}" /rpmbuild
 
     log "assembling the previous-release repo"
     # Third-party packages are identical in both releases, so hardlink them.
     for f in "${repo_b}"/*.rpm; do
-        case "$(basename "${f}")" in pfm-*|percona-dashboards-*) continue ;; esac
+        case "$(basename "${f}")" in
+            pfw-victoriametrics-*) ;;                       # not rebuilt; see above
+            pfw-*|percona-dashboards-*) continue ;;
+        esac
+        # vmproxy is skipped for the same reason as the pfw-* packages: it IS rebuilt
+        # with the old stamp below. Hardlinking the shipped copy too put both releases
+        # in the repo, dnf resolved to the newer one, and the "previous" host was
+        # already running the shipped vmproxy -- so the upgrade had nothing to do and
+        # the NEVRA check reported it as silently skipped.
         ln -f "${f}" "${repo_a}/$(basename "${f}")" 2>/dev/null || cp "${f}" "${repo_a}/"
     done
-    for name in pfm-server pfm-managed pfm-client pfm-grafana percona-dashboards; do
+    for name in pfw-server pfw-managed pfw-agent pfw-grafana pfw-dashboards \
+                pfw-qan-api2 pfw-vmproxy pfw-dump; do
         newest=$(ls -t "${top}"/RPMS/*/"${name}"-*.rpm 2>/dev/null | head -1)
         [ -n "${newest}" ] || die "previous release is missing ${name}"
         cp "${newest}" "${repo_a}/"
@@ -186,7 +246,7 @@ PY
     # and signing it would need the release key just to run a test. The upgrade
     # transaction -- the half that matters -- still runs against the signed bundle
     # with gpgcheck=1.
-    docker run --rm -v "${repo_a}":/repo "${PFMM_RPMBUILD_IMAGE}" \
+    docker run --rm -v "${repo_a}":/repo "${PFW_RPMBUILD_IMAGE}" \
         sh -c "createrepo_c -q /repo && chown -R ${host_uid}:${host_gid} /repo"
     printf '  %s packages\n' "$(ls "${repo_a}"/*.rpm | wc -l)"
 }
@@ -195,46 +255,93 @@ PY
 
 install_previous_release() {
     log "installing the previous release on an isolated host"
-    start_container -v "${repo_a}":/pfmm-repo-a:ro -v "${repo_b}":/pfmm-repo-b:ro
+    start_container -v "${repo_a}":/pfw-repo-a:ro -v "${repo_b}":/pfw-repo-b:ro
     p_no_internet || die "test host can reach the internet -- an offline upgrade would not be proven"
     ok "no route to the internet"
-    inc "printf '[pfmm]\nname=PFMM\nbaseurl=file:///pfmm-repo-a\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfmm.repo"
-    inc "dnf --disablerepo='*' --enablerepo=pfmm -y install pfm-server >/tmp/install.log 2>&1" \
+    inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file:///pfw-repo-a\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
+    # pfw-dump explicitly: it ships in the bundle but is NOT a dependency of
+    # pfw-server, so installing only the metapackage left it absent and the NEVRA
+    # comparison below reported it as skipped when it had never been there.
+    inc "dnf --disablerepo='*' --enablerepo=pfw -y install pfw-server pfw-dump >/tmp/install.log 2>&1" \
         || { inc 'tail -20 /tmp/install.log' || true; die "installing the previous release failed"; }
-    inc 'systemctl start pfm.target >/tmp/start.log 2>&1' || true
+    inc 'systemctl start pfw.target >/tmp/start.log 2>&1' || true
     local code; code=$(wait_readyz)
     [ "${code}" = "200" ] && ok "previous release is up (readyz 200)" \
         || { no "previous release never became ready (readyz ${code})"; summary; exit 1; }
 }
 
+# The previous release is built from TODAY's sources (see the file header), so
+# installing it is a genuine first-ever boot: $1 -eq 1, ensure_secrets() runs
+# before provision_srv() writes the DIST_FILE sentinel, srv_provisioned() is
+# false, and it GENERATES random credentials -- it never produces the legacy
+# literal shape the %post relocation exists to repair. Without this step
+# p_secrets_relocated is red in every run (fix or no fix) and the restart
+# assertion is green with or without the %post block, so neither discriminates
+# the defect. This manufactures the pre-secret-store shape by hand: delete the
+# secret store, put the real DB passwords back to the historical literals (a
+# real legacy host's roles genuinely had these values -- pfw-init.sh's
+# LEGACY_MANAGED_DB_PASSWORD/LEGACY_GRAFANA_DB_PASSWORD document the same
+# literals), and rewrite the installed units to the pre-relocation shape
+# (Environment=, no EnvironmentFile=) so the upgrade is repairing a real unit,
+# not a doctored one.
+# Harness bookkeeping, NOT legacy simulation -- this is the one part of the retired
+# seed that is still needed. install_previous_release is a genuine first boot, so
+# ensure_secrets generates a random GF_SECURITY_ADMIN_PASSWORD and Grafana creates the
+# admin user with it. Everything after this point authenticates as admin:admin (the
+# pfw-test-lib default), so without the reset seed_state 401s and every later assertion
+# reports on a server it never reached.
+reset_grafana_admin_for_harness() {
+    log "resetting the Grafana admin password for the harness"
+    inc "GF_DATABASE_PASSWORD=\$(sed -n 's/^GF_DATABASE_PASSWORD=//p' /srv/.pfw-secrets/grafana.env) /usr/sbin/grafana cli --config=/etc/grafana/pfw.ini --homepath /usr/share/grafana admin reset-admin-password admin" \
+        || die "could not reset the Grafana admin user to admin -- the harness cannot authenticate"
+}
+
+# RETIRED: downgrade_to_legacy_credential_shape.
+#
+# It manufactured a pre-P0.3b host -- no secret store, credentials as literal
+# Environment= lines -- to prove the %post relocation repaired one. That shape existed
+# only in beta1, and there is deliberately no beta1 -> beta2 upgrade path, so it modelled
+# a transition this product does not support.
+#
+# It had also drifted badly from the packaging: it knew two units when three read the
+# store, reverted one ClickHouse users file when the package ships two, and deleted the
+# secret store without reverting ClickHouse at all -- which ensure_clickhouse_secret
+# cannot recover from by design. Each drift surfaced as "the fix under test is broken"
+# while the harness was what had gone stale.
+#
+# The two predicates it fed are kept and now assert properties that hold on the supported
+# path: the credential lives in a 0600 file in the secret store, and the upgraded unit
+# carries no credential of its own.
+
 seed_state() {
     log "seeding state an upgrade must not lose"
-    inc "/usr/sbin/pfm-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\$(cat /srv/.postgres_password) canary-pg >/dev/null 2>&1" || true
-    p_service_registered && ok "registered a monitored service (pfm-managed's PostgreSQL DB)" \
+    inc "/usr/sbin/pfw-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\$(cat /srv/.postgres_password) canary-pg >/dev/null 2>&1" || true
+    p_service_registered && ok "registered a monitored service (pfw-managed's PostgreSQL DB)" \
         || no "could not register a service"
     gapi "-X POST -H 'Content-Type: application/json' -d '{\"title\":\"upgrade-canary\"}' https://127.0.0.1:8443/graph/api/folders >/dev/null" || true
     p_grafana_folder && ok "created a Grafana folder (Grafana's DB)" || no "could not create a Grafana folder"
-    ch "CREATE TABLE IF NOT EXISTS default.pfm_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n" >/dev/null || true
-    ch "INSERT INTO default.pfm_upgrade_canary VALUES (42)" >/dev/null || true
+    ch "CREATE TABLE IF NOT EXISTS default.pfw_upgrade_canary (n UInt8) ENGINE = MergeTree ORDER BY n" >/dev/null || true
+    ch "INSERT INTO default.pfw_upgrade_canary VALUES (42)" >/dev/null || true
     p_clickhouse_row && ok "wrote a ClickHouse row (QAN's store)" || no "could not write to ClickHouse"
     # Stands in for the TLS certificate paths and tuning an operator edits by hand.
-    inc "printf '# operator-canary\n' >> /etc/nginx/pfm.conf" || true
+    inc "printf '# operator-canary\n' >> /etc/nginx/pfw.conf" || true
     p_operator_edit_kept && ok "made an operator edit to a %config(noreplace) file" \
-        || no "could not edit nginx/pfm.conf"
+        || no "could not edit nginx/pfw.conf"
 }
 
 # ---------------------------------------------------------------------------- main
 
 run_upgrade_suite() {
-    # Inside the suite, not at file scope: test-pfmm-negative-control sources this
+    # Inside the suite, not at file scope: test-pfw-negative-control sources this
     # file, and a top-level `die` would take the harness down with it.
-    [ -d "${repo_b}/repodata" ] || die "no yum repo at ${repo_b} (run build-pfmm-airgap first)"
-    [ -d "${work}/rpmbuild/SPECS" ] || die "no generated specs at ${work}/rpmbuild/SPECS (run build-pfmm-airgap rpms first)"
+    [ -d "${repo_b}/repodata" ] || die "no yum repo at ${repo_b} (run build-pfw-airgap first)"
+    [ -d "${work}/rpmbuild/SPECS" ] || die "no generated specs at ${work}/rpmbuild/SPECS (run build-pfw-airgap rpms first)"
     build_previous_release
     install_previous_release
+    reset_grafana_admin_for_harness
 
     local before_nevra
-    before_nevra=$(nevras) || die "the previous release did not install all five pfm packages"
+    before_nevra=$(nevras) || die "the previous release did not install all five pfw packages"
     printf '%s\n' "${before_nevra}" | sed 's/^/    /'
 
     seed_state
@@ -258,16 +365,16 @@ run_upgrade_suite() {
     fi
 
     log "upgrading to the shipped bundle, following INSTALL.md"
-    inc "sed -i 's|baseurl=.*|baseurl=file:///pfmm-repo-b|' /etc/yum.repos.d/pfmm.repo"
-    if p_bundle_signed /pfmm-repo-b; then
-        inc 'rpm --import /pfmm-repo-b/RPM-GPG-KEY-postgres1st'
-        inc "sed -i 's|gpgcheck=0|gpgcheck=1\ngpgkey=file:///pfmm-repo-b/RPM-GPG-KEY-postgres1st|' /etc/yum.repos.d/pfmm.repo"
+    inc "sed -i 's|baseurl=.*|baseurl=file:///pfw-repo-b|' /etc/yum.repos.d/pfw.repo"
+    if p_bundle_signed /pfw-repo-b; then
+        inc 'rpm --import /pfw-repo-b/RPM-GPG-KEY-postgres1st'
+        inc "sed -i 's|gpgcheck=0|gpgcheck=1\ngpgkey=file:///pfw-repo-b/RPM-GPG-KEY-postgres1st|' /etc/yum.repos.d/pfw.repo"
         ok "upgrading with gpgcheck=1 against the signed bundle"
     else
         no "shipped bundle is UNSIGNED -- upgrading with gpgcheck=0"
     fi
     inc 'dnf clean all >/dev/null 2>&1' || true
-    if inc "dnf --disablerepo='*' --enablerepo=pfmm -y upgrade >/tmp/upgrade.log 2>&1"; then
+    if inc "dnf --disablerepo='*' --enablerepo=pfw -y upgrade >/tmp/upgrade.log 2>&1"; then
         ok "dnf upgrade completed offline"
     else
         inc 'tail -30 /tmp/upgrade.log' || true; no "dnf upgrade failed"; summary; exit 1
@@ -276,10 +383,24 @@ run_upgrade_suite() {
     # Defect 3: a release that never changes makes dnf skip the package with no
     # error at all, so the operator believes they upgraded and did not.
     local after_nevra
-    after_nevra=$(nevras) || die "a pfm package disappeared during the upgrade"
+    after_nevra=$(nevras) || die "a pfw package disappeared during the upgrade"
     p_all_pkgs_upgraded "${before_nevra}" "${after_nevra}" \
-        && ok "every pfm package actually upgraded" \
+        && ok "every pfw package actually upgraded" \
         || no "dnf silently skipped:$(stuck_pkgs "${before_nevra}" "${after_nevra}") (release string does not advance)"
+
+    log "credential relocation"
+    p_secrets_relocated   && ok "the existing DB password was relocated to a 0600 file" || no "no relocated credential -- an upgraded host has no EnvironmentFile"
+    p_upgraded_unit_clean && ok "the upgraded unit carries no credential" || no "the upgraded unit still carries the credential"
+
+    # The §4.1 scenario. pfw-init.service is a RemainAfterExit oneshot and
+    # %systemd_postun restarts nothing, so an upgraded host does NOT re-run it.
+    # Restart pfw-managed WITHOUT touching pfw-init or rebooting: without the %post
+    # relocation this fails on a missing EnvironmentFile, and it is the single
+    # assertion that catches it.
+    inc 'systemctl restart pfw-managed' || true
+    inc 'systemctl is-active pfw-managed >/dev/null' \
+        && ok "pfw-managed restarts after upgrade without re-running pfw-init" \
+        || no "pfw-managed will not start after upgrade -- missing EnvironmentFile"
 
     # INSTALL.md tells operators dashboards need NO restart because Grafana rescans
     # the provisioning path. Check that claim before restarting anything -- if it is
@@ -297,11 +418,11 @@ run_upgrade_suite() {
 
     log "restarting, as INSTALL.md says to"
     inc 'systemctl daemon-reload'
-    inc 'systemctl restart pfm.target' || true
+    inc 'systemctl restart pfw.target' || true
     local code; code=$(wait_readyz)
     [ "${code}" = "200" ] && ok "readyz 200 after the upgrade" || no "readyz ${code} after the upgrade"
-    p_no_failed_units  && ok "no pfm unit failed after the upgrade" || no "a pfm unit failed after the upgrade"
-    p_all_units_active && ok "all long-running pfm units active after the upgrade" || no "a long-running pfm unit is inactive"
+    p_no_failed_units  && ok "no pfw unit failed after the upgrade" || no "a pfw unit failed after the upgrade"
+    p_all_units_active && ok "all long-running pfw units active after the upgrade" || no "a long-running pfw unit is inactive"
 
     log "state survived"
     p_service_registered && ok "the monitored service is still registered" || no "the monitored service is gone"
@@ -312,9 +433,9 @@ run_upgrade_suite() {
         || no "pre-upgrade metrics were lost"
 
     log "the upgrade did not undo our configuration"
-    # Defect 1: pfm-grafana's own grafana.ini used to win, and grafana then fell back
+    # Defect 1: pfw-grafana's own grafana.ini used to win, and grafana then fell back
     # to a stock sqlite-in-homepath config and died on a read-only path.
-    p_pfm_ini_plugins     && ok "pfm.ini still points at the packaged dashboards" || no "pfm.ini was reverted"
+    p_pfm_ini_plugins     && ok "pfw.ini still points at the packaged dashboards" || no "pfw.ini was reverted"
     p_pfm_ini_loopback    && ok "grafana still binds loopback only" || no "grafana's bind address was reverted"
     p_no_srv_plugin_copy  && ok "no first-boot plugin copy appeared" || no "/srv/grafana/plugins was created"
     p_grafana_not_exposed && ok "grafana is not exposed off-host after the upgrade" \
@@ -324,8 +445,8 @@ run_upgrade_suite() {
     # trusting the spec, because getting this wrong silently discards their TLS and
     # tuning changes on every upgrade.
     log "operator edits to %config(noreplace) files"
-    p_operator_edit_kept && ok "an operator edit to nginx/pfm.conf survived" \
-        || no "an operator edit to nginx/pfm.conf was overwritten"
+    p_operator_edit_kept && ok "an operator edit to nginx/pfw.conf survived" \
+        || no "an operator edit to nginx/pfw.conf was overwritten"
 
     log "the gate still holds after the upgrade"
     p_mysql_rejected  && ok "mysql still rejected" || no "mysql was NOT rejected after the upgrade"
@@ -337,11 +458,11 @@ run_upgrade_suite() {
     # reinstall exactly as it does on an upgrade. So this reproduces the real defect
     # without needing two ClickHouse versions in the bundle.
     log "a third-party clickhouse-server transaction (the defect-4 path)"
-    inc "dnf --disablerepo='*' --enablerepo=pfmm -y reinstall clickhouse-server >/tmp/ch.log 2>&1" \
+    inc "dnf --disablerepo='*' --enablerepo=pfw -y reinstall clickhouse-server >/tmp/ch.log 2>&1" \
         || { inc 'tail -20 /tmp/ch.log' || true; no "clickhouse-server reinstall failed"; }
     p_ch_owner_reverted && ok "the reinstall did revert ownership (the defect is reproduced)" \
         || no "ownership was NOT reverted -- this no longer tests anything; check the scriptlet"
-    inc 'systemctl restart pfm.target' || true
+    inc 'systemctl restart pfw.target' || true
     code=$(wait_readyz)
     # NOT a discriminating check, and deliberately kept anyway. Masking the repair
     # unit and re-running this whole sequence still yields readyz 200: ClickHouse
@@ -351,9 +472,9 @@ run_upgrade_suite() {
     # asserts only that the transaction did not take the server down hard.
     [ "${code}" = "200" ] && ok "the server is still serving after a clickhouse transaction" \
         || no "readyz ${code} after a clickhouse transaction"
-    p_ch_owned_by_pfm    && ok "/etc/clickhouse-server is pfm-owned again" || no "/etc/clickhouse-server is still not pfm-owned"
+    p_ch_owned_by_pfm    && ok "/etc/clickhouse-server is pfw-owned again" || no "/etc/clickhouse-server is still not pfw-owned"
     p_ch_config_readable && ok "ClickHouse's own user can read its config again" \
-        || no "pfm cannot read /etc/clickhouse-server/config.xml -- ClickHouse is running degraded"
+        || no "pfw cannot read /etc/clickhouse-server/config.xml -- ClickHouse is running degraded"
     # Asserted AFTER the upgrade transaction on purpose: the clickhouse package sets
     # its file capabilities from %post, so an upgrade is exactly when a new one can
     # appear. A cap added upstream that we do not cover leaves the unit unstartable
@@ -372,12 +493,12 @@ What this test does NOT cover:
     scriptlet path is exercised, via reinstall.
 
 Every assertion above is a p_* predicate in this file, and every one that can be has
-been negative-controlled: build/scripts/test-pfmm-negative-control breaks the thing each
+been negative-controlled: build/scripts/test-pfw-negative-control breaks the thing each
 predicate guards and requires it to go red. Re-run it after changing an assertion -- a
 green run here means nothing on its own.
 EOF
     summary
 }
 
-# Sourced by test-pfmm-negative-control, which drives the predicates directly.
-[ "${PFMM_LIB_ONLY:-0}" = "1" ] || run_upgrade_suite "$@"
+# Sourced by test-pfw-negative-control, which drives the predicates directly.
+[ "${PFW_LIB_ONLY:-0}" = "1" ] || run_upgrade_suite "$@"

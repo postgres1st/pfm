@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# End-to-end Query Analytics test: does a query run on a MONITORED database appear in QAN?
+#
+#   build/scripts/test-pfw-qan
+#
+# WHY THIS EXISTS
+#
+# test-pfw-airgap and test-pfw-upgrade assert QAN's scaffolding -- pfw-qan-api2 runs,
+# readyz includes a qan check, a row can be written to ClickHouse, a service can be
+# registered -- but nothing between them ever asks the actual question. Until this
+# existed, no run had ever confirmed that a query executed on a monitored PostgreSQL
+# reaches Query Analytics. Every piece could be individually healthy and the product
+# still deliver nothing.
+#
+# It also exercises the DEFAULT query source. `pfw-admin add postgresql` defaults to
+# --query-source=pgstatmonitor, and pg_stat_monitor is NOT in our bundle: it belongs on
+# the monitored database, which is the operator's to install. That is documented in
+# pfw-airgap-INSTALL.md, and this test is the thing that would notice if the default and
+# the shipped reality ever diverged again.
+#
+# The monitored database joins the SAME --internal network as the server, which is the
+# realistic topology: an air-gapped site monitoring its own hosts. It is a separate
+# container, not a database on the server, because a service reachable at 127.0.0.1
+# would not exercise the agent's network path at all.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-airgap-vars"
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-test-lib"
+
+container=${PFW_AIRGAP_CONTAINER:-pfw-airgap-test}
+keep=${KEEP:-1}   # summary() reads this
+db_container=pfw-qan-db
+# Ships pg_stat_monitor and publishes arm64, which the plain postgres image does not.
+db_image=${PFW_QAN_DB_IMAGE:-percona/percona-distribution-postgresql:18}
+service_name=qan-canary-$(date -u +%y%m%d%H%M%S)
+db_password=qanpw
+# Unique per run, deliberately. With a fixed name the report query matches rows a
+# PREVIOUS run left in ClickHouse, and the test passes without collecting anything --
+# which is exactly what happened the first time it ran.
+marker=qan_canary_$(date -u +%y%m%d%H%M%S)
+
+cleanup() { [ "${KEEP:-1}" = 1 ] || docker rm -f "${db_container}" >/dev/null 2>&1 || true; }
+trap cleanup EXIT
+
+docker inspect "${container}" >/dev/null 2>&1 \
+    || die "no container ${container}; run build/scripts/test-pfw-airgap first (it keeps the host by default)"
+set_srv_from_secrets
+
+log "starting a monitored PostgreSQL with pg_stat_monitor"
+# Same network as the server: --internal, so this models a monitored host inside the
+# air gap rather than something reachable from outside it.
+net=$(docker inspect "${container}" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}')
+docker rm -f "${db_container}" >/dev/null 2>&1 || true
+docker run -d --name "${db_container}" --network "${net}" \
+    -e POSTGRES_PASSWORD="${db_password}" -e POSTGRES_USER=postgres \
+    -e PGDATA=/var/lib/postgresql/data/pgdata \
+    "${db_image}" -c shared_preload_libraries=pg_stat_monitor >/dev/null \
+    || die "could not start ${db_image}"
+
+# 120s, not 60: the first start runs initdb before it listens, and a warm re-run is no
+# guide to a cold one. Too short a window reported "never accepted connections" for a
+# database that was up seconds later.
+for _ in $(seq 1 60); do
+    docker exec "${db_container}" psql -U postgres -tAc 'SELECT 1' >/dev/null 2>&1 && break
+    sleep 2
+done
+docker exec "${db_container}" psql -U postgres -tAc 'SELECT 1' >/dev/null 2>&1 \
+    || die "the monitored PostgreSQL never accepted connections"
+
+# Fatal, not a warning: without the extension the default query source collects nothing
+# and every assertion below would fail describing QAN when the fixture is what is wrong.
+docker exec "${db_container}" psql -U postgres -q -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_monitor' >/dev/null 2>&1 \
+    || die "could not create pg_stat_monitor -- ${db_image} may no longer ship it"
+docker exec "${db_container}" psql -U postgres -tAc \
+    "SELECT 1 FROM pg_extension WHERE extname='pg_stat_monitor'" 2>/dev/null | grep -q 1 \
+    || die "pg_stat_monitor is not installed on the monitored database"
+ok "the monitored database has pg_stat_monitor"
+
+log "registering the monitored service"
+# --password-stdin, not --password: the tool warns that --password puts the credential
+# in /proc/<pid>/cmdline, and a test that ignores its own product's advice is a poor
+# example of how to use it.
+inc "printf '%s' '${db_password}' | /usr/sbin/pfw-admin ${SRV} add postgresql \
+        --query-source=pgstatmonitor --password-stdin \
+        --host=${db_container} --port=5432 --username=postgres ${service_name} \
+        2>&1 | grep -q 'Service name:'" \
+    && ok "registered ${service_name} with query-source=pgstatmonitor" \
+    || no "could not register the monitored service"
+
+log "generating query traffic"
+docker exec "${db_container}" psql -U postgres -q \
+    -c "CREATE TABLE IF NOT EXISTS ${marker}(id int, tag text)" >/dev/null 2>&1
+for i in $(seq 1 60); do
+    docker exec "${db_container}" psql -U postgres -q \
+        -c "SELECT id, tag FROM ${marker} WHERE tag = 'marker_${i}'" >/dev/null 2>&1 || true
+done
+ok "ran 60 queries against the monitored database"
+
+# Proves the FIXTURE before the product: if pg_stat_monitor never saw the queries, a
+# missing QAN report says nothing about QAN.
+docker exec "${db_container}" psql -U postgres -tAc \
+    "SELECT count(*) FROM pg_stat_monitor WHERE query LIKE '%${marker}%'" 2>/dev/null \
+    | grep -qvx 0 \
+    && ok "pg_stat_monitor captured the queries" \
+    || no "pg_stat_monitor captured nothing -- the fixture is broken, not QAN"
+
+log "the actual question: do those queries reach Query Analytics?"
+# Polled: the agent collects on an interval and qan-api2 writes to ClickHouse
+# asynchronously, so a single sample would be a coin toss. ~3.5 min is generous; the
+# manual run found it on the third attempt.
+found=no
+for i in $(seq 1 10); do
+    from=$(date -u -d '-15 min' +%Y-%m-%dT%H:%M:%SZ)
+    to=$(date -u -d '+2 min' +%Y-%m-%dT%H:%M:%SZ)
+    if inc "curl -sk -u '$(gauth)' -H 'Content-Type: application/json' \
+              -d '{\"period_start_from\":\"${from}\",\"period_start_to\":\"${to}\",\"group_by\":\"queryid\",\"columns\":[\"query_time\"],\"order_by\":\"-query_time\",\"limit\":50,\"main_metric\":\"query_time\"}' \
+              'https://127.0.0.1:8443/v1/qan/metrics:getReport' | grep -q '${marker}'"; then
+        found=yes; break
+    fi
+    sleep 20
+done
+[ "${found}" = yes ] \
+    && ok "the query appears in the QAN report (attempt ${i})" \
+    || no "the query never reached QAN after ~3.5 minutes"
+
+summary

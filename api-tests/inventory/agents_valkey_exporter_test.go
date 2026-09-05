@@ -29,6 +29,7 @@ import (
 )
 
 func TestValkeyExporter(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "valkey")
 	t.Parallel()
 	t.Run("Basic", func(t *testing.T) {
 		t.Parallel()

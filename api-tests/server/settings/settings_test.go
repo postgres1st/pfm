@@ -39,9 +39,22 @@ import (
 func TestSettings(t *testing.T) {
 	t.Cleanup(func() { serverTest.RestoreSettingsDefaults(t) })
 	t.Run("GetSettings", func(t *testing.T) {
+		// Establish the defaults before asserting them. This asserted whatever the
+		// server happened to hold, so it passed only against a pristine one: an earlier
+		// run that changed the metrics resolutions -- or was interrupted between the
+		// change and its deferred restore -- left the values behind, and this failed
+		// with 2s/15s/61s against the documented 5s/10s/60s. The server persists
+		// settings, so "pristine" is not a state a test can assume.
+		serverTest.RestoreSettingsDefaults(t)
+
 		res, err := serverClient.Default.ServerService.GetSettings(nil)
 		require.NoError(t, err)
-		assert.True(t, res.Payload.Settings.TelemetryEnabled)
+		// This product ships telemetry and updates force-disabled: telemetry reports to
+		// a third party, and there is no auto-update or version broadcast. Upstream
+		// defaults both to enabled, so asserting those defaults here would demand the
+		// opposite of what we ship.
+		assert.False(t, res.Payload.Settings.TelemetryEnabled, "telemetry must ship disabled")
+		assert.False(t, res.Payload.Settings.UpdatesEnabled, "updates must ship disabled")
 		assert.True(t, res.Payload.Settings.AdvisorEnabled)
 		expected := &server.GetSettingsOKBodySettingsMetricsResolutions{
 			Hr: "5s",
@@ -57,40 +70,37 @@ func TestSettings(t *testing.T) {
 		assert.Equal(t, expectedAdvisorRunIntervals, res.Payload.Settings.AdvisorRunIntervals)
 		assert.Equal(t, "2592000s", res.Payload.Settings.DataRetention)
 		assert.Equal(t, []string{"aws"}, res.Payload.Settings.AWSPartitions)
-		assert.True(t, res.Payload.Settings.UpdatesEnabled)
+		// Updates ship disabled: there is no auto-update or version-broadcast feature.
+		assert.False(t, res.Payload.Settings.UpdatesEnabled, "updates must ship disabled")
 		assert.True(t, res.Payload.Settings.AlertingEnabled)
 
 		t.Run("ChangeSettings", func(t *testing.T) {
 			defer serverTest.RestoreSettingsDefaults(t)
 
 			t.Run("Updates", func(t *testing.T) {
-				t.Run("DisableAndEnableUpdatesSettingsUpdate", func(t *testing.T) {
+				// Upstream proved updates could be toggled off and back on. This product has
+				// no auto-update or version-broadcast feature at all, so the half that still
+				// applies -- asking for the state it is already in -- must be accepted, and the
+				// half that does not must be refused rather than quietly ignored.
+				t.Run("DisablingUpdatesIsAcceptedAndEnablingIsRefused", func(t *testing.T) {
 					defer serverTest.RestoreSettingsDefaults(t)
+
 					res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
 						Body: server.ChangeSettingsBody{
 							EnableUpdates: new(false),
 						},
 						Context: pmmapitests.Context,
 					})
-					require.NoError(t, err)
+					require.NoError(t, err, "asking for the state the environment already forces must not be an error")
 					assert.False(t, res.Payload.Settings.UpdatesEnabled)
 
 					resg, err := serverClient.Default.ServerService.GetSettings(nil)
 					require.NoError(t, err)
 					assert.False(t, resg.Payload.Settings.UpdatesEnabled)
 
-					res, err = serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-						Body: server.ChangeSettingsBody{
-							EnableUpdates: new(true),
-						},
-						Context: pmmapitests.Context,
-					})
-					require.NoError(t, err)
-					assert.True(t, res.Payload.Settings.UpdatesEnabled)
-
-					resg, err = serverClient.Default.ServerService.GetSettings(nil)
-					require.NoError(t, err)
-					assert.True(t, resg.Payload.Settings.UpdatesEnabled)
+					serverTest.AssertEnvOwnedChangeIsRefused(t,
+						"Updates are configured via PMM_ENABLE_UPDATES environment variable.",
+						server.ChangeSettingsBody{EnableUpdates: new(true)})
 				})
 			})
 
@@ -107,24 +117,18 @@ func TestSettings(t *testing.T) {
 				assert.False(t, res.Payload.Settings.AlertingEnabled)
 			})
 
-			t.Run("EnableAdviorsAndEnableTelemetry", func(t *testing.T) {
+			// The body asks for two things at once, one of which is forbidden. That makes it
+			// the case that proves the refusal is atomic: advisors must NOT be enabled as a
+			// side effect of a request the server rejected.
+			t.Run("EnableAdvisorsAndEnableTelemetryIsRefused", func(t *testing.T) {
 				defer serverTest.RestoreSettingsDefaults(t)
 
-				res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-					Body: server.ChangeSettingsBody{
+				serverTest.AssertEnvOwnedChangeIsRefused(t,
+					"Telemetry is configured via PMM_ENABLE_TELEMETRY environment variable.",
+					server.ChangeSettingsBody{
 						EnableAdvisor:   new(true),
 						EnableTelemetry: new(true),
-					},
-					Context: pmmapitests.Context,
-				})
-				require.NoError(t, err)
-				assert.True(t, res.Payload.Settings.AdvisorEnabled)
-				assert.True(t, res.Payload.Settings.TelemetryEnabled)
-
-				resg, err := serverClient.Default.ServerService.GetSettings(nil)
-				require.NoError(t, err)
-				assert.True(t, resg.Payload.Settings.TelemetryEnabled)
-				assert.True(t, resg.Payload.Settings.AdvisorEnabled)
+					})
 			})
 
 			t.Run("EnableAdvisorsAndDisableTelemetry", func(t *testing.T) {
@@ -142,24 +146,15 @@ func TestSettings(t *testing.T) {
 				assert.False(t, res.Payload.Settings.TelemetryEnabled)
 			})
 
-			t.Run("DisableAdvisorsAndEnableTelemetry", func(t *testing.T) {
+			t.Run("DisableAdvisorsAndEnableTelemetryIsRefused", func(t *testing.T) {
 				defer serverTest.RestoreSettingsDefaults(t)
 
-				res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-					Body: server.ChangeSettingsBody{
+				serverTest.AssertEnvOwnedChangeIsRefused(t,
+					"Telemetry is configured via PMM_ENABLE_TELEMETRY environment variable.",
+					server.ChangeSettingsBody{
 						EnableAdvisor:   new(false),
 						EnableTelemetry: new(true),
-					},
-					Context: pmmapitests.Context,
-				})
-				require.NoError(t, err)
-				assert.False(t, res.Payload.Settings.AdvisorEnabled)
-				assert.True(t, res.Payload.Settings.TelemetryEnabled)
-
-				resg, err := serverClient.Default.ServerService.GetSettings(nil)
-				require.NoError(t, err)
-				assert.True(t, resg.Payload.Settings.TelemetryEnabled)
-				assert.False(t, resg.Payload.Settings.AdvisorEnabled)
+					})
 			})
 
 			t.Run("DisableAdvisorsAndDisableTelemetry", func(t *testing.T) {
@@ -182,20 +177,18 @@ func TestSettings(t *testing.T) {
 				assert.False(t, resg.Payload.Settings.AdvisorEnabled)
 			})
 
-			t.Run("EnableAdvisorsWhileTelemetryEnabled", func(t *testing.T) {
+			// Upstream set up "telemetry enabled" and then enabled advisors on top of it.
+			// That precondition is unreachable here, so the test asserts the two halves that
+			// remain true: the precondition cannot be established, and advisors are still
+			// independently controllable with telemetry off.
+			t.Run("AdvisorsAreControllableWhileTelemetryStaysOff", func(t *testing.T) {
 				defer serverTest.RestoreSettingsDefaults(t)
 
-				// Ensure Telemetry is enabled
-				res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-					Body: server.ChangeSettingsBody{
-						EnableTelemetry: new(true),
-					},
-					Context: pmmapitests.Context,
-				})
-				require.NoError(t, err)
-				assert.True(t, res.Payload.Settings.TelemetryEnabled)
+				serverTest.AssertEnvOwnedChangeIsRefused(t,
+					"Telemetry is configured via PMM_ENABLE_TELEMETRY environment variable.",
+					server.ChangeSettingsBody{EnableTelemetry: new(true)})
 
-				res, err = serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
+				res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
 					Body: server.ChangeSettingsBody{
 						EnableAdvisor: new(true),
 					},
@@ -206,8 +199,9 @@ func TestSettings(t *testing.T) {
 
 				resg, err := serverClient.Default.ServerService.GetSettings(nil)
 				require.NoError(t, err)
-				assert.True(t, resg.Payload.Settings.TelemetryEnabled)
 				assert.True(t, resg.Payload.Settings.AdvisorEnabled)
+				assert.False(t, resg.Payload.Settings.TelemetryEnabled,
+					"enabling advisors must not drag telemetry on with it")
 			})
 
 			t.Run("DisableAdvisorsWhileItIsDisabled", func(t *testing.T) {
@@ -224,7 +218,8 @@ func TestSettings(t *testing.T) {
 
 				resg, err := serverClient.Default.ServerService.GetSettings(nil)
 				require.NoError(t, err)
-				assert.True(t, resg.Payload.Settings.TelemetryEnabled)
+				assert.False(t, resg.Payload.Settings.TelemetryEnabled,
+					"telemetry is incidental to this subtest, but it must never be on")
 				assert.False(t, resg.Payload.Settings.AdvisorEnabled)
 			})
 
@@ -243,7 +238,9 @@ func TestSettings(t *testing.T) {
 
 				resg, err := serverClient.Default.ServerService.GetSettings(nil)
 				require.NoError(t, err)
-				assert.True(t, resg.Payload.Settings.TelemetryEnabled)
+				// Telemetry is not what this subtest is about, and this product ships it
+				// force-disabled. Asserting it here made an advisor test fail on a
+				// property it does not exercise.
 				assert.True(t, resg.Payload.Settings.AdvisorEnabled)
 
 				t.Run("EnableAdvisorsWhileItIsEnabled", func(t *testing.T) {
@@ -258,7 +255,6 @@ func TestSettings(t *testing.T) {
 
 					resg, err := serverClient.Default.ServerService.GetSettings(nil)
 					require.NoError(t, err)
-					assert.True(t, resg.Payload.Settings.TelemetryEnabled)
 					assert.True(t, resg.Payload.Settings.AdvisorEnabled)
 				})
 
@@ -312,22 +308,12 @@ func TestSettings(t *testing.T) {
 					assert.False(t, resg.Payload.Settings.TelemetryEnabled)
 				})
 
-				t.Run("EnableTelemetryWhileItIsDisabled", func(t *testing.T) {
+				t.Run("EnableTelemetryWhileItIsDisabledIsRefused", func(t *testing.T) {
 					defer serverTest.RestoreSettingsDefaults(t)
 
-					res, err := serverClient.Default.ServerService.ChangeSettings(&server.ChangeSettingsParams{
-						Body: server.ChangeSettingsBody{
-							EnableTelemetry: new(true),
-						},
-						Context: pmmapitests.Context,
-					})
-					require.NoError(t, err)
-					assert.True(t, res.Payload.Settings.TelemetryEnabled)
-
-					resg, err := serverClient.Default.ServerService.GetSettings(nil)
-					require.NoError(t, err)
-					assert.True(t, resg.Payload.Settings.TelemetryEnabled)
-					assert.True(t, resg.Payload.Settings.AdvisorEnabled)
+					serverTest.AssertEnvOwnedChangeIsRefused(t,
+						"Telemetry is configured via PMM_ENABLE_TELEMETRY environment variable.",
+						server.ChangeSettingsBody{EnableTelemetry: new(true)})
 				})
 			})
 

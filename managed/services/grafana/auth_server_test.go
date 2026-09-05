@@ -97,7 +97,7 @@ func TestAuthServerAuthenticate(t *testing.T) {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/dummy", nil)
 	require.NoError(t, err)
-	req.SetBasicAuth("admin", "admin")
+	req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 	authHeaders := req.Header
 
 	t.Run("GrafanaAdminFallback", func(t *testing.T) {
@@ -105,7 +105,7 @@ func TestAuthServerAuthenticate(t *testing.T) {
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/foo", nil)
 		require.NoError(t, err)
-		req.SetBasicAuth("admin", "admin")
+		req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 
 		_, res := s.authenticate(ctx, req, logrus.WithField("test", t.Name()))
 		assert.Nil(t, res)
@@ -164,7 +164,7 @@ func TestServerClientConnection(t *testing.T) {
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, connectionEndpoint, nil)
 		require.NoError(t, err)
-		req.SetBasicAuth("admin", "admin")
+		req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 
 		_, authError := s.authenticate(ctx, req, logrus.WithField("test", t.Name()))
 		assert.Nil(t, authError)
@@ -187,7 +187,7 @@ func TestServerClientConnection(t *testing.T) {
 
 		nodeName := fmt.Sprintf("N1-%d", time.Now().UnixNano())
 		headersMD := metadata.New(map[string]string{
-			"Authorization": "Basic YWRtaW46YWRtaW4=",
+			"Authorization": tests.GrafanaAdminBasicAuth(t),
 		})
 		ctx := metadata.NewIncomingContext(t.Context(), headersMD)
 		_, serviceToken, err := c.CreateServiceAccount(ctx, nodeName, true)
@@ -294,7 +294,7 @@ func TestAuthServerAddVMGatewayToken(t *testing.T) {
 					req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 					require.NoError(t, err)
 					if userID == 0 {
-						req.SetBasicAuth("admin", "admin")
+						req.SetBasicAuth(tests.GrafanaAdminCredentials(t))
 					}
 
 					err = s.maybeAddLBACFilters(ctx, rw, req, userID, logrus.WithField("test", t.Name()))

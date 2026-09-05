@@ -18,6 +18,7 @@ package supervisord
 import (
 	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"testing"
 	"time"
@@ -30,6 +31,15 @@ import (
 
 // TODO move tests to other files and remove this one.
 func TestDevContainer(t *testing.T) {
+	// This exercises the SUPERVISORD backend specifically -- it drives
+	// /etc/supervisord.d and asserts supervisorctl is present. A systemd-native
+	// install ships neither, so there is nothing here for it to test and a failure
+	// says only "this is not a devcontainer". Skip rather than fail, so an
+	// unexercised test reads as unexercised.
+	if _, err := exec.LookPath("supervisorctl"); err != nil {
+		t.Skip("supervisorctl is not installed; this test covers the supervisord backend only")
+	}
+
 	t.Run("UpdateConfiguration", func(t *testing.T) {
 		// logrus.SetLevel(logrus.DebugLevel)
 		vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
@@ -55,6 +65,18 @@ func TestDevContainer(t *testing.T) {
 			for name, b := range originals {
 				err = os.WriteFile(name, b, 0)
 				require.NoError(t, err)
+			}
+			// Remove the ones this test created, not just restore the ones it found.
+			// saveConfigAndReload below asserts changed==true on the first write and
+			// false on the second, so a leftover victoriametrics.ini makes the FIRST
+			// write report unchanged and the test fails on its second run -- passing
+			// once on a clean tree and never again.
+			after, err := filepath.Glob("/etc/supervisord.d/*.ini")
+			require.NoError(t, err)
+			for _, m := range after {
+				if _, existed := originals[m]; !existed {
+					require.NoError(t, os.Remove(m))
+				}
 			}
 			// force update supervisor config
 			err = s.supervisorctl("update")

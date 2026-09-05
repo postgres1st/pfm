@@ -34,6 +34,7 @@ import (
 )
 
 func TestScheduleBackup(t *testing.T) {
+	pmmapitests.SkipIfServiceTypeUnsupported(t, "mongodb")
 	t.Run("mongo", func(t *testing.T) {
 		nodeName := pmmapitests.TestString(t, "node-for-basic-name")
 		nodeID, pmmAgentID := management.RegisterNode(t, mservice.RegisterNodeBody{

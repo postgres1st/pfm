@@ -128,6 +128,10 @@ func TestRDSService(t *testing.T) {
 		})
 
 		t.Run("InvalidClientTokenId", func(t *testing.T) {
+			// Needs a real rejection from AWS; without egress the SDK retries to
+			// exhaustion and the assertion fails having proven nothing.
+			tests.SkipIfAWSUnreachable(t)
+
 			ctx := logger.Set(t.Context(), t.Name())
 			accessKey, secretKey := "EXAMPLE_ACCESS_KEY", "EXAMPLE_SECRET_KEY"
 

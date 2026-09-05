@@ -1,0 +1,280 @@
+#!/usr/bin/env bash
+# Acceptance test for the air-gapped PGF WatchTower bundle produced by build-pfw-airgap.
+#
+#   build/scripts/test-pfw-airgap [/path/to/pfw-repo]
+#
+# Installs the bundle into a throwaway systemd container that has NO route to the
+# internet, boots the stack, and asserts the properties the customer is paying for:
+# offline install, readyz, the PostgreSQL-only gate, branding, and live metrics.
+#
+# Exits non-zero on the first failed assertion; leaves the container running for
+# inspection unless PFW_TEST_KEEP=0.
+#
+# Every assertion is a p_* predicate so test-pfw-negative-control can drive the same
+# function this suite runs, break what it guards, and require it to go red. A green run
+# here is not evidence on its own -- see that script's header for what that cost us.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# BASH_SOURCE, not $0: test-pfw-negative-control sources this file, and under
+# `source` $0 is the *caller's* name, which resolves bin_dir to the wrong directory.
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-airgap-vars"
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-test-lib"
+
+repo=${1:-${PFW_OUT}/pfw-repo}
+container=${PFW_TEST_CONTAINER:-pfw-airgap-test}
+network=${PFW_TEST_NETWORK:-pfw-airgap-net}
+keep=${PFW_TEST_KEEP:-1}
+bundle=/pfw-repo          # where ${repo} is mounted inside the container
+
+# ---------------------------------------------------------------------- predicates
+# Side-effect free and re-runnable; the negative-control harness calls each three
+# times (baseline / broken / restored). Several take an argument so the harness can
+# also feed them a known-bad input -- weaker evidence than breaking real state, and
+# labelled as such in that script.
+
+p_has_nic()            { inc 'ip -o -4 addr show scope global | grep -q .'; }
+p_mongodb_rejected()   { inc "/usr/sbin/pfw-admin ${SRV} add mongodb --host=127.0.0.1 --port=27017 gate-mongo 2>&1 | grep -q 'not supported by this deployment'"; }
+# Unique service name per call by default. `pfw-admin add` is not idempotent -- a
+# repeat with the same name answers "already exists", not "Service name:" -- so a
+# fixed name would make this predicate pass once and fail forever after, and the
+# negative control (which calls every predicate three times) could never restore it.
+p_postgresql_accepted() { inc "/usr/sbin/pfw-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\$(cat /srv/.postgres_password) ${1:-gate-pg-\$(date +%s%N)} 2>&1 | grep -q 'Service name:'"; }
+p_grafana_title()      { inc "curl -sk https://127.0.0.1:8443/graph/login | grep -q '<title>PGF WatchTower</title>'"; }
+p_pfmui_title()        { inc "curl -sk https://127.0.0.1:8443/pfw-ui/ | grep -q '<title>PGF WatchTower</title>'"; }
+p_pg_up()              { inc "curl -s 'http://127.0.0.1:9090/prometheus/api/v1/query?query=pg_up' | grep -q '\"value\"'"; }
+# Expected major is an argument so the negative control can feed it a version the
+# server is NOT running: stopping PostgreSQL only proves the check reads live state,
+# it says nothing about whether the version comparison itself discriminates.
+p_postgres_major()     { inc "su -s /bin/bash pfw -c \"PGPASSWORD=\$(cat /srv/.postgres_password) psql -U postgres -h /run/postgresql -tAc 'SHOW server_version'\" | grep -q '^${1:-18}'"; }
+p_grafana_uses_pfm_ini() { inc 'grep -q -- "--config=/etc/grafana/pfw.ini" /usr/lib/systemd/system/pfw-grafana.service'; }
+p_owned_by_pfm_server() { inc "rpm -qf ${1:-/etc/grafana/pfw.ini} 2>/dev/null | grep -q '^pfw-server'"; }
+p_ch_perms_unit()      { inc 'systemctl cat pfw-clickhouse-perms.service >/dev/null 2>&1'; }
+p_ch_requires_perms()  { inc 'systemctl show pfw-clickhouse.service -p Requires --value | grep -q pfw-clickhouse-perms'; }
+p_release_stamped()    { inc "test \"\$(rpm -q --qf %{RELEASE} $1)\" != \"1.el9\""; }
+p_secrets_dir_perms()  { inc 'test "$(stat -c "%a %U:%G" /srv/.pfw-secrets)" = "700 pfw:pfw"'; }
+p_secret_files_0600()  { inc 'test -n "$(find /srv/.pfw-secrets -type f)" && test -z "$(find /srv/.pfw-secrets -type f ! -perm 600)"'; }
+# Greps the INSTALLED units, not the source tree: the question is what the package
+# put on the host. Unit files install 0644, so a literal here is world-readable.
+p_no_secret_in_units() { ! inc "grep -rhE '^Environment=(PMM_POSTGRES_DBPASSWORD|GF_DATABASE_|GF_SECURITY_)' /usr/lib/systemd/system/pfw-*.service | grep -q ."; }
+# Takes the value so the negative control can feed one that IS present.
+p_managed_pw_generated() { ! inc "grep -qx 'PMM_POSTGRES_DBPASSWORD=${1:-pmm-managed}' /srv/.pfw-secrets/managed-db.env"; }
+# pfw-init.sh's generation marker. Visible and outside /srv/.pfw-secrets on purpose:
+# it is what lets a later boot tell "the store was lost" from "this host predates the
+# store", and so what stops the shipped constant being written over a generated one.
+p_secrets_marker() { inc 'test -f /srv/pfw-secrets-generated'; }
+
+# The strongest assertion in this task: the old credential must no longer work.
+#
+# It has to be a PAIR. On its own it is `!`-inverted around a psql that is allowed to
+# fail for any reason at all -- psql missing, PostgreSQL down, TCP refused, the wrong
+# database name -- and every one of those failures reads as success. The positive half
+# runs the identical connection with the GENERATED password, so a green rejection only
+# counts when the same path demonstrably works. Same shape as the Grafana pair below.
+# Both take the password so the negative control can feed a known value.
+db_login()        { inc "PGPASSWORD=$1 psql -U pmm-managed -h 127.0.0.1 -d pmm-managed -tAc 'SELECT 1' 2>/dev/null | grep -q '^1$'"; }
+managed_db_pw()   { secret_val /srv/.pfw-secrets/managed-db.env PMM_POSTGRES_DBPASSWORD; }
+p_legacy_db_rejected() { ! db_login "${1:-pmm-managed}"; }
+p_generated_db_works() { db_login "${1:-$(managed_db_pw)}"; }
+
+dashboard_count()      { inc "curl -sk -u $(gauth) 'https://127.0.0.1:8443/graph/api/search?type=dash-db&limit=500' | grep -o '\"uid\"' | wc -l" 2>/dev/null || echo 0; }
+
+# Advisor checks are gated by family through the same allowlist as Service types. The
+# upstream set is 49 MySQL and 34 MongoDB against 26 PostgreSQL, and those 83 can never
+# produce a result here -- the gate rejects those Services at registration -- so listing
+# them advertises coverage the product does not have. Counted rather than asserted to be
+# zero-or-not, because "no advisors at all" is also wrong and would otherwise pass.
+advisor_family_count() { inc "curl -sk -u $(gauth) 'https://127.0.0.1:8443/v1/advisors/checks' | grep -o 'ADVISOR_CHECK_FAMILY_${1}' | wc -l" 2>/dev/null || echo -1; }
+p_advisors_pg_only()   { [ "$(advisor_family_count MYSQL)" = "0" ] && [ "$(advisor_family_count MONGODB)" = "0" ] && [ "$(advisor_family_count POSTGRESQL)" -gt 0 ]; }
+p_dashboards()         { [ "$(dashboard_count)" -gt 0 ]; }
+
+# Symmetric pair: the old credential must be refused and the new one accepted on
+# the SAME endpoint. Asserting only the rejection would also pass if Grafana were
+# simply down.
+graph_code()              { inc "curl -sk -o /dev/null -w '%{http_code}' -u $1 'https://127.0.0.1:8443/graph/api/search?limit=1'"; }
+p_admin_admin_rejected()  { [ "$(graph_code "${1:-admin:admin}")" = "401" ]; }
+p_generated_admin_works() { [ "$(graph_code "${1:-$(gauth)}")" = "200" ]; }
+p_grafana_pw_generated()  { ! inc "grep -qx 'GF_DATABASE_PASSWORD=${1:-grafana}' /srv/.pfw-secrets/grafana.env"; }
+# No shipped file may carry a usable Grafana DB password.
+p_no_pw_in_grafana_ini()  { inc "grep -qE '^password *= *$' /etc/grafana/pfw.ini"; }
+# `test -f` first, and not folded into the grep: this one is `!`-inverted, so without
+# it a seed file that is missing, renamed or never packaged reads as "ships no
+# password" -- green for the one reason that should worry us most.
+p_no_pw_in_env_seed()     { inc 'test -f /usr/lib/pfw/defaults/grafana.env' \
+                            && ! inc "grep -qE '^PMM_POSTGRES_DBPASSWORD=\"?pmm-managed\"?$' /usr/lib/pfw/defaults/grafana.env"; }
+
+# Only nginx should answer off-host. Grafana defaults to 0.0.0.0, which would publish
+# the whole UI on :3000 over plain HTTP and bypass the TLS nginx terminates on 8443 --
+# contained inside the upstream container, LAN-exposed on a real host.
+#
+# The exporter ports are no longer excused. They bound 0.0.0.0 by upstream design and
+# were treated as a firewall matter; they now bind 127.0.0.1 unless a service is
+# registered --expose-exporter, so one appearing here is a real finding rather than
+# expected behaviour. (The old allowlist also never covered 42010.)
+off_host_ports()       { inc "ss -lntH 2>/dev/null | awk '\$4 ~ /^\\*:|^0\\.0\\.0\\.0:/ {split(\$4,a,\":\"); print a[length(a)]}' | grep -vE '^8443$' | sort -u | tr '\\n' ' '" || true; }
+p_no_unexpected_listeners() { [ -z "$(off_host_ports)" ]; }
+
+# Every package, not just ours: the bundle is curated, ClickHouse ships its RPMs
+# unsigned, and PGDG/Rocky are signed by keys the customer would otherwise have to
+# import one by one.
+unsigned_count()       { inc "for f in ${1:-${bundle}}/*.rpm; do rpm -K \"\$f\" | grep -q 'signatures OK' || echo \"\$f\"; done | wc -l" 2>/dev/null || echo 999; }
+p_all_rpms_signed()    { [ "$(unsigned_count "${1:-${bundle}}")" = "0" ]; }
+p_rpm_verifies()       { inc "rpm -K '$1' 2>&1 | grep -q 'signatures OK'"; }
+
+# ---------------------------------------------------------------------------- main
+
+run_airgap_suite() {
+    # Inside the suite, not at file scope: test-pfw-negative-control sources this
+    # file, and a top-level `die` would take the harness down with it.
+    [ -d "${repo}/repodata" ] || die "no yum repo at ${repo} (run build-pfw-airgap first)"
+    log "starting isolated test host"
+    start_container -v "${repo}":"${bundle}":ro
+
+    log "asserting the host really is air-gapped"
+    p_no_internet || die "test host can reach the internet -- the air-gap assertion would be meaningless"
+    ok "no route to the internet"
+    p_has_nic && ok "has a NIC with a routable-scope address (realistic host)" \
+        || no "no routable-scope address -- not a realistic host"
+
+    log "installing from the bundle only"
+    # Mirror INSTALL.md: import the key and install with gpgcheck=1, so the test
+    # exercises the path the customer is actually told to use. If the bundle is
+    # unsigned (PFW_SIGN_KEY empty at build time) fall back, and say so.
+    if p_bundle_signed "${bundle}"; then
+        inc "rpm --import ${bundle}/RPM-GPG-KEY-postgres1st"
+        inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=1\ngpgkey=file://${bundle}/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
+        ok "bundle is signed; installing with gpgcheck=1"
+    else
+        inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
+        no "bundle is UNSIGNED -- installing with gpgcheck=0"
+    fi
+    if inc "dnf --disablerepo='*' --enablerepo=pfw -y install pfw-server >/tmp/install.log 2>&1"; then
+        ok "dnf install pfw-server (offline)"
+    else
+        inc 'tail -20 /tmp/install.log' || true; no "offline install"; exit 1
+    fi
+
+    log "booting"
+    inc 'systemctl start pfw.target >/tmp/start.log 2>&1' || true
+    local i code
+    code=$(wait_readyz)
+    [ "${code}" = "200" ] && ok "readyz returned 200" || no "readyz returned ${code} (expected 200)"
+
+    set_srv_from_secrets
+
+    p_no_failed_units  && ok "no pfw unit failed" || no "a pfw unit failed"
+    p_all_units_active && ok "all long-running pfw units active" || no "a long-running pfw unit is inactive"
+
+    log "bootstrap credentials"
+    p_secrets_dir_perms     && ok "/srv/.pfw-secrets is 700 pfw:pfw" || no "/srv/.pfw-secrets has wrong mode or owner"
+    p_secret_files_0600     && ok "secret files are 0600" || no "a secret file is not 0600"
+    p_no_secret_in_units    && ok "no credential in an installed unit file" || no "a unit file carries a credential (world-readable, 0644)"
+    p_managed_pw_generated  && ok "pmm-managed password is generated, not the constant" || no "pmm-managed password is still the shipped constant"
+    p_secrets_marker        && ok "the generation marker is present outside the secret store" || no "no /srv/pfw-secrets-generated -- a later boot could overwrite a generated credential"
+    p_generated_db_works    && ok "the generated pmm-managed password authenticates" || no "the generated pmm-managed password does NOT authenticate"
+    p_legacy_db_rejected    && ok "legacy pmm-managed:pmm-managed rejected by PostgreSQL" || no "legacy pmm-managed:pmm-managed still authenticates"
+    p_grafana_pw_generated  && ok "grafana DB password is generated, not the constant" || no "grafana DB password is still the shipped constant"
+    p_no_pw_in_grafana_ini  && ok "/etc/grafana/pfw.ini ships no password" || no "/etc/grafana/pfw.ini still carries a password"
+    p_no_pw_in_env_seed     && ok "the packaged env seed ships no password" || no "the packaged env seed still carries the constant"
+    p_admin_admin_rejected  && ok "admin/admin is rejected" || no "admin/admin still logs in"
+    p_generated_admin_works && ok "the generated admin password logs in" || no "the generated admin password does NOT log in"
+
+    log "PostgreSQL-only gate"
+    p_mysql_rejected       && ok "mysql rejected" || no "mysql was NOT rejected"
+    p_mongodb_rejected     && ok "mongodb rejected" || no "mongodb was NOT rejected"
+    p_postgresql_accepted  && ok "postgresql accepted" || no "postgresql was NOT accepted"
+
+    log "branding"
+    p_grafana_title   && ok "grafana login title" || no "grafana login title"
+    p_pfmui_title     && ok "/pfw-ui title" || no "/pfw-ui title"
+    p_no_pmm_packages && ok "no pmm-* packages installed" || no "a pmm-* package is installed"
+
+    log "data flowing"
+    # The postgresql service was only just registered by the gate check above, so
+    # poll rather than sampling once -- the first scrape has not necessarily landed.
+    local got_pg_up=no
+    for i in $(seq 1 24); do
+        if p_pg_up; then got_pg_up=yes; break; fi
+        sleep 5
+    done
+    [ "${got_pg_up}" = yes ] && ok "pg_up present in VictoriaMetrics" || no "pg_up never appeared (waited 120s)"
+    p_dashboards && ok "$(dashboard_count) dashboards provisioned" || no "no dashboards provisioned"
+    p_postgres_major 18 && ok "PostgreSQL 18" || no "unexpected PostgreSQL version"
+    p_advisors_pg_only \
+        && ok "advisors expose PostgreSQL checks only ($(advisor_family_count POSTGRESQL) of them)" \
+        || no "advisor list includes non-PostgreSQL families (mysql=$(advisor_family_count MYSQL) mongodb=$(advisor_family_count MONGODB))"
+
+    log "signing"
+    if p_bundle_signed "${bundle}"; then
+        p_all_rpms_signed "${bundle}" && ok "all packages carry a verifying signature" \
+            || no "$(unsigned_count "${bundle}") package(s) do not verify against the shipped key"
+        # A signature nobody enforces is decoration: prove rpm actually rejects a
+        # tampered package rather than trusting that gpgcheck=1 is doing something.
+        # Two-sided by construction -- the untampered copy must still verify, or
+        # "tampering was detected" could just mean rpm -K never succeeds here.
+        inc "cp ${bundle}/pfw-server-*.rpm /tmp/good.rpm && cp /tmp/good.rpm /tmp/tampered.rpm && printf '\x00\x00\x00\x00' | dd of=/tmp/tampered.rpm bs=1 seek=6000 conv=notrunc status=none" || true
+        p_rpm_verifies /tmp/good.rpm && ok "an untampered package verifies" \
+            || no "an untampered package does not verify -- the check below proves nothing"
+        p_rpm_verifies /tmp/tampered.rpm && no "a tampered package still verified -- signature checking is not effective" \
+            || ok "a tampered package fails verification"
+    fi
+
+    log "network exposure"
+    p_no_unexpected_listeners && ok "only nginx (8443) and the exporters listen off-host" \
+        || no "unexpected off-host listeners on port(s): $(off_host_ports)"
+
+    # A from-scratch install cannot observe an upgrade defect at all -- these are
+    # structural stand-ins, and test-pfw-upgrade exercises the real transitions.
+    log "upgrade safety"
+    # Writing over a path another package owns means its next upgrade reverts us.
+    # This one took the whole server down: grafana fell back to its stock
+    # sqlite-in-homepath config and died with "mkdir /usr/share/grafana/data:
+    # read-only file system".
+    p_grafana_uses_pfm_ini && ok "grafana runs from our own pfw.ini, not pfw-grafana's grafana.ini" \
+        || no "grafana.service does not point at /etc/grafana/pfw.ini"
+    p_owned_by_pfm_server /etc/grafana/pfw.ini && ok "pfw.ini is owned by pfw-server" \
+        || no "pfw.ini is not owned by pfw-server"
+    # A first-boot copy of packaged files can never be refreshed, so dashboard
+    # updates would never reach an existing install.
+    p_no_srv_plugin_copy && ok "no first-boot plugin copy under /srv (dashboards read from the package)" \
+        || no "/srv/grafana/plugins exists -- dashboard updates cannot propagate"
+    p_pfm_ini_plugins && ok "paths.plugins points at the owning package" \
+        || no "paths.plugins is not the package directory"
+    # ClickHouse's package owns /etc/clickhouse-server and resets it to
+    # clickhouse:clickhouse on every upgrade of clickhouse-server, which breaks a
+    # stack that runs it as pfw. A one-shot repair unit re-asserts ownership ahead
+    # of ClickHouse on every start; without it, upgrading ClickHouse alone takes
+    # readyz down (observed on 26.7.1 -> 26.7.2).
+    p_ch_perms_unit && ok "clickhouse ownership repair unit is installed" \
+        || no "pfw-clickhouse-perms.service missing -- a clickhouse upgrade will break the server"
+    p_ch_requires_perms && ok "clickhouse requires the ownership repair" \
+        || no "clickhouse does not require the repair unit"
+    p_ch_owned_by_pfm && ok "/etc/clickhouse-server is pfw-owned" || no "/etc/clickhouse-server is not pfw-owned"
+    p_nginx_relabels_cert_dir && ok "pfw-nginx relabels /srv/nginx before start" \
+        || no "pfw-nginx does not restorecon /srv/nginx -- a cert placed with mv/cp keeps the wrong label and TLS silently breaks"
+    p_ch_runtime_dir_guaranteed && ok "pfw-clickhouse creates its own /run directory" \
+        || no "pfw-clickhouse depends on a /run dir it does not create -- the distro unit deletes it, then 226/NAMESPACE"
+    p_selinux_module_shipped && ok "pfw-server ships the SELinux policy module" \
+        || no "pfw_nginx.pp missing -- nginx cannot read /srv on an enforcing host"
+    p_ch_caps_within_bounding_set && ok "clickhouse fcaps are within the unit's CapabilityBoundingSet" \
+        || no "clickhouse carries a file capability outside CapabilityBoundingSet -- execve gives EPERM (203/EXEC) on a native host"
+
+    # An unchanging NEVRA makes dnf skip the package silently: for pfw-server that
+    # is every unit, pfw-init.sh and the grafana/nginx/polkit config; for
+    # pfw-client it is the agent on every monitored host. Both shipped static.
+    local pkg
+    for pkg in pfw-server pfw-agent; do
+        p_release_stamped "${pkg}" && ok "${pkg} release is build-stamped (upgradable)" \
+            || no "${pkg} release is static -- dnf upgrade will skip it"
+    done
+
+    summary
+}
+
+# Sourced by test-pfw-negative-control, which drives the predicates directly.
+[ "${PFW_LIB_ONLY:-0}" = "1" ] || run_airgap_suite "$@"

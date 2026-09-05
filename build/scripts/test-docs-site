@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Builds the documentation site and asserts the build is clean and carries no trackers.
+#
+#   build/scripts/test-docs-site
+#
+# WHY THIS EXISTS
+#
+# Two defects got past a source-level review of this tree on the same day, and building
+# the artifact is the only thing that would have caught either:
+#
+#   1. Three third-party trackers -- PostHog, an Osano CMP and a Google Form -- were
+#      hand-written into the Jinja overrides rather than configured in mkdocs.yml, so a
+#      grep of *.md and *.yml reported the documentation clean while every page reported
+#      its readers to Percona's accounts.
+#
+#   2. After those were unwired, the ASSETS were still shipped. mkdocs copies everything
+#      under docs/ into the built site whether or not a page references it, so
+#      js/rating.js -- carrying the live Google Form URL it POSTed reader feedback to --
+#      remained published and downloadable. Grepping the rendered HTML reported clean;
+#      the file sat beside it in the same build. Unloaded is not unshipped.
+#
+# So the search runs over the whole built site, not the sources and not just the HTML.
+#
+# The build must also be WARNING-free. mkdocs reports a dead internal link or a missing
+# image as a warning and still exits 0, which is how a broken front-page link survived:
+# it pointed at release-notes/{{release}}.md while variables.yml still said 3.8.1, a
+# Percona release whose notes are deliberately not reproduced here.
+#
+# NOT A RELEASE GATE. The documentation site is not a beta2 deliverable -- the bundle
+# takes exactly one file from that tree, the current release notes -- and the site still
+# carries pre-rename names and Percona links that are deliberately deferred to a rewrite
+# before GA (docs/deferred-documentation-rebrand.md). This suite asserts only the two
+# things that must not regress in the meantime: the site builds without dead links, and
+# it ships no trackers. A red result here must never block a bundle build.
+#
+# It exists now, rather than after the rewrite, because the rewrite is the risk window.
+# The trackers it guards against arrived in the first place through copied upstream
+# templates, which is exactly what a rewrite does.
+#
+# Needs Docker and network access for pip. It does NOT need a built bundle, a running
+# server, or any of the other suites.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+cd "${repo_dir}"
+
+IMAGE=${IMAGE:-python:3.12}
+CACHE=${CACHE:-/tmp/pfw-cache}
+mkdir -p "${CACHE}/pip"
+
+pass=0; fail=0
+ok() { printf '  \033[32mPASS\033[0m  %s\n' "$*"; pass=$((pass + 1)); }
+no() { printf '  \033[31mFAIL\033[0m  %s\n' "$*"; fail=$((fail + 1)); }
+
+# Patterns that must not appear ANYWHERE in the built site. Deliberately limited to
+# trackers and marketing endpoints: ordinary percona.com documentation links are a known,
+# recorded gap (docs/deferred-documentation-rebrand.md) and would make this fail on day
+# one, which is how a check ends up disabled instead of fixed.
+readonly TRACKERS='gtag\(|googletagmanager|google-analytics\.com|_gaq|posthog|osano|docs\.google\.com/forms|formResponse|perconalive|learn\.percona\.com|G-[A-Z0-9]{9,}|UA-[0-9]{5,}-'
+
+printf '>>> building the documentation site\n'
+out=$(docker run --rm -v "${repo_dir}":/src -v "${CACHE}/pip":/root/.cache/pip \
+    -w /src/documentation --user 0:0 -e HOME=/tmp "${IMAGE}" sh -c '
+        git config --global --add safe.directory /src
+        pip install -q -r requirements.txt >/tmp/pip.log 2>&1 || {
+            echo "PIPFAIL"; tail -15 /tmp/pip.log; exit 1; }
+        mkdocs build -f mkdocs.yml -d /tmp/site >/tmp/build.log 2>&1
+        echo "MKDOCS_EXIT=$?"
+        echo "--- diagnostics ---"
+        grep -E "^(ERROR|WARNING)" /tmp/build.log || true
+        echo "--- pages ---"
+        find /tmp/site -name "*.html" | wc -l
+        echo "--- offenders ---"
+        grep -rlE "'"${TRACKERS}"'" /tmp/site 2>/dev/null | sed "s|^/tmp/site/||" || true
+    ' 2>&1) || true
+
+if printf '%s' "${out}" | grep -q PIPFAIL; then
+    printf '%s\n' "${out}" | tail -15
+    printf '\ncould not install the documentation toolchain\n'
+    exit 1
+fi
+
+exit_code=$(printf '%s\n' "${out}" | sed -n 's/^MKDOCS_EXIT=//p')
+diagnostics=$(printf '%s\n' "${out}" | sed -n '/^--- diagnostics ---$/,/^--- pages ---$/p' | sed '1d;$d')
+pages=$(printf '%s\n' "${out}" | sed -n '/^--- pages ---$/,/^--- offenders ---$/p' | sed '1d;$d' | tr -d ' ')
+offenders=$(printf '%s\n' "${out}" | sed -n '/^--- offenders ---$/,$p' | sed '1d' | grep -v '^$' || true)
+
+if [ "${exit_code}" = "0" ]; then ok "the site builds"; else
+    no "mkdocs exited ${exit_code:-<unknown>}"
+    printf '%s\n' "${out}" | tail -20
+fi
+
+# Guard the guard: a build that renders nothing would satisfy every assertion below.
+if [ -n "${pages}" ] && [ "${pages}" -gt 0 ] 2>/dev/null; then
+    ok "the site is not empty (${pages} pages)"
+else
+    no "no pages were rendered -- every check below would pass vacuously"
+fi
+
+if [ -z "${diagnostics}" ]; then ok "no mkdocs warnings or errors"; else
+    no "mkdocs reported warnings or errors (dead links, missing files):"
+    printf '        %s\n' "${diagnostics}" | head -10
+fi
+
+if [ -z "${offenders}" ]; then ok "no tracker or marketing endpoint in the built site"; else
+    no "the built site ships tracker or marketing endpoints:"
+    printf '        %s\n' "${offenders}" | head -10
+fi
+
+printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
+[ "${fail}" -eq 0 ]
