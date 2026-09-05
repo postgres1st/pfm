@@ -36,17 +36,17 @@ Agent ID : {{ .PMMAgentStatus.AgentID }}
 Node ID  : {{ .PMMAgentStatus.NodeID }}
 Node name: {{ .PMMAgentStatus.NodeName }}
 
-PMM Server:
+PGF WatchTower Server:
 	URL    : {{ .PMMAgentStatus.ServerURL }}
 	Version: {{ .PMMAgentStatus.ServerVersion }}
 
-PMM Client:
+PGF WatchTower Agent:
 	Connected        : {{ .PMMAgentStatus.Connected }}{{ if .PMMAgentStatus.Connected }}
 	Time drift       : {{ .PMMAgentStatus.ServerClockDrift }}
 	Latency          : {{ .PMMAgentStatus.ServerLatency }}{{ end }}
 	Connection uptime: {{ .PMMAgentStatus.ConnectionUptime }}
-	pmm-admin version: {{ .PMMVersion }}
-	pmm-agent version: {{ .PMMAgentStatus.AgentVersion }}
+	pfw-admin version: {{ .PMMVersion }}
+	pfw-agent version: {{ .PMMAgentStatus.AgentVersion }}
 Agents:
 {{ range .PMMAgentStatus.Agents }}	{{ .AgentID }} {{ printf "%-30s" (.AgentType | $.HumanReadableAgentType) }} {{ printf "%-14s" (.Status | $.NiceAgentStatus) }} {{ .Port }}
 {{ end }}
@@ -72,7 +72,7 @@ func (res *statusResult) String() string {
 }
 
 func newStatusResult(status *agentlocal.Status) *statusResult {
-	// hide username and password from PMM Server URL - if we have it at all
+	// hide username and password from PGF WatchTower Server URL - if we have it at all
 	u, err := url.Parse(status.ServerURL)
 	if err == nil {
 		u.User = nil
@@ -92,7 +92,7 @@ func newStatusResult(status *agentlocal.Status) *statusResult {
 
 // StatusCommand is used by Kong for CLI flags and commands.
 type StatusCommand struct {
-	Timeout time.Duration `name:"wait" help:"Time to wait for a successful response from pmm-agent"`
+	Timeout time.Duration `name:"wait" help:"Time to wait for a successful response from pfw-agent"`
 }
 
 // BeforeApply is run before the command is applied.
@@ -103,8 +103,8 @@ func (cmd *StatusCommand) BeforeApply() error {
 
 // RunCmd runs the StatusCommand.
 func (cmd *StatusCommand) RunCmd() (Result, error) {
-	// Unlike list, this command uses only local pmm-agent status.
-	// It does not use PMM Server APIs.
+	// Unlike list, this command uses only local pfw-agent status.
+	// It does not use PGF WatchTower Server APIs.
 	timeoutCtx, cancel := context.WithTimeout(context.Background(), cmd.Timeout)
 	defer cancel()
 
@@ -121,8 +121,8 @@ func (cmd *StatusCommand) RunCmd() (Result, error) {
 		select {
 		case <-timeoutCtx.Done():
 			if errors.Is(err, agentlocal.ErrNotSetUp) {
-				return nil, fmt.Errorf("failed to get PMM Agent status from local pmm-agent: %w.\n"+
-					"Please run `pmm-admin config` with --server-url flag", err)
+				return nil, fmt.Errorf("failed to get PGF WatchTower Agent status from local pfw-agent: %w.\n"+
+					"Please run `pfw-admin config` with --server-url flag", err)
 			}
 
 			// return response in case when agent can't connect to server
@@ -130,7 +130,7 @@ func (cmd *StatusCommand) RunCmd() (Result, error) {
 				return newStatusResult(status), nil
 			}
 
-			return nil, fmt.Errorf("failed to get PMM Agent status from local pmm-agent: %w", err)
+			return nil, fmt.Errorf("failed to get PGF WatchTower Agent status from local pfw-agent: %w", err)
 		default:
 			time.Sleep(1 * time.Second)
 		}

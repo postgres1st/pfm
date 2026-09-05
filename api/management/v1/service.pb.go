@@ -925,8 +925,8 @@ const file_management_v1_service_proto_rawDesc = "" +
 	"\n" +
 	"ListAgents\x12 .management.v1.ListAgentsRequest\x1a!.management.v1.ListAgentsResponse\"H\x92A(\x12\vList Agents\x1a\x19Lists Agents with filter.\x82\xd3\xe4\x93\x02\x17\x12\x15/v1/management/agents\x12\xd7\x01\n" +
 	"\x11ListAgentVersions\x12'.management.v1.ListAgentVersionsRequest\x1a(.management.v1.ListAgentVersionsResponse\"o\x92AF\x12\x13List Agent Versions\x1a/Lists Agent versions and their update severity.\x82\xd3\xe4\x93\x02 \x12\x1e/v1/management/agents/versions\x12\xb3\x01\n" +
-	"\fRegisterNode\x12\".management.v1.RegisterNodeRequest\x1a#.management.v1.RegisterNodeResponse\"Z\x92A8\x12\x0fRegister a Node\x1a%Registers a new Node and a pmm-agent.\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/v1/management/nodes\x12\xbd\x01\n" +
-	"\x0eUnregisterNode\x12$.management.v1.UnregisterNodeRequest\x1a%.management.v1.UnregisterNodeResponse\"^\x92A5\x12\x11Unregister a Node\x1a Unregisters a Node and pmm-agent\x82\xd3\xe4\x93\x02 *\x1e/v1/management/nodes/{node_id}\x12\x95\x01\n" +
+	"\fRegisterNode\x12\".management.v1.RegisterNodeRequest\x1a#.management.v1.RegisterNodeResponse\"Z\x92A8\x12\x0fRegister a Node\x1a%Registers a new Node and a pfw-agent.\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/v1/management/nodes\x12\xbd\x01\n" +
+	"\x0eUnregisterNode\x12$.management.v1.UnregisterNodeRequest\x1a%.management.v1.UnregisterNodeResponse\"^\x92A5\x12\x11Unregister a Node\x1a Unregisters a Node and pfw-agent\x82\xd3\xe4\x93\x02 *\x1e/v1/management/nodes/{node_id}\x12\x95\x01\n" +
 	"\tListNodes\x12\x1f.management.v1.ListNodesRequest\x1a .management.v1.ListNodesResponse\"E\x92A&\x12\n" +
 	"List Nodes\x1a\x18Lists Nodes with filter.\x82\xd3\xe4\x93\x02\x16\x12\x14/v1/management/nodes\x12\x98\x01\n" +
 	"\aGetNode\x12\x1d.management.v1.GetNodeRequest\x1a\x1e.management.v1.GetNodeResponse\"N\x92A%\x12\bGet Node\x1a\x19Gets a single Node by ID.\x82\xd3\xe4\x93\x02 \x12\x1e/v1/management/nodes/{node_id}\x12\xb2\x01\n" +
@@ -1005,7 +1005,6 @@ var (
 		(*AddAzureDatabaseResponse)(nil),      // 47: management.v1.AddAzureDatabaseResponse
 	}
 )
-
 var file_management_v1_service_proto_depIdxs = []int32{
 	9,  // 0: management.v1.AddServiceRequest.mysql:type_name -> management.v1.AddMySQLServiceParams
 	10, // 1: management.v1.AddServiceRequest.mongodb:type_name -> management.v1.AddMongoDBServiceParams

@@ -1,4 +1,4 @@
 export const Messages = {
-  title: 'PFMM',
+  title: 'PGF WatchTower',
   support: 'Support',
 };

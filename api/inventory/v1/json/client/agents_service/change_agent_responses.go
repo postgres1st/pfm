@@ -2481,7 +2481,7 @@ type ChangeAgentOKBodyAzureDatabaseExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3053,7 +3053,7 @@ type ChangeAgentOKBodyMongodbExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3396,7 +3396,7 @@ type ChangeAgentOKBodyMysqldExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3746,7 +3746,7 @@ type ChangeAgentOKBodyNodeExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4058,7 +4058,7 @@ type ChangeAgentOKBodyNomadAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4188,7 +4188,7 @@ type ChangeAgentOKBodyPostgresExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4521,7 +4521,7 @@ type ChangeAgentOKBodyProxysqlExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4841,14 +4841,14 @@ func (o *ChangeAgentOKBodyProxysqlExporterMetricsResolutions) UnmarshalBinary(b 
 }
 
 /*
-ChangeAgentOKBodyQANMongodbMongologAgent QANMongoDBMongologAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANMongodbMongologAgent QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANMongodbMongologAgent
 */
 type ChangeAgentOKBodyQANMongodbMongologAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5050,14 +5050,14 @@ func (o *ChangeAgentOKBodyQANMongodbMongologAgent) UnmarshalBinary(b []byte) err
 }
 
 /*
-ChangeAgentOKBodyQANMongodbProfilerAgent QANMongoDBProfilerAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANMongodbProfilerAgent QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANMongodbProfilerAgent
 */
 type ChangeAgentOKBodyQANMongodbProfilerAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5259,14 +5259,14 @@ func (o *ChangeAgentOKBodyQANMongodbProfilerAgent) UnmarshalBinary(b []byte) err
 }
 
 /*
-ChangeAgentOKBodyQANMysqlPerfschemaAgent QANMySQLPerfSchemaAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANMysqlPerfschemaAgent QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANMysqlPerfschemaAgent
 */
 type ChangeAgentOKBodyQANMysqlPerfschemaAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5486,14 +5486,14 @@ func (o *ChangeAgentOKBodyQANMysqlPerfschemaAgent) UnmarshalBinary(b []byte) err
 }
 
 /*
-ChangeAgentOKBodyQANMysqlSlowlogAgent QANMySQLSlowlogAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANMysqlSlowlogAgent QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANMysqlSlowlogAgent
 */
 type ChangeAgentOKBodyQANMysqlSlowlogAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5716,14 +5716,14 @@ func (o *ChangeAgentOKBodyQANMysqlSlowlogAgent) UnmarshalBinary(b []byte) error 
 }
 
 /*
-ChangeAgentOKBodyQANPostgresqlPgstatementsAgent QANPostgreSQLPgStatementsAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANPostgresqlPgstatementsAgent QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANPostgresqlPgstatementsAgent
 */
 type ChangeAgentOKBodyQANPostgresqlPgstatementsAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5928,14 +5928,14 @@ func (o *ChangeAgentOKBodyQANPostgresqlPgstatementsAgent) UnmarshalBinary(b []by
 }
 
 /*
-ChangeAgentOKBodyQANPostgresqlPgstatmonitorAgent QANPostgreSQLPgStatMonitorAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+ChangeAgentOKBodyQANPostgresqlPgstatmonitorAgent QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyQANPostgresqlPgstatmonitorAgent
 */
 type ChangeAgentOKBodyQANPostgresqlPgstatmonitorAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6150,7 +6150,7 @@ type ChangeAgentOKBodyRDSExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6464,14 +6464,14 @@ func (o *ChangeAgentOKBodyRDSExporterMetricsResolutions) UnmarshalBinary(b []byt
 }
 
 /*
-ChangeAgentOKBodyRtaMongodbAgent RTAMongoDBAgent runs within pmm-agent and sends MongoDB Real-Time Query Analytics data to the PMM Server.
+ChangeAgentOKBodyRtaMongodbAgent RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.
 swagger:model ChangeAgentOKBodyRtaMongodbAgent
 */
 type ChangeAgentOKBodyRtaMongodbAgent struct {
 	// Unique agent identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6774,7 +6774,7 @@ type ChangeAgentOKBodyValkeyExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).

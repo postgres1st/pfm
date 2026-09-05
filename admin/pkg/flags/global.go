@@ -26,11 +26,12 @@ var isJSON = false
 
 // GlobalFlags stores flags global to all commands.
 type GlobalFlags struct {
-	ServerURL               *url.URL    `placeholder:"SERVER-URL" help:"PMM Server URL in https://username:password@pmm-server-host/ format"`
-	SkipTLSCertificateCheck bool        `name:"server-insecure-tls" help:"Skip PMM Server TLS certificate validation"`
+	ServerURL               *url.URL    `placeholder:"SERVER-URL" help:"PGF WatchTower Server URL in https://username[:password]@server-host/ format"`
+	ServerPasswordStdin     bool        `name:"server-password-stdin" help:"Read the PGF WatchTower Server password from stdin instead of embedding it in --server-url, where it is visible to any local user via /proc/<pid>/cmdline and is recorded in shell history"`
+	SkipTLSCertificateCheck bool        `name:"server-insecure-tls" help:"Skip PGF WatchTower Server TLS certificate validation"`
 	EnableDebug             bool        `name:"debug" help:"Enable debug logging"`
 	EnableTrace             bool        `name:"trace" help:"Enable trace logging (implies debug)"`
-	PMMAgentListenPort      uint32      `default:"${defaultListenPort}" help:"Set listen port of pmm-agent"`
+	PMMAgentListenPort      uint32      `default:"${defaultListenPort}" help:"Set listen port of pfw-agent"`
 	JSON                    jsonFlag    `help:"Enable JSON output"`
 	Version                 versionFlag `short:"v" help:"Show application version"`
 }

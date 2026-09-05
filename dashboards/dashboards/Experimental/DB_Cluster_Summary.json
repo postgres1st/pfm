@@ -9,9 +9,10 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PFMM Annotations",
+                "name": "PGF WatchTower Annotations",
                 "showIn": 0,
                 "tags": [
+                    "pfw_annotation",
                     "pmm_annotation",
                     "$namespace",
                     "$pod"
@@ -20,6 +21,7 @@
                     "limit": 100,
                     "matchAny": true,
                     "tags": [
+                        "pfw_annotation",
                         "pmm_annotation",
                         "$namespace",
                         "$pod"
@@ -80,7 +82,7 @@
                     },
                     "id": 1274,
                     "options": {
-                        "content": "## Disclaimer \n\nThis Experimental Dashboard is not a part of the official Postgres1st Monitoring and Management (PFMM) deployment and might be updated. \nWe ship this Dashboard to obtain feedback from our users. \n\nOnce we officially release this Dashboard, it will be moved to the appropriate folder. \n\n## About Dashboard\n\nThis Dashboard is a part of the [DBaaS solution](https://docs.postgresfirst.com/dbaas) in PFMM.\nThis Dashboard displays the resource consumption in the K8s Cluster.\n\nTo provide feedback on the Dashboard, visit [our forum](https://forums.postgresfirst.com/c/percona-monitoring-and-management-pmm/pmm-unofficial-dashboards-and-plugins/67).",
+                        "content": "## Disclaimer \n\nThis Experimental Dashboard is not a part of the official PGF WatchTower deployment and might be updated. \nWe ship this Dashboard to obtain feedback from our users. \n\nOnce we officially release this Dashboard, it will be moved to the appropriate folder. \n\n## About Dashboard\n\nThis Dashboard is a part of the [DBaaS solution](https://docs.postgresfirst.com/dbaas) in PGF WatchTower.\nThis Dashboard displays the resource consumption in the K8s Cluster.\n",
                         "mode": "markdown"
                     },
                     "pluginVersion": "8.3.5",

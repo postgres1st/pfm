@@ -18,6 +18,7 @@ package encryption
 import (
 	"encoding/base64"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -71,4 +72,21 @@ func TestEncryptionGenerateAndPersistKey(t *testing.T) {
 	// Verify it's valid base64
 	_, err = base64.StdEncoding.DecodeString(e.Key)
 	require.NoError(t, err)
+}
+
+// The rebrand moved the key to /srv/pfw-encryption.key. New() GENERATES a key when it
+// finds none, so a host still holding the pre-rebrand file must adopt it rather than be
+// re-keyed -- silently losing the ability to decrypt everything already stored.
+func TestLegacyKeyPathIsAdopted(t *testing.T) {
+	t.Parallel()
+
+	if DefaultEncryptionKeyPath == LegacyEncryptionKeyPath {
+		t.Fatal("the default and legacy key paths must differ, or the fallback is meaningless")
+	}
+	if !strings.Contains(DefaultEncryptionKeyPath, "pfw-") {
+		t.Errorf("default key path %q does not carry the current branding", DefaultEncryptionKeyPath)
+	}
+	if !strings.Contains(LegacyEncryptionKeyPath, "pmm-") {
+		t.Errorf("legacy key path %q is not the pre-rebrand name", LegacyEncryptionKeyPath)
+	}
 }

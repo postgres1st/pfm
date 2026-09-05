@@ -39,6 +39,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"github.com/percona/pmm/managed/models"
+	"github.com/percona/pmm/managed/utils/dbsecret"
 	"github.com/percona/pmm/managed/utils/envvars"
 	"github.com/percona/pmm/utils/pdeathsig"
 )
@@ -47,7 +48,6 @@ const (
 	defaultClickhouseDatabase           = "pmm"
 	defaultClickhouseAddr               = "127.0.0.1:9000"
 	defaultClickhouseUser               = "default"
-	defaultClickhousePassword           = "clickhouse"
 	defaultVMSearchMaxQueryLen          = "1MB"
 	defaultVMSearchLatencyOffset        = "5s"
 	defaultVMSearchMaxUniqueTimeseries  = "100000000"
@@ -97,14 +97,14 @@ func New(configDir string, params *models.Params) *Service {
 	path, _ := exec.LookPath("supervisorctl")
 	systemctlPath, _ := exec.LookPath("systemctl")
 	l := logrus.WithField("component", "supervisord")
-	pm := selectProcessManager(os.Getenv(processManagerEnv), path != "", systemctlPath != "", pfmUnitsInstalled())
+	pm := selectProcessManager(os.Getenv(processManagerEnv), path != "", systemctlPath != "", pfwUnitsInstalled())
 	l.Infof("Process control backend: %s.", pm)
 	return &Service{
 		configDir:         configDir,
 		supervisorctlPath: path,
 		systemctlPath:     systemctlPath,
 		pm:                pm,
-		envDir:            pfmEnvDir,
+		envDir:            pfwEnvDir,
 		l:                 l,
 		subs:              make(map[chan *event]sub),
 		lastEvents:        make(map[string]eventType),
@@ -118,7 +118,7 @@ func New(configDir string, params *models.Params) *Service {
 func (s *Service) Run(ctx context.Context) { //nolint:gocognit
 	if s.pm == pmSystemd {
 		// The maintail event stream is supervisord-specific; the journald
-		// equivalent (`journalctl -f -u pfm-*`) is a separate workstream (T4).
+		// equivalent (`journalctl -f -u pfw-*`) is a separate workstream (T4).
 		s.l.Info("Running under systemd; supervisord maintail event stream disabled.")
 		return
 	}
@@ -217,7 +217,7 @@ func (s *Service) UpdateConfiguration(settings *models.Settings) error {
 		}
 
 		if s.pm == pmSystemd {
-			// Native units read regenerated config from /run/pfm/<name>.env
+			// Native units read regenerated config from /run/pfw/<name>.env
 			// instead of supervisord .ini files (T3b).
 			if e := s.updateEnvConfig(tmpl.Name(), settings); e != nil {
 				s.l.Errorf("Failed to update %s env config: %s.", tmpl.Name(), e)
@@ -282,7 +282,7 @@ var templates = template.Must(template.New("").Option("missingkey=error").Parse(
 [program:victoriametrics]
 priority = 7
 command =
-	/usr/sbin/victoriametrics
+	/usr/sbin/pfw-victoriametrics
 		--promscrape.config=/etc/victoriametrics-promscrape.yml
 		--retentionPeriod={{ .DataRetentionDays }}d
 		--storageDataPath=/srv/victoriametrics/data
@@ -316,7 +316,7 @@ redirect_stderr = true
 [program:vmalert]
 priority = 7
 command =
-	/usr/sbin/vmalert
+	/usr/sbin/pfw-vmalert
 		--external.url={{ .VMURL }}
 		--datasource.url={{ .VMURL }}
 		--remoteRead.url={{ .VMURL }}
@@ -342,7 +342,7 @@ redirect_stderr = true
 [program:vmproxy]
 priority = 9
 command =
-    /usr/sbin/vmproxy
+    /usr/sbin/pfw-vmproxy
       --target-url={{ .VMURL }}
       --listen-port=8430
       --listen-address={{ .InterfaceToBind }}
@@ -363,7 +363,7 @@ redirect_stderr = true
 [program:qan-api2]
 priority = 13
 command =
-	/usr/sbin/percona-qan-api2
+	/usr/sbin/pfw-qan-api2
 		--data-retention={{ .DataRetentionDays }}
 environment =
 	PMM_CLICKHOUSE_ADDR="{{ .ClickhouseAddr }}",
@@ -428,7 +428,7 @@ redirect_stderr = true
 {{define "nomad-server"}}
 [program:nomad-server]
 priority = 5
-command = /opt/postgres1st/pfm/tools/nomad agent -config /srv/nomad/nomad-server-{{ .PMMServerHost }}.hcl
+command = /opt/postgres1st/watchtower/tools/nomad agent -config /srv/nomad/nomad-server-{{ .PMMServerHost }}.hcl
 autorestart = true
 autostart = {{ .NomadEnabled }}
 startretries = 10
@@ -504,7 +504,10 @@ func (s *Service) configParams(settings *models.Settings) (map[string]any, error
 	clickhouseAddr := envvars.GetEnv("PMM_CLICKHOUSE_ADDR", defaultClickhouseAddr)
 	clickhouseAddrPair := strings.SplitN(clickhouseAddr, ":", 2) //nolint:mnd
 	clickhouseUser := envvars.GetEnv("PMM_CLICKHOUSE_USER", defaultClickhouseUser)
-	clickhousePassword := envvars.GetEnv("PMM_CLICKHOUSE_PASSWORD", defaultClickhousePassword)
+	// The fallback is the generated credential from /srv/.pfw-secrets when this
+	// host has one, and only then the historical constant -- the packaged
+	// defaults/*.env seeds no longer carry it.
+	clickhousePassword := envvars.GetEnv("PMM_CLICKHOUSE_PASSWORD", dbsecret.ClickhousePassword())
 	vmSearchDisableCache := envvars.GetEnv("VM_search_disableCache", strconv.FormatBool(!settings.IsVictoriaMetricsCacheEnabled()))
 	vmSearchMaxQueryLen := envvars.GetEnv("VM_search_maxQueryLen", defaultVMSearchMaxQueryLen)
 	vmSearchLatencyOffset := envvars.GetEnv("VM_search_latencyOffset", defaultVMSearchLatencyOffset)

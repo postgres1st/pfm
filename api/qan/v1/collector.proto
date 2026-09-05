@@ -7,10 +7,10 @@ import "google/api/visibility.proto";
 import "inventory/v1/agents.proto";
 import "qan/v1/qan.proto";
 
-// Collector service accepts data from pmm-agent (via pmm-managed).
+// Collector service accepts data from pfw-agent (via pmm-managed).
 service CollectorService {
   option (google.api.api_visibility).restriction = "INTERNAL";
-  // Collect accepts data from pmm-agent (via pmm-managed).
+  // Collect accepts data from pfw-agent (via pmm-managed).
   rpc Collect(CollectRequest) returns (CollectResponse);
 }
 
@@ -18,7 +18,7 @@ message CollectRequest {
   repeated MetricsBucket metrics_bucket = 1;
 }
 
-// MetricsBucket is aggregated message created by pmm-agent.
+// MetricsBucket is aggregated message created by pfw-agent.
 // Contains information about one query selected in defined way from query class in specific period of time.
 message MetricsBucket {
   // md5 of digest_text/fingerprint.

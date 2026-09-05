@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PMM Agent Local API",
+    "title": "PGF WatchTower Agent Local API",
     "version": "stable"
   },
   "host": "127.0.0.1:7777",

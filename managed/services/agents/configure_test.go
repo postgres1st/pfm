@@ -30,6 +30,13 @@ func TestMain(m *testing.M) {
 		return password, nil
 	}
 
+	// Pin the fleet-wide exporter bind override OFF for the whole package. Many
+	// tests here assert `--web.listen-address=127.0.0.1:...`, which the override
+	// flips to 0.0.0.0 -- so without this the suite's result depends on whether
+	// PFW_EXPOSE_EXPORTERS happens to be set in the caller's environment. A test
+	// that needs it on sets it for its own scope.
+	exposeAllExportersByDefault = func() bool { return false }
+
 	code := m.Run()
 
 	os.Exit(code)

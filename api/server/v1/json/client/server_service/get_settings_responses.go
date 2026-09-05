@@ -680,7 +680,7 @@ func (o *GetSettingsOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-GetSettingsOKBodySettings Settings represents PMM Server settings.
+GetSettingsOKBodySettings Settings represents PGF WatchTower Server settings.
 swagger:model GetSettingsOKBodySettings
 */
 type GetSettingsOKBodySettings struct {
@@ -708,7 +708,7 @@ type GetSettingsOKBodySettings struct {
 	// True if Alerting is enabled.
 	AlertingEnabled bool `json:"alerting_enabled,omitempty"`
 
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PMMPublicAddress string `json:"pmm_public_address,omitempty"`
 
 	// True if Backup Management is enabled.

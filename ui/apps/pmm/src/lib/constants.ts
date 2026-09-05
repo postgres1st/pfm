@@ -9,7 +9,7 @@ export const UPDATES_ENABLED = false;
 // todo: remove completely in a follow up to reduce current scope
 export const PMM_NEW_NAV_PATH = '';
 export const GRAFANA_SUB_PATH = '/graph';
-export const PMM_BASE_PATH = `/pfm-ui${PMM_NEW_NAV_PATH}`;
+export const PMM_BASE_PATH = `/pfw-ui${PMM_NEW_NAV_PATH}`;
 export const PMM_NEW_NAV_GRAFANA_PATH = `${PMM_NEW_NAV_PATH}${GRAFANA_SUB_PATH}`;
 export const PMM_HOME_URL = `${GRAFANA_SUB_PATH}/d/pmm-home`;
 export const PMM_LOGIN_URL = `${GRAFANA_SUB_PATH}/login`;
@@ -61,7 +61,7 @@ export const SERVICE_TYPE_MODEL_ID: Record<
 // Fallback used only until the server settings (and their runtime
 // `supportedServiceTypes` allowlist) have loaded. Mirrors the backend's shipped
 // default so the sidebar shows the PostgreSQL-first set without flicker; once
-// settings arrive, the live value (which honours PFM_DB_TYPES) takes over.
+// settings arrive, the live value (which honours PFW_DB_TYPES) takes over.
 export const DEFAULT_SUPPORTED_SERVICE_TYPES: string[] = [
   ManagedServiceType.postgresql,
   ManagedServiceType.haproxy,

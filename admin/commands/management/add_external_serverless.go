@@ -51,6 +51,7 @@ type AddExternalServerlessCommand struct {
 	Username            string            `help:"External username"`
 	Password            string            `help:"External password"`
 	CredentialsSource   string            `type:"existingfile" help:"Credentials provider"`
+	PasswordStdin       bool              `name:"password-stdin" help:"${stdin_password_help}"`
 	Address             string            `placeholder:"1.2.3.4:9000" help:"External exporter address and port"`
 	Host                string            `placeholder:"1.2.3.4" help:"External exporters hostname or IP address"`
 	ListenPort          uint16            `placeholder:"9999" help:"Listen port of external exporter for scraping metrics"`
@@ -74,10 +75,10 @@ type AddExternalServerlessCommand struct {
 // Help returns cli usage help.
 func (cmd *AddExternalServerlessCommand) Help() string {
 	return `Usage example:
-sudo pmm-admin add external-serverless --url=http://1.2.3.4:9093/metrics
+sudo pfw-admin add external-serverless --url=http://1.2.3.4:9093/metrics
 
 Also, individual parameters can be set instead of --url like:
-sudo pmm-admin add external-serverless --scheme=http --host=1.2.3.4 --listen-port=9093 --metrics-path=/metrics --container-name=ddd --external-name=e125
+sudo pfw-admin add external-serverless --scheme=http --host=1.2.3.4 --listen-port=9093 --metrics-path=/metrics --container-name=ddd --external-name=e125
 
 Notice that some parameters are mandatory depending on the context. 
 For example, if you specify --url, --schema and other related parameters are not mandatory but,
@@ -123,6 +124,14 @@ func (cmd *AddExternalServerlessCommand) RunCmd() (commands.Result, error) {
 			return nil, fmt.Errorf("failed to retrieve credentials from %s: %w", cmd.CredentialsSource, err)
 		}
 	}
+
+	// Applied after --credentials-source so an explicit stdin password still wins,
+	// and so the bare --password warning fires only when that is really the source.
+	password, err := resolvePasswordStdin(cmd.PasswordStdin, cmd.Password)
+	if err != nil {
+		return nil, err
+	}
+	cmd.Password = password
 
 	params := &mservice.AddServiceParams{
 		Body: mservice.AddServiceBody{

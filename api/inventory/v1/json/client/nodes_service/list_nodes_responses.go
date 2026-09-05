@@ -826,7 +826,7 @@ type ListNodesOKBodyContainerItems0 struct {
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `json:"custom_labels,omitempty"`
 
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPMMServerNode bool `json:"is_pmm_server_node,omitempty"`
 }
 
@@ -890,7 +890,7 @@ type ListNodesOKBodyGenericItems0 struct {
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `json:"custom_labels,omitempty"`
 
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPMMServerNode bool `json:"is_pmm_server_node,omitempty"`
 }
 
@@ -978,7 +978,7 @@ func (o *ListNodesOKBodyRemoteAzureDatabaseItems0) UnmarshalBinary(b []byte) err
 }
 
 /*
-ListNodesOKBodyRemoteItems0 RemoteNode represents generic remote Node. It's a node where we don't run pmm-agents. Only external exporters can run on Remote Nodes.
+ListNodesOKBodyRemoteItems0 RemoteNode represents generic remote Node. It's a node where we don't run pfw-agents. Only external exporters can run on Remote Nodes.
 swagger:model ListNodesOKBodyRemoteItems0
 */
 type ListNodesOKBodyRemoteItems0 struct {

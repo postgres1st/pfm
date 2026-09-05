@@ -12,9 +12,10 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PFMM Annotations",
+                "name": "PGF WatchTower Annotations",
                 "showIn": 0,
                 "tags": [
+                    "pfw_annotation",
                     "pmm_annotation",
                     "$node_name",
                     "$service_name"
@@ -23,6 +24,7 @@
                     "limit": 100,
                     "matchAny": true,
                     "tags": [
+                        "pfw_annotation",
                         "pmm_annotation",
                         "$node_name",
                         "$service_name"

@@ -40,7 +40,13 @@ func (e *InvalidAlertingRuleError) Error() string {
 }
 
 // ValidateAlertingRules validates alerting rules (https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules/)
-// by storing them in temporary file and calling `vmalert -dryRun -rule`.
+// by storing them in temporary file and calling `pfw-vmalert -dryRun -rule`.
+//
+// The binary is resolved from PATH by name, so it is coupled to what
+// victoriametrics.spec installs: the package ships /usr/sbin/pfw-vmalert, prefixed
+// because a bare `vmalert` in /usr/sbin collides with upstream VictoriaMetrics
+// packaging and RPM refuses to install both. Renaming one without the other leaves
+// rule validation failing with "executable file not found" at runtime.
 // Returned error is nil, *InvalidAlertingRuleError for "normal" validation errors,
 // or some other fatal error.
 func ValidateAlertingRules(ctx context.Context, rules string) error {
@@ -59,7 +65,7 @@ func ValidateAlertingRules(ctx context.Context, rules string) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, 3*time.Second) //nolint:mnd
 	defer cancel()
 
-	cmd := exec.CommandContext(timeoutCtx, "vmalert", "-loggerLevel", "WARN", "-dryRun", "-rule", tempFile.Name()) //nolint:gosec
+	cmd := exec.CommandContext(timeoutCtx, "pfw-vmalert", "-loggerLevel", "WARN", "-dryRun", "-rule", tempFile.Name()) //nolint:gosec
 	pdeathsig.Set(cmd, unix.SIGKILL)
 
 	b, err := cmd.CombinedOutput()

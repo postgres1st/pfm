@@ -207,7 +207,7 @@ type ChangeSettingsBody struct {
 	// Enable Alerting.
 	EnableAlerting *bool `json:"enable_alerting,omitempty"`
 
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PMMPublicAddress *string `json:"pmm_public_address,omitempty"`
 
 	// Enable Azure Discover.
@@ -931,7 +931,7 @@ func (o *ChangeSettingsOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-ChangeSettingsOKBodySettings Settings represents PMM Server settings.
+ChangeSettingsOKBodySettings Settings represents PGF WatchTower Server settings.
 swagger:model ChangeSettingsOKBodySettings
 */
 type ChangeSettingsOKBodySettings struct {
@@ -959,7 +959,7 @@ type ChangeSettingsOKBodySettings struct {
 	// True if Alerting is enabled.
 	AlertingEnabled bool `json:"alerting_enabled,omitempty"`
 
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PMMPublicAddress string `json:"pmm_public_address,omitempty"`
 
 	// True if Backup Management is enabled.

@@ -12,9 +12,10 @@
         "iconColor": "#e0752d",
         "limit": 100,
         "matchAny": true,
-        "name": "PFMM Annotations",
+        "name": "PGF WatchTower Annotations",
         "showIn": 0,
         "tags": [
+          "pfw_annotation",
           "pmm_annotation",
           "$node_name"
         ],
@@ -22,6 +23,7 @@
           "limit": 100,
           "matchAny": true,
           "tags": [
+            "pfw_annotation",
             "pmm_annotation",
             "$node_name"
           ],
@@ -161,7 +163,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Distinct database services per technology. Unlike Monitored DB Services, each service is counted once regardless of how many exporters report for it. If lower than expected, a service may not be registered with PFMM or its exporter may be down.",
+      "description": "Distinct database services per technology. Unlike Monitored DB Services, each service is counted once regardless of how many exporters report for it. If lower than expected, a service may not be registered with PGF WatchTower or its exporter may be down.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -248,7 +250,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Total monitored nodes matching the current filters. If lower than expected, a node may not be registered with PFMM or its agent may be offline.",
+      "description": "Total monitored nodes matching the current filters. If lower than expected, a node may not be registered with PGF WatchTower or its agent may be offline.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1286,7 +1288,7 @@
       "type": "stat"
     },
     {
-      "description": "Number of advisor checks that failed in the most recent run. A non-zero count means PFMM has detected conditions that need attention. Review which checks failed and why.",
+      "description": "Number of advisor checks that failed in the most recent run. A non-zero count means PGF WatchTower has detected conditions that need attention. Review which checks failed and why.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1307,7 +1309,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Current PFMM version and whether a newer version is available.",
+      "description": "Current PGF WatchTower version and whether a newer version is available.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -1330,7 +1332,7 @@
           "refId": "A"
         }
       ],
-      "title": "PFMM Upgrade",
+      "title": "PGF WatchTower Upgrade",
       "type": "pmm-update-panel"
     },
     {

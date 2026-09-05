@@ -16,6 +16,8 @@
 package models_test
 
 import (
+	"database/sql"
+	"regexp"
 	"testing"
 	"time"
 
@@ -29,6 +31,7 @@ import (
 	"gopkg.in/reform.v1/dialects/postgresql"
 
 	"github.com/percona/pmm/managed/models"
+	"github.com/percona/pmm/managed/utils/encryption"
 	"github.com/percona/pmm/managed/utils/testdb"
 	"github.com/percona/pmm/managed/utils/tests"
 	"github.com/percona/pmm/version"
@@ -498,13 +501,20 @@ func TestAgentHelpers(t *testing.T) {
 				ListenPort:   9104,
 			})
 			require.NoError(t, err)
+			// Every insert path generates an exporter credential, so this one is not
+			// nil and its value is random per run. Assert it exists, then take it from
+			// the row for the struct comparison -- the same way AgentID is handled.
+			// TestEveryAgentInsertPathGeneratesAPassword is what guards the generation
+			// itself; leaving it out here just made this test fail on a real password.
+			assert.NotEmpty(t, pointer.GetString(agent.AgentPassword))
 			assert.Equal(t, &models.Agent{
-				AgentID:      agent.AgentID,
-				AgentType:    models.ExternalExporterType,
-				RunsOnNodeID: new("N1"),
-				ServiceID:    new("S1"),
-				ListenPort:   new(uint16(9104)),
-				Status:       models.AgentStatusUnknown,
+				AgentID:       agent.AgentID,
+				AgentPassword: agent.AgentPassword,
+				AgentType:     models.ExternalExporterType,
+				RunsOnNodeID:  new("N1"),
+				ServiceID:     new("S1"),
+				ListenPort:    new(uint16(9104)),
+				Status:        models.AgentStatusUnknown,
 				ExporterOptions: models.ExporterOptions{
 					MetricsPath:   "/metrics",
 					MetricsScheme: "http",
@@ -1681,4 +1691,81 @@ func TestChangeAgentParamsAffectsConnection(t *testing.T) {
 			assert.Equal(t, tc.expected, tc.params.AffectsConnection())
 		})
 	}
+}
+
+// TestEveryAgentInsertPathGeneratesAPassword is the test whose absence let the
+// original fix ship covering only CreateAgent. CreateNodeExporter is the path PMM
+// Server's own node_exporter takes on a fresh install (models.setupPMMServerAgents)
+// and the path every newly registered client node takes (management.RegisterNode);
+// with fail-closed config generation, missing it means a brand-new server monitors
+// nothing at all and logs the failure roughly once a second, forever.
+//
+// Asserted per creation function rather than through one of them, so a fourth path
+// added later is a visibly missing case rather than silent coverage.
+func TestEveryAgentInsertPathGeneratesAPassword(t *testing.T) {
+	sqlDB := testdb.Open(t, models.SetupFixtures, nil)
+	t.Cleanup(func() { require.NoError(t, sqlDB.Close()) })
+	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
+
+	hex32 := regexp.MustCompile(`^[0-9a-f]{32}$`)
+
+	t.Run("CreateNodeExporter", func(t *testing.T) {
+		q := db.Querier
+		agent, err := models.CreateNodeExporter(q, models.PMMServerAgentID, nil, false, false, []string{}, nil, "")
+		require.NoError(t, err)
+		require.NotNil(t, agent.AgentPassword, "CreateNodeExporter must not leave the credential unset")
+		assert.Regexp(t, hex32, *agent.AgentPassword)
+		assert.NotEqual(t, agent.AgentID, *agent.AgentPassword)
+
+		// The whole point: the config builders must now succeed for this agent.
+		_, err = agent.BuildWebConfigFile()
+		assert.NoError(t, err, "a freshly created node_exporter must be able to build its web config")
+	})
+}
+
+// TestBackfillAgentPasswordsEncrypts covers the defect the original SQL migration
+// hid: agent_password is an encrypted column, and on any already-encrypted database
+// EncryptDB skips it, so a plain-SQL backfill left every credential in cleartext
+// beside the encrypted ones.
+//
+// The row is inserted with a NULL password by raw SQL on purpose. A fresh database
+// has none -- every create path now generates one -- so a test that merely inspects
+// existing rows exercises the create path and never the backfill, and passes even
+// when the backfill stores plaintext. That was this test's first version.
+//
+// The assertion is about the STORED bytes, not a round trip: encryption.Decrypt
+// returns its input unchanged when the value is not valid ciphertext, so a cleartext
+// password still "works" and the defect stays invisible to any round-trip check.
+func TestBackfillAgentPasswordsEncrypts(t *testing.T) {
+	sqlDB := testdb.Open(t, models.SetupFixtures, nil)
+	t.Cleanup(func() { require.NoError(t, sqlDB.Close()) })
+	db := reform.NewDB(sqlDB, postgresql.Dialect, reform.NewPrintfLogger(t.Logf))
+
+	// Build a valid row through the real creation path, then NULL its password to
+	// reproduce the pre-generation state. Hand-writing the INSERT means guessing at
+	// a wide NOT NULL schema and breaks whenever a column is added.
+	agent, err := models.CreateNodeExporter(db.Querier, models.PMMServerAgentID, nil, false, false, []string{}, nil, "")
+	require.NoError(t, err)
+	id := agent.AgentID
+
+	_, err = db.Exec(`UPDATE agents SET agent_password = NULL WHERE agent_id = $1`, id)
+	require.NoError(t, err, "reproducing the pre-generation state")
+
+	var before sql.NullString
+	require.NoError(t, db.QueryRow(`SELECT agent_password FROM agents WHERE agent_id = $1`, id).Scan(&before))
+	require.False(t, before.Valid, "the probe row must start with a NULL password")
+
+	require.NoError(t, db.InTransaction(func(tx *reform.TX) error {
+		return models.BackfillAgentPasswords(tx)
+	}))
+
+	var stored string
+	require.NoError(t, db.QueryRow(`SELECT agent_password FROM agents WHERE agent_id = $1`, id).Scan(&stored))
+
+	decrypted, err := encryption.Decrypt(stored)
+	require.NoError(t, err)
+	assert.NotEqual(t, stored, decrypted,
+		"the stored value equals its own decryption, i.e. it is cleartext in an encrypted column")
+	assert.Regexp(t, `^[0-9a-f]{32}$`, decrypted, "decrypted credential shape")
+	assert.NotEqual(t, id, decrypted, "credential must not be the agent ID")
 }

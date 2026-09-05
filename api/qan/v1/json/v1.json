@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PMM QAN API",
+    "title": "PGF WatchTower QAN API",
     "version": "v1"
   },
   "paths": {

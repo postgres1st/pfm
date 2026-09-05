@@ -105,7 +105,7 @@ type GenericNode struct {
 	Az string `protobuf:"bytes,8,opt,name=az,proto3" json:"az,omitempty"`
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `protobuf:"bytes,9,rep,name=custom_labels,json=customLabels,proto3" json:"custom_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPmmServerNode bool `protobuf:"varint,10,opt,name=is_pmm_server_node,json=isPmmServerNode,proto3" json:"is_pmm_server_node,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -234,7 +234,7 @@ type ContainerNode struct {
 	Az string `protobuf:"bytes,9,opt,name=az,proto3" json:"az,omitempty"`
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `protobuf:"bytes,10,rep,name=custom_labels,json=customLabels,proto3" json:"custom_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPmmServerNode bool `protobuf:"varint,11,opt,name=is_pmm_server_node,json=isPmmServerNode,proto3" json:"is_pmm_server_node,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -347,7 +347,7 @@ func (x *ContainerNode) GetIsPmmServerNode() bool {
 	return false
 }
 
-// RemoteNode represents generic remote Node. It's a node where we don't run pmm-agents. Only external exporters can run on Remote Nodes.
+// RemoteNode represents generic remote Node. It's a node where we don't run pfw-agents. Only external exporters can run on Remote Nodes.
 type RemoteNode struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
@@ -2043,7 +2043,6 @@ var (
 		nil,                              // 28: inventory.v1.AddRemoteAzureNodeParams.CustomLabelsEntry
 	}
 )
-
 var file_inventory_v1_nodes_proto_depIdxs = []int32{
 	19, // 0: inventory.v1.GenericNode.custom_labels:type_name -> inventory.v1.GenericNode.CustomLabelsEntry
 	20, // 1: inventory.v1.ContainerNode.custom_labels:type_name -> inventory.v1.ContainerNode.CustomLabelsEntry

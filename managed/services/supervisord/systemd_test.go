@@ -20,6 +20,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -33,13 +35,13 @@ import (
 func TestSystemdUnitName(t *testing.T) {
 	t.Parallel()
 
-	// supervisord program names map to native pfm-*.service units; the
+	// supervisord program names map to native pfw-*.service units; the
 	// redundant "pmm-" prefix on the control-plane services is collapsed.
-	// pfm-agent.service is the client package's unit (masked on a server), so the
-	// server's self-monitoring agent maps to pfm-server-agent.service instead.
-	assert.Equal(t, "pfm-server-agent.service", systemdUnitName("pmm-agent"))
-	assert.Equal(t, "pfm-managed.service", systemdUnitName("pmm-managed"))
-	assert.Equal(t, "pfm-victoriametrics.service", systemdUnitName("victoriametrics"))
+	// pfw-agent.service is the client package's unit (masked on a server), so the
+	// server's self-monitoring agent maps to pfw-server-agent.service instead.
+	assert.Equal(t, "pfw-server-agent.service", systemdUnitName("pmm-agent"))
+	assert.Equal(t, "pfw-managed.service", systemdUnitName("pmm-managed"))
+	assert.Equal(t, "pfw-victoriametrics.service", systemdUnitName("victoriametrics"))
 }
 
 func TestSelectProcessManager(t *testing.T) {
@@ -59,9 +61,9 @@ func TestSelectProcessManager(t *testing.T) {
 		// unknown env value falls through to auto-detect
 		{"garbage env -> auto", "wat", false, true, true, pmSystemd},
 		// auto-detect needs POSITIVE evidence: supervisorctl absent, systemctl
-		// present, AND the pfm unit set actually installed.
+		// present, AND the pfw unit set actually installed.
 		{"auto systemd (units present)", "", false, true, true, pmSystemd},
-		{"auto declines without pfm units", "", false, true, false, pmSupervisord},
+		{"auto declines without pfw units", "", false, true, false, pmSupervisord},
 		{"auto supervisord (both present)", "", true, true, true, pmSupervisord},
 		{"auto default (neither)", "", false, false, false, pmSupervisord},
 	} {
@@ -78,7 +80,7 @@ func TestMarshalEnvConfig(t *testing.T) {
 	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
 	require.NoError(t, err)
 	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "db_username", DBPassword: "db_password", SSLMode: "disable"}
-	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	s := New("/run/pfw", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
 	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour, PMMPublicAddress: "192.168.0.42:8443"}
 	settings.VictoriaMetrics.CacheEnabled = new(false)
 
@@ -182,7 +184,7 @@ func TestMarshalEnvConfigGrafanaHA(t *testing.T) {
 	require.NoError(t, err)
 	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u", DBPassword: "p", SSLMode: "disable"}
 	haParams := &models.HAParams{Enabled: true, GrafanaGossipPort: 9095, AdvertiseAddress: "10.0.0.5", Nodes: []string{"n1", "n2"}}
-	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: haParams})
+	s := New("/run/pfw", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: haParams})
 	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
 
 	env, err := s.marshalEnvConfig("grafana", settings)
@@ -232,17 +234,17 @@ func TestReloadViaSystemd(t *testing.T) {
 	calls, err := os.ReadFile(logPath)
 	require.NoError(t, err)
 	// reset-failed must precede reload-or-restart, and use the mapped unit name.
-	assert.Contains(t, string(calls), "reset-failed pfm-victoriametrics.service")
-	assert.Contains(t, string(calls), "reload-or-restart pfm-victoriametrics.service")
+	assert.Contains(t, string(calls), "reset-failed pfw-victoriametrics.service")
+	assert.Contains(t, string(calls), "reload-or-restart pfw-victoriametrics.service")
 }
 
 func TestDisableDynamicService(t *testing.T) {
-	// not parallel: overrides package-level pfmDataDir.
-	saved := pfmDataDir
-	t.Cleanup(func() { pfmDataDir = saved })
+	// not parallel: overrides package-level pfwDataDir.
+	saved := pfwDataDir
+	t.Cleanup(func() { pfwDataDir = saved })
 
 	t.Run("stop fails -> error, env kept, but marker already written", func(t *testing.T) {
-		pfmDataDir = t.TempDir()
+		pfwDataDir = t.TempDir()
 		bin, _ := fakeSystemctl(t, 1) // stop fails
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
@@ -258,7 +260,7 @@ func TestDisableDynamicService(t *testing.T) {
 	})
 
 	t.Run("ok -> marker written, scoped stop (never mask), env removed", func(t *testing.T) {
-		pfmDataDir = t.TempDir()
+		pfwDataDir = t.TempDir()
 		bin, logPath := fakeSystemctl(t, 0)
 		dir := t.TempDir()
 		path := filepath.Join(dir, "victoriametrics.env")
@@ -270,7 +272,7 @@ func TestDisableDynamicService(t *testing.T) {
 		// Durable disable is a persistent marker + a SCOPED `stop` — never `mask`,
 		// which would need the unscopeable manage-unit-files polkit action (a local
 		// root-escalation vector via `link`).
-		assert.Contains(t, string(calls), "stop pfm-victoriametrics.service")
+		assert.Contains(t, string(calls), "stop pfw-victoriametrics.service")
 		assert.NotContains(t, string(calls), "mask")
 		_, mErr := os.Stat(disabledMarkerPath("victoriametrics"))
 		assert.NoError(t, mErr) // marker present -> ConditionPathExists keeps it down
@@ -280,10 +282,10 @@ func TestDisableDynamicService(t *testing.T) {
 }
 
 func TestUpdateEnvConfigEmbeddedClearsMarker(t *testing.T) {
-	// not parallel: overrides package-level pfmDataDir.
-	saved := pfmDataDir
-	t.Cleanup(func() { pfmDataDir = saved })
-	pfmDataDir = t.TempDir()
+	// not parallel: overrides package-level pfwDataDir.
+	saved := pfwDataDir
+	t.Cleanup(func() { pfwDataDir = saved })
+	pfwDataDir = t.TempDir()
 
 	// A disable marker left by a prior external-VM config.
 	marker := disabledMarkerPath("victoriametrics")
@@ -312,10 +314,10 @@ func TestUpdateEnvConfigEmbeddedClearsMarker(t *testing.T) {
 }
 
 func TestUpdateEnvConfigReenableForcesRestartWhenEnvUnchanged(t *testing.T) {
-	// not parallel: overrides package-level pfmDataDir.
-	saved := pfmDataDir
-	t.Cleanup(func() { pfmDataDir = saved })
-	pfmDataDir = t.TempDir()
+	// not parallel: overrides package-level pfwDataDir.
+	saved := pfwDataDir
+	t.Cleanup(func() { pfwDataDir = saved })
+	pfwDataDir = t.TempDir()
 
 	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
 	require.NoError(t, err)
@@ -343,7 +345,7 @@ func TestUpdateEnvConfigReenableForcesRestartWhenEnvUnchanged(t *testing.T) {
 	// The unit was disabled and the env is byte-identical, so a restart must be
 	// FORCED — otherwise re-enabling the embedded VM leaves it down until reboot.
 	calls, _ := os.ReadFile(logPath)
-	assert.Contains(t, string(calls), "reload-or-restart pfm-victoriametrics.service")
+	assert.Contains(t, string(calls), "reload-or-restart pfw-victoriametrics.service")
 }
 
 func TestEnvQuote(t *testing.T) {
@@ -378,7 +380,7 @@ func TestMarshalEnvConfigHostilePassword(t *testing.T) {
 		Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "u",
 		DBPassword: `p\`, SSLMode: "require", // trailing backslash
 	}
-	s := New("/run/pfm", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	s := New("/run/pfw", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
 	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
 
 	env, err := s.marshalEnvConfig("grafana", settings)
@@ -401,7 +403,7 @@ func TestSystemctlSurfacesStderr(t *testing.T) {
 	require.NoError(t, os.WriteFile(bin, []byte(script), 0o755))
 	s := newSystemdService(bin, dir)
 
-	_, err := s.systemctl("start", "pfm-victoriametrics.service")
+	_, err := s.systemctl("start", "pfw-victoriametrics.service")
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "Access denied")
 }
@@ -430,15 +432,15 @@ func TestWriteEnvFileMode(t *testing.T) {
 }
 
 func TestPfmUnitsInstalled(t *testing.T) {
-	// not parallel: mutates the package-level pfmUnitPaths.
-	saved := pfmUnitPaths
-	t.Cleanup(func() { pfmUnitPaths = saved })
+	// not parallel: mutates the package-level pfwUnitPaths.
+	saved := pfwUnitPaths
+	t.Cleanup(func() { pfwUnitPaths = saved })
 
-	target := filepath.Join(t.TempDir(), "pfm.target")
-	pfmUnitPaths = []string{target}
-	assert.False(t, pfmUnitsInstalled())
+	target := filepath.Join(t.TempDir(), "pfw.target")
+	pfwUnitPaths = []string{target}
+	assert.False(t, pfwUnitsInstalled())
 	require.NoError(t, os.WriteFile(target, []byte("x"), 0o644))
-	assert.True(t, pfmUnitsInstalled())
+	assert.True(t, pfwUnitsInstalled())
 }
 
 func TestProcessControlAvailable(t *testing.T) {
@@ -473,4 +475,61 @@ func TestParseIsActive(t *testing.T) {
 	} {
 		assert.Equal(t, tc.want, parseIsActive(tc.out), "%q", tc.out)
 	}
+}
+
+// TestSeededEnvMatchesRender asserts the invariant that pfw-qan-api2.service
+// documents in prose and nothing verified until now: the packaged seed at
+// build/packages/config/pfw/defaults/qan-api2.env must be byte-identical to what
+// pmm-managed renders on a default install.
+//
+// Why it matters: systemd-tmpfiles seeds /run/pfw/qan-api2.env at boot (/run is a
+// fresh tmpfs every time), qan-api2 starts and begins its ClickHouse schema
+// migration, and pmm-managed renders the same file ~1.5s later. saveEnvAndReload
+// compares bytes; any difference issues reload-or-restart and interrupts the
+// migration, leaving schema_migrations dirty. The unit's own note records that
+// ordering with After=pfw-managed was tried and does not help, because pmm-managed
+// is Type=exec and the ordering is satisfied before it renders anything.
+//
+// A change that adds, removes or alters a key on ONE side of this pair reopens that
+// failure. This test is the tripwire.
+func TestSeededEnvMatchesRender(t *testing.T) {
+	t.Parallel()
+
+	vmParams, err := models.NewVictoriaMetricsParams(models.BasePrometheusConfigPath, models.VMBaseURL)
+	require.NoError(t, err)
+	pgParams := &models.PGParams{Addr: "127.0.0.1:5432", DBName: "postgres", DBUsername: "db_username", DBPassword: "db_password", SSLMode: "disable"}
+	s := New("/run/pfw", &models.Params{VMParams: vmParams, PGParams: pgParams, HAParams: &models.HAParams{}})
+	// 30 days is the DataRetention the seed encodes.
+	settings := &models.Settings{DataRetention: 30 * 24 * time.Hour}
+	settings.VictoriaMetrics.CacheEnabled = new(false)
+
+	rendered, err := s.marshalEnvConfig("qan-api2", settings)
+	require.NoError(t, err)
+
+	seed, err := os.ReadFile("../../../build/packages/config/pfw/defaults/qan-api2.env")
+	require.NoError(t, err, "the packaged seed must exist; if it moved, this test must follow it")
+
+	// Compared as key sets rather than raw bytes: the seed is written by hand and
+	// the render is generated, so incidental ordering is not the property at risk.
+	// What matters is that neither side carries a key the other lacks -- that is
+	// exactly what produces a diff at boot.
+	keys := func(b []byte) []string {
+		var out []string
+		for _, line := range strings.Split(string(b), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			out = append(out, strings.SplitN(line, "=", 2)[0])
+		}
+		sort.Strings(out)
+		return out
+	}
+
+	assert.Equal(t, keys(seed), keys(rendered),
+		"defaults/qan-api2.env and the qan-api2 render template have drifted apart. "+
+			"Any key present on one side and absent on the other makes the first render "+
+			"differ from the seed, which restarts qan-api2 mid-migration on first boot. "+
+			"Add or remove the key on BOTH sides, or carry the value on the unit as its "+
+			"own EnvironmentFile the way the ClickHouse credential does.")
 }

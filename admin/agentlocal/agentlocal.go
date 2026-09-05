@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package agentlocal provides facilities for accessing local pmm-agent API.
+// Package agentlocal provides facilities for accessing local pfw-agent API.
 package agentlocal
 
 import (
@@ -33,7 +33,7 @@ import (
 	agentlocal "github.com/percona/pmm/api/agentlocal/v1/json/client/agent_local_service"
 )
 
-// SetTransport configures transport for accessing local pmm-agent API.
+// SetTransport configures transport for accessing local pfw-agent API.
 func SetTransport(debug bool, port uint32) {
 	// use JSON APIs over HTTP/1.1
 	transport := httptransport.New(fmt.Sprintf("%s:%d", Localhost, port), "/", []string{"http"})
@@ -51,23 +51,23 @@ func SetTransport(debug bool, port uint32) {
 type NetworkInfo bool
 
 const (
-	// RequestNetworkInfo requests network info from pmm-agent.
+	// RequestNetworkInfo requests network info from pfw-agent.
 	RequestNetworkInfo NetworkInfo = true
-	// DoNotRequestNetworkInfo does not request network info from pmm-agent.
+	// DoNotRequestNetworkInfo does not request network info from pfw-agent.
 	DoNotRequestNetworkInfo NetworkInfo = false
 	// Localhost is the local hostname.
 	Localhost = "127.0.0.1"
-	// DefaultPMMAgentListenPort is the default port for pmm-agent.
+	// DefaultPMMAgentListenPort is the default port for pfw-agent.
 	DefaultPMMAgentListenPort = 7777
 )
 
-// ErrNotSetUp is returned by GetStatus when pmm-agent is running, but not set up.
-var ErrNotSetUp = errors.New("pmm-agent is running, but not set up")
+// ErrNotSetUp is returned by GetStatus when pfw-agent is running, but not set up.
+var ErrNotSetUp = errors.New("pfw-agent is running, but not set up")
 
-// ErrNotConnected is returned by GetStatus when pmm-agent is running and set up, but not connected to PMM Server.
-var ErrNotConnected = errors.New("pmm-agent is not connected to PMM Server")
+// ErrNotConnected is returned by GetStatus when pfw-agent is running and set up, but not connected to PMM Server.
+var ErrNotConnected = errors.New("pfw-agent is not connected to PGF WatchTower Server")
 
-// Status represents pmm-agent status.
+// Status represents pfw-agent status.
 type Status struct {
 	AgentID  string `json:"agent_id"`
 	NodeID   string `json:"node_id"`
@@ -95,7 +95,7 @@ type AgentStatus struct {
 	Port      int64  `json:"listen_port,omitempty"`
 }
 
-// GetRawStatus returns raw local pmm-agent status. No special cases.
+// GetRawStatus returns raw local pfw-agent status. No special cases.
 // Most callers should use GetStatus instead.
 func GetRawStatus(ctx context.Context, requestNetworkInfo NetworkInfo) (*agentlocal.StatusOKBody, error) {
 	params := &agentlocal.StatusParams{
@@ -115,9 +115,9 @@ func GetRawStatus(ctx context.Context, requestNetworkInfo NetworkInfo) (*agentlo
 	return res.Payload, nil
 }
 
-// GetStatus returns local pmm-agent status.
-// As a special case, if pmm-agent is running, but not set up, ErrNotSetUp is returned.
-// If pmm-agent is set up, but not connected ErrNotConnected is returned.
+// GetStatus returns local pfw-agent status.
+// As a special case, if pfw-agent is running, but not set up, ErrNotSetUp is returned.
+// If pfw-agent is set up, but not connected ErrNotConnected is returned.
 func GetStatus(requestNetworkInfo NetworkInfo) (*Status, error) {
 	var err error
 	p, err := GetRawStatus(context.TODO(), requestNetworkInfo)

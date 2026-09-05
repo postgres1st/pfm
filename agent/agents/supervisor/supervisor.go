@@ -848,7 +848,7 @@ func (s *Supervisor) processParams(agentID string, agentProcess *agentv1.SetStat
 	for _, varName := range agentProcess.EnvVariableNames {
 		value, exists := os.LookupEnv(varName)
 		if !exists {
-			s.l.Warnf("Environment variable %s not found in pmm-agent environment for agent %s", varName, agentID)
+			s.l.Warnf("Environment variable %s not found in pfw-agent environment for agent %s", varName, agentID)
 			continue
 		}
 

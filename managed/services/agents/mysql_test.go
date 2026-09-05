@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -56,11 +57,11 @@ func TestMySQLdExporterConfig(t *testing.T) {
 			"--collect.auto_increment.columns",
 			"--collect.binlog_size",
 			"--collect.custom_query.hr",
-			"--collect.custom_query.hr.directory=/opt/postgres1st/pfm/collectors/custom-queries/mysql/high-resolution",
+			"--collect.custom_query.hr.directory=/opt/postgres1st/watchtower/collectors/custom-queries/mysql/high-resolution",
 			"--collect.custom_query.lr",
-			"--collect.custom_query.lr.directory=/opt/postgres1st/pfm/collectors/custom-queries/mysql/low-resolution",
+			"--collect.custom_query.lr.directory=/opt/postgres1st/watchtower/collectors/custom-queries/mysql/low-resolution",
 			"--collect.custom_query.mr",
-			"--collect.custom_query.mr.directory=/opt/postgres1st/pfm/collectors/custom-queries/mysql/medium-resolution",
+			"--collect.custom_query.mr.directory=/opt/postgres1st/watchtower/collectors/custom-queries/mysql/medium-resolution",
 			"--collect.engine_innodb_status",
 			"--collect.engine_tokudb_status",
 			"--collect.global_status",
@@ -90,7 +91,7 @@ func TestMySQLdExporterConfig(t *testing.T) {
 			"--exporter.global-conn-pool",
 			"--exporter.max-idle-conns=3",
 			"--exporter.max-open-conns=3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s",
@@ -220,6 +221,7 @@ func TestMySQLdExporterConfigTablestatsGroupDisabled(t *testing.T) {
 	}
 	exporter := &models.Agent{
 		AgentID:         "agent-id",
+		AgentPassword:   pointer.ToString("agent-password"),
 		AgentType:       models.MySQLdExporterType,
 		Username:        new("username"),
 		Password:        new("s3cur3 p@$$w0r4."),
@@ -272,13 +274,13 @@ func TestMySQLdExporterConfigTablestatsGroupDisabled(t *testing.T) {
 			"--mysql.ssl-ca-file={{ .TextFiles.tlsCa }}",
 			"--mysql.ssl-cert-file={{ .TextFiles.tlsCert }}",
 			"--mysql.ssl-key-file={{ .TextFiles.tlsKey }}",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s&tls=custom",
-			"HTTP_AUTH=pmm:agent-id",
+			"HTTP_AUTH=pmm:agent-password",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4.", "content-of-tls-key"},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password", "content-of-tls-key"},
 		TextFiles: map[string]string{
 			"tlsCa":   "content-of-tls-ca",
 			"tlsCert": "content-of-tls-cert",
@@ -329,10 +331,11 @@ func TestMySQLdExporterConfigDisabledCollectors(t *testing.T) {
 		Port:    new(uint16(3306)),
 	}
 	exporter := &models.Agent{
-		AgentID:   "agent-id",
-		AgentType: models.MySQLdExporterType,
-		Username:  new("username"),
-		Password:  new("s3cur3 p@$$w0r4."),
+		AgentID:       "agent-id",
+		AgentPassword: pointer.ToString("agent-password"),
+		AgentType:     models.MySQLdExporterType,
+		Username:      new("username"),
+		Password:      new("s3cur3 p@$$w0r4."),
 		ExporterOptions: models.ExporterOptions{
 			DisabledCollectors: []string{"heartbeat", "info_schema.clientstats", "perf_schema.eventsstatements", "custom_query.hr"},
 		},
@@ -379,13 +382,13 @@ func TestMySQLdExporterConfigDisabledCollectors(t *testing.T) {
 			"--exporter.global-conn-pool",
 			"--exporter.max-idle-conns=3",
 			"--exporter.max-open-conns=3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s",
-			"HTTP_AUTH=pmm:agent-id",
+			"HTTP_AUTH=pmm:agent-password",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4."},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 	requireNoDuplicateFlags(t, actual.Args)
 	require.NoError(t, err)
@@ -462,7 +465,7 @@ func TestMySQLdExporterConfigMySQL8Support(t *testing.T) {
 				"--exporter.conn-max-lifetime=55s",
 				"--exporter.max-idle-conns=3",
 				"--exporter.max-open-conns=3",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 				"--config.my-cnf={{ .TextFiles.myCnf }}",
 				"--web.config.file={{ .TextFiles.webConfig }}",
 			},
@@ -527,7 +530,7 @@ func TestMySQLdExporterConfigMySQL8Support(t *testing.T) {
 				"--exporter.conn-max-lifetime=55s",
 				"--exporter.max-idle-conns=3",
 				"--exporter.max-open-conns=3",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 				"--config.my-cnf={{ .TextFiles.myCnf }}",
 				"--web.config.file={{ .TextFiles.webConfig }}",
 			},
@@ -591,7 +594,7 @@ func TestMySQLdExporterConfigMySQL8Support(t *testing.T) {
 				"--exporter.conn-max-lifetime=55s",
 				"--exporter.max-idle-conns=3",
 				"--exporter.max-open-conns=3",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 				"--config.my-cnf={{ .TextFiles.myCnf }}",
 				"--web.config.file={{ .TextFiles.webConfig }}",
 			},

@@ -1,4 +1,4 @@
-// PFMM ships no update source: pfm-managed.service sets PMM_ENABLE_UPDATES=false and
+// PGF WatchTower ships no update source: pfw-managed.service sets PMM_ENABLE_UPDATES=false and
 // the settings API treats an env-set value as immutable, so an Updates toggle could
 // only ever return FailedPrecondition. It is hidden behind the same UPDATES_ENABLED
 // flag as the /updates route, the nav entry and the header banner.

@@ -49,7 +49,7 @@ type AddValkeyServiceParams struct {
 	// Service access socket.
 	// Address (and port) or socket is required.
 	Socket string `protobuf:"bytes,7,opt,name=socket,proto3" json:"socket,omitempty"`
-	// The "pmm-agent" identifier which should run agents. Required.
+	// The "pfw-agent" identifier which should run agents. Required.
 	PmmAgentId string `protobuf:"bytes,8,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Valkey username for scraping metrics.
 	Username string `protobuf:"bytes,9,opt,name=username,proto3" json:"username,omitempty"`
@@ -417,7 +417,6 @@ var (
 		(*v1.ValkeyExporter)(nil),      // 8: inventory.v1.ValkeyExporter
 	}
 )
-
 var file_management_v1_valkey_proto_depIdxs = []int32{
 	3, // 0: management.v1.AddValkeyServiceParams.add_node:type_name -> management.v1.AddNodeParams
 	2, // 1: management.v1.AddValkeyServiceParams.custom_labels:type_name -> management.v1.AddValkeyServiceParams.CustomLabelsEntry

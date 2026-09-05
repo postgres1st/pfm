@@ -1,19 +1,14 @@
-# Percona Monitoring and Management UI
+# PGF WatchTower UI
 
-[Percona Monitoring and Management (PMM)](https://www.percona.com/software/database-tools/percona-monitoring-and-management) is a best-of-breed open source database monitoring solution. It helps you reduce complexity, optimize performance, and improve the security of your business-critical database environments, no matter where they are located or deployed.
-PMM helps users to:
+The main PGF WatchTower web application — a React/TypeScript app served through Grafana,
+providing the primary user interface for PostgreSQL monitoring and query analytics.
 
-- Reduce Complexity
-- Optimize Database Performance
-- Improve Data Security
-
-See the [PMM Documentation](https://www.percona.com/doc/percona-monitoring-and-management/2.x/index.html) for more information.
-
-See detailed information about prerequisites and setup [here](../../README.md)
+See [`ui/README.md`](../../README.md) for prerequisites and setup, and
+[`ui/AGENTS.md`](../../AGENTS.md) for the architecture and routing overview.
 
 # Locally testing @percona/percona-ui
 
-`@percona/percona-ui` is a normal npm dependency (see `package.json`). To iterate on the library and PMM together, `yarn link` an in-progress checkout against this app. The recipe depends on whether you're running `make dev` on the host or `make run-ui` inside the PMM devcontainer.
+`@percona/percona-ui` is a normal npm dependency (see `package.json`). To iterate on the library and PGF WatchTower together, `yarn link` an in-progress checkout against this app. The recipe depends on whether you're running `make dev` on the host or `make run-ui` inside the PGF WatchTower devcontainer.
 
 In both cases:
 
@@ -33,7 +28,7 @@ In both cases:
 
 - From the lib folder on the host: `pnpm build:watch` and `yarn link`.
 - From `ui/apps/pmm` on the host: `yarn link @percona/percona-ui`.
-- Any change in the lib triggers a rebuild and HMR in PMM.
+- Any change in the lib triggers a rebuild and HMR in PGF WatchTower.
 
 ## Devcontainer flow (`make run-ui`)
 

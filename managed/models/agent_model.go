@@ -100,7 +100,7 @@ var v2_42 = version.MustParse("2.42.0-0")
 var PMMServerAgentID = string("pmm-server")
 
 // AgentConfigFilePath is the default path to pmm-agent config file; it changes to /srv in HA setups.
-var AgentConfigFilePath = "/opt/postgres1st/pfm/config/pfm-agent.yaml"
+var AgentConfigFilePath = "/opt/postgres1st/watchtower/config/pfw-agent.yaml"
 
 // ExporterOptions represents structure for special Exporter options.
 type ExporterOptions struct {
@@ -472,14 +472,20 @@ func (a *Agent) SetEnvironmentVariableNames(names []string) error {
 	return nil
 }
 
-// GetAgentPassword returns agent password, if it is empty then agent ID.
+// GetAgentPassword returns the exporter credential stored for this agent, or ""
+// when none is set.
+//
+// It deliberately does NOT fall back to the agent ID. The agent ID is stored in
+// inventory, returned by the inventory API and written to logs, so deriving the
+// exporter password from it made the endpoint authenticated in name only:
+// anyone able to list agents could scrape any exporter. Every agent created
+// since gets a generated credential (models.CreateAgent), and rows predating
+// that are backfilled by migration.
+//
+// Callers must treat "" as fail-closed rather than substituting anything; see
+// BuildWebConfigFile.
 func (a *Agent) GetAgentPassword() string {
-	password := a.AgentID
-	if pointer.GetString(a.AgentPassword) != "" {
-		password = *a.AgentPassword
-	}
-
-	return password
+	return pointer.GetString(a.AgentPassword)
 }
 
 // UnifiedLabels returns combined standard and custom labels with empty labels removed.
@@ -1022,8 +1028,15 @@ const webConfigTemplate = `basic_auth_users:
 
 // BuildWebConfigFile builds prometheus-compatible basic auth configuration.
 func (a *Agent) BuildWebConfigFile() (string, error) {
-	// If not provided by the user, it is the `agent_id`.
 	password := a.GetAgentPassword()
+	// Fail closed. Hashing "" would produce a valid web config granting `pmm:`
+	// access with an empty password -- strictly worse than the agent-ID fallback
+	// this replaced. A row reaching here without a credential means the backfill
+	// migration did not run, which is a bug worth surfacing rather than papering
+	// over.
+	if password == "" {
+		return "", fmt.Errorf("no agent password set for agent %s", a.AgentID)
+	}
 	salt := getPasswordSalt(a)
 
 	hashedPassword, err := HashPassword(password, salt)

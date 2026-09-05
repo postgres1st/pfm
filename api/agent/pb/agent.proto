@@ -6,8 +6,8 @@ import "agent/v1/agent.proto";
 
 option go_package = "api/agentpb;agentpb";
 
-// Agent service provides private methods for pmm-agent <-> pmm-managed interactions.
+// Agent service provides private methods for pfw-agent <-> pmm-managed interactions.
 service Agent {
-  // Connect establishes two-way communication channel between pmm-agent and pmm-managed.
+  // Connect establishes two-way communication channel between pfw-agent and pmm-managed.
   rpc Connect(stream agent.v1.AgentMessage) returns (stream agent.v1.ServerMessage);
 }

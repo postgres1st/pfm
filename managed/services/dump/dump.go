@@ -41,7 +41,7 @@ import (
 var ErrDumpAlreadyRunning = status.Error(codes.FailedPrecondition, "pmm-dump already running.")
 
 const (
-	pmmDumpBin = "pmm-dump"
+	pmmDumpBin = "pfw-dump"
 	dumpsDir   = "/srv/dump"
 )
 

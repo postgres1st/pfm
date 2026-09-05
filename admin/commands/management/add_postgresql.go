@@ -62,8 +62,9 @@ type AddPostgreSQLCommand struct {
 	Database          string `help:"PostgreSQL database"`
 	AgentPassword     string `help:"Custom password for /metrics endpoint"`
 	CredentialsSource string `type:"existingfile" help:"Credentials provider"`
+	PasswordStdin     bool   `name:"password-stdin" help:"${stdin_password_help}"`
 	NodeID            string `help:"Node ID (default is autodetected)"`
-	PMMAgentID        string `help:"The pmm-agent identifier which runs this instance (default is autodetected)"`
+	PMMAgentID        string `help:"The pfw-agent identifier which runs this instance (default is autodetected)"`
 	// TODO add "auto"
 	QuerySource            string            `default:"pgstatmonitor" help:"Source of SQL queries, one of: pgstatements, pgstatmonitor, none (default: pgstatmonitor)"`
 	Environment            string            `help:"Environment name"`
@@ -177,6 +178,14 @@ func (cmd *AddPostgreSQLCommand) RunCmd() (commands.Result, error) {
 			return nil, fmt.Errorf("failed to retrieve credentials from %s: %w", cmd.CredentialsSource, err)
 		}
 	}
+
+	// Applied after --credentials-source so an explicit stdin password still wins,
+	// and so the bare --password warning fires only when that is really the source.
+	password, err := resolvePasswordStdin(cmd.PasswordStdin, cmd.Password)
+	if err != nil {
+		return nil, err
+	}
+	cmd.Password = password
 
 	params := &mservice.AddServiceParams{
 		Body: mservice.AddServiceBody{

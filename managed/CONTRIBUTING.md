@@ -1,6 +1,6 @@
 # Contributing notes
 
-**pmm-managed** is a core component of PFMM Server. As such, its development and testing are best done inside a PFMM Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
+**pmm-managed** is a core component of PGF WatchTower Server. As such, its development and testing are best done inside a PGF WatchTower Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
 
 # Devcontainer setup
 
@@ -67,19 +67,19 @@ go test -timeout=30s -p 1 ./...
 
 ## Add instances for monitoring
 
-The `make env-up` command starts PFMM Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using PFMM Client components:
+The `make env-up` command starts PGF WatchTower Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using PGF WatchTower Agent components:
 
 
 1. Clone the pmm-admin [repo](https://github.com/percona/pmm-admin/) and install it by running `make install`.
 2. Clone the pmm-agent [repo](https://github.com/percona/pmm-agent).
 3.  Run database instances to be monitored. You can either run your own or use the [`docker-compose.yml`](https://github.com/percona/pmm-agent/blob/master/docker-compose.yml) file provided by pmm-agent to run MySQL, PostgreSQL, and MongoDB containers using `make env-up` in the pmm-agent repo (make sure to comment out the `pmm-server` service in the docker-compose file since we are already running pmm-managed in devcontainer).
 4. Open another shell session and `cd` into the pmm-agent repo, run `make setup-dev` and `make run` to set up and run pmm-agent and connect it to pmm-managed
-5. In another shell, use pfm-admin to add agents to the database instances and start monitoring them using `pfm-admin add postgresql --username=pmm-agent --password=pmm-agent-password`. Only PostgreSQL is accepted -- this build gates every other service type, so `add mysql`/`add mongodb` are rejected with "not supported by this deployment".
+5. In another shell, use pfw-admin to add agents to the database instances and start monitoring them using `pfw-admin add postgresql --username=pmm-agent --password=pmm-agent-password`. Only PostgreSQL is accepted -- this build gates every other service type, so `add mysql`/`add mongodb` are rejected with "not supported by this deployment".
 6. Once pmm-managed has started monitoring the databases. Log in to the web client in your browser to verify. The number of monitored instances will have increased.
 
 ## Working with Advisors
 
-Advisors are automated checks in PFMM that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the PFMM Server devcontainer.
+Advisors are automated checks in PGF WatchTower that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the PGF WatchTower Server devcontainer.
 
 To get started:
 

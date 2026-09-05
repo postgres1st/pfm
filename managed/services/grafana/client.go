@@ -1007,7 +1007,7 @@ func (a *annotation) decode() {
 	a.Time = t
 }
 
-// CreateAnnotation creates annotation with given text and tags ("pmm_annotation" is added automatically)
+// CreateAnnotation creates annotation with given text and tags ("pfw_annotation" is added automatically)
 // and returns Grafana's response text which is typically "Annotation added" or "Failed to save annotation".
 func (c *Client) CreateAnnotation(ctx context.Context, tags []string, from time.Time, text, authorization string) (string, error) {
 	// http://docs.grafana.org/http_api/annotations/#create-annotation

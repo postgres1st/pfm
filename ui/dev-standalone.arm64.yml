@@ -6,7 +6,7 @@
 # tree, and two things in it are known stale:
 #
 #   - `image: pmm-server-pg-arm64:3.8.1` predates the 3.9.0 forward-port.
-#   - the proxy mount maps /pmm-ui; the SPA now serves from /pfm-ui, so pmm-dev.conf
+#   - the proxy mount maps /pmm-ui; the SPA now serves from /pfw-ui, so pmm-dev.conf
 #     needs the same rename before this works.
 #
 # Treat it as a starting point plus a list of things not to rediscover, not as a

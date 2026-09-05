@@ -52,7 +52,7 @@ func (res *addAgentProxysqlExporterResult) String() string {
 type AddAgentProxysqlExporterCommand struct {
 	flags.LogLevelFatalFlags
 
-	PMMAgentID          string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID          string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	ServiceID           string            `arg:"" help:"Service identifier"`
 	Username            string            `arg:"" optional:"" help:"ProxySQL username for scraping metrics"`
 	Password            string            `help:"ProxySQL password for scraping metrics"`

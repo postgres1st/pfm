@@ -49,7 +49,7 @@ type AddMongoDBServiceParams struct {
 	// Service Access socket.
 	// Address (and port) or socket is required.
 	Socket string `protobuf:"bytes,7,opt,name=socket,proto3" json:"socket,omitempty"`
-	// The "pmm-agent" identifier which should run agents. Required.
+	// The "pfw-agent" identifier which should run agents. Required.
 	PmmAgentId string `protobuf:"bytes,9,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Environment name.
 	Environment string `protobuf:"bytes,10,opt,name=environment,proto3" json:"environment,omitempty"`
@@ -107,7 +107,7 @@ type AddMongoDBServiceParams struct {
 	// Optionally expose the exporter process on all public interfaces
 	ExposeExporter bool `protobuf:"varint,34,opt,name=expose_exporter,json=exposeExporter,proto3" json:"expose_exporter,omitempty"`
 	// Environment variable names to pass to the exporter.
-	// Values will be resolved from pmm-agent's environment when starting the exporter.
+	// Values will be resolved from pfw-agent's environment when starting the exporter.
 	EnvironmentVariableNames []string `protobuf:"bytes,36,rep,name=environment_variable_names,json=environmentVariableNames,proto3" json:"environment_variable_names,omitempty"`
 	// If true, adds Real-Time Analytics agent for the provided service.
 	RtaMongodbAgent bool `protobuf:"varint,37,opt,name=rta_mongodb_agent,json=rtaMongodbAgent,proto3" json:"rta_mongodb_agent,omitempty"`
@@ -569,7 +569,6 @@ var (
 		(*v1.RTAMongoDBAgent)(nil),         // 11: inventory.v1.RTAMongoDBAgent
 	}
 )
-
 var file_management_v1_mongodb_proto_depIdxs = []int32{
 	3,  // 0: management.v1.AddMongoDBServiceParams.add_node:type_name -> management.v1.AddNodeParams
 	2,  // 1: management.v1.AddMongoDBServiceParams.custom_labels:type_name -> management.v1.AddMongoDBServiceParams.CustomLabelsEntry

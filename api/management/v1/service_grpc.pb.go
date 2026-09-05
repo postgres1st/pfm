@@ -45,11 +45,11 @@ type ManagementServiceClient interface {
 	AddAnnotation(ctx context.Context, in *AddAnnotationRequest, opts ...grpc.CallOption) (*AddAnnotationResponse, error)
 	// ListAgents returns a list of Agents filtered by service_id or node_id.
 	ListAgents(ctx context.Context, in *ListAgentsRequest, opts ...grpc.CallOption) (*ListAgentsResponse, error)
-	// ListAgentVersions returns a list of PMM Agent versions and their update severity.
+	// ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
 	ListAgentVersions(ctx context.Context, in *ListAgentVersionsRequest, opts ...grpc.CallOption) (*ListAgentVersionsResponse, error)
-	// RegisterNode registers a new Node and a pmm-agent.
+	// RegisterNode registers a new Node and a pfw-agent.
 	RegisterNode(ctx context.Context, in *RegisterNodeRequest, opts ...grpc.CallOption) (*RegisterNodeResponse, error)
-	// UnregisterNode unregisters a Node, pmm-agent and removes the service account and its token.
+	// UnregisterNode unregisters a Node, pfw-agent and removes the service account and its token.
 	UnregisterNode(ctx context.Context, in *UnregisterNodeRequest, opts ...grpc.CallOption) (*UnregisterNodeResponse, error)
 	// ListNode returns a list of nodes.
 	ListNodes(ctx context.Context, in *ListNodesRequest, opts ...grpc.CallOption) (*ListNodesResponse, error)
@@ -217,11 +217,11 @@ type ManagementServiceServer interface {
 	AddAnnotation(context.Context, *AddAnnotationRequest) (*AddAnnotationResponse, error)
 	// ListAgents returns a list of Agents filtered by service_id or node_id.
 	ListAgents(context.Context, *ListAgentsRequest) (*ListAgentsResponse, error)
-	// ListAgentVersions returns a list of PMM Agent versions and their update severity.
+	// ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
 	ListAgentVersions(context.Context, *ListAgentVersionsRequest) (*ListAgentVersionsResponse, error)
-	// RegisterNode registers a new Node and a pmm-agent.
+	// RegisterNode registers a new Node and a pfw-agent.
 	RegisterNode(context.Context, *RegisterNodeRequest) (*RegisterNodeResponse, error)
-	// UnregisterNode unregisters a Node, pmm-agent and removes the service account and its token.
+	// UnregisterNode unregisters a Node, pfw-agent and removes the service account and its token.
 	UnregisterNode(context.Context, *UnregisterNodeRequest) (*UnregisterNodeResponse, error)
 	// ListNode returns a list of nodes.
 	ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error)

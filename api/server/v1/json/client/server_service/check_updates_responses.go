@@ -583,10 +583,10 @@ CheckUpdatesOKBody check updates OK body
 swagger:model CheckUpdatesOKBody
 */
 type CheckUpdatesOKBody struct {
-	// True if there is a PMM Server update available.
+	// True if there is a PGF WatchTower Server update available.
 	UpdateAvailable bool `json:"update_available,omitempty"`
 
-	// Latest available PMM Server release announcement URL.
+	// Latest available PGF WatchTower Server release announcement URL.
 	LatestNewsURL string `json:"latest_news_url,omitempty"`
 
 	// Last check time.
@@ -765,7 +765,7 @@ func (o *CheckUpdatesOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-CheckUpdatesOKBodyInstalled VersionInfo describes component version, or PMM Server as a whole.
+CheckUpdatesOKBodyInstalled VersionInfo describes component version, or PGF WatchTower Server as a whole.
 swagger:model CheckUpdatesOKBodyInstalled
 */
 type CheckUpdatesOKBodyInstalled struct {

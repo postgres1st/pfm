@@ -46,7 +46,7 @@ func (res *addAgentNodeExporterResult) String() string {
 type AddAgentNodeExporterCommand struct {
 	flags.LogLevelNoFatalFlags
 
-	PMMAgentID        string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID        string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	CustomLabels      map[string]string `mapsep:"," help:"Custom user-assigned labels"`
 	PushMetrics       bool              `help:"Enables push metrics model flow, it will be sent to the server by an agent"`
 	ExposeExporter    bool              `help:"Expose the address of the exporter publicly on 0.0.0.0"`

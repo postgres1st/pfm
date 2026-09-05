@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package helpers provides helpers for whole pmm-admin.
+// Package helpers provides helpers for whole pfw-admin.
 package helpers
 
 import (
@@ -62,7 +62,7 @@ func IsHAProxySupported() (bool, error) {
 	}
 
 	if lessThanMinVersion {
-		return false, fmt.Errorf("haproxy is not supported in this version, please update your pmm-server to %s or higher", minVersion)
+		return false, fmt.Errorf("haproxy is not supported in this version, please update your pfw-server to %s or higher", minVersion)
 	}
 
 	return true, nil
@@ -84,11 +84,11 @@ func GetNodeName(node *nodes.GetNodeOKBody) (string, error) {
 	}
 }
 
-// IsOnPmmServer returns true if pmm-admin is running on pmm-server.
+// IsOnPmmServer returns true if pfw-admin is running on pmm-server.
 func IsOnPmmServer() (bool, error) {
 	status, err := agentlocal.GetStatus(agentlocal.DoNotRequestNetworkInfo)
 	if err != nil {
-		return false, fmt.Errorf("can't get local pmm-agent status: %w", err)
+		return false, fmt.Errorf("can't get local pfw-agent status: %w", err)
 	}
 
 	return status.NodeID == "pmm-server", nil

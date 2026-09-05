@@ -118,11 +118,12 @@ func TestVictoriaMetrics(t *testing.T) {
 
 			// listen port is not known
 			&models.Agent{
-				AgentID:    "711674c2-36e6-42d5-8e63-5d7c84c9053a",
-				AgentType:  models.NodeExporterType,
-				PMMAgentID: new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				NodeID:     new("cc663f36-18ca-40a1-aea9-c6310bb4738d"),
-				ListenPort: nil,
+				AgentID:       "711674c2-36e6-42d5-8e63-5d7c84c9053a",
+				AgentPassword: new("711674c2-36e6-42d5-8e63-5d7c84c9053a"),
+				AgentType:     models.NodeExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				NodeID:        new("cc663f36-18ca-40a1-aea9-c6310bb4738d"),
+				ListenPort:    nil,
 			},
 
 			&models.Service{
@@ -167,6 +168,7 @@ func TestVictoriaMetrics(t *testing.T) {
 
 			&models.Agent{
 				AgentID:        "ecd8995a-d479-4b4d-bfb7-865bac4ac2fb",
+				AgentPassword:  new("ecd8995a-d479-4b4d-bfb7-865bac4ac2fb"),
 				AgentType:      models.MongoDBExporterType,
 				PMMAgentID:     new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
 				ServiceID:      new("acds89846-3cd2-47f8-a5f9-ac789513cde4"),
@@ -176,21 +178,23 @@ func TestVictoriaMetrics(t *testing.T) {
 			},
 
 			&models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.MySQLdExporterType,
-				PMMAgentID:   new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				ServiceID:    new("014647c3-b2f5-44eb-94f4-d943260a968c"),
-				CustomLabels: []byte(`{"_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("75bb30d3-ef4a-4147-97a8-621a996611dd"),
+				AgentType:     models.MySQLdExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				ServiceID:     new("014647c3-b2f5-44eb-94f4-d943260a968c"),
+				CustomLabels:  []byte(`{"_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 			},
 
 			&models.Agent{
-				AgentID:      "f9ab9f7b-5e53-4952-a2e7-ff25fb90fe6a",
-				AgentType:    models.MySQLdExporterType,
-				PMMAgentID:   new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				ServiceID:    new("4f1508fd-12c4-4ecf-b0a4-7ab19c996f61"),
-				CustomLabels: []byte(`{"_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "f9ab9f7b-5e53-4952-a2e7-ff25fb90fe6a",
+				AgentPassword: new("f9ab9f7b-5e53-4952-a2e7-ff25fb90fe6a"),
+				AgentType:     models.MySQLdExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				ServiceID:     new("4f1508fd-12c4-4ecf-b0a4-7ab19c996f61"),
+				CustomLabels:  []byte(`{"_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 			},
 
 			&models.Service{
@@ -204,25 +208,28 @@ func TestVictoriaMetrics(t *testing.T) {
 			},
 
 			&models.Agent{
-				AgentID:      "29e14468-d479-4b4d-bfb7-4ac2fb865bac",
-				AgentType:    models.PostgresExporterType,
-				PMMAgentID:   new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				ServiceID:    new("9cffbdd4-3cd2-47f8-a5f9-a749c3d5fee1"),
-				CustomLabels: []byte(`{"_agent_label": "postgres-baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "29e14468-d479-4b4d-bfb7-4ac2fb865bac",
+				AgentPassword: new("29e14468-d479-4b4d-bfb7-4ac2fb865bac"),
+				AgentType:     models.PostgresExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				ServiceID:     new("9cffbdd4-3cd2-47f8-a5f9-a749c3d5fee1"),
+				CustomLabels:  []byte(`{"_agent_label": "postgres-baz"}`),
+				ListenPort:    new(uint16(12345)),
 			},
 
 			&models.Agent{
-				AgentID:      "fd2dcf41-0718-4319-9fa9-b7a509787c98",
-				AgentType:    models.ValkeyExporterType,
-				PMMAgentID:   new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				ServiceID:    new("a04c391a-b3d0-40c2-95c5-3cfec462c8e5"),
-				CustomLabels: []byte(`{"_agent_label": "valkey-baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "fd2dcf41-0718-4319-9fa9-b7a509787c98",
+				AgentPassword: new("fd2dcf41-0718-4319-9fa9-b7a509787c98"),
+				AgentType:     models.ValkeyExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				ServiceID:     new("a04c391a-b3d0-40c2-95c5-3cfec462c8e5"),
+				CustomLabels:  []byte(`{"_agent_label": "valkey-baz"}`),
+				ListenPort:    new(uint16(12345)),
 			},
 
 			&models.Agent{
 				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996612dd",
+				AgentPassword: new("75bb30d3-ef4a-4147-97a8-621a996612dd"),
 				AgentType:     models.ExternalExporterType,
 				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
 				ServiceID:     new("014647c3-b2f5-44eb-94f4-d943260a968c"),
@@ -233,12 +240,13 @@ func TestVictoriaMetrics(t *testing.T) {
 
 			// disabled
 			&models.Agent{
-				AgentID:    "4226ddb5-8197-443c-9891-7772b38324a7",
-				AgentType:  models.NodeExporterType,
-				PMMAgentID: new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
-				NodeID:     new("cc663f36-18ca-40a1-aea9-c6310bb4738d"),
-				Disabled:   true,
-				ListenPort: new(uint16(12346)),
+				AgentID:       "4226ddb5-8197-443c-9891-7772b38324a7",
+				AgentPassword: new("4226ddb5-8197-443c-9891-7772b38324a7"),
+				AgentType:     models.NodeExporterType,
+				PMMAgentID:    new("217907dc-d34d-4e2e-aa84-a1b765d49853"),
+				NodeID:        new("cc663f36-18ca-40a1-aea9-c6310bb4738d"),
+				Disabled:      true,
+				ListenPort:    new(uint16(12346)),
 			},
 
 			// PMM Agent without version
@@ -261,6 +269,7 @@ func TestVictoriaMetrics(t *testing.T) {
 			// Agent with push model
 			&models.Agent{
 				AgentID:        "386c4ce6-7cd2-4bc9-9d6f-b4691c6e7eb7",
+				AgentPassword:  new("386c4ce6-7cd2-4bc9-9d6f-b4691c6e7eb7"),
 				AgentType:      models.MongoDBExporterType,
 				PMMAgentID:     new("892b3d86-12e5-4765-aa32-e5092ecd78e1"),
 				ServiceID:      new("1eae647b-f1e2-4e15-bc58-dfdbc3c37cbf"),
@@ -275,6 +284,7 @@ func TestVictoriaMetrics(t *testing.T) {
 			// Agent with pull model
 			&models.Agent{
 				AgentID:        "cfec996c-4fe6-41d9-83cb-e1a3b1fe10a8",
+				AgentPassword:  new("cfec996c-4fe6-41d9-83cb-e1a3b1fe10a8"),
 				AgentType:      models.MongoDBExporterType,
 				PMMAgentID:     new("892b3d86-12e5-4765-aa32-e5092ecd78e1"),
 				ServiceID:      new("1eae647b-f1e2-4e15-bc58-dfdbc3c37cbf"),

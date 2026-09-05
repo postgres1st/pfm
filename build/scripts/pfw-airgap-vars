@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+# Pinned inputs for the air-gapped PGF WatchTower server bundle (build-pfw-airgap).
+#
+# Sourced, not executed. Everything the bundle is built from is pinned to an
+# exact commit here: a build from the same checkout of this file must produce the
+# same package set. Do NOT replace these with branch names -- "main" moves and the
+# bundle stops being reproducible.
+#
+# NOTE: this pipeline is deliberately independent of build/scripts/vars, which is
+# wired to the Percona-Lab/pmm-submodules Jenkins layout (root_dir eight levels
+# up, sources/pmm/src/...). This one builds from THIS checkout.
+
+# --- versions that land in RPM NEVRAs -----------------------------------------
+# pfw-server's version comes from %define full_pfw_version in its own spec (its
+# release is stamped with a build timestamp + commit there, like the sibling
+# specs). It is deliberately not settable here -- a variable that looked like it
+# controlled the version but was never passed to rpmbuild is worse than none.
+# `~beta1`, never `-beta1`. rpm reads a tilde as a pre-release marker, so
+# 3.9.0~beta1 sorts BELOW 3.9.0 and the beta upgrades cleanly to the release with no
+# suffix on it. The hyphen form sorts ABOVE 3.9.0 and would strand a customer on the
+# beta permanently. For the same reason the final release is plain 3.9.0, not 3.9.0-ga:
+# a -ga suffix also sorts above the bare version, so it could never be dropped again.
+#
+#   3.9.0~beta1-1  <  3.9.0~beta2-1  <  3.9.0-1  <  3.9.0-2
+#
+# Note the hyphen in a NEVRA separates Version from Release; it is not part of either.
+# beta2 is the first release under the pfw-* names; beta1 shipped as pfm-*. RPM sorts
+# 3.9.0~beta1 < 3.9.0~beta2 < 3.9.0, so beta2 -> rc -> GA upgrades in place (verified
+# with rpm.labelCompare). There is deliberately no upgrade path from beta1.
+PFW_VERSION=${PFW_VERSION:-3.9.0~beta2}   # pfw-managed / pfw-client
+PFW_GRAFANA_VERSION=${PFW_GRAFANA_VERSION:-12.4.5}
+PFW_DIST=${PFW_DIST:-.el9}
+
+# --- our rebranded Grafana fork -----------------------------------------------
+# Published at postgres1st/grafana (public), which grafana.spec's Source0 also
+# points at. The remote is the source of truth: leave PFW_GRAFANA_FORK empty and
+# preflight clones PFW_GRAFANA_REPO at the pinned commit into the workspace, so
+# any host can build without a pre-existing clone.
+#
+# Set PFW_GRAFANA_FORK to an existing clone to skip that -- worth it locally,
+# since the fetch is large and the built tree (node_modules, public/build) is
+# reused across runs. When set, the checked-out commit is only warned about, not
+# enforced, so you can build an older pin deliberately.
+#
+# Keep the commit in sync with %global commit in
+# build/packages/rpm/server/SPECS/grafana.spec (preflight enforces it).
+PFW_GRAFANA_REPO=${PFW_GRAFANA_REPO:-https://github.com/postgres1st/grafana.git}
+PFW_GRAFANA_FORK=${PFW_GRAFANA_FORK:-}
+PFW_GRAFANA_COMMIT=${PFW_GRAFANA_COMMIT:-aa2b9b24c72031d7daa59461fd08fa349b9a6b48}
+
+# --- client-side components built from source ---------------------------------
+# Percona's exporter forks + toolkit. Upstream tracks these as submodule branches
+# in Percona-Lab/pmm-submodules; pinned to the exact commits this bundle was
+# validated against.
+PFW_NODE_EXPORTER_REPO=https://github.com/percona/node_exporter.git
+PFW_NODE_EXPORTER_COMMIT=a547672a2ff50e0b98b0458133f191895050d526
+
+PFW_POSTGRES_EXPORTER_REPO=https://github.com/percona/postgres_exporter.git
+PFW_POSTGRES_EXPORTER_COMMIT=f6ffcfff11491eab0ad3bbd1f5b666645be1eb4e
+
+PFW_RDS_EXPORTER_REPO=https://github.com/percona/rds_exporter.git
+PFW_RDS_EXPORTER_COMMIT=325cfc574c36cc81e8f925101bbd954fd4ee2ed5
+
+PFW_AZURE_EXPORTER_REPO=https://github.com/percona/azure_metrics_exporter.git
+PFW_AZURE_EXPORTER_COMMIT=d81fabbf1c62f9e876838860fbb972b13a554092
+
+PFW_TOOLKIT_REPO=https://github.com/percona/percona-toolkit.git
+PFW_TOOLKIT_COMMIT=892463d318826b7185a827c2f38fe740f375b676
+
+# Same commits build/scripts/vars pins for the upstream client build.
+PFW_VMAGENT_REPO=https://github.com/VictoriaMetrics/VictoriaMetrics.git
+PFW_VMAGENT_COMMIT=7e6644db82229b47349636552238545de9728f60
+
+# Built from source rather than fetched, so an aarch64 bundle is possible at all --
+# Percona's cache publishes x86_64 only. Both must match the %global commit in their
+# spec, because the staged tarball is named after it and %setup unpacks that directory.
+#
+# VictoriaMetrics is pinned TWICE on purpose: PFW_VMAGENT_COMMIT above builds the vmagent
+# the CLIENT ships, while this tag is the server-side victoriametrics/vmalert pair. They
+# are different versions and must not be merged into one pin.
+# NOT an upstream release: pmm-6401-v1.147.0 is a Percona BRANCH tag
+# (pmm-6401-read-prometheus-data-files) carrying PMM-specific work for reading Prometheus
+# data files. Checked 2026-09-03: it has diverged from upstream -- 217 commits ahead of
+# v1.151.0 and 467 behind. Moving to a plain upstream tag would drop that feature, so it
+# is a functional decision, not a version bump. Now that we build this from source we are
+# no longer bound to Percona's tag, which makes the move possible but no less deliberate.
+PFW_VM_REPO=https://github.com/VictoriaMetrics/VictoriaMetrics.git
+PFW_VM_COMMIT=pmm-6401-v1.147.0
+
+PFW_PMM_DUMP_REPO=https://github.com/percona/pmm-dump.git
+PFW_PMM_DUMP_COMMIT=8353b46afd09746c07a6d1c001dd1ef72e6c4761
+
+PFW_NOMAD_REPO=https://github.com/hashicorp/nomad.git
+PFW_NOMAD_COMMIT=a2a5fee9c42d6481adcb9be865bcbccf8fd4d725
+
+# --- target architecture ------------------------------------------------------
+# Defaults to the build host. Cross-building is NOT supported: the Go/webpack
+# builds and rpmbuild all produce host-native output, so an x86_64 bundle must be
+# built on an x86_64 host. This variable selects the arch-specific *inputs*.
+PFW_ARCH=${PFW_ARCH:-$(uname -m)}
+
+# --- target architecture inputs ------------------------------------------------
+# Nothing is fetched prebuilt any more: every server component is built from source
+# (see stage_exporters and stage_pmm_bin). Percona's S3 build cache used to supply
+# percona-victoriametrics, qan-api2, vmproxy and pmm-dump, and was dropped because it
+# publishes x86_64 only -- verified 2026-09-02, 228 keys under RELEASE/, none aarch64 --
+# rotates its keys, so every pin had expired, and shipped Percona-branded RPMs that made
+# our own rebranded specs dead letters.
+case "${PFW_ARCH}" in
+aarch64)
+  PFW_PGDG_ARCH=aarch64
+  PFW_PLUGIN_ARCH=linux_arm64
+  ;;
+x86_64)
+  PFW_PGDG_ARCH=x86_64
+  PFW_PLUGIN_ARCH=linux_amd64
+  ;;
+*)
+  echo "unsupported architecture: ${PFW_ARCH} (expected aarch64 or x86_64)" >&2
+  return 1 2>/dev/null || exit 1
+  ;;
+esac
+
+# --- build workspace and bundle output ----------------------------------------
+# Arch-suffixed, and defined HERE rather than in each script, for two reasons.
+#
+# Arch-suffixed: one clone can hold an aarch64 and an x86_64 build without either
+# clobbering the other. It also makes the split build safe -- building the closure on
+# an x86_64 host and running only the `bundle` stage on an aarch64 workstation (so the
+# signing key never has to leave it) then writes to .pfw-airgap-x86_64 rather than
+# over the local aarch64 tree.
+#
+# Defined once: this default used to be duplicated as a literal in build-pfw-airgap,
+# test-pfw-airgap, test-pfw-upgrade and pfw-test-lib. Four copies of a path is four
+# chances to desync, and making the builder arch-aware while a suite kept the old
+# literal would point the suite at a directory nothing had written -- which fails
+# looking like a broken build, not a stale path. All four already source this file.
+#
+# repo_dir is set by each caller before sourcing; the fallback keeps this usable if a
+# future caller forgets.
+PFW_OUT=${PFW_OUT:-${repo_dir:-.}/build/.pfw-airgap-${PFW_ARCH}}
+
+# --- grafana dashboard plugins (percona-dashboards.spec Source1/Source2) ------
+PFW_CLICKHOUSE_DS_VERSION=4.19.0
+PFW_POLYSTAT_VERSION=2.1.16
+
+# --- third-party repos the dependency closure is resolved against -------------
+PFW_PGDG_REPO_RPM=https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-${PFW_PGDG_ARCH}/pgdg-redhat-repo-latest.noarch.rpm
+PFW_PERCONA_REPO_RPM=https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+PFW_CLICKHOUSE_BASEURL=https://packages.clickhouse.com/rpm/stable/
+
+# --- package signing ----------------------------------------------------------
+# Every RPM in the bundle is signed with this key, including the third-party ones.
+# That is deliberate: the bundle is a curated set, ClickHouse ships its RPMs
+# unsigned, and PGDG/Rocky are signed by keys the customer would otherwise have to
+# import separately -- so signing the whole set lets `gpgcheck=1` work after a
+# single `rpm --import`. Package contents are untouched; only the signature header
+# changes.
+#
+# PLACEHOLDER IDENTITY: contact@postgresfirst.com is a stand-in until the team
+# settles on a real org key. Replacing it is a one-line change here plus a
+# re-run of the bundle stage -- nothing else references the key.
+#
+# Set PFW_SIGN_KEY empty to build an unsigned bundle; the bundle stage then emits an
+# INSTALL.md with gpgcheck=0 and skips signing. It also skips rather than failing when
+# the key is set but its secret half is not in the caller's keyring.
+#
+# `-` not `:-`: with `:-`, `PFW_SIGN_KEY= build-pfw-airgap` substitutes the default
+# rather than staying empty, so the documented unsigned path was unreachable from the
+# environment and only editing this file worked.
+PFW_SIGN_KEY=${PFW_SIGN_KEY-contact@postgresfirst.com}
+PFW_SIGN_KEY_FILE=${PFW_SIGN_KEY_FILE:-RPM-GPG-KEY-postgres1st}
+
+# --- toolchain images ---------------------------------------------------------
+# Must satisfy: pmm go.mod (go 1.26.5), grafana go.mod (1.25.9) and .nvmrc
+# (node >=22 <25); the pmm UI needs node >=22 with yarn classic.
+PFW_GO_IMAGE=${PFW_GO_IMAGE:-golang:1.26.5}
+PFW_NODE_IMAGE=${PFW_NODE_IMAGE:-node:24}
+PFW_UI_NODE_IMAGE=${PFW_UI_NODE_IMAGE:-node:22}
+# Tag is bumped whenever the image's package list changes -- build_rpmbuilder_image()
+# skips the build when the tag already exists, so reusing a tag would silently keep a
+# stale image. :9.1 added selinux-policy-devel + make for pfw_nginx.pp.
+PFW_RPMBUILD_IMAGE=${PFW_RPMBUILD_IMAGE:-pfw-rpmbuilder:9.1}
+PFW_EL_IMAGE=${PFW_EL_IMAGE:-rockylinux/rockylinux:9}
+PFW_SYSTEMD_IMAGE=${PFW_SYSTEMD_IMAGE:-pfw-rocky9-systemd}
+
+# Webpack peaks around 8-10 GB; 7.7 GB has been observed to OOM.
+PFW_NODE_HEAP_MB=${PFW_NODE_HEAP_MB:-10240}

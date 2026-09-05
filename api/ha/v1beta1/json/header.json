@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PMM HA API",
+    "title": "PGF WatchTower HA API",
     "version": "v1beta1"
   },
   "schemes": [

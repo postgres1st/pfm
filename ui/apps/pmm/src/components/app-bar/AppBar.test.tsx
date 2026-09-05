@@ -4,7 +4,7 @@ import { PMM_HOME_URL, PMM_SUPPORT_URL } from 'lib/constants';
 import { TestWrapper } from 'utils/testWrapper';
 
 describe('AppBar', () => {
-  it('links back to older PFMM', () => {
+  it('links back to older PGF WatchTower', () => {
     render(
       <TestWrapper>
         <AppBar />

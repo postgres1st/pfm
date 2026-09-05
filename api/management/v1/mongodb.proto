@@ -37,7 +37,7 @@ message AddMongoDBServiceParams {
   // Service Access socket.
   // Address (and port) or socket is required.
   string socket = 7;
-  // The "pmm-agent" identifier which should run agents. Required.
+  // The "pfw-agent" identifier which should run agents. Required.
   string pmm_agent_id = 9 [(validate.rules).string.min_len = 1];
   // Environment name.
   string environment = 10;
@@ -95,7 +95,7 @@ message AddMongoDBServiceParams {
   // Optionally expose the exporter process on all public interfaces
   bool expose_exporter = 34;
   // Environment variable names to pass to the exporter.
-  // Values will be resolved from pmm-agent's environment when starting the exporter.
+  // Values will be resolved from pfw-agent's environment when starting the exporter.
   repeated string environment_variable_names = 36;
   // If true, adds Real-Time Analytics agent for the provided service.
   bool rta_mongodb_agent = 37;

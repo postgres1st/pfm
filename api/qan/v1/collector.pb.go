@@ -70,7 +70,7 @@ func (x *CollectRequest) GetMetricsBucket() []*MetricsBucket {
 	return nil
 }
 
-// MetricsBucket is aggregated message created by pmm-agent.
+// MetricsBucket is aggregated message created by pfw-agent.
 // Contains information about one query selected in defined way from query class in specific period of time.
 type MetricsBucket struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2757,7 +2757,6 @@ var (
 		ExampleType(0),          // 7: qan.v1.ExampleType
 	}
 )
-
 var file_qan_v1_collector_proto_depIdxs = []int32{
 	1, // 0: qan.v1.CollectRequest.metrics_bucket:type_name -> qan.v1.MetricsBucket
 	6, // 1: qan.v1.MetricsBucket.agent_type:type_name -> inventory.v1.AgentType

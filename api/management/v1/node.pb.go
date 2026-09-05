@@ -617,7 +617,7 @@ type UniversalNode struct {
 	Services []*UniversalNode_Service `protobuf:"bytes,17,rep,name=services,proto3" json:"services,omitempty"`
 	// Instance ID for cloud providers (e.g. AWS RDS).
 	InstanceId string `protobuf:"bytes,18,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPmmServerNode bool `protobuf:"varint,19,opt,name=is_pmm_server_node,json=isPmmServerNode,proto3" json:"is_pmm_server_node,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
@@ -1255,7 +1255,6 @@ var (
 		(*timestamppb.Timestamp)(nil),  // 21: google.protobuf.Timestamp
 	}
 )
-
 var file_management_v1_node_proto_depIdxs = []int32{
 	16, // 0: management.v1.AddNodeParams.node_type:type_name -> inventory.v1.NodeType
 	11, // 1: management.v1.AddNodeParams.custom_labels:type_name -> management.v1.AddNodeParams.CustomLabelsEntry

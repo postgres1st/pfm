@@ -523,7 +523,7 @@ func (a *Client) ListServices(params *ListServicesParams, opts ...ClientOption) 
 /*
 RegisterNode registers a node
 
-Registers a new Node and a pmm-agent.
+Registers a new Node and a pfw-agent.
 */
 func (a *Client) RegisterNode(params *RegisterNodeParams, opts ...ClientOption) (*RegisterNodeOK, error) {
 	// NOTE: parameters are not validated before sending
@@ -611,7 +611,7 @@ func (a *Client) RemoveService(params *RemoveServiceParams, opts ...ClientOption
 /*
 UnregisterNode unregisters a node
 
-Unregisters a Node and pmm-agent
+Unregisters a Node and pfw-agent
 */
 func (a *Client) UnregisterNode(params *UnregisterNodeParams, opts ...ClientOption) (*UnregisterNodeOK, error) {
 	// NOTE: parameters are not validated before sending

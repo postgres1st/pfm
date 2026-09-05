@@ -49,7 +49,7 @@ func (res *addAgentRDSExporterResult) String() string {
 type AddAgentRDSExporterCommand struct {
 	flags.LogLevelFatalFlags
 
-	PMMAgentID             string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID             string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	NodeID                 string            `arg:"" help:"Node identifier"`
 	AWSAccessKey           string            `help:"AWS Access Key ID"`
 	AWSSecretKey           string            `help:"AWS Secret Access Key"`

@@ -151,7 +151,7 @@ type GetActionResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where this Action is running / was run.
+	// pfw-agent ID where this Action is running / was run.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Current Action output; may be partial if Action is still running.
 	Output string `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
@@ -230,7 +230,7 @@ func (x *GetActionResponse) GetError() string {
 
 type StartMySQLExplainActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -313,7 +313,7 @@ type StartMySQLExplainActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -365,7 +365,7 @@ func (x *StartMySQLExplainActionResult) GetPmmAgentId() string {
 
 type StartMySQLExplainJSONActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -448,7 +448,7 @@ type StartMySQLExplainJSONActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -500,7 +500,7 @@ func (x *StartMySQLExplainJSONActionResult) GetPmmAgentId() string {
 
 type StartMySQLExplainTraditionalJSONActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -583,7 +583,7 @@ type StartMySQLExplainTraditionalJSONActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -635,7 +635,7 @@ func (x *StartMySQLExplainTraditionalJSONActionResult) GetPmmAgentId() string {
 
 type StartMySQLShowCreateTableActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -709,7 +709,7 @@ type StartMySQLShowCreateTableActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -761,7 +761,7 @@ func (x *StartMySQLShowCreateTableActionResult) GetPmmAgentId() string {
 
 type StartMySQLShowTableStatusActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -835,7 +835,7 @@ type StartMySQLShowTableStatusActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -887,7 +887,7 @@ func (x *StartMySQLShowTableStatusActionResult) GetPmmAgentId() string {
 
 type StartMySQLShowIndexActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -961,7 +961,7 @@ type StartMySQLShowIndexActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1013,7 +1013,7 @@ func (x *StartMySQLShowIndexActionResult) GetPmmAgentId() string {
 
 type StartPostgreSQLShowCreateTableActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1087,7 +1087,7 @@ type StartPostgreSQLShowCreateTableActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1139,7 +1139,7 @@ func (x *StartPostgreSQLShowCreateTableActionResult) GetPmmAgentId() string {
 
 type StartPostgreSQLShowIndexActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1213,7 +1213,7 @@ type StartPostgreSQLShowIndexActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1265,7 +1265,7 @@ func (x *StartPostgreSQLShowIndexActionResult) GetPmmAgentId() string {
 
 type StartMongoDBExplainActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action. Required.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1330,7 +1330,7 @@ type StartMongoDBExplainActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1383,7 +1383,7 @@ func (x *StartMongoDBExplainActionResult) GetPmmAgentId() string {
 // Message to prepare pt-pg-summary data
 type StartPTPgSummaryActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action.
 	ServiceId     string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1440,7 +1440,7 @@ type StartPTPgSummaryActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1493,7 +1493,7 @@ func (x *StartPTPgSummaryActionResult) GetPmmAgentId() string {
 // Message to prepare pt-mongodb-summary data
 type StartPTMongoDBSummaryActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action.
 	ServiceId     string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1550,7 +1550,7 @@ type StartPTMongoDBSummaryActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1603,7 +1603,7 @@ func (x *StartPTMongoDBSummaryActionResult) GetPmmAgentId() string {
 // Message to prepare pt-mysql-summary data
 type StartPTMySQLSummaryActionParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service ID for this Action.
 	ServiceId     string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -1660,7 +1660,7 @@ type StartPTMySQLSummaryActionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1712,7 +1712,7 @@ func (x *StartPTMySQLSummaryActionResult) GetPmmAgentId() string {
 
 type StartPTSummaryActionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Node ID for this Action.
 	NodeId        string `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
@@ -1768,7 +1768,7 @@ type StartPTSummaryActionResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique Action ID.
 	ActionId string `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PmmAgentId    string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2649,7 +2649,6 @@ var (
 		(*StartServiceActionResponse)(nil),                   // 32: actions.v1.StartServiceActionResponse
 	}
 )
-
 var file_actions_v1_actions_proto_depIdxs = []int32{
 	3,  // 0: actions.v1.StartServiceActionRequest.mysql_explain:type_name -> actions.v1.StartMySQLExplainActionParams
 	5,  // 1: actions.v1.StartServiceActionRequest.mysql_explain_json:type_name -> actions.v1.StartMySQLExplainJSONActionParams

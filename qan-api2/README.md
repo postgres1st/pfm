@@ -1,6 +1,6 @@
 # qan-api2
 
-Query Analytics API for PFMM 3.x.
+Query Analytics API for PGF WatchTower 3.x.
 
 ## Get Report
 

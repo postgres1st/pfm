@@ -22,8 +22,8 @@ import (
 )
 
 var registerResultT = commands.ParseTemplate(`
-pmm-agent registered.
-pmm-agent ID: {{ .PMMAgent.AgentID }}
+pfw-agent registered.
+pfw-agent ID: {{ .PMMAgent.AgentID }}
 Node ID     : {{ .PMMAgent.RunsOnNodeID }}
 {{ if .Warning }}
 Warning: {{ .Warning }}

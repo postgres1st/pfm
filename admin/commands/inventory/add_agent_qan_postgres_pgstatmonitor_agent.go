@@ -51,7 +51,7 @@ type AddAgentQANPostgreSQLPgStatMonitorAgentCommand struct {
 	flags.CommentsParsingFlags
 	flags.LogLevelFatalFlags
 
-	PMMAgentID            string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID            string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	ServiceID             string            `arg:"" help:"Service identifier"`
 	Username              string            `arg:"" optional:"" help:"PostgreSQL username for QAN agent"`
 	Password              string            `help:"PostgreSQL password for QAN agent"`

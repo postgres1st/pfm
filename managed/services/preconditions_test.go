@@ -148,7 +148,7 @@ func TestCheckMongoDBBackupPreconditions(t *testing.T) {
 func TestCheckArtifactOverlapping(t *testing.T) {
 	// CheckArtifactOverlapping is exercised here against MongoDB/MySQL backup artifacts and
 	// scheduled backup tasks - a MySQL/MongoDB-only feature with no PostgreSQL equivalent.
-	// Skip gated rather than retarget so widening PFM_DB_TYPES restores the coverage.
+	// Skip gated rather than retarget so widening PFW_DB_TYPES restores the coverage.
 	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
 	sqlDB := testdb.Open(t, models.SkipFixtures, nil)

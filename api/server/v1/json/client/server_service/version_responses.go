@@ -583,10 +583,10 @@ VersionOKBody version OK body
 swagger:model VersionOKBody
 */
 type VersionOKBody struct {
-	// PMM Server version.
+	// PGF WatchTower Server version.
 	Version string `json:"version,omitempty"`
 
-	// DistributionMethod defines PMM Server distribution method: Docker image, OVF/OVA, or AMI.
+	// DistributionMethod defines PGF WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.
 	// Enum: ["DISTRIBUTION_METHOD_UNSPECIFIED","DISTRIBUTION_METHOD_DOCKER","DISTRIBUTION_METHOD_OVF","DISTRIBUTION_METHOD_AMI","DISTRIBUTION_METHOD_AZURE","DISTRIBUTION_METHOD_DO"]
 	DistributionMethod *string `json:"distribution_method,omitempty"`
 
@@ -804,7 +804,7 @@ func (o *VersionOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-VersionOKBodyManaged VersionInfo describes component version, or PMM Server as a whole.
+VersionOKBodyManaged VersionInfo describes component version, or PGF WatchTower Server as a whole.
 swagger:model VersionOKBodyManaged
 */
 type VersionOKBodyManaged struct {
@@ -869,7 +869,7 @@ func (o *VersionOKBodyManaged) UnmarshalBinary(b []byte) error {
 }
 
 /*
-VersionOKBodyServer VersionInfo describes component version, or PMM Server as a whole.
+VersionOKBodyServer VersionInfo describes component version, or PGF WatchTower Server as a whole.
 swagger:model VersionOKBodyServer
 */
 type VersionOKBodyServer struct {

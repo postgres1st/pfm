@@ -10,12 +10,12 @@ The `dashboards/dashboards/` directory contains Grafana dashboard JSON definitio
 Dashboard JSON files are standard Grafana dashboard exports. They are loaded into Grafana through two mechanisms:
 
 1. **Plugin bundling** — `pmm-app/src/plugin.json` declares each dashboard in its `includes` array. The build copies them into the plugin `dist/` directory, and Grafana provisions them when the pmm-app plugin is loaded.
-2. **Grafana provisioning** — the PFMM Server Ansible role configures Grafana to load dashboards from the plugin's `dist/dashboards/` path.
+2. **Grafana provisioning** — the PGF WatchTower Server Ansible role configures Grafana to load dashboards from the plugin's `dist/dashboards/` path.
 
 ```
 dashboards/dashboards/*.json
   → pmm-app build (copied to dist/dashboards/)
-    → Grafana provisioning on PFMM Server
+    → Grafana provisioning on PGF WatchTower Server
       → Grafana UI (visualization)
 ```
 
@@ -30,7 +30,7 @@ dashboards/dashboards/*.json
 | `Valkey/` | Valkey/Redis clients, cluster, memory, replication, slowlog |
 | `Insight/` | Home Dashboard, Advanced Data Exploration, VictoriaMetrics, Exporters |
 | `Experimental/` | Databases Overview, DB Cluster Summary |
-| `PMM Health/` | Environments Overview, PMM Health Overview, HA Health Overview |
+| `WatchTower Health/` | Environments Overview, WatchTower Health Overview, HA Health Overview |
 | `Query Analytics/` | QAN panel wrapper (`pmm-qan.json`) |
 | `Kubernetes (experimental)/` | Kubernetes operator monitoring |
 

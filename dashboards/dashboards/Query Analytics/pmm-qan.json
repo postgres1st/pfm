@@ -8,10 +8,10 @@
                 "hide": true,
                 "iconColor": "#e0752d",
                 "limit": 100,
-                "name": "PFMM Annotations",
+                "name": "PGF WatchTower Annotations",
                 "showIn": 0,
                 "tags": [
-                    "pmm_annotation",
+                    "pfw_annotation",
                     "$node_name",
                     "$service_name"
                 ],
@@ -58,7 +58,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "PFMM Query Analytics",
+            "title": "PGF WatchTower Query Analytics",
             "transparent": true,
             "type": "pmm-qan-app-panel"
         }
@@ -429,7 +429,7 @@
         ]
     },
     "timezone": "",
-    "title": "PFMM Query Analytics",
+    "title": "PGF WatchTower Query Analytics",
     "uid": "pmm-qan",
     "version": 2
 }

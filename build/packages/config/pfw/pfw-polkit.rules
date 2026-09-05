@@ -1,0 +1,30 @@
+// Installed to /usr/share/polkit-1/rules.d/49-pfw.rules by the pfw-server RPM.
+//
+// Let the non-root pfw service account start/stop/restart/reload ONLY pfw-*
+// units, so pfw-managed (User=pfw) can reload the dynamic services after an env
+// re-render, start pfw-agent, and stop the embedded VM. Without this, every
+// systemctl call from pmm-managed fails with polkit "Access denied".
+//
+// SECURITY: only the manage-units action is granted, and only for pfw-*/pfw.target
+// units — that action carries the target unit, so it can be scoped. The
+// manage-unit-files action (mask / unmask / enable / disable / LINK / preset) is
+// deliberately NOT granted: systemd exposes NO per-unit detail on it, so it cannot
+// be scoped to pfw-*, and granting it would let a compromised pfw process `link` an
+// attacker-authored unit and `start` it as root (the unit name matches the pfw-
+// prefix). pmm-managed therefore does not use mask/unmask at all — it disables the
+// embedded VM with a ConditionPathExists marker file instead (see systemd.go's
+// disableDynamicService).
+function pfwUnit(u) {
+    return u && (u.indexOf("pfw-") === 0 || u === "pfw.target");
+}
+
+polkit.addRule(function(action, subject) {
+    if (subject.user !== "pfw") {
+        return;
+    }
+    if (action.id === "org.freedesktop.systemd1.manage-units" && pfwUnit(action.lookup("unit"))) {
+        return polkit.Result.YES;
+    }
+    // Everything else (incl. all manage-unit-files ops) falls through to the
+    // systemd default (auth_admin) — denied for the headless pfw account.
+});

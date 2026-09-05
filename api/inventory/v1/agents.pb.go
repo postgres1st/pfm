@@ -212,14 +212,14 @@ func (x *PMMAgent) GetProcessExecPath() string {
 	return ""
 }
 
-// VMAgent runs on Generic or Container Node alongside pmm-agent.
+// VMAgent runs on Generic or Container Node alongside pfw-agent.
 // It scrapes other exporter Agents that are configured with push_metrics_enabled
-// and uses Prometheus remote write protocol to push metrics to PMM Server.
+// and uses Prometheus remote write protocol to push metrics to PGF WatchTower Server.
 type VMAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Actual Agent status.
 	Status AgentStatus `protobuf:"varint,10,opt,name=status,proto3,enum=inventory.v1.AgentStatus" json:"status,omitempty"`
@@ -300,7 +300,7 @@ type NomadAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -391,7 +391,7 @@ type NodeExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -536,7 +536,7 @@ type MySQLdExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -791,7 +791,7 @@ type MongoDBExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -1027,7 +1027,7 @@ type PostgresExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -1235,7 +1235,7 @@ type ProxySQLExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -1425,7 +1425,7 @@ type ValkeyExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -1601,12 +1601,12 @@ func (x *ValkeyExporter) GetConnectionTimeout() *durationpb.Duration {
 	return nil
 }
 
-// QANMySQLPerfSchemaAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+// QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 type QANMySQLPerfSchemaAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -1800,12 +1800,12 @@ func (x *QANMySQLPerfSchemaAgent) GetExtraDsnParams() map[string]string {
 	return nil
 }
 
-// QANMySQLSlowlogAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+// QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 type QANMySQLSlowlogAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2008,12 +2008,12 @@ func (x *QANMySQLSlowlogAgent) GetExtraDsnParams() map[string]string {
 	return nil
 }
 
-// QANMongoDBProfilerAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+// QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 type QANMongoDBProfilerAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2153,12 +2153,12 @@ func (x *QANMongoDBProfilerAgent) GetLogLevel() LogLevel {
 	return LogLevel_LOG_LEVEL_UNSPECIFIED
 }
 
-// QANMongoDBMongologAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+// QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 type QANMongoDBMongologAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2344,12 +2344,12 @@ func (x *RTAOptions) GetCollectInterval() *durationpb.Duration {
 	return nil
 }
 
-// RTAMongoDBAgent runs within pmm-agent and sends MongoDB Real-Time Query Analytics data to the PMM Server.
+// RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.
 type RTAMongoDBAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique agent identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2480,12 +2480,12 @@ func (x *RTAMongoDBAgent) GetLogLevel() LogLevel {
 	return LogLevel_LOG_LEVEL_UNSPECIFIED
 }
 
-// QANPostgreSQLPgStatementsAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+// QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 type QANPostgreSQLPgStatementsAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2634,12 +2634,12 @@ func (x *QANPostgreSQLPgStatementsAgent) GetLogLevel() LogLevel {
 	return LogLevel_LOG_LEVEL_UNSPECIFIED
 }
 
-// QANPostgreSQLPgStatMonitorAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+// QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 type QANPostgreSQLPgStatMonitorAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -2802,7 +2802,7 @@ type RDSExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -3137,7 +3137,7 @@ type AzureDatabaseExporter struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unique randomly generated instance identifier.
 	AgentId string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,2,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Desired Agent status: enabled (false) or disabled (true).
 	Disabled bool `protobuf:"varint,3,opt,name=disabled,proto3" json:"disabled,omitempty"`
@@ -3361,7 +3361,7 @@ func (x *ChangeCommonAgentParams) GetMetricsResolutions() *common.MetricsResolut
 
 type ListAgentsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Return only Agents started by this pmm-agent.
+	// Return only Agents started by this pfw-agent.
 	// Exactly one of these parameters should be present: pmm_agent_id, node_id, service_id.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Return only Agents that provide insights for that Node.
@@ -5479,7 +5479,7 @@ func (x *AddPMMAgentParams) GetCustomLabels() map[string]string {
 
 type AddNodeExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `protobuf:"bytes,2,rep,name=custom_labels,json=customLabels,proto3" json:"custom_labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -5668,7 +5668,7 @@ func (x *ChangeNodeExporterParams) GetExposeExporter() bool {
 
 type AddMySQLdExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -6075,7 +6075,7 @@ func (x *ChangeMySQLdExporterParams) GetConnectionTimeout() *durationpb.Duration
 
 type AddMongoDBExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -6119,7 +6119,7 @@ type AddMongoDBExporterParams struct {
 	// Optionally expose the exporter process on all public interfaces
 	ExposeExporter bool `protobuf:"varint,20,opt,name=expose_exporter,json=exposeExporter,proto3" json:"expose_exporter,omitempty"`
 	// Environment variable names to pass to the exporter.
-	// Values will be resolved from pmm-agent's environment when starting the exporter.
+	// Values will be resolved from pfw-agent's environment when starting the exporter.
 	EnvironmentVariableNames []string `protobuf:"bytes,21,rep,name=environment_variable_names,json=environmentVariableNames,proto3" json:"environment_variable_names,omitempty"`
 	// Enable all collectors.
 	EnableAllCollectors bool `protobuf:"varint,22,opt,name=enable_all_collectors,json=enableAllCollectors,proto3" json:"enable_all_collectors,omitempty"`
@@ -6574,7 +6574,7 @@ func (x *ChangeMongoDBExporterParams) GetEnableDiagnosticDataHistograms() bool {
 
 type AddPostgresExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -6988,7 +6988,7 @@ func (x *ChangePostgresExporterParams) GetConnectionTimeout() *durationpb.Durati
 
 type AddProxySQLExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -7312,7 +7312,7 @@ func (x *ChangeProxySQLExporterParams) GetSkipConnectionCheck() bool {
 
 type AddQANMySQLPerfSchemaAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -7672,7 +7672,7 @@ func (x *ChangeQANMySQLPerfSchemaAgentParams) GetLogLevel() LogLevel {
 
 type AddQANMySQLSlowlogAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -8051,7 +8051,7 @@ func (x *ChangeQANMySQLSlowlogAgentParams) GetLogLevel() LogLevel {
 
 type AddQANMongoDBProfilerAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -8404,7 +8404,7 @@ func (x *ChangeQANMongoDBProfilerAgentParams) GetSkipConnectionCheck() bool {
 
 type AddQANMongoDBMongologAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -8757,7 +8757,7 @@ func (x *ChangeQANMongoDBMongologAgentParams) GetSkipConnectionCheck() bool {
 
 type AddQANPostgreSQLPgStatementsAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -9090,7 +9090,7 @@ func (x *ChangeQANPostgreSQLPgStatementsAgentParams) GetSkipConnectionCheck() bo
 
 type AddQANPostgreSQLPgStatMonitorAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -9441,7 +9441,7 @@ func (x *ChangeQANPostgreSQLPgStatMonitorAgentParams) GetSkipConnectionCheck() b
 
 type AddRDSExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Node identifier.
 	NodeId string `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
@@ -9927,7 +9927,7 @@ func (x *ChangeExternalExporterParams) GetSkipConnectionCheck() bool {
 
 type AddAzureDatabaseExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Node identifier.
 	NodeId string `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
@@ -10242,7 +10242,7 @@ func (x *ChangeNomadAgentParams) GetEnable() bool {
 
 type AddValkeyExporterParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -10620,7 +10620,7 @@ func (x *ChangeValkeyExporterParams) GetSkipConnectionCheck() bool {
 
 type AddRTAMongoDBAgentParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PmmAgentId string `protobuf:"bytes,1,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Service identifier.
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
@@ -12634,7 +12634,6 @@ var (
 		(*common.StringMap)(nil),                            // 112: common.StringMap
 	}
 )
-
 var file_inventory_v1_agents_proto_depIdxs = []int32{
 	68,  // 0: inventory.v1.PMMAgent.custom_labels:type_name -> inventory.v1.PMMAgent.CustomLabelsEntry
 	108, // 1: inventory.v1.VMAgent.status:type_name -> inventory.v1.AgentStatus

@@ -82,10 +82,10 @@ describe('auth.clientSession', () => {
     });
 
     it('notifies when removing a tracked key', () => {
-      localStorage.setItem('pfm-ui.session.active', 'true');
+      localStorage.setItem('pfw-ui.session.active', 'true');
       const dispatchSpy = vi.spyOn(window, 'dispatchEvent');
 
-      localStorage.removeItem('pfm-ui.session.active');
+      localStorage.removeItem('pfw-ui.session.active');
 
       expect(dispatchSpy).toHaveBeenCalledWith(sessionChangeEvent);
       dispatchSpy.mockRestore();

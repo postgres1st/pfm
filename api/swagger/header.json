@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PMM API",
+    "title": "PGF WatchTower API",
     "version": "v3"
   },
   "schemes": [

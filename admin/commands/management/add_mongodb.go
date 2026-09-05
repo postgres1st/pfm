@@ -62,7 +62,7 @@ type AddMongoDBCommand struct {
 	Address           string `arg:"" optional:"" help:"MongoDB address and port (default: 127.0.0.1:27017)"`
 	Socket            string `help:"Path to socket"`
 	NodeID            string `help:"Node ID (default is autodetected)"`
-	PMMAgentID        string `help:"The pmm-agent identifier which runs this instance (default is autodetected)"`
+	PMMAgentID        string `help:"The pfw-agent identifier which runs this instance (default is autodetected)"`
 	Username          string `help:"MongoDB username"`
 	Password          string `help:"MongoDB password"`
 	AgentPassword     string `help:"Custom password for /metrics endpoint"`
@@ -86,7 +86,7 @@ type AddMongoDBCommand struct {
 	EnableDiagnosticDataHistograms bool              `help:"Enable collecting histogram bucket metrics from getDiagnosticData"`
 	DisableCollectors              []string          `help:"Comma-separated list of collector names to exclude from exporter"`
 	StatsCollections               []string          `help:"Collections for collstats & indexstats"`
-	CollectionsLimit               int32             `name:"max-collections-limit" default:"-1" help:"Disable collstats, dbstats, topmetrics and indexstats if there are more than <n> collections. 0: No limit. Default is -1, which let PMM automatically set this value"`
+	CollectionsLimit               int32             `name:"max-collections-limit" default:"-1" help:"Disable collstats, dbstats, topmetrics and indexstats if there are more than <n> collections. 0: No limit. Default is -1, which lets PGF WatchTower set this value automatically"`
 	ExposeExporter                 bool              `name:"expose-exporter" help:"Optionally expose the address of the exporter publicly on 0.0.0.0"`
 	AgentEnvVars                   []string          `name:"agent-env-vars" help:"Comma-separated list of environment variable names to pass to the exporter (values are read from the current environment), e.g. 'VAR1,VAR2'"`
 	ConnectionTimeout              *time.Duration    `placeholder:"DURATION" help:"Connection timeout to use for exporter (e.g. 1s, 1.5s)"`

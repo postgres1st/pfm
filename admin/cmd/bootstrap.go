@@ -47,7 +47,7 @@ func Bootstrap(opts cli.PMMAdminCommands) {
 	var kongParser *kong.Kong
 	var parsedOpts any
 
-	kongParser = kong.Must(&opts, getDefaultKongOptions("pfm-admin")...)
+	kongParser = kong.Must(&opts, getDefaultKongOptions("pfw-admin")...)
 	parsedOpts = &opts
 
 	kongcompletion.Register(kongParser)
@@ -63,6 +63,12 @@ func Bootstrap(opts cli.PMMAdminCommands) {
 
 	configureLogger(globalFlags)
 	finishBootstrap(globalFlags)
+
+	// Before any command runs: every consumer reads the credential from ServerURL,
+	// so it has to be complete by the time kongCtx.Run dispatches.
+	if err := flags.ResolveServerPassword(globalFlags, os.Stdin); err != nil {
+		processFinalError(err, bool(globalFlags.JSON))
+	}
 
 	err = kongCtx.Run(globalFlags)
 	processFinalError(err, bool(globalFlags.JSON))
@@ -154,6 +160,7 @@ func getDefaultKongOptions(appName string) []kong.Option {
 			"nodeIp":                       nodeinfo.PublicAddress,
 			"nodeTypeDefault":              nodeTypeDefault,
 			"hostname":                     hostname,
+			"stdin_password_help":          management.StdinPasswordHelp,
 			"serviceTypesEnum":             strings.Join(management.AllServiceTypesKeys, ", "),
 			"defaultMachineID":             defaultMachineID,
 			"distro":                       nodeinfo.Distro,

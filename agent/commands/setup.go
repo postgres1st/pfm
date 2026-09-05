@@ -30,17 +30,17 @@ import (
 	mservice "github.com/percona/pmm/api/management/v1/json/client/management_service"
 )
 
-// Setup implements `pmm-agent setup` command.
+// Setup implements `pfw-agent setup` command.
 func Setup() {
 	/*
 		Cases when this code breaks:
 
-		1. $ pmm-agent run --listen-port=12345  # non-default port, no config file
-		   $ pmm-agent setup
-		   We should stop setup (pmm-agent is running without config file), but we don't.
+		1. $ pfw-agent run --listen-port=12345  # non-default port, no config file
+		   $ pfw-agent setup
+		   We should stop setup (pfw-agent is running without config file), but we don't.
 
-		2. $ pmm-agent run --server-address=1.2.3.4:443 --config-file=pmm-agent.yaml
-		   $ pmm-agent setup
+		2. $ pfw-agent run --server-address=1.2.3.4:443 --config-file=pfw-agent.yaml
+		   $ pfw-agent setup
 		   We will use server address from config, not from run's flag.
 	*/
 
@@ -61,7 +61,7 @@ func Setup() {
 	configFilepath, running := checkStatus(configFilepath, l)
 
 	if cfg.ID == "" && cfg.Setup.SkipRegistration {
-		fmt.Printf("Can't skip registration: pmm-agent ID is empty.\n")
+		fmt.Printf("Can't skip registration: pfw-agent ID is empty.\n")
 		os.Exit(1)
 	}
 
@@ -77,7 +77,7 @@ func Setup() {
 
 	cfg.ProcMountsPath = cfg.Setup.ProcMountsPath
 
-	err = config.SaveToFile(configFilepath, cfg, "Updated by `pmm-agent setup`.")
+	err = config.SaveToFile(configFilepath, cfg, "Updated by `pfw-agent setup`.")
 	if err != nil {
 		fmt.Printf("Failed to write configuration file %s: %s.\n", configFilepath, err)
 		os.Exit(1)
@@ -85,7 +85,7 @@ func Setup() {
 	fmt.Printf("Configuration file %s updated.\n", configFilepath)
 
 	if !running {
-		fmt.Printf("Please start pmm-agent: `pmm-agent --config-file=%s`.\n", configFilepath)
+		fmt.Printf("Please start pfw-agent: `pfw-agent --config-file=%s`.\n", configFilepath)
 		return
 	}
 
@@ -95,22 +95,22 @@ func Setup() {
 }
 
 func checkStatus(configFilepath string, l *logrus.Entry) (string, bool) {
-	fmt.Printf("Checking local pmm-agent status...\n")
+	fmt.Printf("Checking local pfw-agent status...\n")
 	status, err := localStatus()
 	l.Debugf("Status error: %#v", err)
 	switch err := err.(type) { //nolint:errorlint
 	case nil:
 		if status.ConfigFilepath == "" {
-			fmt.Printf("pmm-agent is running but does not read configuration from the file. " +
+			fmt.Printf("pfw-agent is running but does not read configuration from the file. " +
 				"Please restart it with --config-file flag.\n")
 			os.Exit(1)
 		}
 		if configFilepath != "" && status.ConfigFilepath != configFilepath {
-			fmt.Printf("pmm-agent is running and reads configuration from %s. "+
-				"Please re-run `pmm-agent setup` without --config-file flag.\n", status.ConfigFilepath)
+			fmt.Printf("pfw-agent is running and reads configuration from %s. "+
+				"Please re-run `pfw-agent setup` without --config-file flag.\n", status.ConfigFilepath)
 			os.Exit(1)
 		}
-		fmt.Printf("pmm-agent is running.\n")
+		fmt.Printf("pfw-agent is running.\n")
 		return status.ConfigFilepath, true
 
 	case *agent_local.StatusDefault:
@@ -118,26 +118,26 @@ func checkStatus(configFilepath string, l *logrus.Entry) (string, bool) {
 		if err.Payload != nil {
 			msg = fmt.Sprintf("%s (gRPC code %d, HTTP code %d)", err.Payload.Message, err.Payload.Code, err.Code())
 		}
-		fmt.Printf("pmm-agent is running, but status check failed: %s.\n", msg)
+		fmt.Printf("pfw-agent is running, but status check failed: %s.\n", msg)
 		os.Exit(1)
 		panic("not reached")
 
 	default:
 		if configFilepath == "" {
-			fmt.Printf("pmm-agent is not running. Please re-run `pmm-agent setup` with --config-file flag.\n")
+			fmt.Printf("pfw-agent is not running. Please re-run `pfw-agent setup` with --config-file flag.\n")
 			os.Exit(1)
 		}
-		fmt.Printf("pmm-agent is not running.\n")
+		fmt.Printf("pfw-agent is not running.\n")
 		return configFilepath, false
 	}
 }
 
 func register(cfg *config.Config, l *logrus.Entry) {
-	fmt.Printf("Registering pmm-agent on PMM Server...\n")
+	fmt.Printf("Registering pfw-agent on PGF WatchTower Server...\n")
 
 	u := cfg.Server.URL()
 	if u == nil {
-		fmt.Printf("Can't construct PMM Server URL. Please re-run with --server-address flag.\n")
+		fmt.Printf("Can't construct PGF WatchTower Server URL. Please re-run with --server-address flag.\n")
 		os.Exit(1)
 	}
 
@@ -160,7 +160,7 @@ func register(cfg *config.Config, l *logrus.Entry) {
 			msg += ".\nPlease check pmm-managed logs."
 		}
 
-		fmt.Printf("Failed to register pmm-agent on PMM Server: %s.\n", msg)
+		fmt.Printf("Failed to register pfw-agent on PGF WatchTower Server: %s.\n", msg)
 		os.Exit(1)
 	}
 	cfg.ID = agentID
@@ -168,13 +168,13 @@ func register(cfg *config.Config, l *logrus.Entry) {
 		cfg.Server.Username = "service_token"
 		cfg.Server.Password = token
 	} else {
-		l.Info("PMM Server responded with an empty service token. Consider upgrading PMM Server to the latest version.")
+		l.Info("PGF WatchTower Server responded with an empty service token. Consider upgrading PGF WatchTower Server to the latest version.")
 	}
 	fmt.Printf("Registered.\n")
 }
 
 func reload(l *logrus.Entry) {
-	fmt.Printf("Reloading pmm-agent configuration...\n")
+	fmt.Printf("Reloading pfw-agent configuration...\n")
 
 	// sync error handling with Reload API method
 	err := localReload()
@@ -185,7 +185,7 @@ func reload(l *logrus.Entry) {
 		os.Exit(1)
 	}
 
-	// wait up to 5 seconds for pmm-agent to reload itself
+	// wait up to 5 seconds for pfw-agent to reload itself
 	for range 5 {
 		time.Sleep(time.Second)
 		_, err = localStatus()

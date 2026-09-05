@@ -74,7 +74,7 @@ type ListAgentsParams struct {
 
 	/* PMMAgentID.
 
-	     Return only Agents started by this pmm-agent.
+	     Return only Agents started by this pfw-agent.
 	Exactly one of these parameters should be present: pmm_agent_id, node_id, service_id.
 	*/
 	PMMAgentID *string

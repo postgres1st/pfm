@@ -14,7 +14,7 @@ enum ExampleType {
   EXAMPLE_TYPE_WITH_ERROR = 4;
 }
 
-// MetricsBucket is aggregated message created by pmm-agent.
+// MetricsBucket is aggregated message created by pfw-agent.
 // Contains information about one query selected in defined way from query class in specific period of time.
 message MetricsBucket {
   // Common contains common fields for all DBs.

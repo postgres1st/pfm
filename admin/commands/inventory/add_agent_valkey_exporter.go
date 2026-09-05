@@ -57,7 +57,7 @@ func (res *addAgentValkeyExporterResult) String() string {
 type AddAgentValkeyExporterCommand struct {
 	flags.LogLevelNoFatalFlags
 
-	PMMAgentID          string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID          string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	ServiceID           string            `arg:"" help:"Service identifier"`
 	Username            string            `arg:"" optional:"" help:"Valkey username for scraping metrics"`
 	Password            string            `help:"Valkey password for scraping metrics"`

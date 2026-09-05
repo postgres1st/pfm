@@ -477,7 +477,7 @@ func (*StateChangedResponse) Descriptor() ([]byte, []int) {
 	return file_agent_v1_agent_proto_rawDescGZIP(), []int{6}
 }
 
-// SetStateRequest is a ServerMessage asking pmm-agent to run agents according to desired state.
+// SetStateRequest is a ServerMessage asking pfw-agent to run agents according to desired state.
 type SetStateRequest struct {
 	state          protoimpl.MessageState                   `protogen:"open.v1"`
 	AgentProcesses map[string]*SetStateRequest_AgentProcess `protobuf:"bytes,1,rep,name=agent_processes,json=agentProcesses,proto3" json:"agent_processes,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
@@ -985,11 +985,11 @@ func (x *QueryActionResult) GetDocs() []*QueryActionMap {
 	return nil
 }
 
-// StartActionRequest is a ServerMessage asking pmm-agent to start action.
+// StartActionRequest is a ServerMessage asking pfw-agent to start action.
 type StartActionRequest struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	ActionId string                 `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
-	// Timeout for the whole action. If zero or absent, pmm-agent will pick one itself.
+	// Timeout for the whole action. If zero or absent, pfw-agent will pick one itself.
 	Timeout *durationpb.Duration `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
 	// Types that are valid to be assigned to Params:
 	//
@@ -1426,7 +1426,7 @@ func (*StartActionResponse) Descriptor() ([]byte, []int) {
 	return file_agent_v1_agent_proto_rawDescGZIP(), []int{15}
 }
 
-// StopActionRequest is a ServerMessage asking pmm-agent to stop action.
+// StopActionRequest is a ServerMessage asking pfw-agent to stop action.
 type StopActionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ActionId      string                 `protobuf:"bytes,1,opt,name=action_id,json=actionId,proto3" json:"action_id,omitempty"`
@@ -1618,7 +1618,7 @@ func (*ActionResultResponse) Descriptor() ([]byte, []int) {
 	return file_agent_v1_agent_proto_rawDescGZIP(), []int{19}
 }
 
-// PBMSwitchPITRRequest is a ServerMessage asking pmm-agent to switch PITR pbm feature.
+// PBMSwitchPITRRequest is a ServerMessage asking pfw-agent to switch PITR pbm feature.
 type PBMSwitchPITRRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// DSN for the MongoDB service. May contain connection (dial) timeout.
@@ -1835,7 +1835,7 @@ func (x *AgentLogsResponse) GetAgentConfigLogLinesCount() uint32 {
 	return 0
 }
 
-// CheckConnectionRequest is a ServerMessage asking pmm-agent to check connection with Service.
+// CheckConnectionRequest is a ServerMessage asking pfw-agent to check connection with Service.
 type CheckConnectionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Service type.
@@ -1972,7 +1972,7 @@ func (x *CheckConnectionResponse) GetError() string {
 	return ""
 }
 
-// ServiceInfoRequest is a ServerMessage that queries pmm-agent for database information.
+// ServiceInfoRequest is a ServerMessage that queries pfw-agent for database information.
 type ServiceInfoRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Service type.
@@ -2145,7 +2145,7 @@ func (x *ServiceInfoResponse) GetPgsmVersion() string {
 	return ""
 }
 
-// JobStatusRequest is a ServerMessage asking pmm-agent for job status.
+// JobStatusRequest is a ServerMessage asking pfw-agent for job status.
 type JobStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	JobId         string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
@@ -2357,7 +2357,7 @@ func (x *FilesystemLocationConfig) GetPath() string {
 	return ""
 }
 
-// StartJobRequest is a ServerMessage asking pmm-agent to start job.
+// StartJobRequest is a ServerMessage asking pfw-agent to start job.
 type StartJobRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	JobId string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
@@ -2534,7 +2534,7 @@ func (x *StartJobResponse) GetError() string {
 	return ""
 }
 
-// StopJobRequest is a ServerMessage asking pmm-agent to stop job.
+// StopJobRequest is a ServerMessage asking pfw-agent to stop job.
 type StopJobRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	JobId         string                 `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`
@@ -3658,7 +3658,7 @@ func (*ServerMessage_AgentLogs) isServerMessage_Payload() {}
 
 func (*ServerMessage_ServiceInfo) isServerMessage_Payload() {}
 
-// AgentProcess describes desired configuration of a single agent process started by pmm-agent.
+// AgentProcess describes desired configuration of a single agent process started by pfw-agent.
 type SetStateRequest_AgentProcess struct {
 	state              protoimpl.MessageState `protogen:"open.v1"`
 	Type               v1.AgentType           `protobuf:"varint,1,opt,name=type,proto3,enum=inventory.v1.AgentType" json:"type,omitempty"`
@@ -3668,7 +3668,7 @@ type SetStateRequest_AgentProcess struct {
 	Env                []string               `protobuf:"bytes,5,rep,name=env,proto3" json:"env,omitempty"`
 	TextFiles          map[string]string      `protobuf:"bytes,6,rep,name=text_files,json=textFiles,proto3" json:"text_files,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	RedactWords        []string               `protobuf:"bytes,7,rep,name=redact_words,json=redactWords,proto3" json:"redact_words,omitempty"`
-	// Environment variable names to be resolved from pmm-agent's environment.
+	// Environment variable names to be resolved from pfw-agent's environment.
 	EnvVariableNames []string `protobuf:"bytes,8,rep,name=env_variable_names,json=envVariableNames,proto3" json:"env_variable_names,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -3760,7 +3760,7 @@ func (x *SetStateRequest_AgentProcess) GetEnvVariableNames() []string {
 	return nil
 }
 
-// BuiltinAgent describes desired configuration of a single built-in agent for pmm-agent.
+// BuiltinAgent describes desired configuration of a single built-in agent for pfw-agent.
 type SetStateRequest_BuiltinAgent struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Type  v1.AgentType           `protobuf:"varint,1,opt,name=type,proto3,enum=inventory.v1.AgentType" json:"type,omitempty"`
@@ -7221,7 +7221,6 @@ var (
 		(*v11.Metadata)(nil),                                           // 104: backup.v1.Metadata
 	}
 )
-
 var file_agent_v1_agent_proto_depIdxs = []int32{
 	44,  // 0: agent.v1.TextFiles.files:type_name -> agent.v1.TextFiles.FilesEntry
 	94,  // 1: agent.v1.Pong.current_time:type_name -> google.protobuf.Timestamp

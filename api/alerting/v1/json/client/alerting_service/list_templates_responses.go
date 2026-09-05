@@ -562,7 +562,7 @@ type ListTemplatesOKBodyTemplatesItems0 struct {
 
 	// TemplateSource defines template source.
 	//
-	//  - TEMPLATE_SOURCE_BUILT_IN: Template that is shipped with PMM Server releases.
+	//  - TEMPLATE_SOURCE_BUILT_IN: Template that is shipped with PGF WatchTower Server releases.
 	//  - TEMPLATE_SOURCE_SAAS: Template that is downloaded from check.percona.com.
 	//  - TEMPLATE_SOURCE_USER_FILE: Templated loaded from user-suplied file.
 	//  - TEMPLATE_SOURCE_USER_API: Templated created via API.

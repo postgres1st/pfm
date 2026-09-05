@@ -38,7 +38,7 @@ Agents list.
 `)
 
 var acceptableAgentTypes = map[string][]string{
-	types.AgentTypePMMAgent:                        {types.AgentTypeName(types.AgentTypePMMAgent), "pmm-agent"},
+	types.AgentTypePMMAgent:                        {types.AgentTypeName(types.AgentTypePMMAgent), "pfw-agent"},
 	types.AgentTypeNodeExporter:                    {types.AgentTypeName(types.AgentTypeNodeExporter), "node-exporter"},
 	types.AgentTypeMySQLdExporter:                  {types.AgentTypeName(types.AgentTypeMySQLdExporter), "mysqld-exporter"},
 	types.AgentTypeMongoDBExporter:                 {types.AgentTypeName(types.AgentTypeMongoDBExporter), "mongodb-exporter"},
@@ -99,7 +99,7 @@ func getAgentStatus(status *string) string {
 
 // ListAgentsCommand is used by Kong for CLI flags and commands.
 type ListAgentsCommand struct {
-	PMMAgentID string `help:"Filter by pmm-agent identifier"`
+	PMMAgentID string `help:"Filter by pfw-agent identifier"`
 	ServiceID  string `help:"Filter by Service identifier"`
 	NodeID     string `help:"Filter by Node identifier"`
 	AgentType  string `help:"Filter by Agent type"`

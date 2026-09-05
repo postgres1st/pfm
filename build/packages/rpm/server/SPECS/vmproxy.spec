@@ -12,13 +12,13 @@
 # the line below is sed'ed by build/bin/build-server-rpm to set a correct version
 %define full_pmm_version 2.0.0
 
-Name:		vmproxy
+Name:		pfw-vmproxy
 Version:	%{full_pmm_version}
 Release:	%{rpm_release}
-Summary:	Percona VMProxy stateless reverse proxy for VictoriaMetrics
+Summary:	PGF WatchTower VMProxy, a stateless reverse proxy for VictoriaMetrics
 
 License:	AGPLv3
-URL:		https://%{provider}
+URL:		https://github.com/postgres1st/pfm
 Source0:	https://%{provider}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 
 %description
@@ -45,15 +45,15 @@ make release
 %install
 install -d -p %{buildroot}%{_bindir}
 install -d -p %{buildroot}%{_sbindir}
-install -p -m 0755 bin/vmproxy %{buildroot}%{_sbindir}/vmproxy
+install -p -m 0755 bin/vmproxy %{buildroot}%{_sbindir}/pfw-vmproxy
 
 
 %files
 %license src/%{provider}/vmproxy/LICENSE
 %doc src/%{provider}/vmproxy/README.md
-%{_sbindir}/vmproxy
+%{_sbindir}/pfw-vmproxy
 
 
 %changelog
-* Mon Dec 5 2022 Michal Kralik <michal.kralik@percona.com> - 2.34.0-1
-- Initial release of VMProxy
+* Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
+- First PGF WatchTower build of this package, from source.

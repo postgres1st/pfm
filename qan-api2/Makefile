@@ -14,7 +14,7 @@ help: ## Display this help message
 
 # `cut` is used to remove the leading `v` from the version
 PMM_RELEASE_PATH ?= $(BIN_DIR)
-PMM_RELEASE_VERSION ?= $(shell git describe --always --dirty | cut -b2-)
+PMM_RELEASE_VERSION ?= $(shell git describe --always --dirty | sed 's/^v//')
 PMM_RELEASE_TIMESTAMP ?= $(shell date '+%s')
 PMM_RELEASE_FULLCOMMIT ?= $(shell git rev-parse HEAD)
 PMM_RELEASE_BRANCH ?= $(shell git describe --always --contains --all)
@@ -116,14 +116,14 @@ pmm-env-up:                     ## Run PMM server, MySQL Server and sysbench con
 	docker exec $(PMM_CONTAINER) supervisorctl stop qan-api2
 	docker exec -i $(PMM_CONTAINER) clickhouse client -d pmm --password=clickhouse --query="drop database pmm"
 	docker exec -i $(PMM_CONTAINER) clickhouse client -d pmm --password=clickhouse --query="create database pmm"
-	docker cp bin/qan-api2 $(PMM_CONTAINER):/usr/sbin/percona-qan-api2
+	docker cp bin/qan-api2 $(PMM_CONTAINER):/usr/sbin/pfw-qan-api2
 	docker exec $(PMM_CONTAINER) supervisorctl start qan-api2
 	cat fixture/metrics.part_*.json | docker exec -i $(TEST_CONTAINER_NAME) clickhouse client -d pmm_test --password=clickhouse --query="INSERT INTO metrics FORMAT JSONEachRow"
 
 deploy:
 	GOOS=linux GOARCH=amd64 make release
 	docker exec $(PMM_CONTAINER) supervisorctl stop qan-api2
-	docker cp $(PMM_RELEASE_PATH)/qan-api2 $(PMM_CONTAINER):/usr/sbin/percona-qan-api2
+	docker cp $(PMM_RELEASE_PATH)/qan-api2 $(PMM_CONTAINER):/usr/sbin/pfw-qan-api2
 	docker exec $(PMM_CONTAINER) supervisorctl start qan-api2
 	docker exec $(PMM_CONTAINER) supervisorctl status
 	docker exec $(PMM_CONTAINER) supervisorctl tail -f qan-api2

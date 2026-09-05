@@ -31,7 +31,7 @@ import (
 )
 
 // skipIfServiceTypeUnsupported skips tests covering a service type this build does not
-// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// accept. Gated on the allowlist rather than commented out, so widening PFW_DB_TYPES
 // restores the coverage without editing tests.
 func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
 	t.Helper()
@@ -44,7 +44,7 @@ func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) 
 func TestToAPIAgent(t *testing.T) {
 	// The subjects here are a MongoDB RTA agent and a mysqld exporter (with MySQL-specific
 	// options); both require their respective services, which are unsupported under the
-	// default PostgreSQL-only gate. Skip gated rather than retarget so widening PFM_DB_TYPES
+	// default PostgreSQL-only gate. Skip gated rather than retarget so widening PFW_DB_TYPES
 	// restores the coverage.
 	skipIfServiceTypeUnsupported(t, models.MongoDBServiceType)
 	skipIfServiceTypeUnsupported(t, models.MySQLServiceType)

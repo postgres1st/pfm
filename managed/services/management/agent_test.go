@@ -42,7 +42,7 @@ import (
 var now time.Time
 
 // skipIfServiceTypeUnsupported skips tests covering a service type this build does not
-// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// accept. Gated on the allowlist rather than commented out, so widening PFW_DB_TYPES
 // restores the coverage without editing tests.
 func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
 	t.Helper()
@@ -158,16 +158,20 @@ func TestAgentService(t *testing.T) {
 			})
 			require.NoError(t, err)
 
+			// Every agent insert path generates an exporter credential now, so
+			// IsAgentPasswordSet is true on all of these; IsPasswordSet reflects the
+			// DB password, which comes from /srv/.postgres_password.
 			expected := []*agentv1.UniversalAgent{
 				{
-					AgentId:       pgExporterID,
-					AgentType:     "postgres_exporter",
-					PmmAgentId:    models.PMMServerAgentID,
-					IsConnected:   false,
-					CreatedAt:     timestamppb.New(now),
-					UpdatedAt:     timestamppb.New(now),
-					Username:      "postgres",
-					IsPasswordSet: true,
+					AgentId:            pgExporterID,
+					AgentType:          "postgres_exporter",
+					PmmAgentId:         models.PMMServerAgentID,
+					IsConnected:        false,
+					CreatedAt:          timestamppb.New(now),
+					UpdatedAt:          timestamppb.New(now),
+					Username:           "postgres",
+					IsPasswordSet:      true,
+					IsAgentPasswordSet: true,
 					PostgresqlOptions: &agentv1.UniversalAgent_PostgreSQLOptions{
 						IsSslKeySet: false,
 					},
@@ -177,14 +181,15 @@ func TestAgentService(t *testing.T) {
 					CommentsParsingDisabled: true,
 				},
 				{
-					AgentId:       pgStatStatementID,
-					AgentType:     "qan-postgresql-pgstatements-agent",
-					PmmAgentId:    models.PMMServerAgentID,
-					IsConnected:   false,
-					CreatedAt:     timestamppb.New(now),
-					UpdatedAt:     timestamppb.New(now),
-					Username:      "postgres",
-					IsPasswordSet: true,
+					AgentId:            pgStatStatementID,
+					AgentType:          "qan-postgresql-pgstatements-agent",
+					PmmAgentId:         models.PMMServerAgentID,
+					IsConnected:        false,
+					CreatedAt:          timestamppb.New(now),
+					UpdatedAt:          timestamppb.New(now),
+					Username:           "postgres",
+					IsPasswordSet:      true,
+					IsAgentPasswordSet: true,
 					PostgresqlOptions: &agentv1.UniversalAgent_PostgreSQLOptions{
 						IsSslKeySet: false,
 					},
@@ -245,14 +250,15 @@ func TestAgentService(t *testing.T) {
 
 			expected := []*agentv1.UniversalAgent{
 				{
-					AgentId:     rdsExporter.AgentID,
-					AgentType:   "rds_exporter",
-					PmmAgentId:  "00000000-0000-4000-8000-000000000007",
-					IsConnected: false,
-					CreatedAt:   timestamppb.New(now),
-					UpdatedAt:   timestamppb.New(now),
-					ServiceId:   "00000000-0000-4000-8000-000000000006",
-					Status:      "AGENT_STATUS_UNKNOWN",
+					AgentId:            rdsExporter.AgentID,
+					AgentType:          "rds_exporter",
+					IsAgentPasswordSet: true,
+					PmmAgentId:         "00000000-0000-4000-8000-000000000007",
+					IsConnected:        false,
+					CreatedAt:          timestamppb.New(now),
+					UpdatedAt:          timestamppb.New(now),
+					ServiceId:          "00000000-0000-4000-8000-000000000006",
+					Status:             "AGENT_STATUS_UNKNOWN",
 				},
 			}
 			assert.Equal(t, expected, response.Agents)
@@ -296,15 +302,16 @@ func TestAgentService(t *testing.T) {
 
 			expected := []*agentv1.UniversalAgent{
 				{
-					AgentId:      azureExporter.AgentID,
-					AgentType:    "azure_database_exporter",
-					PmmAgentId:   "00000000-0000-4000-8000-000000000007",
-					IsConnected:  false,
-					CreatedAt:    timestamppb.New(now),
-					UpdatedAt:    timestamppb.New(now),
-					ServiceId:    "00000000-0000-4000-8000-000000000006",
-					Status:       "AGENT_STATUS_UNKNOWN",
-					AzureOptions: &agentv1.UniversalAgent_AzureOptions{},
+					AgentId:            azureExporter.AgentID,
+					AgentType:          "azure_database_exporter",
+					IsAgentPasswordSet: true,
+					PmmAgentId:         "00000000-0000-4000-8000-000000000007",
+					IsConnected:        false,
+					CreatedAt:          timestamppb.New(now),
+					UpdatedAt:          timestamppb.New(now),
+					ServiceId:          "00000000-0000-4000-8000-000000000006",
+					Status:             "AGENT_STATUS_UNKNOWN",
+					AzureOptions:       &agentv1.UniversalAgent_AzureOptions{},
 				},
 			}
 			assert.Equal(t, expected, response.Agents)
@@ -353,16 +360,17 @@ func TestAgentService(t *testing.T) {
 
 			expected := []*agentv1.UniversalAgent{
 				{
-					AgentId:       rtaAgent.AgentID,
-					AgentType:     "rta-mongodb-agent",
-					PmmAgentId:    "00000000-0000-4000-8000-000000000007",
-					IsConnected:   false,
-					CreatedAt:     timestamppb.New(now),
-					UpdatedAt:     timestamppb.New(now),
-					ServiceId:     "00000000-0000-4000-8000-000000000006",
-					Status:        "AGENT_STATUS_UNKNOWN",
-					Username:      "test-user",
-					IsPasswordSet: true,
+					AgentId:            rtaAgent.AgentID,
+					AgentType:          "rta-mongodb-agent",
+					PmmAgentId:         "00000000-0000-4000-8000-000000000007",
+					IsConnected:        false,
+					CreatedAt:          timestamppb.New(now),
+					UpdatedAt:          timestamppb.New(now),
+					ServiceId:          "00000000-0000-4000-8000-000000000006",
+					Status:             "AGENT_STATUS_UNKNOWN",
+					Username:           "test-user",
+					IsPasswordSet:      true,
+					IsAgentPasswordSet: true,
 					RtaOptions: &inventoryv1.RTAOptions{
 						CollectInterval: durationpb.New(2 * time.Second),
 					},

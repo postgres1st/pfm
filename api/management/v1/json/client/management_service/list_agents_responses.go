@@ -584,7 +584,7 @@ type ListAgentsOKBodyAgentsItems0 struct {
 	// True if password for connecting the agent to the database is set.
 	IsPasswordSet bool `json:"is_password_set,omitempty"`
 
-	// The pmm-agent identifier.
+	// The pfw-agent identifier.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Path to exec process.

@@ -7,7 +7,7 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [tsconfigPaths({ root: '.' }), react(), svgr()],
-  base: '/pfm-ui',
+  base: '/pfw-ui',
   resolve: {
     dedupe: [
       'react',

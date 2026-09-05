@@ -21,7 +21,7 @@ import { pmmThemeOptions } from '@percona/percona-ui';
  *    text) for those four colors, per WCAG AA. Brand chips (primary/secondary)
  *    are untouched and stay solid.
  *
- * Recolors the PFMM shell only — Grafana dashboards keep Grafana's palette.
+ * Recolors the PGF WatchTower shell only — Grafana dashboards keep Grafana's palette.
  */
 
 // Readable soft-badge colors per status color, per mode: [color, tint-hue, text].

@@ -149,7 +149,7 @@ func (c *Client) Run(ctx context.Context) error {
 		missing = "Agent ID"
 	}
 	if cfg.Server.Address == "" {
-		missing = "PMM Server address"
+		missing = "PGF WatchTower Server address"
 	}
 	if missing != "" {
 		c.l.Errorf("%s is not provided, halting.", missing)

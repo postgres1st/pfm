@@ -49,7 +49,7 @@ import (
 )
 
 const (
-	builtinTemplatesDir       = "/opt/postgres1st/pfmm/alerting-templates"
+	builtinTemplatesDir       = "/opt/postgres1st/watchtower/alerting-templates"
 	userTemplatesDir          = "/srv/alerting/templates"
 	defaultEvaluationInterval = time.Minute
 

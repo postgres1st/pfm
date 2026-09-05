@@ -26,7 +26,7 @@ import (
 func main() {
 	// empty version breaks much of pmm-managed logic
 	if version.Version == "" {
-		panic("pmm-agent version is not set during build.")
+		panic("pfw-agent version is not set during build.")
 	}
 
 	logger.SetupGlobalLogger()

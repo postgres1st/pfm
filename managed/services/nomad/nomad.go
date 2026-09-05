@@ -35,7 +35,7 @@ import (
 var serverConfig string
 
 const (
-	pathToNomad       = "/opt/postgres1st/pfm/tools/nomad"
+	pathToNomad       = "/opt/postgres1st/watchtower/tools/nomad"
 	pathToCerts       = "/srv/nomad/certs"
 	pathToNomadConfig = "/srv/nomad/nomad-server-%s.hcl"
 	region            = "global"

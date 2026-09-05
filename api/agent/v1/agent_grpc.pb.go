@@ -27,9 +27,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Agent service provides private methods for pmm-agent <-> pmm-managed interactions.
+// Agent service provides private methods for pfw-agent <-> pmm-managed interactions.
 type AgentServiceClient interface {
-	// Connect establishes two-way communication channel between pmm-agent and pmm-managed.
+	// Connect establishes two-way communication channel between pfw-agent and pmm-managed.
 	Connect(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[AgentMessage, ServerMessage], error)
 }
 
@@ -58,9 +58,9 @@ type AgentService_ConnectClient = grpc.BidiStreamingClient[AgentMessage, ServerM
 // All implementations must embed UnimplementedAgentServiceServer
 // for forward compatibility.
 //
-// Agent service provides private methods for pmm-agent <-> pmm-managed interactions.
+// Agent service provides private methods for pfw-agent <-> pmm-managed interactions.
 type AgentServiceServer interface {
-	// Connect establishes two-way communication channel between pmm-agent and pmm-managed.
+	// Connect establishes two-way communication channel between pfw-agent and pmm-managed.
 	Connect(grpc.BidiStreamingServer[AgentMessage, ServerMessage]) error
 	mustEmbedUnimplementedAgentServiceServer()
 }

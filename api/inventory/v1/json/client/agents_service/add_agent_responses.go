@@ -2481,7 +2481,7 @@ type AddAgentOKBodyAzureDatabaseExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3053,7 +3053,7 @@ type AddAgentOKBodyMongodbExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3396,7 +3396,7 @@ type AddAgentOKBodyMysqldExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -3746,7 +3746,7 @@ type AddAgentOKBodyNodeExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4107,7 +4107,7 @@ type AddAgentOKBodyPostgresExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4440,7 +4440,7 @@ type AddAgentOKBodyProxysqlExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4760,14 +4760,14 @@ func (o *AddAgentOKBodyProxysqlExporterMetricsResolutions) UnmarshalBinary(b []b
 }
 
 /*
-AddAgentOKBodyQANMongodbMongologAgent QANMongoDBMongologAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+AddAgentOKBodyQANMongodbMongologAgent QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANMongodbMongologAgent
 */
 type AddAgentOKBodyQANMongodbMongologAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -4969,14 +4969,14 @@ func (o *AddAgentOKBodyQANMongodbMongologAgent) UnmarshalBinary(b []byte) error 
 }
 
 /*
-AddAgentOKBodyQANMongodbProfilerAgent QANMongoDBProfilerAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.
+AddAgentOKBodyQANMongodbProfilerAgent QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANMongodbProfilerAgent
 */
 type AddAgentOKBodyQANMongodbProfilerAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5178,14 +5178,14 @@ func (o *AddAgentOKBodyQANMongodbProfilerAgent) UnmarshalBinary(b []byte) error 
 }
 
 /*
-AddAgentOKBodyQANMysqlPerfschemaAgent QANMySQLPerfSchemaAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+AddAgentOKBodyQANMysqlPerfschemaAgent QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANMysqlPerfschemaAgent
 */
 type AddAgentOKBodyQANMysqlPerfschemaAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5405,14 +5405,14 @@ func (o *AddAgentOKBodyQANMysqlPerfschemaAgent) UnmarshalBinary(b []byte) error 
 }
 
 /*
-AddAgentOKBodyQANMysqlSlowlogAgent QANMySQLSlowlogAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.
+AddAgentOKBodyQANMysqlSlowlogAgent QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANMysqlSlowlogAgent
 */
 type AddAgentOKBodyQANMysqlSlowlogAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5635,14 +5635,14 @@ func (o *AddAgentOKBodyQANMysqlSlowlogAgent) UnmarshalBinary(b []byte) error {
 }
 
 /*
-AddAgentOKBodyQANPostgresqlPgstatementsAgent QANPostgreSQLPgStatementsAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+AddAgentOKBodyQANPostgresqlPgstatementsAgent QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANPostgresqlPgstatementsAgent
 */
 type AddAgentOKBodyQANPostgresqlPgstatementsAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -5847,14 +5847,14 @@ func (o *AddAgentOKBodyQANPostgresqlPgstatementsAgent) UnmarshalBinary(b []byte)
 }
 
 /*
-AddAgentOKBodyQANPostgresqlPgstatmonitorAgent QANPostgreSQLPgStatMonitorAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.
+AddAgentOKBodyQANPostgresqlPgstatmonitorAgent QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyQANPostgresqlPgstatmonitorAgent
 */
 type AddAgentOKBodyQANPostgresqlPgstatmonitorAgent struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6069,7 +6069,7 @@ type AddAgentOKBodyRDSExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6383,14 +6383,14 @@ func (o *AddAgentOKBodyRDSExporterMetricsResolutions) UnmarshalBinary(b []byte) 
 }
 
 /*
-AddAgentOKBodyRtaMongodbAgent RTAMongoDBAgent runs within pmm-agent and sends MongoDB Real-Time Query Analytics data to the PMM Server.
+AddAgentOKBodyRtaMongodbAgent RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.
 swagger:model AddAgentOKBodyRtaMongodbAgent
 */
 type AddAgentOKBodyRtaMongodbAgent struct {
 	// Unique agent identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6693,7 +6693,7 @@ type AddAgentOKBodyValkeyExporter struct {
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Desired Agent status: enabled (false) or disabled (true).
@@ -6953,7 +6953,7 @@ AddAgentParamsBodyAzureDatabaseExporter add agent params body azure database exp
 swagger:model AddAgentParamsBodyAzureDatabaseExporter
 */
 type AddAgentParamsBodyAzureDatabaseExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Node identifier.
@@ -7153,7 +7153,7 @@ AddAgentParamsBodyMongodbExporter add agent params body mongodb exporter
 swagger:model AddAgentParamsBodyMongodbExporter
 */
 type AddAgentParamsBodyMongodbExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -7220,7 +7220,7 @@ type AddAgentParamsBodyMongodbExporter struct {
 	ExposeExporter bool `json:"expose_exporter,omitempty"`
 
 	// Environment variable names to pass to the exporter.
-	// Values will be resolved from pmm-agent's environment when starting the exporter.
+	// Values will be resolved from pfw-agent's environment when starting the exporter.
 	EnvironmentVariableNames []string `json:"environment_variable_names"`
 
 	// Enable all collectors.
@@ -7329,7 +7329,7 @@ AddAgentParamsBodyMysqldExporter add agent params body mysqld exporter
 swagger:model AddAgentParamsBodyMysqldExporter
 */
 type AddAgentParamsBodyMysqldExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -7488,7 +7488,7 @@ AddAgentParamsBodyNodeExporter add agent params body node exporter
 swagger:model AddAgentParamsBodyNodeExporter
 */
 type AddAgentParamsBodyNodeExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Custom user-assigned labels.
@@ -7646,7 +7646,7 @@ AddAgentParamsBodyPostgresExporter add agent params body postgres exporter
 swagger:model AddAgentParamsBodyPostgresExporter
 */
 type AddAgentParamsBodyPostgresExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -7803,7 +7803,7 @@ AddAgentParamsBodyProxysqlExporter add agent params body proxysql exporter
 swagger:model AddAgentParamsBodyProxysqlExporter
 */
 type AddAgentParamsBodyProxysqlExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -7945,7 +7945,7 @@ AddAgentParamsBodyQANMongodbMongologAgent add agent params body QAN mongodb mong
 swagger:model AddAgentParamsBodyQANMongodbMongologAgent
 */
 type AddAgentParamsBodyQANMongodbMongologAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8092,7 +8092,7 @@ AddAgentParamsBodyQANMongodbProfilerAgent add agent params body QAN mongodb prof
 swagger:model AddAgentParamsBodyQANMongodbProfilerAgent
 */
 type AddAgentParamsBodyQANMongodbProfilerAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8239,7 +8239,7 @@ AddAgentParamsBodyQANMysqlPerfschemaAgent add agent params body QAN mysql perfsc
 swagger:model AddAgentParamsBodyQANMysqlPerfschemaAgent
 */
 type AddAgentParamsBodyQANMysqlPerfschemaAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8387,7 +8387,7 @@ AddAgentParamsBodyQANMysqlSlowlogAgent add agent params body QAN mysql slowlog a
 swagger:model AddAgentParamsBodyQANMysqlSlowlogAgent
 */
 type AddAgentParamsBodyQANMysqlSlowlogAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8539,7 +8539,7 @@ AddAgentParamsBodyQANPostgresqlPgstatementsAgent add agent params body QAN postg
 swagger:model AddAgentParamsBodyQANPostgresqlPgstatementsAgent
 */
 type AddAgentParamsBodyQANPostgresqlPgstatementsAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8681,7 +8681,7 @@ AddAgentParamsBodyQANPostgresqlPgstatmonitorAgent add agent params body QAN post
 swagger:model AddAgentParamsBodyQANPostgresqlPgstatmonitorAgent
 */
 type AddAgentParamsBodyQANPostgresqlPgstatmonitorAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -8826,7 +8826,7 @@ AddAgentParamsBodyRDSExporter add agent params body RDS exporter
 swagger:model AddAgentParamsBodyRDSExporter
 */
 type AddAgentParamsBodyRDSExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Node identifier.
@@ -8956,7 +8956,7 @@ AddAgentParamsBodyRtaMongodbAgent add agent params body rta mongodb agent
 swagger:model AddAgentParamsBodyRtaMongodbAgent
 */
 type AddAgentParamsBodyRtaMongodbAgent struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.
@@ -9198,7 +9198,7 @@ AddAgentParamsBodyValkeyExporter add agent params body valkey exporter
 swagger:model AddAgentParamsBodyValkeyExporter
 */
 type AddAgentParamsBodyValkeyExporter struct {
-	// The pmm-agent identifier which runs this instance.
+	// The pfw-agent identifier which runs this instance.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service identifier.

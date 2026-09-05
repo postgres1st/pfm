@@ -81,7 +81,7 @@ func (ExampleType) EnumDescriptor() ([]byte, []int) {
 	return file_agent_v1_collector_proto_rawDescGZIP(), []int{0}
 }
 
-// MetricsBucket is aggregated message created by pmm-agent.
+// MetricsBucket is aggregated message created by pfw-agent.
 // Contains information about one query selected in defined way from query class in specific period of time.
 type MetricsBucket struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
@@ -2827,7 +2827,6 @@ var (
 		v1.AgentType(0),                  // 9: inventory.v1.AgentType
 	}
 )
-
 var file_agent_v1_collector_proto_depIdxs = []int32{
 	3, // 0: agent.v1.MetricsBucket.common:type_name -> agent.v1.MetricsBucket.Common
 	4, // 1: agent.v1.MetricsBucket.mysql:type_name -> agent.v1.MetricsBucket.MySQL

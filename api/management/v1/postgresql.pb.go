@@ -51,7 +51,7 @@ type AddPostgreSQLServiceParams struct {
 	// Service Access socket.
 	// Address (and port) or socket is required.
 	Socket string `protobuf:"bytes,8,opt,name=socket,proto3" json:"socket,omitempty"`
-	// The "pmm-agent" identifier which should run agents. Required.
+	// The "pfw-agent" identifier which should run agents. Required.
 	PmmAgentId string `protobuf:"bytes,9,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Environment name.
 	Environment string `protobuf:"bytes,10,opt,name=environment,proto3" json:"environment,omitempty"`
@@ -535,7 +535,6 @@ var (
 		(*v1.QANPostgreSQLPgStatMonitorAgent)(nil), // 10: inventory.v1.QANPostgreSQLPgStatMonitorAgent
 	}
 )
-
 var file_management_v1_postgresql_proto_depIdxs = []int32{
 	3,  // 0: management.v1.AddPostgreSQLServiceParams.add_node:type_name -> management.v1.AddNodeParams
 	2,  // 1: management.v1.AddPostgreSQLServiceParams.custom_labels:type_name -> management.v1.AddPostgreSQLServiceParams.CustomLabelsEntry

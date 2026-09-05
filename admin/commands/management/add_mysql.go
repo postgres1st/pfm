@@ -101,7 +101,7 @@ type AddMySQLCommand struct {
 	Address       string `arg:"" optional:"" help:"MySQL address and port (default: 127.0.0.1:3306)"`
 	Socket        string `help:"Path to MySQL socket"`
 	NodeID        string `help:"Node ID (default is autodetected)"`
-	PMMAgentID    string `help:"The pmm-agent identifier which runs this instance (default is autodetected)"`
+	PMMAgentID    string `help:"The pfw-agent identifier which runs this instance (default is autodetected)"`
 	Username      string `default:"root" help:"MySQL username"`
 	Password      string `help:"MySQL password"`
 	AgentPassword string `help:"Custom password for /metrics endpoint"`

@@ -50,9 +50,9 @@ message StateChangedRequest {
 // StateChangedResponse is a ServerMessage for StateChangedRequest acceptance.
 message StateChangedResponse {}
 
-// SetStateRequest is a ServerMessage asking pmm-agent to run agents according to desired state.
+// SetStateRequest is a ServerMessage asking pfw-agent to run agents according to desired state.
 message SetStateRequest {
-  // AgentProcess describes desired configuration of a single agent process started by pmm-agent.
+  // AgentProcess describes desired configuration of a single agent process started by pfw-agent.
   message AgentProcess {
     inventory.v1.AgentType type = 1;
     string template_left_delim = 2;
@@ -61,11 +61,11 @@ message SetStateRequest {
     repeated string env = 5 [(extensions.v1.sensitive) = REDACT_TYPE_DSN];
     map<string, string> text_files = 6 [(extensions.v1.sensitive) = REDACT_TYPE_MASK];
     repeated string redact_words = 7 [(extensions.v1.sensitive) = REDACT_TYPE_FULL];
-    // Environment variable names to be resolved from pmm-agent's environment.
+    // Environment variable names to be resolved from pfw-agent's environment.
     repeated string env_variable_names = 8;
   }
   map<string, AgentProcess> agent_processes = 1;
-  // BuiltinAgent describes desired configuration of a single built-in agent for pmm-agent.
+  // BuiltinAgent describes desired configuration of a single built-in agent for pfw-agent.
   message BuiltinAgent {
     inventory.v1.AgentType type = 1;
     string dsn = 2 [(extensions.v1.sensitive) = REDACT_TYPE_DSN];
@@ -158,7 +158,7 @@ message QueryActionResult {
   repeated QueryActionMap docs = 3;
 }
 
-// StartActionRequest is a ServerMessage asking pmm-agent to start action.
+// StartActionRequest is a ServerMessage asking pfw-agent to start action.
 message StartActionRequest {
   // MySQLExplainParams describes MySQL EXPLAIN action parameters.
   message MySQLExplainParams {
@@ -351,7 +351,7 @@ message StartActionRequest {
     SystemService system_service = 1;
   }
   string action_id = 1;
-  // Timeout for the whole action. If zero or absent, pmm-agent will pick one itself.
+  // Timeout for the whole action. If zero or absent, pfw-agent will pick one itself.
   google.protobuf.Duration timeout = 2;
 
   oneof params {
@@ -382,7 +382,7 @@ message StartActionRequest {
 // StartActionResponse is an AgentMessage for StartActionRequest acceptance.
 message StartActionResponse {}
 
-// StopActionRequest is a ServerMessage asking pmm-agent to stop action.
+// StopActionRequest is a ServerMessage asking pfw-agent to stop action.
 message StopActionRequest {
   string action_id = 1;
 }
@@ -405,7 +405,7 @@ message ActionResultRequest {
 // ActionResultResponse is an ServerMessage for ActionResultRequest acceptance.
 message ActionResultResponse {}
 
-// PBMSwitchPITRRequest is a ServerMessage asking pmm-agent to switch PITR pbm feature.
+// PBMSwitchPITRRequest is a ServerMessage asking pfw-agent to switch PITR pbm feature.
 message PBMSwitchPITRRequest {
   // DSN for the MongoDB service. May contain connection (dial) timeout.
   // May contain placeholders for file paths in DSN.
@@ -434,7 +434,7 @@ message AgentLogsResponse {
   uint32 agent_config_log_lines_count = 2;
 }
 
-// CheckConnectionRequest is a ServerMessage asking pmm-agent to check connection with Service.
+// CheckConnectionRequest is a ServerMessage asking pfw-agent to check connection with Service.
 message CheckConnectionRequest {
   // Service type.
   inventory.v1.ServiceType type = 1;
@@ -461,7 +461,7 @@ message CheckConnectionResponse {
   string error = 1;
 }
 
-// ServiceInfoRequest is a ServerMessage that queries pmm-agent for database information.
+// ServiceInfoRequest is a ServerMessage that queries pfw-agent for database information.
 message ServiceInfoRequest {
   // Service type.
   inventory.v1.ServiceType type = 1;
@@ -491,7 +491,7 @@ message ServiceInfoResponse {
   optional string pgsm_version = 5;
 }
 
-// JobStatusRequest is a ServerMessage asking pmm-agent for job status.
+// JobStatusRequest is a ServerMessage asking pfw-agent for job status.
 message JobStatusRequest {
   string job_id = 1;
 }
@@ -515,7 +515,7 @@ message FilesystemLocationConfig {
   string path = 1;
 }
 
-// StartJobRequest is a ServerMessage asking pmm-agent to start job.
+// StartJobRequest is a ServerMessage asking pfw-agent to start job.
 message StartJobRequest {
   // MySQLBackup is job for backup MySQL service.
   message MySQLBackup {
@@ -618,7 +618,7 @@ message StartJobResponse {
   string error = 1;
 }
 
-// StopJobRequest is a ServerMessage asking pmm-agent to stop job.
+// StopJobRequest is a ServerMessage asking pfw-agent to stop job.
 message StopJobRequest {
   string job_id = 1;
 }
@@ -792,8 +792,8 @@ message ServerMessage {
   }
 }
 
-// Agent service provides private methods for pmm-agent <-> pmm-managed interactions.
+// Agent service provides private methods for pfw-agent <-> pmm-managed interactions.
 service AgentService {
-  // Connect establishes two-way communication channel between pmm-agent and pmm-managed.
+  // Connect establishes two-way communication channel between pfw-agent and pmm-managed.
   rpc Connect(stream AgentMessage) returns (stream ServerMessage);
 }

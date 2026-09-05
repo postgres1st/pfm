@@ -34,7 +34,7 @@ export const TECHNICAL_PREVIEW_DOC_URL =
 export const FEATURE_MANAGEMENT_SETTINGS = [
   // Gated on the same UPDATES_ENABLED flag as the /updates route, the nav entry, the
   // polling provider and the header banner — this was the one surface it was never
-  // applied to. PFMM ships no update source, and pfm-managed.service sets
+  // applied to. PGF WatchTower ships no update source, and pfw-managed.service sets
   // PMM_ENABLE_UPDATES=false, which the settings API treats as immutable
   // (FailedPrecondition), so the toggle could only ever return an error.
   //

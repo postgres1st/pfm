@@ -300,7 +300,7 @@ type AddRDSServiceParams struct {
 	Port uint32 `protobuf:"varint,6,opt,name=port,proto3" json:"port,omitempty"`
 	// Instance engine.
 	Engine DiscoverRDSEngine `protobuf:"varint,7,opt,name=engine,proto3,enum=management.v1.DiscoverRDSEngine" json:"engine,omitempty"`
-	// PMM Agent ID.
+	// PGF WatchTower Agent ID.
 	PmmAgentId string `protobuf:"bytes,34,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Unique across all Nodes user-defined name. Defaults to AWS instance ID.
 	NodeName string `protobuf:"bytes,8,opt,name=node_name,json=nodeName,proto3" json:"node_name,omitempty"`
@@ -876,7 +876,6 @@ var (
 		(*v1.QANPostgreSQLPgStatementsAgent)(nil), // 16: inventory.v1.QANPostgreSQLPgStatementsAgent
 	}
 )
-
 var file_management_v1_rds_proto_depIdxs = []int32{
 	0,  // 0: management.v1.DiscoverRDSInstance.engine:type_name -> management.v1.DiscoverRDSEngine
 	1,  // 1: management.v1.DiscoverRDSResponse.rds_instances:type_name -> management.v1.DiscoverRDSInstance

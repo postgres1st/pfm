@@ -1900,7 +1900,7 @@ type StartServiceActionOKBodyMongodbExplain struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -1940,7 +1940,7 @@ type StartServiceActionOKBodyMysqlExplain struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -1980,7 +1980,7 @@ type StartServiceActionOKBodyMysqlExplainJSON struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2020,7 +2020,7 @@ type StartServiceActionOKBodyMysqlExplainTraditionalJSON struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2060,7 +2060,7 @@ type StartServiceActionOKBodyMysqlShowCreateTable struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2100,7 +2100,7 @@ type StartServiceActionOKBodyMysqlShowIndex struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2140,7 +2140,7 @@ type StartServiceActionOKBodyMysqlShowTableStatus struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2180,7 +2180,7 @@ type StartServiceActionOKBodyPTMongodbSummary struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2220,7 +2220,7 @@ type StartServiceActionOKBodyPTMysqlSummary struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2260,7 +2260,7 @@ type StartServiceActionOKBodyPTPostgresSummary struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2300,7 +2300,7 @@ type StartServiceActionOKBodyPostgresqlShowCreateTable struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2340,7 +2340,7 @@ type StartServiceActionOKBodyPostgresqlShowIndex struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 
@@ -2377,7 +2377,7 @@ StartServiceActionParamsBodyMongodbExplain start service action params body mong
 swagger:model StartServiceActionParamsBodyMongodbExplain
 */
 type StartServiceActionParamsBodyMongodbExplain struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2420,7 +2420,7 @@ StartServiceActionParamsBodyMysqlExplain start service action params body mysql 
 swagger:model StartServiceActionParamsBodyMysqlExplain
 */
 type StartServiceActionParamsBodyMysqlExplain struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2469,7 +2469,7 @@ StartServiceActionParamsBodyMysqlExplainJSON start service action params body my
 swagger:model StartServiceActionParamsBodyMysqlExplainJSON
 */
 type StartServiceActionParamsBodyMysqlExplainJSON struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2518,7 +2518,7 @@ StartServiceActionParamsBodyMysqlExplainTraditionalJSON start service action par
 swagger:model StartServiceActionParamsBodyMysqlExplainTraditionalJSON
 */
 type StartServiceActionParamsBodyMysqlExplainTraditionalJSON struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2567,7 +2567,7 @@ StartServiceActionParamsBodyMysqlShowCreateTable start service action params bod
 swagger:model StartServiceActionParamsBodyMysqlShowCreateTable
 */
 type StartServiceActionParamsBodyMysqlShowCreateTable struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2613,7 +2613,7 @@ StartServiceActionParamsBodyMysqlShowIndex start service action params body mysq
 swagger:model StartServiceActionParamsBodyMysqlShowIndex
 */
 type StartServiceActionParamsBodyMysqlShowIndex struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2659,7 +2659,7 @@ StartServiceActionParamsBodyMysqlShowTableStatus start service action params bod
 swagger:model StartServiceActionParamsBodyMysqlShowTableStatus
 */
 type StartServiceActionParamsBodyMysqlShowTableStatus struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2705,7 +2705,7 @@ StartServiceActionParamsBodyPTMongodbSummary Message to prepare pt-mongodb-summa
 swagger:model StartServiceActionParamsBodyPTMongodbSummary
 */
 type StartServiceActionParamsBodyPTMongodbSummary struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action.
@@ -2745,7 +2745,7 @@ StartServiceActionParamsBodyPTMysqlSummary Message to prepare pt-mysql-summary d
 swagger:model StartServiceActionParamsBodyPTMysqlSummary
 */
 type StartServiceActionParamsBodyPTMysqlSummary struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action.
@@ -2785,7 +2785,7 @@ StartServiceActionParamsBodyPTPostgresSummary Message to prepare pt-pg-summary d
 swagger:model StartServiceActionParamsBodyPTPostgresSummary
 */
 type StartServiceActionParamsBodyPTPostgresSummary struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action.
@@ -2825,7 +2825,7 @@ StartServiceActionParamsBodyPostgresShowCreateTable start service action params 
 swagger:model StartServiceActionParamsBodyPostgresShowCreateTable
 */
 type StartServiceActionParamsBodyPostgresShowCreateTable struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.
@@ -2871,7 +2871,7 @@ StartServiceActionParamsBodyPostgresShowIndex start service action params body p
 swagger:model StartServiceActionParamsBodyPostgresShowIndex
 */
 type StartServiceActionParamsBodyPostgresShowIndex struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Service ID for this Action. Required.

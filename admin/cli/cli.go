@@ -41,18 +41,18 @@ var (
 	_ GlobalFlagsGetter = &PMMAdminCommands{} //nolint:exhaustruct
 )
 
-// PMMAdminCommands stores all commands, flags and arguments for the "pmm-admin" binary.
+// PMMAdminCommands stores all commands, flags and arguments for the "pfw-admin" binary.
 type PMMAdminCommands struct {
 	flags.GlobalFlags
 
-	Status     commands.StatusCommand       `cmd:"" help:"Show information about local pmm-agent"`
+	Status     commands.StatusCommand       `cmd:"" help:"Show information about local pfw-agent"`
 	Summary    commands.SummaryCommand      `cmd:"" help:"Fetch system data for diagnostics"`
 	List       commands.ListCommand         `cmd:"" help:"Show Services and Agents running on this Node"`
-	Config     commands.ConfigCommand       `cmd:"" help:"Configure local pmm-agent"`
+	Config     commands.ConfigCommand       `cmd:"" help:"Configure local pfw-agent"`
 	Annotate   commands.AnnotationCommand   `cmd:"" help:"Add an annotation to Grafana charts"`
-	Unregister management.UnregisterCommand `cmd:"" help:"Unregister current Node from PMM Server"`
+	Unregister management.UnregisterCommand `cmd:"" help:"Unregister current Node from PGF WatchTower Server"`
 	Remove     management.RemoveCommand     `cmd:"" help:"Remove Service from monitoring"`
-	Register   management.RegisterCommand   `cmd:"" help:"Register current Node with PMM Server"`
+	Register   management.RegisterCommand   `cmd:"" help:"Register current Node with PGF WatchTower Server"`
 	Add        management.AddCommand        `cmd:"" help:"Add Service to monitoring"`
 	Inventory  inventory.InventoryCommand   `cmd:"" hidden:"" help:"Inventory commands"`
 	Version    commands.VersionCommand      `cmd:"" help:"Print version"`
@@ -94,7 +94,7 @@ func run(ctx *kong.Context, globals *flags.GlobalFlags) error {
 	var err error
 
 	// Since Kong 1.16.0 the root command is treated as runnable, so invoking
-	// pmm-admin without a subcommand no longer produces a parse error and
+	// pfw-admin without a subcommand no longer produces a parse error and
 	// ctx.Selected() is nil. Print usage and exit as previous versions did.
 	if ctx.Selected() == nil {
 		_ = ctx.PrintUsage(false)
@@ -130,7 +130,7 @@ func printResponse(opts *flags.GlobalFlags, res commands.Result, err error) erro
 		printErrorResponse(opts, err)
 		os.Exit(1)
 
-	case *exec.ExitError: // from config command that execs `pmm-agent setup`
+	case *exec.ExitError: // from config command that execs `pfw-agent setup`
 		if res != nil {
 			printExitError(opts, res, err)
 			os.Exit(err.ExitCode())

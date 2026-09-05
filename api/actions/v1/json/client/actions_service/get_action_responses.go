@@ -420,7 +420,7 @@ type GetActionOKBody struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where this Action is running / was run.
+	// pfw-agent ID where this Action is running / was run.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Current Action output; may be partial if Action is still running.

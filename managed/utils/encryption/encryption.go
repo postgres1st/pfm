@@ -35,8 +35,15 @@ import (
 )
 
 var (
-	// DefaultEncryptionKeyPath contains default PMM encryption key path.
-	DefaultEncryptionKeyPath = "/srv/pmm-encryption.key"
+	// DefaultEncryptionKeyPath contains the default encryption key path.
+	DefaultEncryptionKeyPath = "/srv/pfw-encryption.key"
+
+	// LegacyEncryptionKeyPath is where the key lived before the rebrand. Adopted when
+	// the current path is absent -- NOT cosmetic: New() generates a fresh key when it
+	// finds no file, so renaming the default without this would silently re-key a host
+	// and make every already-encrypted value undecryptable. Nothing would fail at the
+	// moment of loss; the data is simply gone the next time it is read.
+	LegacyEncryptionKeyPath = "/srv/pmm-encryption.key"
 	// ErrEncryptionNotInitialized is error in case of encryption is not initialized.
 	ErrEncryptionNotInitialized = errors.New("encryption is not initialized")
 	// DefaultEncryption is the default implementation of encryption, lazily initialized.
@@ -106,6 +113,26 @@ func New() *Encryption {
 			e.Path = "./encryption.key"
 		} else {
 			e.Path = DefaultEncryptionKeyPath
+			// Adopt the pre-rebrand key rather than generate a new one over the top of
+			// a host that already has data encrypted with it.
+			if _, err := os.Stat(e.Path); os.IsNotExist(err) {
+				switch _, lerr := os.Stat(LegacyEncryptionKeyPath); {
+				case lerr == nil:
+					logrus.Warnf("Encryption: using the pre-rebrand key at %s. "+
+						"Stop the server and rename it to %s when convenient.",
+						LegacyEncryptionKeyPath, DefaultEncryptionKeyPath)
+					e.Path = LegacyEncryptionKeyPath
+				case !os.IsNotExist(lerr):
+					// Cannot tell whether the pre-rebrand key exists. Falling through
+					// would GENERATE one, re-keying a host whose data may be encrypted
+					// with a key sitting right there unreadable -- and nothing would
+					// fail until someone read that data. Refuse instead: an operator
+					// can fix a permission error, but not a silent re-key.
+					logrus.Panicf("Encryption: cannot determine whether %s exists (%v); "+
+						"refusing to generate a new key, which would make any data "+
+						"encrypted with it unrecoverable", LegacyEncryptionKeyPath, lerr)
+				}
+			}
 		}
 	}
 

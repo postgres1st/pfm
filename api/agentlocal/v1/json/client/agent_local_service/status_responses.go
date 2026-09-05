@@ -467,10 +467,10 @@ type StatusOKBody struct {
 	// agents info
 	AgentsInfo []*StatusOKBodyAgentsInfoItems0 `json:"agents_info"`
 
-	// Config file path if pmm-agent was started with one.
+	// Config file path if pfw-agent was started with one.
 	ConfigFilepath string `json:"config_filepath,omitempty"`
 
-	// PMM Agent version.
+	// PGF WatchTower Agent version.
 	AgentVersion string `json:"agent_version,omitempty"`
 
 	// Shows connection uptime in percentage between agent and server
@@ -638,7 +638,7 @@ func (o *StatusOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-StatusOKBodyAgentsInfoItems0 AgentInfo contains information about Agent managed by pmm-agent.
+StatusOKBodyAgentsInfoItems0 AgentInfo contains information about Agent managed by pfw-agent.
 swagger:model StatusOKBodyAgentsInfoItems0
 */
 type StatusOKBodyAgentsInfoItems0 struct {
@@ -867,26 +867,26 @@ func (o *StatusOKBodyAgentsInfoItems0) UnmarshalBinary(b []byte) error {
 }
 
 /*
-StatusOKBodyServerInfo ServerInfo contains information about the PMM Server.
+StatusOKBodyServerInfo ServerInfo contains information about the PGF WatchTower Server.
 swagger:model StatusOKBodyServerInfo
 */
 type StatusOKBodyServerInfo struct {
-	// PMM Server URL in a form https://HOST:PORT/.
+	// PGF WatchTower Server URL in a form https://HOST:PORT/.
 	URL string `json:"url,omitempty"`
 
-	// PMM Server's TLS certificate validation should be skipped if true.
+	// PGF WatchTower Server's TLS certificate validation should be skipped if true.
 	InsecureTLS bool `json:"insecure_tls,omitempty"`
 
-	// True if pmm-agent is currently connected to the server.
+	// True if pfw-agent is currently connected to the server.
 	Connected bool `json:"connected,omitempty"`
 
-	// PMM Server version (if agent is connected).
+	// PGF WatchTower Server version (if agent is connected).
 	Version string `json:"version,omitempty"`
 
-	// Ping time from pmm-agent to pmm-managed (if agent is connected).
+	// Ping time from pfw-agent to pmm-managed (if agent is connected).
 	Latency string `json:"latency,omitempty"`
 
-	// Clock drift from PMM Server (if agent is connected).
+	// Clock drift from PGF WatchTower Server (if agent is connected).
 	ClockDrift string `json:"clock_drift,omitempty"`
 }
 

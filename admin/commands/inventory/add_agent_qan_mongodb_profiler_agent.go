@@ -49,7 +49,7 @@ func (res *addAgentQANMongoDBProfilerAgentResult) String() string {
 type AddAgentQANMongoDBProfilerAgentCommand struct {
 	flags.LogLevelFatalFlags
 
-	PMMAgentID                    string            `arg:"" help:"The pmm-agent identifier which runs this instance"`
+	PMMAgentID                    string            `arg:"" help:"The pfw-agent identifier which runs this instance"`
 	ServiceID                     string            `arg:"" help:"Service identifier"`
 	Username                      string            `arg:"" optional:"" help:"MongoDB username for scraping metrics"`
 	Password                      string            `help:"MongoDB password for scraping metrics"`

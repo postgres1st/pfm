@@ -128,7 +128,7 @@ type UniversalAgent struct {
 	NodeId string `protobuf:"bytes,19,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
 	// True if password for connecting the agent to the database is set.
 	IsPasswordSet bool `protobuf:"varint,20,opt,name=is_password_set,json=isPasswordSet,proto3" json:"is_password_set,omitempty"`
-	// The pmm-agent identifier.
+	// The pfw-agent identifier.
 	PmmAgentId string `protobuf:"bytes,21,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// TLS options for connecting to PostgreSQL.
 	PostgresqlOptions *UniversalAgent_PostgreSQLOptions `protobuf:"bytes,22,opt,name=postgresql_options,json=postgresqlOptions,proto3" json:"postgresql_options,omitempty"`
@@ -1251,7 +1251,6 @@ var (
 		(*durationpb.Duration)(nil),              // 17: google.protobuf.Duration
 	}
 )
-
 var file_management_v1_agent_proto_depIdxs = []int32{
 	8,  // 0: management.v1.UniversalAgent.azure_options:type_name -> management.v1.UniversalAgent.AzureOptions
 	14, // 1: management.v1.UniversalAgent.created_at:type_name -> google.protobuf.Timestamp

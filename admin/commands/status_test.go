@@ -59,15 +59,15 @@ Agent ID : pmm-server
 Node ID  : pmm-server
 Node name: pmm-server-node
 
-PMM Server:
+PGF WatchTower Server:
 	URL    : https://address/
 	Version: 2.4.0
 
-PMM Client:
+PGF WatchTower Agent:
 	Connected        : false
 	Connection uptime: 0
-	pmm-admin version: unknown
-	pmm-agent version: 2.5.1
+	pfw-admin version: unknown
+	pfw-agent version: 2.5.1
 Agents:
 	1afe233f-b319-4645-be6c-a1e05d4a545b node_exporter                  Running        3310
 	2c7c0e04-6eef-411d-bcce-51e138e771cc postgresql_pgstatements_agent  Running        0

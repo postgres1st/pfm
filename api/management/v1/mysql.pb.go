@@ -49,7 +49,7 @@ type AddMySQLServiceParams struct {
 	// Service Access socket.
 	// Address (and port) or socket is required.
 	Socket string `protobuf:"bytes,7,opt,name=socket,proto3" json:"socket,omitempty"`
-	// The "pmm-agent" identifier which should run agents. Required.
+	// The "pfw-agent" identifier which should run agents. Required.
 	PmmAgentId string `protobuf:"bytes,8,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Environment name.
 	Environment string `protobuf:"bytes,9,opt,name=environment,proto3" json:"environment,omitempty"`
@@ -545,7 +545,6 @@ var (
 		(*v1.QANMySQLSlowlogAgent)(nil),    // 11: inventory.v1.QANMySQLSlowlogAgent
 	}
 )
-
 var file_management_v1_mysql_proto_depIdxs = []int32{
 	4,  // 0: management.v1.AddMySQLServiceParams.add_node:type_name -> management.v1.AddNodeParams
 	2,  // 1: management.v1.AddMySQLServiceParams.custom_labels:type_name -> management.v1.AddMySQLServiceParams.CustomLabelsEntry

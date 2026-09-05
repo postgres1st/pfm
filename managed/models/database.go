@@ -1185,6 +1185,21 @@ var databaseSchema = [][]string{
 		`ALTER TABLE dumps ADD COLUMN encrypted boolean NOT NULL DEFAULT false`,
 		`UPDATE dumps SET encrypted = false`,
 	},
+	119: {
+		// Deliberately empty. This index once carried
+		//   UPDATE agents SET agent_password = replace(gen_random_uuid()::text,'-','')
+		// to backfill exporter credentials for agents predating their generation.
+		// That was wrong: agent_password is an encrypted column
+		// (DefaultAgentEncryptionColumnsV3), and plain SQL cannot encrypt. On any
+		// already-encrypted database -- i.e. every 3.x upgrade -- EncryptDB skips
+		// columns already listed in settings.EncryptedItems, so the backfilled
+		// values would have stayed in cleartext beside the encrypted ones, which is
+		// the very disclosure class this work exists to close.
+		//
+		// The backfill now happens in Go, in backfillAgentPasswords below, which
+		// runs after EncryptDB and encrypts each value itself. The index is kept so
+		// migration numbering stays stable for databases that already recorded it.
+	},
 }
 
 // ^^^ Avoid default values in schema definition. ^^^
@@ -1384,6 +1399,31 @@ func checkVersion(ctx context.Context, db reform.DBTXContext) error {
 	return nil
 }
 
+// Credential-bearing DDL is built here rather than inline so it can be unit-tested
+// without a database. Identifiers go through pq.QuoteIdentifier and the password
+// through pq.QuoteLiteral: PostgreSQL takes no bind parameters for identifiers in
+// DDL, and a raw fmt.Sprintf of the password let a single quote close the literal
+// and inject SQL as the superuser. pfw-init.sh:87 already guards the shell path
+// against exactly this; this is the Go half.
+func createUserSQL(username, password string) string {
+	return fmt.Sprintf("CREATE USER %s LOGIN PASSWORD %s",
+		pq.QuoteIdentifier(username), pq.QuoteLiteral(password))
+}
+
+func alterUserPasswordSQL(username, password string) string {
+	return fmt.Sprintf("ALTER USER %s WITH PASSWORD %s",
+		pq.QuoteIdentifier(username), pq.QuoteLiteral(password))
+}
+
+func grantAllOnDatabaseSQL(dbname, username string) string {
+	return fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO %s",
+		pq.QuoteIdentifier(dbname), pq.QuoteIdentifier(username))
+}
+
+func createDatabaseSQL(dbname string) string {
+	return fmt.Sprintf("CREATE DATABASE %s", pq.QuoteIdentifier(dbname))
+}
+
 // initWithRoot tries to create the user and the database.
 func initWithRoot(params SetupDBParams) error {
 	if params.Logf != nil {
@@ -1411,7 +1451,7 @@ func initWithRoot(params SetupDBParams) error {
 	}
 
 	if countDatabases == 0 {
-		_, err = db.Exec(fmt.Sprintf(`CREATE DATABASE "%s"`, params.Name))
+		_, err = db.Exec(createDatabaseSQL(params.Name))
 		if err != nil {
 			return fmt.Errorf("failed to create database %s: %w", params.Name, err)
 		}
@@ -1424,12 +1464,12 @@ func initWithRoot(params SetupDBParams) error {
 	}
 
 	if countRoles == 0 {
-		_, err = db.Exec(fmt.Sprintf(`CREATE USER "%s" LOGIN PASSWORD '%s'`, params.Username, params.Password))
+		_, err = db.Exec(createUserSQL(params.Username, params.Password))
 		if err != nil {
 			return fmt.Errorf("failed to create user %s: %w", params.Username, err)
 		}
 
-		_, err = db.Exec(`GRANT ALL PRIVILEGES ON DATABASE $1 TO $2`, params.Name, params.Username)
+		_, err = db.Exec(grantAllOnDatabaseSQL(params.Name, params.Username))
 		if err != nil {
 			return fmt.Errorf("failed to grant privileges to user %s on database %s: %w", params.Username, params.Name, err)
 		}
@@ -1438,11 +1478,63 @@ func initWithRoot(params SetupDBParams) error {
 		// scram-sha-256 during an upgrade, leaving the role with no usable password hash).
 		// initWithRoot is only ever called after a 28000/28P01 auth error, so resetting the
 		// password to the currently configured value is OK.
-		_, err = db.Exec(fmt.Sprintf(`ALTER USER "%s" WITH PASSWORD '%s'`, params.Username, params.Password))
+		_, err = db.Exec(alterUserPasswordSQL(params.Username, params.Password))
 		if err != nil {
 			return fmt.Errorf("failed to update password for user %s: %w", params.Username, err)
 		}
 	}
+	return nil
+}
+
+// backfillAgentPasswords gives every agent row that predates generated credentials
+// a real one.
+//
+// Before this, an unset agent_password made Agent.GetAgentPassword fall back to the
+// agent ID -- a value the inventory API returns and logs contain -- so an upgraded
+// server would keep authenticating its exporters with a public string forever, and
+// the config builders (which now fail closed) would refuse to build for those rows.
+//
+// It encrypts each value itself rather than relying on EncryptDB; see the call site
+// for why the ordering matters. Idempotent: only NULL rows are touched, so a re-run
+// is a no-op and an interrupted run resumes.
+func backfillAgentPasswords(tx *reform.TX) error {
+	rows, err := tx.Query(`SELECT agent_id FROM agents WHERE agent_password IS NULL`)
+	if err != nil {
+		return fmt.Errorf("failed to select agents needing a generated password: %w", err)
+	}
+	defer rows.Close() //nolint:errcheck
+
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return fmt.Errorf("failed to scan agent_id: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	// Closed explicitly before issuing UPDATEs: lib/pq cannot run another statement
+	// on the same connection while rows are still open.
+	if err := rows.Close(); err != nil {
+		return err
+	}
+
+	for _, id := range ids {
+		password, err := generateAgentPassword()
+		if err != nil {
+			return err
+		}
+		encrypted, err := encryption.Encrypt(password)
+		if err != nil {
+			return fmt.Errorf("failed to encrypt generated password for agent %s: %w", id, err)
+		}
+		if _, err := tx.Exec(`UPDATE agents SET agent_password = $1 WHERE agent_id = $2`, encrypted, id); err != nil {
+			return fmt.Errorf("failed to store generated password for agent %s: %w", id, err)
+		}
+	}
+
 	return nil
 }
 
@@ -1490,6 +1582,16 @@ func migrateDB(db *reform.DB, params SetupDBParams) error {
 		}
 
 		err := EncryptDB(tx, params.Name, DefaultAgentEncryptionColumnsV3)
+		if err != nil {
+			return err
+		}
+
+		// After EncryptDB, deliberately. On a database that has never been
+		// encrypted, EncryptDB encrypts the existing values and this then encrypts
+		// the newly generated ones; on an already-encrypted database EncryptDB skips
+		// the column entirely and this is the only thing that encrypts them. Running
+		// it before EncryptDB would double-encrypt on the first path.
+		err = backfillAgentPasswords(tx)
 		if err != nil {
 			return err
 		}
@@ -1565,7 +1667,7 @@ func setupPMMServerHAAgents(q *reform.Querier, params SetupDBParams) error {
 		"--skip-registration",
 		"--server-insecure-tls",
 	}
-	cmd := exec.Command("pfm-agent", args...) //nolint:gosec
+	cmd := exec.Command("pfw-agent", args...) //nolint:gosec
 	logrus.Debugf("Running: pmm-agent %s", strings.Join(cmd.Args, " "))
 	output, err := cmd.CombinedOutput()
 	if err != nil {

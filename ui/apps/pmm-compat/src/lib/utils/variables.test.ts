@@ -17,7 +17,7 @@ import { cleanupVariables, getLinkWithVariables, shouldIncludeVars } from './var
 
 const prefixes = {
   grafana: '/graph',
-  pmm: '/pfm-ui/next',
+  pmm: '/pfw-ui/next',
 };
 
 const dashboards = {

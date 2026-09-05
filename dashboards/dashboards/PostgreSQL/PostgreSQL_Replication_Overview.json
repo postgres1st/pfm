@@ -27,11 +27,12 @@
                 "enable": false,
                 "hide": false,
                 "iconColor": "orange",
-                "name": "PFMM Annotations",
+                "name": "PGF WatchTower Annotations",
                 "target": {
                     "limit": 100,
                     "matchAny": true,
                     "tags": [
+                        "pfw_annotation",
                         "pmm_annotation",
                         "$service_name",
                         "$node_name"

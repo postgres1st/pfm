@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "PFMM Compatibility",
+  "name": "PGF WatchTower Compatibility",
   "id": "pmm-compat-app",
   "preload": true,
   "info": {
-    "keywords": ["postgres first", "pfmm", "pfmm-ui"],
-    "description": "This plugins provides a compatibility layer between Grafana and PFMM UI",
+    "keywords": ["postgres first", "pfw", "pfw-ui"],
+    "description": "This plugins provides a compatibility layer between Grafana and PGF WatchTower UI",
     "links": [
       { "name": "Project site", "url": "https://github.com/postgres1st/pfm" },
       { "name": "AGPL-3 License", "url": "https://github.com/postgres1st/pfm/blob/main/LICENSE" }
@@ -15,8 +15,8 @@
       "name": "Postgres1st"
     },
     "logos": {
-      "small": "img/pfmm-logo.svg",
-      "large": "img/pfmm-logo.svg"
+      "small": "img/pfw-logo.svg",
+      "large": "img/pfw-logo.svg"
     },
     "screenshots": [],
     "version": "%VERSION%",

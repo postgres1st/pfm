@@ -1,18 +1,18 @@
-# pfm-admin
+# pfw-admin
 
-The command-line client for PFMM. It registers nodes and PostgreSQL services with a PFMM
+The command-line client for PGF WatchTower. It registers nodes and PostgreSQL services with a PGF WatchTower
 server and reports agent status.
 
 # Contributing notes
 
 ## Pre-requirements:
-git, make, curl, go, gcc, a running PFMM server, pfm-agent
+git, make, curl, go, gcc, a running PGF WatchTower server, pfw-agent
 
 ## Local setup
-### To run pfm-admin commands
-- Run a PFMM server, or [pfm-managed](../managed) directly.
-- Run pfm-agent: `cd ../agent`.
-- Run pfm-admin commands:
+### To run pfw-admin commands
+- Run a PGF WatchTower server, or [pfw-managed](../managed) directly.
+- Run pfw-agent: `cd ../agent`.
+- Run pfw-admin commands:
     ```shell script
     go run main.go status
     ```
@@ -32,19 +32,19 @@ PMM Client:
 	Time drift       : 41.93µs
 	Latency          : 211.026µs
 	Connection uptime: 100
-	pmm-admin version: 3.9.0
-	pmm-agent version: 3.9.0
+	pfw-admin version: 3.9.0
+	pfw-agent version: 3.9.0
 Agents:
 	3329a405-8a5d-4414-9890-b6ae4209e0cc NODE_EXPORTER                  RUNNING        40001
 ```
 
-The `PMM Server:` / `PMM Client:` headings and the `pmm-admin`/`pmm-agent` version labels
-come from the status template in `commands/status.go` and have not been rebranded yet —
-the sample above matches what the binary prints today, not what it will print after the
-rename.
+The sample above matches what the binary prints today. The `pfw-admin`/`pfw-agent`
+version labels have been rebranded; the `PMM Server:` / `PMM Client:` headings have
+**not** — they come from the status template in `commands/status.go` and are part of
+the CLI-text work still outstanding (see `docs/pfw-identifier-map.md`, A.5).
 
 It means that everything works.
 
 ## Testing
-pfm-admin doesn't require setting-up an environment.
+pfw-admin doesn't require setting-up an environment.
 Run `make test` to run tests.

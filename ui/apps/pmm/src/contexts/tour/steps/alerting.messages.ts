@@ -48,7 +48,7 @@ export const Messages = {
     title: 'Alert groups',
     alert: 'Alert groups show grouped alerts.',
     grouping:
-      "Group common alerts into a single alert group to ensure that PFMM doesn't fire duplicate alerts.",
+      "Group common alerts into a single alert group to ensure that PGF WatchTower doesn't fire duplicate alerts.",
   },
   settings: {
     title: 'Alert settings',

@@ -30,7 +30,7 @@ message GetActionRequest {
 message GetActionResponse {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where this Action is running / was run.
+  // pfw-agent ID where this Action is running / was run.
   string pmm_agent_id = 2;
   // Current Action output; may be partial if Action is still running.
   string output = 3;
@@ -41,7 +41,7 @@ message GetActionResponse {
 }
 
 message StartMySQLExplainActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -57,12 +57,12 @@ message StartMySQLExplainActionParams {
 message StartMySQLExplainActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMySQLExplainJSONActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -78,12 +78,12 @@ message StartMySQLExplainJSONActionParams {
 message StartMySQLExplainJSONActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMySQLExplainTraditionalJSONActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -98,12 +98,12 @@ message StartMySQLExplainTraditionalJSONActionParams {
 message StartMySQLExplainTraditionalJSONActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMySQLShowCreateTableActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -116,12 +116,12 @@ message StartMySQLShowCreateTableActionParams {
 message StartMySQLShowCreateTableActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMySQLShowTableStatusActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -134,12 +134,12 @@ message StartMySQLShowTableStatusActionParams {
 message StartMySQLShowTableStatusActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMySQLShowIndexActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -152,12 +152,12 @@ message StartMySQLShowIndexActionParams {
 message StartMySQLShowIndexActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartPostgreSQLShowCreateTableActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -170,12 +170,12 @@ message StartPostgreSQLShowCreateTableActionParams {
 message StartPostgreSQLShowCreateTableActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartPostgreSQLShowIndexActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -188,12 +188,12 @@ message StartPostgreSQLShowIndexActionParams {
 message StartPostgreSQLShowIndexActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartMongoDBExplainActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action. Required.
   string service_id = 2 [(validate.rules).string.min_len = 1];
@@ -204,13 +204,13 @@ message StartMongoDBExplainActionParams {
 message StartMongoDBExplainActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 // Message to prepare pt-pg-summary data
 message StartPTPgSummaryActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action.
   string service_id = 2;
@@ -220,13 +220,13 @@ message StartPTPgSummaryActionParams {
 message StartPTPgSummaryActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 // Message to prepare pt-mongodb-summary data
 message StartPTMongoDBSummaryActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action.
   string service_id = 2;
@@ -236,13 +236,13 @@ message StartPTMongoDBSummaryActionParams {
 message StartPTMongoDBSummaryActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 // Message to prepare pt-mysql-summary data
 message StartPTMySQLSummaryActionParams {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Service ID for this Action.
   string service_id = 2;
@@ -252,12 +252,12 @@ message StartPTMySQLSummaryActionParams {
 message StartPTMySQLSummaryActionResult {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 
 message StartPTSummaryActionRequest {
-  // pmm-agent ID where to run this Action.
+  // pfw-agent ID where to run this Action.
   string pmm_agent_id = 1;
   // Node ID for this Action.
   string node_id = 2;
@@ -266,7 +266,7 @@ message StartPTSummaryActionRequest {
 message StartPTSummaryActionResponse {
   // Unique Action ID.
   string action_id = 1;
-  // pmm-agent ID where to this Action was started.
+  // pfw-agent ID where to this Action was started.
   string pmm_agent_id = 2;
 }
 

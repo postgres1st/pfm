@@ -27,9 +27,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Collector service accepts data from pmm-agent (via pmm-managed).
+// Collector service accepts data from pfw-agent (via pmm-managed).
 type CollectorServiceClient interface {
-	// Collect accepts data from pmm-agent (via pmm-managed).
+	// Collect accepts data from pfw-agent (via pmm-managed).
 	Collect(ctx context.Context, in *CollectRequest, opts ...grpc.CallOption) (*CollectResponse, error)
 }
 
@@ -55,9 +55,9 @@ func (c *collectorServiceClient) Collect(ctx context.Context, in *CollectRequest
 // All implementations must embed UnimplementedCollectorServiceServer
 // for forward compatibility.
 //
-// Collector service accepts data from pmm-agent (via pmm-managed).
+// Collector service accepts data from pfw-agent (via pmm-managed).
 type CollectorServiceServer interface {
-	// Collect accepts data from pmm-agent (via pmm-managed).
+	// Collect accepts data from pfw-agent (via pmm-managed).
 	Collect(context.Context, *CollectRequest) (*CollectResponse, error)
 	mustEmbedUnimplementedCollectorServiceServer()
 }

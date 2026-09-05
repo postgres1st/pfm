@@ -1,9 +1,9 @@
-# Postgres1st Monitoring and Management UI
+# PGF WatchTower UI
 
-The web interface for PFMM. It is a React application served through Grafana by a
+The web interface for PGF WatchTower. It is a React application served through Grafana by a
 companion plugin.
 
-See the [repository root README](../README.md) for what PFMM is and how it is installed.
+See the [repository root README](../README.md) for what PGF WatchTower is and how it is installed.
 
 ## Stack
 
@@ -57,7 +57,7 @@ Notes:
 
 ### Update Grafana in the devcontainer
 
-The devcontainer ships a prebuilt Grafana baked into the dev image named by `PMM_SERVER_IMAGE` in your `.env` (upstream's `perconalab/pmm-server:3-dev-container` by default). To develop against a local Grafana fork instead — PFMM's is [postgres1st/grafana](https://github.com/postgres1st/grafana) — mount your checkout into the container and rebuild it:
+The devcontainer ships a prebuilt Grafana baked into the dev image named by `PMM_SERVER_IMAGE` in your `.env` (upstream's `perconalab/pmm-server:3-dev-container` by default). To develop against a local Grafana fork instead — PGF WatchTower's is [postgres1st/grafana](https://github.com/postgres1st/grafana) — mount your checkout into the container and rebuild it:
 
 1. Clone the Grafana fork **next to** the `pmm` repo on the host, so it resolves to `../grafana` from the repo root:
 
@@ -89,7 +89,7 @@ For frontend changes in the fork, rebuild its `public/` assets (`make build-js` 
 
 ## Run locally on the host
 
-Use this when you want to drive Vite from your IDE without `make env`. You still need a reachable server — the simplest way is to leave the devcontainer running (`make env-up`) so its ports are exposed; any other PFMM server reachable at `https://localhost:8443` works too.
+Use this when you want to drive Vite from your IDE without `make env`. You still need a reachable server — the simplest way is to leave the devcontainer running (`make env-up`) so its ports are exposed; any other PGF WatchTower server reachable at `https://localhost:8443` works too.
 
 Prerequisites:
 

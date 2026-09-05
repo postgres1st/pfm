@@ -45,7 +45,7 @@ export const NavigationProvider: FC<PropsWithChildren> = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { status, versionInfo } = useUpdates();
   const [navOpen, setNavOpen] = useLocalStorage<boolean>(
-    'pfm-ui.sidebar.expanded',
+    'pfw-ui.sidebar.expanded',
     true
   );
   const { data: haInfo } = useHaInfo({
@@ -58,7 +58,7 @@ export const NavigationProvider: FC<PropsWithChildren> = ({ children }) => {
     // then drop any type this deployment does not support so unsupported DB nav
     // trees (MySQL, MongoDB, ProxySQL, Valkey, ...) stay hidden. Until settings
     // load, `supportedServiceTypes` is undefined — fall back to the shipped
-    // PostgreSQL-first default (which also honours PFM_DB_TYPES once loaded).
+    // PostgreSQL-first default (which also honours PFW_DB_TYPES once loaded).
     // An empty array is treated as "not yet loaded" too: the backend never ships
     // an empty allowlist, so a missing value must not silently blank the whole
     // sidebar (PostgreSQL included).

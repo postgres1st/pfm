@@ -166,7 +166,7 @@ func TestAnnotations(t *testing.T) {
 		ctx, s, _, grafanaClient, teardown := setup(t)
 		t.Cleanup(func() { teardown(t) })
 
-		expectedTags := []string{"pmm_annotation"}
+		expectedTags := []string{"pfw_annotation"}
 		expectedText := "Some text"
 		grafanaClient.On("CreateAnnotation", ctx, expectedTags, mock.Anything, expectedText, authorization).Return("", nil)
 		resp, err := s.AddAnnotation(ctx, &managementv1.AddAnnotationRequest{

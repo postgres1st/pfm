@@ -51,7 +51,7 @@ type AddProxySQLCommand struct {
 	Address             string            `arg:"" optional:"" help:"ProxySQL address and port (default: 127.0.0.1:6032)"`
 	Socket              string            `help:"Path to ProxySQL socket"`
 	NodeID              string            `help:"Node ID (default is autodetected)"`
-	PMMAgentID          string            `help:"The pmm-agent identifier which runs this instance (default is autodetected)"`
+	PMMAgentID          string            `help:"The pfw-agent identifier which runs this instance (default is autodetected)"`
 	Username            string            `default:"admin" help:"ProxySQL username"`
 	Password            string            `default:"admin" help:"ProxySQL password"`
 	AgentPassword       string            `help:"Custom password for /metrics endpoint"`

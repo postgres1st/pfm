@@ -1,7 +1,7 @@
 {
   "name": "pmm-app",
   "version": "2.32.0",
-  "description": "PMM UI",
+  "description": "PGF WatchTower UI",
   "author": "Postgres1st",
   "license": "AGPL-3.0-only",
   "repository": {

@@ -142,23 +142,23 @@ func addClientData(ctx context.Context, zipW *zip.Writer) {
 
 	// FIXME get it via pmm-agent's API - it is _not_ a good idea to use exec there
 	// golangci-lint should continue complain about it until it is fixed
-	b, err = exec.Command("pfm-agent", "--version").CombinedOutput()
+	b, err = exec.Command("pfw-agent", "--version").CombinedOutput()
 	if err != nil {
 		logrus.Debugf("%s", err)
 		b = []byte(err.Error())
 	}
-	addData(zipW, "client/pmm-agent-version.txt", now, bytes.NewReader(b))
+	addData(zipW, "client/pfw-agent-version.txt", now, bytes.NewReader(b))
 
-	addData(zipW, "client/pmm-admin-version.txt", now, bytes.NewReader([]byte(version.FullInfo())))
+	addData(zipW, "client/pfw-admin-version.txt", now, bytes.NewReader([]byte(version.FullInfo())))
 
 	host := net.JoinHostPort(agentlocal.Localhost, strconv.FormatInt(agentlocal.DefaultPMMAgentListenPort, 10))
-	err = downloadFile(ctx, zipW, fmt.Sprintf("http://%s/logs.zip", host), "client/pmm-agent")
+	err = downloadFile(ctx, zipW, fmt.Sprintf("http://%s/logs.zip", host), "client/pfw-agent")
 	if err != nil {
 		logrus.Warnf("%s", err)
 	}
 
 	if status.ConfigFilepath != "" {
-		addFile(zipW, "client/pmm-agent-config.yaml", status.ConfigFilepath)
+		addFile(zipW, "client/pfw-agent-config.yaml", status.ConfigFilepath)
 	}
 
 	addClientCommand(zipW, "client/list.txt", &ListCommand{NodeID: status.RunsOnNodeID})
@@ -307,13 +307,13 @@ func addPprofData(ctx context.Context, zipW *zip.Writer, skipServer bool, global
 
 	host := net.JoinHostPort(agentlocal.Localhost, strconv.FormatUint(uint64(globals.PMMAgentListenPort), 10))
 	sources := map[string]string{
-		"client/pprof/pmm-agent": fmt.Sprintf("http://%s/debug/pprof", host),
+		"client/pprof/pfw-agent": fmt.Sprintf("http://%s/debug/pprof", host),
 	}
 
 	isRunOnPmmServer, _ := helpers.IsOnPmmServer()
 
 	if !skipServer && isRunOnPmmServer {
-		sources["server/pprof/qan-api2"] = fmt.Sprintf("http://%s/debug/pprof", net.JoinHostPort(agentlocal.Localhost, "9933"))
+		sources["server/pprof/pfw-qan-api2"] = fmt.Sprintf("http://%s/debug/pprof", net.JoinHostPort(agentlocal.Localhost, "9933"))
 	}
 
 	for _, p := range profiles {
@@ -354,7 +354,7 @@ func addPprofData(ctx context.Context, zipW *zip.Writer, skipServer bool, global
 // SummaryCommand is used by Kong for CLI flags and commands.
 type SummaryCommand struct {
 	Filename   string `help:"Summary archive filename"`
-	SkipServer bool   `help:"Skip fetching logs.zip from PMM Server"`
+	SkipServer bool   `help:"Skip fetching logs.zip from PGF WatchTower Server"`
 	Pprof      bool   `name:"pprof" help:"Include performance profiling data"`
 }
 

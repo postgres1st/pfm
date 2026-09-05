@@ -173,7 +173,7 @@ redirect_stderr = true
 [program:pmm-managed]
 priority = 14
 command =
-    /usr/sbin/pfm-managed
+    /usr/sbin/pfw-managed
         --victoriametrics-config=/etc/victoriametrics-promscrape.yml
         --supervisord-config-dir=/etc/supervisord.d
 autorestart = true
@@ -189,7 +189,7 @@ redirect_stderr = true
 
 [program:pmm-agent]
 priority = 15
-command = /usr/sbin/pfm-agent --config-file={{ .AgentConfigFilePath }} --paths-tempdir=/srv/pfm-agent/tmp --paths-nomad-data-dir=/srv/nomad/data
+command = /usr/sbin/pfw-agent --config-file={{ .AgentConfigFilePath }} --paths-tempdir=/srv/pfw-agent/tmp --paths-nomad-data-dir=/srv/nomad/data
 autorestart = true
 autostart = false
 startretries = 1000

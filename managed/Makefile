@@ -6,15 +6,19 @@ help:                           ## Display this help message
 		awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 	@echo
 
-# `cut` is used to remove first `v` from `git describe` output
+# Strip a leading `v` from `git describe` output IF present. This was `cut -b2-`,
+# which drops the first character unconditionally -- correct for upstream's vX.Y.Z
+# tags, but a release tag of ours (PFMM_3.9.0_BETA1 at the time) has no leading v,
+# so it silently produced FMM_3.9.0_BETA1 in every binary's --version output.
+# Stripping only a leading `v` is correct for either tag style.
 PMM_RELEASE_PATH ?= ../bin
-PMM_RELEASE_VERSION ?= $(shell git describe --always | cut -b2-)
+PMM_RELEASE_VERSION ?= $(shell git describe --always | sed 's/^v//')
 PMM_RELEASE_TIMESTAMP ?= $(shell date '+%s')
 PMM_RELEASE_FULLCOMMIT ?= $(shell git rev-parse HEAD)
 PMM_RELEASE_BRANCH ?= $(shell git describe --always --contains --all)
 
 PMM_LD_FLAGS = -ldflags " \
-			-X 'github.com/percona/pmm/version.ProjectName=pfm-managed' \
+			-X 'github.com/percona/pmm/version.ProjectName=pfw-managed' \
 			-X 'github.com/percona/pmm/version.Version=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.PMMVersion=$(PMM_RELEASE_VERSION)' \
 			-X 'github.com/percona/pmm/version.Timestamp=$(PMM_RELEASE_TIMESTAMP)' \
@@ -42,11 +46,11 @@ release:                        ## Build pmm-managed release binaries
 	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/...
 
 release-encryption-rotation:                        ## Build PMM encryption rotation tool
-	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfm-encryption-rotation/...
+	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfw-encryption-rotation/...
 
 release-starlark:
-	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfm-managed-starlark/...
-	$(PMM_RELEASE_PATH)/pfm-managed-starlark --version
+	env CGO_ENABLED=0 go build -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/pfw-managed-starlark/...
+	$(PMM_RELEASE_PATH)/pfw-managed-starlark --version
 
 release-dev:										## Build pmm-managed binaries for development
 	go build $(PMM_RACE_FLAG) -gcflags="all=-N -l" -v $(PMM_LD_FLAGS) -o $(PMM_RELEASE_PATH)/ ./cmd/...

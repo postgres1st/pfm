@@ -34,7 +34,7 @@ message AddMySQLServiceParams {
   // Service Access socket.
   // Address (and port) or socket is required.
   string socket = 7;
-  // The "pmm-agent" identifier which should run agents. Required.
+  // The "pfw-agent" identifier which should run agents. Required.
   string pmm_agent_id = 8 [(validate.rules).string.min_len = 1];
   // Environment name.
   string environment = 9;

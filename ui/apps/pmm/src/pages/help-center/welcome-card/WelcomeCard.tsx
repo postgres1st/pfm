@@ -64,7 +64,7 @@ const WelcomeCard: FC = () => {
           }}
         >
           <Icon
-            name="pfmm-titled-outlined"
+            name="pfw-titled-outlined"
             sx={{
               height: 112,
               width: 'auto',

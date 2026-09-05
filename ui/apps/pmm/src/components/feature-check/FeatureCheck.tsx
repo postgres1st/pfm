@@ -30,12 +30,12 @@ const FeatureCheck: FC<Props> = ({ feature, pageTitle }) => {
                     component={RouterLink}
                     to="/settings/advanced-settings"
                   >
-                    PMM Settings
+                    PGF WatchTower Settings
                   </Link>
                   .
                 </>
               ) : (
-                'Ask your admin to enable it in PMM Settings.'
+                'Ask your admin to enable it in PGF WatchTower Settings.'
               )}
             </Typography>
           </Stack>

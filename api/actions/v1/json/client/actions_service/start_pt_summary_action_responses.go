@@ -189,7 +189,7 @@ StartPTSummaryActionBody start PT summary action body
 swagger:model StartPTSummaryActionBody
 */
 type StartPTSummaryActionBody struct {
-	// pmm-agent ID where to run this Action.
+	// pfw-agent ID where to run this Action.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 
 	// Node ID for this Action.
@@ -460,7 +460,7 @@ type StartPTSummaryActionOKBody struct {
 	// Unique Action ID.
 	ActionID string `json:"action_id,omitempty"`
 
-	// pmm-agent ID where to this Action was started.
+	// pfw-agent ID where to this Action was started.
 	PMMAgentID string `json:"pmm_agent_id,omitempty"`
 }
 

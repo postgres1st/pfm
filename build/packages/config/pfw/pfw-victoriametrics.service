@@ -1,0 +1,71 @@
+# pfw-victoriametrics — metrics TSDB (was pmm-managed-generated
+# [program:victoriametrics], priority=7). "Dynamic": pmm-managed regenerates its
+# runtime config when settings change. In the native model the settings-driven
+# values arrive via EnvironmentFile (/run/pfw/victoriametrics.env, written by
+# pmm-managed — T3b) and are consumed through VM's own --envflag.enable:
+#   VM_retentionPeriod        -> -retentionPeriod        (from DataRetention)
+#   VM_search_disableCache    -> -search.disableCache    (from cache setting)
+# All other flags keep their current defaults as static args. If the env file is
+# absent (first boot before pmm-managed renders), VM falls back to its built-in
+# defaults — T3b/T7 seeds sane defaults so this window is benign.
+[Unit]
+Description=PGF WatchTower VictoriaMetrics (metrics storage)
+After=pfw-init.service pfw-postgresql.service
+Requires=pfw-init.service
+PartOf=pfw.target
+# When an EXTERNAL VictoriaMetrics is configured, pmm-managed drops this persistent
+# marker so the embedded VM stays down across reboots. Using a condition (a plain
+# file pfw can write) instead of `systemctl mask` avoids granting pfw the coarse,
+# unscopeable manage-unit-files polkit action (see pfw-polkit.rules / systemd.go).
+ConditionPathExists=!/srv/.pfw-disabled/victoriametrics
+# Match supervisord startretries=10 (systemd default is 5/10s).
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+[Service]
+Type=exec
+User=pfw
+Group=pfw
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/victoriametrics /srv/logs
+IPAddressDeny=any
+IPAddressAllow=localhost
+# Non-optional: the RPM tmpfiles seeds this at boot. Fail closed if it is
+# missing rather than let ${PMM_BIND_ADDRESS} expand empty and bind 0.0.0.0.
+EnvironmentFile=/run/pfw/victoriametrics.env
+ExecStart=/usr/sbin/pfw-victoriametrics \
+    --promscrape.config=/etc/victoriametrics-promscrape.yml \
+    --storageDataPath=/srv/victoriametrics/data \
+    --httpListenAddr=${PMM_BIND_ADDRESS}:9090 \
+    --search.maxQueryLen=1MB \
+    --search.latencyOffset=5s \
+    --search.maxUniqueTimeseries=100000000 \
+    --search.maxSamplesPerQuery=1500000000 \
+    --search.maxQueueDuration=30s \
+    --search.logSlowQueryDuration=30s \
+    --search.maxQueryDuration=90s \
+    --promscrape.streamParse=true \
+    --http.pathPrefix=/prometheus \
+    --envflag.enable \
+    --envflag.prefix=VM_
+KillSignal=SIGINT
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfw.target

@@ -1,6 +1,6 @@
 # Code of Conduct
 
-This applies to everyone taking part in the PFMM project — issues, pull requests, code
+This applies to everyone taking part in the PGF WatchTower project — issues, pull requests, code
 review, discussions and any other project space.
 
 ## What we expect

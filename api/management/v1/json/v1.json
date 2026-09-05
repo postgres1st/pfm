@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PMM Management API",
+    "title": "PGF WatchTower Management API",
     "version": "v1"
   },
   "paths": {
@@ -255,7 +255,7 @@
                         "x-order": 19
                       },
                       "pmm_agent_id": {
-                        "description": "The pmm-agent identifier.",
+                        "description": "The pfw-agent identifier.",
                         "type": "string",
                         "x-order": 20
                       },
@@ -800,7 +800,7 @@
                         "x-order": 17
                       },
                       "is_pmm_server_node": {
-                        "description": "True if this node is a PMM Server node (HA mode).",
+                        "description": "True if this node is a PGF WatchTower Server node (HA mode).",
                         "type": "boolean",
                         "x-order": 18
                       }
@@ -845,7 +845,7 @@
         }
       },
       "post": {
-        "description": "Registers a new Node and a pmm-agent.",
+        "description": "Registers a new Node and a pfw-agent.",
         "tags": [
           "ManagementService"
         ],
@@ -1028,7 +1028,7 @@
                       "x-order": 8
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PMM Server node (HA mode).",
+                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 9
                     }
@@ -1093,7 +1093,7 @@
                       "x-order": 9
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PMM Server node (HA mode).",
+                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 10
                     }
@@ -1357,7 +1357,7 @@
                       "x-order": 17
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PMM Server node (HA mode).",
+                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 18
                     }
@@ -1401,7 +1401,7 @@
         }
       },
       "delete": {
-        "description": "Unregisters a Node and pmm-agent",
+        "description": "Unregisters a Node and pfw-agent",
         "tags": [
           "ManagementService"
         ],
@@ -1819,7 +1819,7 @@
                               "x-order": 19
                             },
                             "pmm_agent_id": {
-                              "description": "The pmm-agent identifier.",
+                              "description": "The pfw-agent identifier.",
                               "type": "string",
                               "x-order": 20
                             },
@@ -2140,7 +2140,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "The \"pmm-agent\" identifier which should run agents. Required.",
+                      "description": "The \"pfw-agent\" identifier which should run agents. Required.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -2409,7 +2409,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "The \"pmm-agent\" identifier which should run agents. Required.",
+                      "description": "The \"pfw-agent\" identifier which should run agents. Required.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -2566,7 +2566,7 @@
                       "x-order": 32
                     },
                     "environment_variable_names": {
-                      "description": "Environment variable names to pass to the exporter.\nValues will be resolved from pmm-agent's environment when starting the exporter.",
+                      "description": "Environment variable names to pass to the exporter.\nValues will be resolved from pfw-agent's environment when starting the exporter.",
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -2700,7 +2700,7 @@
                       "x-order": 7
                     },
                     "pmm_agent_id": {
-                      "description": "The \"pmm-agent\" identifier which should run agents. Required.",
+                      "description": "The \"pfw-agent\" identifier which should run agents. Required.",
                       "type": "string",
                       "x-order": 8
                     },
@@ -2961,7 +2961,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "The \"pmm-agent\" identifier which should run agents. Required.",
+                      "description": "The \"pfw-agent\" identifier which should run agents. Required.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -3451,7 +3451,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "PMM Agent ID.",
+                      "description": "PGF WatchTower Agent ID.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -3725,7 +3725,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "The \"pmm-agent\" identifier which should run agents. Required.",
+                      "description": "The \"pfw-agent\" identifier which should run agents. Required.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -3933,7 +3933,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4101,7 +4101,7 @@
                       "x-order": 1
                     },
                     "qan_mysql_perfschema": {
-                      "description": "QANMySQLPerfSchemaAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.",
+                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -4110,7 +4110,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4226,7 +4226,7 @@
                       "x-order": 2
                     },
                     "qan_mysql_slowlog": {
-                      "description": "QANMySQLSlowlogAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.",
+                      "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -4235,7 +4235,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4444,7 +4444,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4604,7 +4604,7 @@
                       "x-order": 1
                     },
                     "qan_mongodb_profiler": {
-                      "description": "QANMongoDBProfilerAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.",
+                      "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -4613,7 +4613,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4696,7 +4696,7 @@
                       "x-order": 2
                     },
                     "qan_mongodb_mongolog": {
-                      "description": "QANMongoDBMongologAgent runs within pmm-agent and sends MongoDB Query Analytics data to the PMM Server.",
+                      "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -4705,7 +4705,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4788,7 +4788,7 @@
                       "x-order": 3
                     },
                     "rta_mongodb_agent": {
-                      "description": "RTAMongoDBAgent runs within pmm-agent and sends MongoDB Real-Time Query Analytics data to the PMM Server.",
+                      "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -4797,7 +4797,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -4973,7 +4973,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -5113,7 +5113,7 @@
                       "x-order": 1
                     },
                     "qan_postgresql_pgstatements_agent": {
-                      "description": "QANPostgreSQLPgStatementsAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.",
+                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -5122,7 +5122,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -5210,7 +5210,7 @@
                       "x-order": 2
                     },
                     "qan_postgresql_pgstatmonitor_agent": {
-                      "description": "QANPostgreSQLPgStatMonitorAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.",
+                      "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -5219,7 +5219,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -5398,7 +5398,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -5927,7 +5927,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -6126,7 +6126,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -6294,7 +6294,7 @@
                       "x-order": 3
                     },
                     "qan_mysql_perfschema": {
-                      "description": "QANMySQLPerfSchemaAgent runs within pmm-agent and sends MySQL Query Analytics data to the PMM Server.",
+                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -6303,7 +6303,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -6505,7 +6505,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -6645,7 +6645,7 @@
                       "x-order": 6
                     },
                     "qan_postgresql_pgstatements": {
-                      "description": "QANPostgreSQLPgStatementsAgent runs within pmm-agent and sends PostgreSQL Query Analytics data to the PMM Server.",
+                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -6654,7 +6654,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },
@@ -6823,7 +6823,7 @@
                           "x-order": 0
                         },
                         "pmm_agent_id": {
-                          "description": "The pmm-agent identifier which runs this instance.",
+                          "description": "The pfw-agent identifier which runs this instance.",
                           "type": "string",
                           "x-order": 1
                         },

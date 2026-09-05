@@ -28,11 +28,11 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// AgentLocal service provides public methods for checking pmm-agent status locally.
+// AgentLocal service provides public methods for checking pfw-agent status locally.
 type AgentLocalServiceClient interface {
-	// Status returns current pmm-agent status.
+	// Status returns current pfw-agent status.
 	Status(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusResponse, error)
-	// Reload reloads pmm-agent configuration.
+	// Reload reloads pfw-agent configuration.
 	Reload(ctx context.Context, in *ReloadRequest, opts ...grpc.CallOption) (*ReloadResponse, error)
 }
 
@@ -68,11 +68,11 @@ func (c *agentLocalServiceClient) Reload(ctx context.Context, in *ReloadRequest,
 // All implementations must embed UnimplementedAgentLocalServiceServer
 // for forward compatibility.
 //
-// AgentLocal service provides public methods for checking pmm-agent status locally.
+// AgentLocal service provides public methods for checking pfw-agent status locally.
 type AgentLocalServiceServer interface {
-	// Status returns current pmm-agent status.
+	// Status returns current pfw-agent status.
 	Status(context.Context, *StatusRequest) (*StatusResponse, error)
-	// Reload reloads pmm-agent configuration.
+	// Reload reloads pfw-agent configuration.
 	Reload(context.Context, *ReloadRequest) (*ReloadResponse, error)
 	mustEmbedUnimplementedAgentLocalServiceServer()
 }

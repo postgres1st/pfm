@@ -25,7 +25,7 @@ import (
 // SupportedServiceTypesEnvVar overrides the set of Service types this build accepts.
 // Value is a comma-separated list of ServiceType values, e.g. "postgresql,proxysql".
 // Intended for debugging; the shipped default needs no override.
-const SupportedServiceTypesEnvVar = "PFM_DB_TYPES"
+const SupportedServiceTypesEnvVar = "PFW_DB_TYPES"
 
 // defaultSupportedServiceTypes is what this distribution ships with.
 //

@@ -10,7 +10,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PMM Agent Local API",
+    "title": "PGF WatchTower Agent Local API",
     "version": "stable"
   },
   "host": "127.0.0.1:7777",
@@ -20,7 +20,7 @@
         "tags": [
           "AgentLocalService"
         ],
-        "summary": "Reload reloads pmm-agent configuration.",
+        "summary": "Reload reloads pfw-agent configuration.",
         "operationId": "Reload",
         "parameters": [
           {
@@ -36,7 +36,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "description": "ReloadRequest may not be received by the client due to pmm-agent restart.",
+              "description": "ReloadRequest may not be received by the client due to pfw-agent restart.",
               "type": "object"
             }
           },
@@ -79,7 +79,7 @@
         "tags": [
           "AgentLocalService"
         ],
-        "summary": "Status returns current pmm-agent status.",
+        "summary": "Status returns current pfw-agent status.",
         "operationId": "Status2",
         "parameters": [
           {
@@ -109,36 +109,36 @@
                   "x-order": 2
                 },
                 "server_info": {
-                  "description": "ServerInfo contains information about the PMM Server.",
+                  "description": "ServerInfo contains information about the PGF WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "url": {
-                      "description": "PMM Server URL in a form https://HOST:PORT/.",
+                      "description": "PGF WatchTower Server URL in a form https://HOST:PORT/.",
                       "type": "string",
                       "x-order": 0
                     },
                     "insecure_tls": {
-                      "description": "PMM Server's TLS certificate validation should be skipped if true.",
+                      "description": "PGF WatchTower Server's TLS certificate validation should be skipped if true.",
                       "type": "boolean",
                       "x-order": 1
                     },
                     "connected": {
-                      "description": "True if pmm-agent is currently connected to the server.",
+                      "description": "True if pfw-agent is currently connected to the server.",
                       "type": "boolean",
                       "x-order": 2
                     },
                     "version": {
-                      "description": "PMM Server version (if agent is connected).",
+                      "description": "PGF WatchTower Server version (if agent is connected).",
                       "type": "string",
                       "x-order": 3
                     },
                     "latency": {
-                      "description": "Ping time from pmm-agent to pmm-managed (if agent is connected).",
+                      "description": "Ping time from pfw-agent to pmm-managed (if agent is connected).",
                       "type": "string",
                       "x-order": 4
                     },
                     "clock_drift": {
-                      "description": "Clock drift from PMM Server (if agent is connected).",
+                      "description": "Clock drift from PGF WatchTower Server (if agent is connected).",
                       "type": "string",
                       "x-order": 5
                     }
@@ -148,7 +148,7 @@
                 "agents_info": {
                   "type": "array",
                   "items": {
-                    "description": "AgentInfo contains information about Agent managed by pmm-agent.",
+                    "description": "AgentInfo contains information about Agent managed by pfw-agent.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -214,12 +214,12 @@
                   "x-order": 4
                 },
                 "config_filepath": {
-                  "description": "Config file path if pmm-agent was started with one.",
+                  "description": "Config file path if pfw-agent was started with one.",
                   "type": "string",
                   "x-order": 5
                 },
                 "agent_version": {
-                  "description": "PMM Agent version.",
+                  "description": "PGF WatchTower Agent version.",
                   "type": "string",
                   "x-order": 6
                 },
@@ -269,7 +269,7 @@
         "tags": [
           "AgentLocalService"
         ],
-        "summary": "Status returns current pmm-agent status.",
+        "summary": "Status returns current pfw-agent status.",
         "operationId": "Status",
         "parameters": [
           {
@@ -308,36 +308,36 @@
                   "x-order": 2
                 },
                 "server_info": {
-                  "description": "ServerInfo contains information about the PMM Server.",
+                  "description": "ServerInfo contains information about the PGF WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "url": {
-                      "description": "PMM Server URL in a form https://HOST:PORT/.",
+                      "description": "PGF WatchTower Server URL in a form https://HOST:PORT/.",
                       "type": "string",
                       "x-order": 0
                     },
                     "insecure_tls": {
-                      "description": "PMM Server's TLS certificate validation should be skipped if true.",
+                      "description": "PGF WatchTower Server's TLS certificate validation should be skipped if true.",
                       "type": "boolean",
                       "x-order": 1
                     },
                     "connected": {
-                      "description": "True if pmm-agent is currently connected to the server.",
+                      "description": "True if pfw-agent is currently connected to the server.",
                       "type": "boolean",
                       "x-order": 2
                     },
                     "version": {
-                      "description": "PMM Server version (if agent is connected).",
+                      "description": "PGF WatchTower Server version (if agent is connected).",
                       "type": "string",
                       "x-order": 3
                     },
                     "latency": {
-                      "description": "Ping time from pmm-agent to pmm-managed (if agent is connected).",
+                      "description": "Ping time from pfw-agent to pmm-managed (if agent is connected).",
                       "type": "string",
                       "x-order": 4
                     },
                     "clock_drift": {
-                      "description": "Clock drift from PMM Server (if agent is connected).",
+                      "description": "Clock drift from PGF WatchTower Server (if agent is connected).",
                       "type": "string",
                       "x-order": 5
                     }
@@ -347,7 +347,7 @@
                 "agents_info": {
                   "type": "array",
                   "items": {
-                    "description": "AgentInfo contains information about Agent managed by pmm-agent.",
+                    "description": "AgentInfo contains information about Agent managed by pfw-agent.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -413,12 +413,12 @@
                   "x-order": 4
                 },
                 "config_filepath": {
-                  "description": "Config file path if pmm-agent was started with one.",
+                  "description": "Config file path if pfw-agent was started with one.",
                   "type": "string",
                   "x-order": 5
                 },
                 "agent_version": {
-                  "description": "PMM Agent version.",
+                  "description": "PGF WatchTower Agent version.",
                   "type": "string",
                   "x-order": 6
                 },
@@ -468,7 +468,7 @@
   },
   "tags": [
     {
-      "description": "AgentLocal service provides public methods for checking pmm-agent status locally.",
+      "description": "AgentLocal service provides public methods for checking pfw-agent status locally.",
       "name": "AgentLocalService"
     }
   ]

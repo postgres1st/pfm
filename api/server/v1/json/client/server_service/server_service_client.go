@@ -101,7 +101,7 @@ type ClientService interface {
 /*
 ChangeSettings changes settings
 
-Changes PMM Server settings.
+Changes PGF WatchTower Server settings.
 */
 func (a *Client) ChangeSettings(params *ChangeSettingsParams, opts ...ClientOption) (*ChangeSettingsOK, error) {
 	// NOTE: parameters are not validated before sending
@@ -145,7 +145,7 @@ func (a *Client) ChangeSettings(params *ChangeSettingsParams, opts ...ClientOpti
 /*
 CheckUpdates checks updates
 
-Checks for available PMM Server updates.
+Checks for available PGF WatchTower Server updates.
 */
 func (a *Client) CheckUpdates(params *CheckUpdatesParams, opts ...ClientOption) (*CheckUpdatesOK, error) {
 	// NOTE: parameters are not validated before sending
@@ -189,7 +189,7 @@ func (a *Client) CheckUpdates(params *CheckUpdatesParams, opts ...ClientOption) 
 /*
 GetReadOnlySettings gets read only settings
 
-Returns a stripped version of PMM Server settings.
+Returns a stripped version of PGF WatchTower Server settings.
 */
 func (a *Client) GetReadOnlySettings(params *GetReadOnlySettingsParams, opts ...ClientOption) (*GetReadOnlySettingsOK, error) {
 	// NOTE: parameters are not validated before sending
@@ -233,7 +233,7 @@ func (a *Client) GetReadOnlySettings(params *GetReadOnlySettingsParams, opts ...
 /*
 GetSettings gets settings
 
-Returns current PMM Server settings.
+Returns current PGF WatchTower Server settings.
 */
 func (a *Client) GetSettings(params *GetSettingsParams, opts ...ClientOption) (*GetSettingsOK, error) {
 	// NOTE: parameters are not validated before sending
@@ -453,7 +453,7 @@ func (a *Client) Readiness(params *ReadinessParams, opts ...ClientOption) (*Read
 /*
 Version versions
 
-Returns PMM Server versions.
+Returns PGF WatchTower Server versions.
 */
 func (a *Client) Version(params *VersionParams, opts ...ClientOption) (*VersionOK, error) {
 	// NOTE: parameters are not validated before sending

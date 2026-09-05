@@ -591,7 +591,7 @@ type ListNodesOKBodyNodesItems0 struct {
 	// Instance ID for cloud providers (e.g. AWS RDS).
 	InstanceID string `json:"instance_id,omitempty"`
 
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPMMServerNode bool `json:"is_pmm_server_node,omitempty"`
 }
 

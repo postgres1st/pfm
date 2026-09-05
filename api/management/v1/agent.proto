@@ -100,7 +100,7 @@ message UniversalAgent {
   string node_id = 19;
   // True if password for connecting the agent to the database is set.
   bool is_password_set = 20;
-  // The pmm-agent identifier.
+  // The pfw-agent identifier.
   string pmm_agent_id = 21;
   // TLS options for connecting to PostgreSQL.
   PostgreSQLOptions postgresql_options = 22;

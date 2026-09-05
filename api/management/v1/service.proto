@@ -145,7 +145,7 @@ service ManagementService {
       description: "Lists Agents with filter."
     };
   }
-  // ListAgentVersions returns a list of PMM Agent versions and their update severity.
+  // ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
   rpc ListAgentVersions(ListAgentVersionsRequest) returns (ListAgentVersionsResponse) {
     option (google.api.http) = {get: "/v1/management/agents/versions"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -153,7 +153,7 @@ service ManagementService {
       description: "Lists Agent versions and their update severity."
     };
   }
-  // RegisterNode registers a new Node and a pmm-agent.
+  // RegisterNode registers a new Node and a pfw-agent.
   rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeResponse) {
     option (google.api.http) = {
       post: "/v1/management/nodes"
@@ -161,15 +161,15 @@ service ManagementService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Register a Node"
-      description: "Registers a new Node and a pmm-agent."
+      description: "Registers a new Node and a pfw-agent."
     };
   }
-  // UnregisterNode unregisters a Node, pmm-agent and removes the service account and its token.
+  // UnregisterNode unregisters a Node, pfw-agent and removes the service account and its token.
   rpc UnregisterNode(UnregisterNodeRequest) returns (UnregisterNodeResponse) {
     option (google.api.http) = {delete: "/v1/management/nodes/{node_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Unregister a Node"
-      description: "Unregisters a Node and pmm-agent"
+      description: "Unregisters a Node and pfw-agent"
     };
   }
   // ListNode returns a list of nodes.

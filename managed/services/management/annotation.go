@@ -43,7 +43,7 @@ func (s *ManagementService) AddAnnotation(ctx context.Context, req *managementv1
 
 	tags := req.Tags
 	if len(req.ServiceNames) == 0 && req.NodeName == "" {
-		tags = append([]string{"pmm_annotation"}, tags...)
+		tags = append([]string{"pfw_annotation"}, tags...)
 	}
 	var postfix []string
 	if len(req.ServiceNames) != 0 {

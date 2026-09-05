@@ -461,7 +461,7 @@ func TestMinPMMAgents(t *testing.T) {
 }
 
 // skipIfServiceTypeUnsupported skips tests covering a service type this build does not
-// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// accept. Gated on the allowlist rather than commented out, so widening PFW_DB_TYPES
 // restores the coverage without editing tests.
 func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
 	t.Helper()
@@ -535,7 +535,7 @@ func TestFindTargets(t *testing.T) {
 		// That holds for MySQL but not PostgreSQL: the PostgreSQL DSN builder rejects a
 		// versionless agent (SSL SNI support check), so the empty-version fixture would never
 		// produce a target and the expected counts would not hold. Skip gated rather than
-		// retarget, so widening PFM_DB_TYPES restores the original MySQL coverage.
+		// retarget, so widening PFW_DB_TYPES restores the original MySQL coverage.
 		skipIfServiceTypeUnsupported(t, models.MySQLServiceType)
 		t.Parallel()
 

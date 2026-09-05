@@ -1,6 +1,6 @@
 {
   "type": "app",
-  "name": "PFMM",
+  "name": "PGF WatchTower",
   "id": "pmm-app",
   "info": {
     "description": "Postgres1st Monitoring and Management dashboards",
@@ -10,7 +10,7 @@
     "keywords": [
       "postgres first",
       "query analytics",
-      "pfmm",
+      "pfw",
       "qan"
     ],
     "links": [
@@ -24,8 +24,8 @@
       }
     ],
     "logos": {
-      "small": "img/pfmm-logo.svg",
-      "large": "img/pfmm-logo.svg"
+      "small": "img/pfw-logo.svg",
+      "large": "img/pfw-logo.svg"
     },
     "version": "3.4.1",
     "updated": "2025-09-30"
@@ -146,17 +146,17 @@
     {
       "type": "dashboard",
       "name": "Environments Overview",
-      "path": "dashboards/PMM Health/Environments_Overview.json"
+      "path": "dashboards/WatchTower Health/Environments_Overview.json"
     },
     {
       "type": "dashboard",
-      "name": "PFMM Health",
-      "path": "dashboards/PMM Health/PMM_Health.json"
+      "name": "WatchTower Health",
+      "path": "dashboards/WatchTower Health/PMM_Health.json"
     },
     {
       "type": "dashboard",
-      "name": "PFMM HA Health Overview",
-      "path": "dashboards/PMM Health/PMM_HA_Health_Overview.json"
+      "name": "WatchTower HA Health Overview",
+      "path": "dashboards/WatchTower Health/PMM_HA_Health_Overview.json"
     },
     {
       "type": "dashboard",

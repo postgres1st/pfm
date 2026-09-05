@@ -1,6 +1,6 @@
-# PFMM APIs
+# PGF WatchTower APIs
 
-The gRPC and REST API definitions for PFMM 3.x.
+The gRPC and REST API definitions for PGF WatchTower 3.x.
 
 All generated files (Go code, Swagger spec, documentation) are already stored in this repository.
 

@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PMM Real-Time Analytics API",
+    "title": "PGF WatchTower Real-Time Analytics API",
     "version": "v1"
   },
   "schemes": [

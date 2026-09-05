@@ -3,7 +3,7 @@
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [api/AGENTS.md](../api/AGENTS.md) (API definitions) · [agent/AGENTS.md](../agent/AGENTS.md) (client agent) · [qan-api2/AGENTS.md](../qan-api2/AGENTS.md) (QAN backend)
 
-**pmm-managed** is the core backend service of PFMM Server. It manages configuration of server-side components (VictoriaMetrics, Grafana, QAN, VMAlert, Alertmanager), maintains the inventory of monitored nodes/services/agents, orchestrates backups, runs advisor checks, handles HA consensus, and exposes gRPC/REST APIs consumed by pmm-admin, pmm-agent, and the UI.
+**pmm-managed** is the core backend service of PGF WatchTower Server. It manages configuration of server-side components (VictoriaMetrics, Grafana, QAN, VMAlert, Alertmanager), maintains the inventory of monitored nodes/services/agents, orchestrates backups, runs advisor checks, handles HA consensus, and exposes gRPC/REST APIs consumed by pmm-admin, pmm-agent, and the UI.
 
 ## Architecture
 
@@ -11,7 +11,7 @@
 
 ```
 pmm-admin (CLI) ──→ gRPC/REST API ──→ pmm-managed ──→ PostgreSQL (inventory, settings)
-PFMM UI ───────────→ gRPC-Gateway ──→                ──→ VictoriaMetrics (scrape config)
+PGF WatchTower UI ───────────→ gRPC-Gateway ──→                ──→ VictoriaMetrics (scrape config)
 pmm-agent ────────→ bidirectional gRPC stream ──→    ──→ Grafana API (dashboards, users)
                                                      ──→ Supervisord (process management)
                                                      ──→ qan-api2 (QAN forwarding)
@@ -34,7 +34,7 @@ func New(db *reform.DB, logger *logrus.Entry, ...) *Service {
 }
 ```
 
-All services are composed and wired in `managed/cmd/pfm-managed/main.go`.
+All services are composed and wired in `managed/cmd/pfw-managed/main.go`.
 
 ### API Layer
 
@@ -71,7 +71,7 @@ PMM Agent (1) ──→ (N) Child Agent (via pmm_agent_id)
 
 ### Database Layer (reform ORM)
 
-PFMM uses **reform** (NOT gorm) for PostgreSQL:
+PGF WatchTower uses **reform** (NOT gorm) for PostgreSQL:
 
 ```go
 //go:generate go tool reform
@@ -121,7 +121,7 @@ type Node struct {
 
 ## High Availability (HA)
 
-PFMM supports HA via **Raft consensus** (`services/ha/`):
+PGF WatchTower supports HA via **Raft consensus** (`services/ha/`):
 - Distributed state using `hashicorp/raft`
 - Agent states synchronized across nodes via gossip
 - Leader election determines which node runs certain operations (e.g., scheduled backups)
@@ -167,7 +167,7 @@ PFMM supports HA via **Raft consensus** (`services/ha/`):
 
 ### Integration Tests
 - Located in `/api-tests/` (separate directory)
-- Run against live PFMM Server: `make api-test`
+- Run against live PGF WatchTower Server: `make api-test`
 
 ### Test Data
 - `testdata/pg/` — PostgreSQL fixtures
@@ -185,7 +185,7 @@ Always run `make gen` after modifying `.proto` files, reform models, or interfac
 
 ## Key Files to Reference
 
-- `managed/cmd/pfm-managed/main.go` — application bootstrap, all service wiring
+- `managed/cmd/pfw-managed/main.go` — application bootstrap, all service wiring
 - `managed/models/database.go` — database schema and migrations
 - `managed/models/node_model.go`, `service_model.go`, `agent_model.go` — core domain models
 - `managed/services/agents/registry.go` — agent registration and lifecycle

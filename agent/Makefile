@@ -5,19 +5,44 @@ help:                           ## Display this help message
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | \
 		awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
-# `cut` is used to remove first `v` from `git describe` output
+# Strip a leading `v` from `git describe` output IF present. This was `cut -b2-`,
+# which drops the first character unconditionally -- correct for upstream's vX.Y.Z
+# tags, but a release tag of ours (PFMM_3.9.0_BETA1 at the time) has no leading v,
+# so it silently produced FMM_3.9.0_BETA1 in every binary's --version output.
+# Stripping only a leading `v` is correct for either tag style.
 PMM_RELEASE_PATH ?= ../bin
-PMM_RELEASE_VERSION ?= $(shell git describe --always --dirty | cut -b2-)
+PMM_RELEASE_VERSION ?= $(shell git describe --always --dirty | sed 's/^v//')
 PMM_RELEASE_TIMESTAMP ?= $(shell date '+%s')
 PMM_RELEASE_FULLCOMMIT ?= $(shell git rev-parse HEAD)
 PMM_RELEASE_BRANCH ?= $(shell git describe --always --contains --all)
 PMM_DEV_SERVER_PORT ?= 443
+
+# Architecture-dependent image defaults.
+#
+# The compose file's default MYSQL_IMAGE, percona:5.7, publishes amd64 only, so on an
+# arm64 host (Apple silicon, Graviton) it will not start. percona-server:8.0 publishes
+# both, so default to it there. Override MYSQL_IMAGE to pin something else.
+#
+# Not overridden, and why: postgres and percona-server-mongodb already publish arm64.
+# aleksi/test_db is amd64-only and CANNOT be fixed by substitution -- but it does not
+# need to be. It is a data-only container whose whole job is to seed world.sql into two
+# named volumes, and Docker populates a named volume from image content when the
+# container is CREATED, before anything executes. So on arm64 it seeds both volumes and
+# then exits 255 with an exec-format error. That exit code is expected and harmless;
+# check the volumes, not the container.
+UNAME_M := $(shell uname -m)
+ifneq (,$(filter $(UNAME_M),aarch64 arm64))
+MYSQL_IMAGE ?= percona/percona-server:8.0
+endif
+export MYSQL_IMAGE
+export MONGO_IMAGE
+export POSTGRES_IMAGE
 ifeq ($(GOBIN),)
 	GOBIN := $(shell go env GOPATH)/bin
 endif
 GOPATH=$(shell go env GOPATH)
 
-VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pfm-agent' \
+VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pfw-agent' \
 				-X 'github.com/percona/pmm/version.Version=$(PMM_RELEASE_VERSION)' \
 				-X 'github.com/percona/pmm/version.PMMVersion=$(PMM_RELEASE_VERSION)' \
 				-X 'github.com/percona/pmm/version.Timestamp=$(PMM_RELEASE_TIMESTAMP)' \
@@ -25,17 +50,17 @@ VERSION_FLAGS = -X 'github.com/percona/pmm/version.ProjectName=pfm-agent' \
 				-X 'github.com/percona/pmm/version.Branch=$(PMM_RELEASE_BRANCH)'
 
 release:                        ## Build static pmm-agent release binary (Linux only)
-	CGO_ENABLED=1 go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfm-agent
-	go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfm-agent-entrypoint ./cmd/pfm-agent-entrypoint
-	$(PMM_RELEASE_PATH)/pfm-agent --version
-	ldd $(PMM_RELEASE_PATH)/pfm-agent 2>&1 | grep -Fq 'not a dynamic executable'
+	CGO_ENABLED=1 go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfw-agent
+	go build -v -ldflags "-extldflags '-static' $(VERSION_FLAGS)" -tags 'osusergo netgo static_build' -o $(PMM_RELEASE_PATH)/pfw-agent-entrypoint ./cmd/pfw-agent-entrypoint
+	$(PMM_RELEASE_PATH)/pfw-agent --version
+	ldd $(PMM_RELEASE_PATH)/pfw-agent 2>&1 | grep -Fq 'not a dynamic executable'
 
 release-gssapi:                 ## Build dynamic pmm-agent release binary (for GSSAPI support)
-	CGO_ENABLED=1 go build -v -ldflags "$(VERSION_FLAGS)" -tags 'osusergo netgo gssapi' -o $(PMM_RELEASE_PATH)/pfm-agent
-	$(PMM_RELEASE_PATH)/pfm-agent --version
+	CGO_ENABLED=1 go build -v -ldflags "$(VERSION_FLAGS)" -tags 'osusergo netgo gssapi' -o $(PMM_RELEASE_PATH)/pfw-agent
+	$(PMM_RELEASE_PATH)/pfw-agent --version
 
 release-dev:
-	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -o $(PMM_RELEASE_PATH)/pfm-agent
+	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -o $(PMM_RELEASE_PATH)/pfw-agent
 
 release-dev-gssapi:
 	CGO_ENABLED=1 go build -race -v -ldflags "$(VERSION_FLAGS)" -tags 'gssapi' -o $(PMM_RELEASE_PATH)/pmm-agent-gssapi
@@ -116,6 +141,25 @@ _run:
 	pmm-agent $(RUN_FLAGS)
 
 ENV_UP_FLAGS ?= --force-recreate --renew-anon-volumes --remove-orphans
+
+# The data services the test suites actually dial: agent tests hardcode
+# localhost:5432, 127.0.0.1:3306 and localhost:27017, so these must publish on the host
+# rather than talk over the compose network. Deliberately excludes pmm-server: that is
+# perconalab/pmm-server:3-dev-latest, which is amd64-only AND upstream's image, so our
+# renamed paths are not in it -- see the disabled job in .github/workflows/managed.yml.
+# Use this for `go test ./agent/...`; use env-up when you also need a server.
+env-up-db:                      ## Start only the databases the tests dial
+	$(MAKE) _testdata
+	docker compose up $(ENV_UP_FLAGS) -d test_db mysql mongo postgres valkey
+
+_testdata:
+	rm -fr testdata
+	# to make slowlog rotation tests work
+	mkdir -p testdata/mysql/slowlogs
+	# to make mongolog tests work
+	mkdir -p testdata/mongo/var/log/mongodb
+	touch testdata/mongo/var/log/mongodb/mongo.log testdata/mongo/var/log/mongodb/mongo_tls.log
+	chmod -R 0777 testdata
 
 env-up:                         ## Start development environment
 	rm -fr testdata

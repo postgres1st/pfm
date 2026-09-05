@@ -12,6 +12,13 @@ services:
     volumes:
       - ./testdata/checks:/srv/checks
 
+  # Data-only: its whole job is to seed world.sql into the two named volumes below,
+  # which mysql and postgres then mount as their init SQL. Docker populates a named
+  # volume from image content when the container is CREATED, before anything runs, so
+  # the seeding happens even though this image is amd64-only. On arm64 it therefore
+  # seeds both volumes and then exits 255 with an exec-format error. That exit code is
+  # expected and harmless -- check the volumes, not the container. There is no arm64
+  # tag to switch to, and none is needed.
   test_db:
     image: aleksi/test_db:1.1.0
     container_name: pmm-agent_test_db

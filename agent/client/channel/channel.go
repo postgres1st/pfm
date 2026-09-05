@@ -312,7 +312,7 @@ func (c *Channel) runReceiver() {
 			if msg.Status != nil && grpcstatus.FromProto(msg.Status).Code() == codes.Unimplemented {
 				// This means pmm-managed does not know the message payload type we just sent.
 				// We continue here to stop endless cycle of Unimplemented messages between pmm-agent and pmm-managed.
-				c.l.Warnf("pmm-managed was not able to process message with id: %d, handling of that payload type is unimplemented", msg.Id)
+				c.l.Warnf("pfw-managed was not able to process message with id: %d, handling of that payload type is unimplemented", msg.Id)
 				continue
 			}
 			c.Send(&AgentResponse{

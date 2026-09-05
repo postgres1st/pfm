@@ -26,20 +26,20 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// ServerInfo contains information about the PMM Server.
+// ServerInfo contains information about the PGF WatchTower Server.
 type ServerInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// PMM Server URL in a form https://HOST:PORT/.
+	// PGF WatchTower Server URL in a form https://HOST:PORT/.
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	// PMM Server's TLS certificate validation should be skipped if true.
+	// PGF WatchTower Server's TLS certificate validation should be skipped if true.
 	InsecureTls bool `protobuf:"varint,2,opt,name=insecure_tls,json=insecureTls,proto3" json:"insecure_tls,omitempty"`
-	// True if pmm-agent is currently connected to the server.
+	// True if pfw-agent is currently connected to the server.
 	Connected bool `protobuf:"varint,3,opt,name=connected,proto3" json:"connected,omitempty"`
-	// PMM Server version (if agent is connected).
+	// PGF WatchTower Server version (if agent is connected).
 	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
-	// Ping time from pmm-agent to pmm-managed (if agent is connected).
+	// Ping time from pfw-agent to pmm-managed (if agent is connected).
 	Latency *durationpb.Duration `protobuf:"bytes,5,opt,name=latency,proto3" json:"latency,omitempty"`
-	// Clock drift from PMM Server (if agent is connected).
+	// Clock drift from PGF WatchTower Server (if agent is connected).
 	ClockDrift    *durationpb.Duration `protobuf:"bytes,6,opt,name=clock_drift,json=clockDrift,proto3" json:"clock_drift,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -117,7 +117,7 @@ func (x *ServerInfo) GetClockDrift() *durationpb.Duration {
 	return nil
 }
 
-// AgentInfo contains information about Agent managed by pmm-agent.
+// AgentInfo contains information about Agent managed by pfw-agent.
 type AgentInfo struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	AgentId   string                 `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
@@ -248,9 +248,9 @@ type StatusResponse struct {
 	NodeName     string                 `protobuf:"bytes,3,opt,name=node_name,json=nodeName,proto3" json:"node_name,omitempty"`
 	ServerInfo   *ServerInfo            `protobuf:"bytes,4,opt,name=server_info,json=serverInfo,proto3" json:"server_info,omitempty"`
 	AgentsInfo   []*AgentInfo           `protobuf:"bytes,5,rep,name=agents_info,json=agentsInfo,proto3" json:"agents_info,omitempty"`
-	// Config file path if pmm-agent was started with one.
+	// Config file path if pfw-agent was started with one.
 	ConfigFilepath string `protobuf:"bytes,6,opt,name=config_filepath,json=configFilepath,proto3" json:"config_filepath,omitempty"`
-	// PMM Agent version.
+	// PGF WatchTower Agent version.
 	AgentVersion string `protobuf:"bytes,7,opt,name=agent_version,json=agentVersion,proto3" json:"agent_version,omitempty"`
 	// Shows connection uptime in percentage between agent and server
 	ConnectionUptime float32 `protobuf:"fixed32,8,opt,name=connection_uptime,json=connectionUptime,proto3" json:"connection_uptime,omitempty"`
@@ -380,7 +380,7 @@ func (*ReloadRequest) Descriptor() ([]byte, []int) {
 	return file_agentlocal_v1_agentlocal_proto_rawDescGZIP(), []int{4}
 }
 
-// ReloadRequest may not be received by the client due to pmm-agent restart.
+// ReloadRequest may not be received by the client due to pfw-agent restart.
 type ReloadResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -485,7 +485,6 @@ var (
 		v1.AgentStatus(0),           // 8: inventory.v1.AgentStatus
 	}
 )
-
 var file_agentlocal_v1_agentlocal_proto_depIdxs = []int32{
 	6, // 0: agentlocal.v1.ServerInfo.latency:type_name -> google.protobuf.Duration
 	6, // 1: agentlocal.v1.ServerInfo.clock_drift:type_name -> google.protobuf.Duration

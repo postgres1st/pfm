@@ -33,7 +33,7 @@ import (
 )
 
 // skipIfServiceTypeUnsupported skips tests covering a service type this build does not
-// accept. Gated on the allowlist rather than commented out, so widening PFM_DB_TYPES
+// accept. Gated on the allowlist rather than commented out, so widening PFW_DB_TYPES
 // restores the coverage without editing tests.
 func skipIfServiceTypeUnsupported(t *testing.T, serviceType models.ServiceType) {
 	t.Helper()

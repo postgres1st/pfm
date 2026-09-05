@@ -36,7 +36,7 @@ message AddPostgreSQLServiceParams {
   // Service Access socket.
   // Address (and port) or socket is required.
   string socket = 8;
-  // The "pmm-agent" identifier which should run agents. Required.
+  // The "pfw-agent" identifier which should run agents. Required.
   string pmm_agent_id = 9 [(validate.rules).string.min_len = 1];
   // Environment name.
   string environment = 10;

@@ -87,7 +87,7 @@ const router = createBrowserRouter(
     },
   ],
   {
-    basename: '/pfm-ui',
+    basename: '/pfw-ui',
   }
 );
 

@@ -9,9 +9,10 @@
                 "iconColor": "#e0752d",
                 "limit": 100,
                 "matchAny": true,
-                "name": "PFMM Annotations",
+                "name": "PGF WatchTower Annotations",
                 "showIn": 0,
                 "tags": [
+                    "pfw_annotation",
                     "pmm_annotation",
                     "$node_name"
                 ],
@@ -19,6 +20,7 @@
                     "limit": 100,
                     "matchAny": true,
                     "tags": [
+                        "pfw_annotation",
                         "pmm_annotation",
                         "$node_name"
                     ],
@@ -68,7 +70,7 @@
             "type": "row"
         },
         {
-            "description": "Shows the average CPU usage in percent per host for all exporters. An Exporter is a software library that provides metrics to PFMM.\n\nNote that the CPU usage is only the CPU usage of the exporter itself. It does not include the additional resource usage that is required to produce metrics by the application or operating system.\n\nSee also:",
+            "description": "Shows the average CPU usage in percent per host for all exporters. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nNote that the CPU usage is only the CPU usage of the exporter itself. It does not include the additional resource usage that is required to produce metrics by the application or operating system.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -117,11 +119,6 @@
             "links": [
                 {
                     "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
-                {
-                    "targetBlank": true,
                     "title": "Exporters and integrations",
                     "url": "https://prometheus.io/docs/instrumenting/exporters/"
                 }
@@ -157,7 +154,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows the Exporters average Memory usage per host. An Exporter is a software library that provides metrics to PFMM.\n\nNote that the Memory usage is only the Memory usage of the exporter itself. It does not include the additional memory usage that is required to produce metrics by the application or operating system.\n\nSee also:",
+            "description": "Shows the Exporters average Memory usage per host. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nNote that the Memory usage is only the Memory usage of the exporter itself. It does not include the additional memory usage that is required to produce metrics by the application or operating system.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -197,11 +194,6 @@
             "links": [
                 {
                     "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
-                {
-                    "targetBlank": true,
                     "title": "Exporters and integrations",
                     "url": "https://prometheus.io/docs/instrumenting/exporters/"
                 }
@@ -236,7 +228,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows the number of monitored hosts that are running Exporters. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the number of monitored hosts that are running Exporters. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -274,11 +266,6 @@
             "id": 1611,
             "interval": "$interval",
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -323,7 +310,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows the total number of Exporters running with this PFMM Server instance. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the total number of Exporters running with this PGF WatchTower Server instance. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -361,11 +348,6 @@
             "id": 1612,
             "interval": "$interval",
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -431,7 +413,7 @@
             "dashLength": 10,
             "dashes": false,
             "decimals": 2,
-            "description": "Plots the Exporters' CPU usage across each monitored host (by default, All hosts). An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Plots the Exporters' CPU usage across each monitored host (by default, All hosts). An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "links": []
@@ -464,11 +446,6 @@
             "lines": true,
             "linewidth": 2,
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -537,7 +514,7 @@
             "dashLength": 10,
             "dashes": false,
             "decimals": 2,
-            "description": "Plots the Exporters' Memory usage across each monitored host (by default, All hosts). An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Plots the Exporters' Memory usage across each monitored host (by default, All hosts). An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "links": []
@@ -570,11 +547,6 @@
             "lines": true,
             "linewidth": 2,
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -655,7 +627,7 @@
             "dashLength": 10,
             "dashes": false,
             "decimals": 3,
-            "description": "Shows the Exporters' CPU Cores used for each type of Exporter. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the Exporters' CPU Cores used for each type of Exporter. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "links": []
@@ -688,11 +660,6 @@
             "lines": true,
             "linewidth": 2,
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -765,7 +732,7 @@
             "dashLength": 10,
             "dashes": false,
             "decimals": 2,
-            "description": "Shows the Exporters' memory used for each type of Exporter. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the Exporters' memory used for each type of Exporter. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "links": []
@@ -798,11 +765,6 @@
             "lines": true,
             "linewidth": 2,
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -890,11 +852,6 @@
             "links": [
                 {
                     "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
-                {
-                    "targetBlank": true,
                     "title": "Exporters and integrations",
                     "url": "https://prometheus.io/docs/instrumenting/exporters/"
                 },
@@ -913,7 +870,7 @@
             "type": "text"
         },
         {
-            "description": "Show the CPU usage as a percentage for all Exporters on a per-host basis. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Show the CPU usage as a percentage for all Exporters on a per-host basis. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -962,11 +919,6 @@
             "links": [
                 {
                     "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
-                {
-                    "targetBlank": true,
                     "title": "Exporters and integrations",
                     "url": "https://prometheus.io/docs/instrumenting/exporters/"
                 },
@@ -1007,7 +959,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows total Memory Used by Exporters on a per-host basis. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows total Memory Used by Exporters on a per-host basis. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1045,11 +997,6 @@
             "id": 163,
             "interval": "$interval",
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -1093,7 +1040,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows the number of Exporters running on a per-host basis. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the number of Exporters running on a per-host basis. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1131,11 +1078,6 @@
             "id": 314,
             "interval": "$interval",
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",
@@ -1264,7 +1206,7 @@
             "type": "table-old"
         },
         {
-            "description": "Shows the total number of virtual CPUs on the host. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the total number of virtual CPUs on the host. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1310,11 +1252,6 @@
             "links": [
                 {
                     "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
-                {
-                    "targetBlank": true,
                     "title": "Exporters and integrations",
                     "url": "https://prometheus.io/docs/instrumenting/exporters/"
                 }
@@ -1356,7 +1293,7 @@
             "type": "stat"
         },
         {
-            "description": "Shows the total amount of RAM of the host. An Exporter is a software library that provides metrics to PFMM.\n\nSee also:",
+            "description": "Shows the total amount of RAM of the host. An Exporter is a software library that provides metrics to PGF WatchTower.\n\nSee also:",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1401,11 +1338,6 @@
             "id": 26,
             "interval": "$interval",
             "links": [
-                {
-                    "targetBlank": true,
-                    "title": "Understanding Prometheus Exporters",
-                    "url": "https://www.postgresfirst.com/blog/2018/02/20/understand-prometheus-exporters-percona-monitoring-management-pmm/"
-                },
                 {
                     "targetBlank": true,
                     "title": "Exporters and integrations",

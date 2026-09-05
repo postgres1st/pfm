@@ -680,7 +680,7 @@ func (o *GetReadOnlySettingsOKBody) UnmarshalBinary(b []byte) error {
 }
 
 /*
-GetReadOnlySettingsOKBodySettings ReadOnlySettings represents a stripped-down version of PMM Server settings that can be accessed by users of all roles.
+GetReadOnlySettingsOKBodySettings ReadOnlySettings represents a stripped-down version of PGF WatchTower Server settings that can be accessed by users of all roles.
 swagger:model GetReadOnlySettingsOKBodySettings
 */
 type GetReadOnlySettingsOKBodySettings struct {
@@ -696,7 +696,7 @@ type GetReadOnlySettingsOKBodySettings struct {
 	// True if Alerting is enabled.
 	AlertingEnabled bool `json:"alerting_enabled,omitempty"`
 
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PMMPublicAddress string `json:"pmm_public_address,omitempty"`
 
 	// True if Backup Management is enabled.

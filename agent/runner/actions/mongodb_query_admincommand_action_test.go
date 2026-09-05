@@ -16,6 +16,7 @@ package actions
 
 import (
 	"context"
+	"runtime"
 	"testing"
 	"time"
 
@@ -204,7 +205,15 @@ func buildInfoAssertions(t *testing.T, b []byte) { //nolint:thelper
 	objxM := convertToObjxMap(t, b)
 	assert.InDelta(t, 1.0, objxM.Get("ok").Data(), 0.0001)
 	assert.Equal(t, "mozjs", objxM.Get("javascriptEngine").Data())
-	assert.Equal(t, "x86_64", objxM.Get("buildEnvironment.distarch").Data())
+	// distarch is the architecture mongod was BUILT for, which here is the container we
+	// started, i.e. the host's. Hardcoding x86_64 failed on arm64 hosts (Apple silicon,
+	// Graviton) while the server was behaving correctly. MongoDB spells the two
+	// architectures x86_64 and aarch64, Go spells them amd64 and arm64.
+	distarch := map[string]string{"amd64": "x86_64", "arm64": "aarch64"}[runtime.GOARCH]
+	if distarch == "" {
+		t.Skipf("no known mongod distarch spelling for GOARCH %q", runtime.GOARCH)
+	}
+	assert.Equal(t, distarch, objxM.Get("buildEnvironment.distarch").Data())
 }
 
 func getDiagnosticDataAssertions(t *testing.T, b []byte) { //nolint:thelper

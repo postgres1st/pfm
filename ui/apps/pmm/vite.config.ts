@@ -19,7 +19,7 @@ export default defineConfig({
     svgr(),
     ...(hasNginxCerts ? [] : [basicSsl()]),
   ],
-  base: '/pfm-ui',
+  base: '/pfw-ui',
   resolve: {
     dedupe: [
       'react',

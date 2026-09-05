@@ -28,7 +28,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// DistributionMethod defines PMM Server distribution method: Docker image, OVF/OVA, or AMI.
+// DistributionMethod defines PGF WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.
 type DistributionMethod int32
 
 const (
@@ -87,7 +87,7 @@ func (DistributionMethod) EnumDescriptor() ([]byte, []int) {
 	return file_server_v1_server_proto_rawDescGZIP(), []int{0}
 }
 
-// VersionInfo describes component version, or PMM Server as a whole.
+// VersionInfo describes component version, or PGF WatchTower Server as a whole.
 type VersionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// User-visible version.
@@ -198,14 +198,14 @@ func (x *VersionRequest) GetDummy() string {
 
 type VersionResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// PMM Server version.
+	// PGF WatchTower Server version.
 	Version string `protobuf:"bytes,1,opt,name=version,proto3" json:"version,omitempty"`
-	// Detailed PMM Server version information.
+	// Detailed PGF WatchTower Server version information.
 	Server *VersionInfo `protobuf:"bytes,2,opt,name=server,proto3" json:"server,omitempty"`
 	// pmm-managed version information for debugging.
 	Managed *VersionInfo `protobuf:"bytes,3,opt,name=managed,proto3" json:"managed,omitempty"`
-	// PMM Server distribution method.
-	DistributionMethod DistributionMethod `protobuf:"varint,4,opt,name=distribution_method,json=distributionMethod,proto3,enum=server.v1.DistributionMethod" json:"distribution_method,omitempty"` // TODO Versions and statuses of Grafana, Prometheus, PostgreSQL, qan-api2, ClickHouse, pmm-agent, etc.
+	// PGF WatchTower Server distribution method.
+	DistributionMethod DistributionMethod `protobuf:"varint,4,opt,name=distribution_method,json=distributionMethod,proto3,enum=server.v1.DistributionMethod" json:"distribution_method,omitempty"` // TODO Versions and statuses of Grafana, Prometheus, PostgreSQL, qan-api2, ClickHouse, pfw-agent, etc.
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -549,13 +549,13 @@ func (x *DockerVersionInfo) GetReleaseNotesText() string {
 
 type CheckUpdatesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Currently installed PMM Server version.
+	// Currently installed PGF WatchTower Server version.
 	Installed *VersionInfo `protobuf:"bytes,1,opt,name=installed,proto3" json:"installed,omitempty"`
-	// Latest available PMM Server version.
+	// Latest available PGF WatchTower Server version.
 	Latest *DockerVersionInfo `protobuf:"bytes,2,opt,name=latest,proto3" json:"latest,omitempty"`
-	// True if there is a PMM Server update available.
+	// True if there is a PGF WatchTower Server update available.
 	UpdateAvailable bool `protobuf:"varint,3,opt,name=update_available,json=updateAvailable,proto3" json:"update_available,omitempty"`
-	// Latest available PMM Server release announcement URL.
+	// Latest available PGF WatchTower Server release announcement URL.
 	LatestNewsUrl string `protobuf:"bytes,4,opt,name=latest_news_url,json=latestNewsUrl,proto3" json:"latest_news_url,omitempty"`
 	// Last check time.
 	LastCheck     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=last_check,json=lastCheck,proto3" json:"last_check,omitempty"`
@@ -846,7 +846,7 @@ func (x *AdvisorRunIntervals) GetFrequentInterval() *durationpb.Duration {
 	return nil
 }
 
-// Settings represents PMM Server settings.
+// Settings represents PGF WatchTower Server settings.
 type Settings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// True if updates are enabled.
@@ -863,7 +863,7 @@ type Settings struct {
 	PlatformEmail string `protobuf:"bytes,8,opt,name=platform_email,json=platformEmail,proto3" json:"platform_email,omitempty"`
 	// True if Alerting is enabled.
 	AlertingEnabled bool `protobuf:"varint,10,opt,name=alerting_enabled,json=alertingEnabled,proto3" json:"alerting_enabled,omitempty"`
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PmmPublicAddress string `protobuf:"bytes,11,opt,name=pmm_public_address,json=pmmPublicAddress,proto3" json:"pmm_public_address,omitempty"`
 	// Intervals between Advisor runs.
 	AdvisorRunIntervals *AdvisorRunIntervals `protobuf:"bytes,12,opt,name=advisor_run_intervals,json=advisorRunIntervals,proto3" json:"advisor_run_intervals,omitempty"`
@@ -1055,7 +1055,7 @@ func (x *Settings) GetSupportedServiceTypes() []string {
 	return nil
 }
 
-// ReadOnlySettings represents a stripped-down version of PMM Server settings that can be accessed by users of all roles.
+// ReadOnlySettings represents a stripped-down version of PGF WatchTower Server settings that can be accessed by users of all roles.
 type ReadOnlySettings struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// True if updates are enabled.
@@ -1066,7 +1066,7 @@ type ReadOnlySettings struct {
 	AdvisorEnabled bool `protobuf:"varint,3,opt,name=advisor_enabled,json=advisorEnabled,proto3" json:"advisor_enabled,omitempty"`
 	// True if Alerting is enabled.
 	AlertingEnabled bool `protobuf:"varint,4,opt,name=alerting_enabled,json=alertingEnabled,proto3" json:"alerting_enabled,omitempty"`
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PmmPublicAddress string `protobuf:"bytes,5,opt,name=pmm_public_address,json=pmmPublicAddress,proto3" json:"pmm_public_address,omitempty"`
 	// True if Backup Management is enabled.
 	BackupManagementEnabled bool `protobuf:"varint,6,opt,name=backup_management_enabled,json=backupManagementEnabled,proto3" json:"backup_management_enabled,omitempty"`
@@ -1347,7 +1347,7 @@ type ChangeSettingsRequest struct {
 	EnableAdvisor *bool `protobuf:"varint,7,opt,name=enable_advisor,json=enableAdvisor,proto3,oneof" json:"enable_advisor,omitempty"`
 	// Enable Alerting.
 	EnableAlerting *bool `protobuf:"varint,8,opt,name=enable_alerting,json=enableAlerting,proto3,oneof" json:"enable_alerting,omitempty"`
-	// PMM Server public address.
+	// PGF WatchTower Server public address.
 	PmmPublicAddress *string `protobuf:"bytes,9,opt,name=pmm_public_address,json=pmmPublicAddress,proto3,oneof" json:"pmm_public_address,omitempty"`
 	// Intervals between Advisor runs.
 	AdvisorRunIntervals *AdvisorRunIntervals `protobuf:"bytes,10,opt,name=advisor_run_intervals,json=advisorRunIntervals,proto3" json:"advisor_run_intervals,omitempty"`
@@ -1658,16 +1658,16 @@ const file_server_v1_server_proto_rawDesc = "" +
 	"\x17DISTRIBUTION_METHOD_OVF\x10\x02\x12\x1b\n" +
 	"\x17DISTRIBUTION_METHOD_AMI\x10\x03\x12\x1d\n" +
 	"\x19DISTRIBUTION_METHOD_AZURE\x10\x04\x12\x1a\n" +
-	"\x16DISTRIBUTION_METHOD_DO\x10\x052\x89\r\n" +
-	"\rServerService\x12\x86\x01\n" +
-	"\aVersion\x12\x19.server.v1.VersionRequest\x1a\x1a.server.v1.VersionResponse\"D\x92A'\x12\aVersion\x1a\x1cReturns PMM Server versions.\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/server/version\x12\xab\x02\n" +
+	"\x16DISTRIBUTION_METHOD_DO\x10\x052\xc0\r\n" +
+	"\rServerService\x12\x91\x01\n" +
+	"\aVersion\x12\x19.server.v1.VersionRequest\x1a\x1a.server.v1.VersionResponse\"O\x92A2\x12\aVersion\x1a'Returns PGF WatchTower Server versions.\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/server/version\x12\xab\x02\n" +
 	"\tReadiness\x12\x1b.server.v1.ReadinessRequest\x1a\x1c.server.v1.ReadinessResponse\"\xe2\x01\x92A\xc5\x01\x12\x16Check server readiness\x1a\xaa\x01Returns an error when Server components being restarted are not ready yet. Use this API for checking the health of Docker containers and for probing Kubernetes readiness.\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/server/readyz\x12\x81\x02\n" +
-	"\x11LeaderHealthCheck\x12#.server.v1.LeaderHealthCheckRequest\x1a$.server.v1.LeaderHealthCheckResponse\"\xa0\x01\x92Ay\x12\x10Check Leadership\x1aeChecks if the instance is the leader in a cluster. Returns an error if the instance isn't the leader.\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/server/leaderHealthCheck\x12\xa7\x01\n" +
-	"\fCheckUpdates\x12\x1e.server.v1.CheckUpdatesRequest\x1a\x1f.server.v1.CheckUpdatesResponse\"V\x92A9\x12\rCheck updates\x1a(Checks for available PMM Server updates.\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/server/updates\x12\xe9\x01\n" +
-	"\x0eListChangeLogs\x12 .server.v1.ListChangeLogsRequest\x1a!.server.v1.ListChangeLogsResponse\"\x91\x01\x92Ai\x12\x11Get the changelog\x1aTDisplay a changelog comparing the installed version to the latest available version.\x82\xd3\xe4\x93\x02\x1f\x12\x1d/v1/server/updates/changelogs\x12\xa0\x01\n" +
-	"\vGetSettings\x12\x1d.server.v1.GetSettingsRequest\x1a\x1e.server.v1.GetSettingsResponse\"R\x92A4\x12\fGet settings\x1a$Returns current PMM Server settings.\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/server/settings\x12\xd9\x01\n" +
-	"\x13GetReadOnlySettings\x12%.server.v1.GetReadOnlySettingsRequest\x1a&.server.v1.GetReadOnlySettingsResponse\"s\x92AL\x12\x16Get read-only settings\x1a2Returns a stripped version of PMM Server settings.\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/server/settings/readonly\x12\xa7\x01\n" +
-	"\x0eChangeSettings\x12 .server.v1.ChangeSettingsRequest\x1a!.server.v1.ChangeSettingsResponse\"P\x92A/\x12\x0fChange settings\x1a\x1cChanges PMM Server settings.\x82\xd3\xe4\x93\x02\x18:\x01*\x1a\x13/v1/server/settingsB\x90\x01\n" +
+	"\x11LeaderHealthCheck\x12#.server.v1.LeaderHealthCheckRequest\x1a$.server.v1.LeaderHealthCheckResponse\"\xa0\x01\x92Ay\x12\x10Check Leadership\x1aeChecks if the instance is the leader in a cluster. Returns an error if the instance isn't the leader.\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/server/leaderHealthCheck\x12\xb2\x01\n" +
+	"\fCheckUpdates\x12\x1e.server.v1.CheckUpdatesRequest\x1a\x1f.server.v1.CheckUpdatesResponse\"a\x92AD\x12\rCheck updates\x1a3Checks for available PGF WatchTower Server updates.\x82\xd3\xe4\x93\x02\x14\x12\x12/v1/server/updates\x12\xe9\x01\n" +
+	"\x0eListChangeLogs\x12 .server.v1.ListChangeLogsRequest\x1a!.server.v1.ListChangeLogsResponse\"\x91\x01\x92Ai\x12\x11Get the changelog\x1aTDisplay a changelog comparing the installed version to the latest available version.\x82\xd3\xe4\x93\x02\x1f\x12\x1d/v1/server/updates/changelogs\x12\xab\x01\n" +
+	"\vGetSettings\x12\x1d.server.v1.GetSettingsRequest\x1a\x1e.server.v1.GetSettingsResponse\"]\x92A?\x12\fGet settings\x1a/Returns current PGF WatchTower Server settings.\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/server/settings\x12\xe4\x01\n" +
+	"\x13GetReadOnlySettings\x12%.server.v1.GetReadOnlySettingsRequest\x1a&.server.v1.GetReadOnlySettingsResponse\"~\x92AW\x12\x16Get read-only settings\x1a=Returns a stripped version of PGF WatchTower Server settings.\x82\xd3\xe4\x93\x02\x1e\x12\x1c/v1/server/settings/readonly\x12\xb2\x01\n" +
+	"\x0eChangeSettings\x12 .server.v1.ChangeSettingsRequest\x1a!.server.v1.ChangeSettingsResponse\"[\x92A:\x12\x0fChange settings\x1a'Changes PGF WatchTower Server settings.\x82\xd3\xe4\x93\x02\x18:\x01*\x1a\x13/v1/server/settingsB\x90\x01\n" +
 	"\rcom.server.v1B\vServerProtoP\x01Z-github.com/percona/pmm/api/server/v1;serverv1\xa2\x02\x03SXX\xaa\x02\tServer.V1\xca\x02\tServer\\V1\xe2\x02\x15Server\\V1\\GPBMetadata\xea\x02\n" +
 	"Server::V1b\x06proto3"
 
@@ -1715,7 +1715,6 @@ var (
 		(*common.StringArray)(nil),          // 25: common.StringArray
 	}
 )
-
 var file_server_v1_server_proto_depIdxs = []int32{
 	23, // 0: server.v1.VersionInfo.timestamp:type_name -> google.protobuf.Timestamp
 	1,  // 1: server.v1.VersionResponse.server:type_name -> server.v1.VersionInfo

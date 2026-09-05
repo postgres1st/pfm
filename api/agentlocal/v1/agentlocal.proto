@@ -7,23 +7,23 @@ import "google/protobuf/duration.proto";
 import "inventory/v1/agent_status.proto";
 import "inventory/v1/agents.proto";
 
-// ServerInfo contains information about the PMM Server.
+// ServerInfo contains information about the PGF WatchTower Server.
 message ServerInfo {
-  // PMM Server URL in a form https://HOST:PORT/.
+  // PGF WatchTower Server URL in a form https://HOST:PORT/.
   string url = 1;
-  // PMM Server's TLS certificate validation should be skipped if true.
+  // PGF WatchTower Server's TLS certificate validation should be skipped if true.
   bool insecure_tls = 2;
-  // True if pmm-agent is currently connected to the server.
+  // True if pfw-agent is currently connected to the server.
   bool connected = 3;
-  // PMM Server version (if agent is connected).
+  // PGF WatchTower Server version (if agent is connected).
   string version = 4;
-  // Ping time from pmm-agent to pmm-managed (if agent is connected).
+  // Ping time from pfw-agent to pmm-managed (if agent is connected).
   google.protobuf.Duration latency = 5;
-  // Clock drift from PMM Server (if agent is connected).
+  // Clock drift from PGF WatchTower Server (if agent is connected).
   google.protobuf.Duration clock_drift = 6;
 }
 
-// AgentInfo contains information about Agent managed by pmm-agent.
+// AgentInfo contains information about Agent managed by pfw-agent.
 message AgentInfo {
   string agent_id = 1;
   inventory.v1.AgentType agent_type = 2;
@@ -45,9 +45,9 @@ message StatusResponse {
   string node_name = 3;
   ServerInfo server_info = 4;
   repeated AgentInfo agents_info = 5;
-  // Config file path if pmm-agent was started with one.
+  // Config file path if pfw-agent was started with one.
   string config_filepath = 6;
-  // PMM Agent version.
+  // PGF WatchTower Agent version.
   string agent_version = 7;
   // Shows connection uptime in percentage between agent and server
   float connection_uptime = 8;
@@ -55,12 +55,12 @@ message StatusResponse {
 
 message ReloadRequest {}
 
-// ReloadRequest may not be received by the client due to pmm-agent restart.
+// ReloadRequest may not be received by the client due to pfw-agent restart.
 message ReloadResponse {}
 
-// AgentLocal service provides public methods for checking pmm-agent status locally.
+// AgentLocal service provides public methods for checking pfw-agent status locally.
 service AgentLocalService {
-  // Status returns current pmm-agent status.
+  // Status returns current pfw-agent status.
   rpc Status(StatusRequest) returns (StatusResponse) {
     option (google.api.http) = {
       post: "/local/Status"
@@ -68,7 +68,7 @@ service AgentLocalService {
       additional_bindings: {get: "/local/Status"}
     };
   }
-  // Reload reloads pmm-agent configuration.
+  // Reload reloads pfw-agent configuration.
   rpc Reload(ReloadRequest) returns (ReloadResponse) {
     option (google.api.http) = {
       post: "/local/Reload"

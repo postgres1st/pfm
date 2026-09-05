@@ -18,7 +18,7 @@ Run `make run` to start qan-api2.
 Run `PMM_CONTAINER=<container-name> make release deploy` to deploy a locally built
 qan-api2 into a running server container. `PMM_CONTAINER` defaults to `pmm-server`; it
 keeps that name because the Makefile does, and the binary is still deployed to
-`/usr/sbin/percona-qan-api2` inside the container.
+`/usr/sbin/pfw-qan-api2` inside the container.
 
 ## Testing
 Run `make test-env-up` to set up the test environment (ClickHouse plus test data).

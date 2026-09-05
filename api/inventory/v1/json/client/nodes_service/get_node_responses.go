@@ -781,7 +781,7 @@ type GetNodeOKBodyContainer struct {
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `json:"custom_labels,omitempty"`
 
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPMMServerNode bool `json:"is_pmm_server_node,omitempty"`
 }
 
@@ -845,7 +845,7 @@ type GetNodeOKBodyGeneric struct {
 	// Custom user-assigned labels.
 	CustomLabels map[string]string `json:"custom_labels,omitempty"`
 
-	// True if this node is a PMM Server node (HA mode).
+	// True if this node is a PGF WatchTower Server node (HA mode).
 	IsPMMServerNode bool `json:"is_pmm_server_node,omitempty"`
 }
 
@@ -878,7 +878,7 @@ func (o *GetNodeOKBodyGeneric) UnmarshalBinary(b []byte) error {
 }
 
 /*
-GetNodeOKBodyRemote RemoteNode represents generic remote Node. It's a node where we don't run pmm-agents. Only external exporters can run on Remote Nodes.
+GetNodeOKBodyRemote RemoteNode represents generic remote Node. It's a node where we don't run pfw-agents. Only external exporters can run on Remote Nodes.
 swagger:model GetNodeOKBodyRemote
 */
 type GetNodeOKBodyRemote struct {
