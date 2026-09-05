@@ -269,7 +269,11 @@ func (u *StateUpdater) sendSetStateRequest(ctx context.Context, agent *pmmAgentI
 				}
 				agentProcesses[row.AgentID] = cfg
 			case models.ProxySQLExporterType:
-				agentProcesses[row.AgentID] = proxysqlExporterConfig(node, service, row, redactMode, pmmAgentVersion)
+				cfg, err := proxysqlExporterConfig(node, service, row, redactMode, pmmAgentVersion)
+				if err != nil {
+					return err
+				}
+				agentProcesses[row.AgentID] = cfg
 			case models.ValkeyExporterType:
 				agentProcesses[row.AgentID] = valkeyExporterConfig(node, service, row, redactMode, pmmAgentVersion)
 			case models.QANMySQLPerfSchemaAgentType:

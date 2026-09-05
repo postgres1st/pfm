@@ -23,3 +23,9 @@ func SetSupportedServiceTypesForTests(types ...ServiceType) func() {
 	supportedServiceTypes = serviceTypeSet(types)
 	return func() { supportedServiceTypes = previous }
 }
+
+// BackfillAgentPasswords exposes backfillAgentPasswords to the external test
+// package. It cannot be tested from inside package models: the test needs
+// utils/testdb, and testdb imports models, so an internal test file creates an
+// import cycle.
+var BackfillAgentPasswords = backfillAgentPasswords

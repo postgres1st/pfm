@@ -18,6 +18,7 @@ package agents
 import (
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/stretchr/testify/require"
 
 	agentv1 "github.com/percona/pmm/api/agent/v1"
@@ -35,6 +36,7 @@ func TestAuthWebConfig(t *testing.T) {
 		node := &models.Node{}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{},
 		}
@@ -45,7 +47,7 @@ func TestAuthWebConfig(t *testing.T) {
 
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Env: []string{
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
 			TextFiles: map[string]string(nil),
 		}
@@ -60,6 +62,7 @@ func TestAuthWebConfig(t *testing.T) {
 		node := &models.Node{}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{},
 		}
@@ -71,7 +74,7 @@ func TestAuthWebConfig(t *testing.T) {
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Env: []string(nil),
 			TextFiles: map[string]string{
-				"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
+				"webConfig": "basic_auth_users:\n    pmm: agent-password\n",
 			},
 		}
 
@@ -86,6 +89,7 @@ func TestAuthWebConfig(t *testing.T) {
 		node := &models.Node{}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{},
 		}
@@ -97,7 +101,7 @@ func TestAuthWebConfig(t *testing.T) {
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Env: []string(nil),
 			TextFiles: map[string]string{
-				"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
+				"webConfig": "basic_auth_users:\n    pmm: agent-password\n",
 			},
 		}
 
@@ -118,6 +122,7 @@ func TestNodeExporterConfig(t *testing.T) {
 		}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{},
 		}
@@ -194,11 +199,12 @@ func TestNodeExporterConfig(t *testing.T) {
 				"--no-collector.xfs",
 				"--no-collector.zfs",
 				"--web.disable-exporter-metrics",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			Env: []string{
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
+			RedactWords: []string{"agent-password"},
 		}
 		requireNoDuplicateFlags(t, actual.Args)
 		require.Equal(t, expected.Args, actual.Args)
@@ -210,8 +216,9 @@ func TestNodeExporterConfig(t *testing.T) {
 		t.Parallel()
 		node := &models.Node{}
 		exporter := &models.Agent{
-			AgentID:   "agent-id",
-			AgentType: models.NodeExporterType,
+			AgentID:       "agent-id",
+			AgentPassword: pointer.ToString("agent-password"),
+			AgentType:     models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{
 				DisabledCollectors: []string{"cpu", "netstat", "netstat.fields", "vmstat", "meminfo"},
 			},
@@ -279,11 +286,12 @@ func TestNodeExporterConfig(t *testing.T) {
 				"--no-collector.xfs",
 				"--no-collector.zfs",
 				"--web.disable-exporter-metrics",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			Env: []string{
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
+			RedactWords: []string{"agent-password"},
 		}
 		requireNoDuplicateFlags(t, actual.Args)
 		require.Equal(t, expected.Args, actual.Args)
@@ -298,6 +306,7 @@ func TestNodeExporterConfig(t *testing.T) {
 		}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.NodeExporterType,
 			ExporterOptions: models.ExporterOptions{},
 		}
@@ -315,11 +324,12 @@ func TestNodeExporterConfig(t *testing.T) {
 				"--collector.textfile.directory.lr=" + pathsBase(agentVersion, "{{", "}}") + "/collectors/textfile-collector/low-resolution",
 				"--collector.textfile.directory.mr=" + pathsBase(agentVersion, "{{", "}}") + "/collectors/textfile-collector/medium-resolution",
 				"--web.disable-exporter-metrics",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			Env: []string{
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
+			RedactWords: []string{"agent-password"},
 		}
 		requireNoDuplicateFlags(t, actual.Args)
 		require.Equal(t, expected.Args, actual.Args)

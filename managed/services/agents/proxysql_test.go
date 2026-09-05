@@ -18,6 +18,7 @@ package agents
 import (
 	"testing"
 
+	"github.com/AlekSi/pointer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -45,7 +46,8 @@ func TestProxySQLExporterConfig(t *testing.T) {
 		AgentPassword:   new("agent-password"),
 		ExporterOptions: models.ExporterOptions{},
 	}
-	actual := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+	actual, err := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+	require.NoError(t, err)
 	expected := &agentv1.SetStateRequest_AgentProcess{
 		Type:               inventoryv1.AgentType_AGENT_TYPE_PROXYSQL_EXPORTER,
 		TemplateLeftDelim:  "{{",
@@ -55,7 +57,7 @@ func TestProxySQLExporterConfig(t *testing.T) {
 			"-collect.mysql_connection_pool",
 			"-collect.mysql_status",
 			"-collect.stats_memory_metrics",
-			"-web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"-web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s",
@@ -69,19 +71,22 @@ func TestProxySQLExporterConfig(t *testing.T) {
 
 	t.Run("EmptyPassword", func(t *testing.T) {
 		exporter.Password = nil
-		actual := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		actual, err := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		require.NoError(t, err)
 		assert.Equal(t, "DATA_SOURCE_NAME=username@tcp(1.2.3.4:3306)/?timeout=2s", actual.Env[0])
 	})
 
 	t.Run("EmptyUsername", func(t *testing.T) {
 		exporter.Username = nil
-		actual := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		actual, err := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		require.NoError(t, err)
 		assert.Equal(t, "DATA_SOURCE_NAME=tcp(1.2.3.4:3306)/?timeout=2s", actual.Env[0])
 	})
 
 	t.Run("DisabledCollector", func(t *testing.T) {
 		exporter.ExporterOptions.DisabledCollectors = []string{"mysql_connection_list", "stats_memory_metrics"}
-		actual := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		actual, err := proxysqlExporterConfig(node, proxysql, exporter, exposeSecrets, pmmAgentVersion)
+		require.NoError(t, err)
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Type:               inventoryv1.AgentType_AGENT_TYPE_PROXYSQL_EXPORTER,
 			TemplateLeftDelim:  "{{",
@@ -89,7 +94,7 @@ func TestProxySQLExporterConfig(t *testing.T) {
 			Args: []string{
 				"-collect.mysql_connection_pool",
 				"-collect.mysql_status",
-				"-web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"-web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 		}
 		require.Equal(t, expected.Args, actual.Args)
@@ -105,12 +110,14 @@ func TestProxySQLExporterConfig(t *testing.T) {
 		}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.ProxySQLExporterType,
 			Username:        new("username"),
 			Password:        new("s3cur3 p@$$w0r4."),
 			ExporterOptions: models.ExporterOptions{},
 		}
-		actual := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+		actual, err := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+		require.NoError(t, err)
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Type:               inventoryv1.AgentType_AGENT_TYPE_PROXYSQL_EXPORTER,
 			TemplateLeftDelim:  "{{",
@@ -121,13 +128,13 @@ func TestProxySQLExporterConfig(t *testing.T) {
 				"-collect.mysql_status",
 				"-collect.stats_command_counter",
 				"-collect.stats_memory_metrics",
-				"-web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"-web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			Env: []string{
 				"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s",
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
-			RedactWords: []string{"s3cur3 p@$$w0r4."},
+			RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 		}
 		require.Equal(t, expected.Args, actual.Args)
 		require.Equal(t, expected.Env, actual.Env)
@@ -146,12 +153,14 @@ func TestProxySQLExporterConfig(t *testing.T) {
 		}
 		exporter := &models.Agent{
 			AgentID:         "agent-id",
+			AgentPassword:   pointer.ToString("agent-password"),
 			AgentType:       models.ProxySQLExporterType,
 			Username:        new("username"),
 			Password:        new("s3cur3 p@$$w0r4."),
 			ExporterOptions: models.ExporterOptions{},
 		}
-		actual := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+		actual, err := proxysqlExporterConfig(node, proxysql, exporter, redactSecrets, pmmAgentVersion)
+		require.NoError(t, err)
 		expected := &agentv1.SetStateRequest_AgentProcess{
 			Type:               inventoryv1.AgentType_AGENT_TYPE_PROXYSQL_EXPORTER,
 			TemplateLeftDelim:  "{{",
@@ -163,13 +172,13 @@ func TestProxySQLExporterConfig(t *testing.T) {
 				"-collect.runtime_mysql_servers",
 				"-collect.stats_command_counter",
 				"-collect.stats_memory_metrics",
-				"-web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"-web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			Env: []string{
 				"DATA_SOURCE_NAME=username:s3cur3 p@$$w0r4.@tcp(1.2.3.4:3306)/?timeout=2s",
-				"HTTP_AUTH=pmm:agent-id",
+				"HTTP_AUTH=pmm:agent-password",
 			},
-			RedactWords: []string{"s3cur3 p@$$w0r4."},
+			RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 		}
 		require.Equal(t, expected.Args, actual.Args)
 		require.Equal(t, expected.Env, actual.Env)

@@ -46,10 +46,11 @@ func TestScrapeConfig(t *testing.T) {
 				CustomLabels: []byte(`{"_some_node_label": "foo"}`),
 			}
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.NodeExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.NodeExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{
 					DisabledCollectors: []string{"cpu", "entropy"},
 				},
@@ -63,7 +64,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -106,7 +107,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -135,7 +136,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -183,10 +184,11 @@ func TestScrapeConfig(t *testing.T) {
 				CustomLabels: []byte(`{"_some_node_label": "foo"}`),
 			}
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.NodeExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.NodeExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{
 					DisabledCollectors: []string{"cpu", "time"},
 				},
@@ -200,7 +202,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -257,6 +259,7 @@ func TestScrapeConfig(t *testing.T) {
 			}
 			agent := &models.Agent{
 				AgentID:         "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword:   new("agent-password"),
 				AgentType:       models.MySQLdExporterType,
 				CustomLabels:    []byte(`{"_some_agent_label": "baz"}`),
 				ListenPort:      new(uint16(12345)),
@@ -272,7 +275,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -306,7 +309,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -345,7 +348,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -412,10 +415,11 @@ func TestScrapeConfig(t *testing.T) {
 				CustomLabels: []byte(`{"_some_service_label": "bar"}`),
 			}
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.MySQLdExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.MySQLdExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{
 					DisabledCollectors: []string{"global_status", "info_schema.innodb_cmp", "info_schema.query_response_time", "perf_schema.eventsstatements", "heartbeat"},
 				},
@@ -430,7 +434,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -463,7 +467,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -500,7 +504,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -564,6 +568,7 @@ func TestScrapeConfig(t *testing.T) {
 			}
 			agent := &models.Agent{
 				AgentID:         "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword:   new("agent-password"),
 				AgentType:       models.MySQLdExporterType,
 				ListenPort:      new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{},
@@ -581,7 +586,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -612,7 +617,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -647,7 +652,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -727,6 +732,7 @@ func TestScrapeConfig(t *testing.T) {
 			}
 			agent := &models.Agent{
 				AgentID:         "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword:   new("agent-password"),
 				AgentType:       models.MongoDBExporterType,
 				CustomLabels:    []byte(`{"_some_agent_label": "baz"}`),
 				ListenPort:      new(uint16(12345)),
@@ -746,7 +752,7 @@ func TestScrapeConfig(t *testing.T) {
 					HTTPClientConfig: config.HTTPClientConfig{
 						BasicAuth: &config.BasicAuth{
 							Username: "pmm",
-							Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+							Password: "agent-password",
 						},
 					},
 					ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -776,7 +782,7 @@ func TestScrapeConfig(t *testing.T) {
 					HTTPClientConfig: config.HTTPClientConfig{
 						BasicAuth: &config.BasicAuth{
 							Username: "pmm",
-							Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+							Password: "agent-password",
 						},
 					},
 					ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -827,6 +833,7 @@ func TestScrapeConfig(t *testing.T) {
 			}
 			agent := &models.Agent{
 				AgentID:         "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword:   new("agent-password"),
 				AgentType:       models.MongoDBExporterType,
 				CustomLabels:    []byte(`{"_some_agent_label": "baz"}`),
 				ListenPort:      new(uint16(12345)),
@@ -846,7 +853,7 @@ func TestScrapeConfig(t *testing.T) {
 					HTTPClientConfig: config.HTTPClientConfig{
 						BasicAuth: &config.BasicAuth{
 							Username: "pmm",
-							Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+							Password: "agent-password",
 						},
 					},
 					ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -877,7 +884,7 @@ func TestScrapeConfig(t *testing.T) {
 					HTTPClientConfig: config.HTTPClientConfig{
 						BasicAuth: &config.BasicAuth{
 							Username: "pmm",
-							Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+							Password: "agent-password",
 						},
 					},
 					ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -950,10 +957,11 @@ func TestScrapeConfig(t *testing.T) {
 				CustomLabels: []byte(`{"_some_service_label": "bar"}`),
 			}
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.PostgresExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.PostgresExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{
 					DisabledCollectors: []string{"standard.process", "custom_query.lr"},
 				},
@@ -967,7 +975,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -1000,7 +1008,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -1030,7 +1038,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -1101,10 +1109,11 @@ func TestScrapeConfig(t *testing.T) {
 				CustomLabels: []byte(`{"_some_service_label": "bar"}`),
 			}
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.ProxySQLExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.ProxySQLExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				ListenPort:    new(uint16(12345)),
 			}
 
 			expected := []*config.ScrapeConfig{{
@@ -1115,7 +1124,7 @@ func TestScrapeConfig(t *testing.T) {
 				HTTPClientConfig: config.HTTPClientConfig{
 					BasicAuth: &config.BasicAuth{
 						Username: "pmm",
-						Password: "75bb30d3-ef4a-4147-97a8-621a996611dd",
+						Password: "agent-password",
 					},
 				},
 				ServiceDiscoveryConfig: config.ServiceDiscoveryConfig{
@@ -1290,6 +1299,7 @@ func TestScrapeConfig(t *testing.T) {
 		t.Run("Normal", func(t *testing.T) {
 			agent := &models.Agent{
 				AgentID:         "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword:   new("agent-password"),
 				AgentType:       models.ExternalExporterType,
 				CustomLabels:    []byte(`{"_some_agent_label": "baz"}`),
 				ListenPort:      new(uint16(12345)),
@@ -1334,12 +1344,13 @@ func TestScrapeConfig(t *testing.T) {
 
 		t.Run("WithExtraParams", func(t *testing.T) {
 			agent := &models.Agent{
-				AgentID:      "75bb30d3-ef4a-4147-97a8-621a996611dd",
-				AgentType:    models.ExternalExporterType,
-				CustomLabels: []byte(`{"_some_agent_label": "baz"}`),
-				Username:     new("username"),
-				Password:     new("password"),
-				ListenPort:   new(uint16(12345)),
+				AgentID:       "75bb30d3-ef4a-4147-97a8-621a996611dd",
+				AgentPassword: new("agent-password"),
+				AgentType:     models.ExternalExporterType,
+				CustomLabels:  []byte(`{"_some_agent_label": "baz"}`),
+				Username:      new("username"),
+				Password:      new("password"),
+				ListenPort:    new(uint16(12345)),
 				ExporterOptions: models.ExporterOptions{
 					MetricsPath:   "/some-metric-path",
 					MetricsScheme: "https",
@@ -1433,4 +1444,36 @@ func assertScrapeConfigsEqual(t *testing.T, expected, actual *config.ScrapeConfi
 		require.NoError(t, err)
 		t.Logf("Diff:\n%s", diff)
 	}
+}
+
+// The scraper's half of the exporter credential must fail closed like the exporter's
+// half does. Emitting `pmm:` with an empty password yields a scrape config that
+// cannot work -- the exporter 401s, the target reads as down, nothing is logged --
+// which was the last path where a missing credential degraded silently.
+//
+// The caller (prometheus.AddScrapeConfigs) logs and skips per agent, so this error
+// costs one agent's metrics, not everyone's.
+func TestHTTPClientConfigFailsClosedWithoutACredential(t *testing.T) {
+	t.Parallel()
+
+	t.Run("refuses an agent with no credential", func(t *testing.T) {
+		t.Parallel()
+		_, err := httpClientConfig(&models.Agent{AgentID: "agent-id"})
+		require.Error(t, err)
+		require.ErrorContains(t, err, "no agent password")
+	})
+
+	t.Run("builds basic auth when the credential is set", func(t *testing.T) {
+		t.Parallel()
+		cfg, err := httpClientConfig(&models.Agent{
+			AgentID:       "agent-id",
+			AgentPassword: new("2f8a1c0b9d4e6f7a0b1c2d3e4f5a6b7c"),
+		})
+		require.NoError(t, err)
+		require.NotNil(t, cfg.BasicAuth)
+		assert.Equal(t, "pmm", cfg.BasicAuth.Username)
+		assert.Equal(t, "2f8a1c0b9d4e6f7a0b1c2d3e4f5a6b7c", cfg.BasicAuth.Password)
+		// The agent ID must never serve as the credential again.
+		assert.NotEqual(t, "agent-id", cfg.BasicAuth.Password)
+	})
 }

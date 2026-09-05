@@ -171,11 +171,14 @@ func mysqldExporterConfig(
 			return nil, err
 		}
 	} else {
-		env := []string{
-			"DATA_SOURCE_NAME=" + exporter.DSN(service, models.DSNParams{DialTimeout: connectionTimeout, Database: ""}, nil, pmmAgentVersion),
-			"HTTP_AUTH=pmm:" + exporter.GetAgentPassword(),
+		auth, err := httpAuthEnv(exporter)
+		if err != nil {
+			return nil, err
 		}
-		res.Env = env
+		res.Env = []string{
+			"DATA_SOURCE_NAME=" + exporter.DSN(service, models.DSNParams{DialTimeout: connectionTimeout, Database: ""}, nil, pmmAgentVersion),
+			auth,
+		}
 	}
 
 	if redactMode != exposeSecrets {

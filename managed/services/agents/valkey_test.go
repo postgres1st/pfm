@@ -55,7 +55,7 @@ func TestValkeyExporterConfig(t *testing.T) {
 				"--include-config-metrics",
 				"--include-system-metrics",
 				"--redis.addr=redis://username:secret@1.2.3.4:6379",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 			RedactWords: []string{"secret"},
 		}

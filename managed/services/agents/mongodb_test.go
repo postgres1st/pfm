@@ -16,6 +16,7 @@
 package agents
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -59,7 +60,7 @@ func TestMongodbExporterConfig225(t *testing.T) {
 			"--compatible-mode",
 			"--discovering-mode",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"MONGODB_URI=mongodb://username:s3cur3%20p%40$$w0r4.@1.2.3.4:27017/?connectTimeoutMS=2000&directConnection=true&serverSelectionTimeoutMS=2000",
@@ -84,7 +85,7 @@ func TestMongodbExporterConfig225(t *testing.T) {
 			"--discovering-mode",
 			"--mongodb.collstats-colls=col1,col2,col3",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
 		require.NoError(t, err)
@@ -122,7 +123,7 @@ func TestMongodbExporterConfig226(t *testing.T) {
 			"--compatible-mode",
 			"--discovering-mode",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"MONGODB_URI=mongodb://username:s3cur3%20p%40$$w0r4.@1.2.3.4:27017/?connectTimeoutMS=2000&directConnection=true&serverSelectionTimeoutMS=2000",
@@ -150,7 +151,7 @@ func TestMongodbExporterConfig226(t *testing.T) {
 			"--mongodb.collstats-colls=col1,col2,col3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=col1,col2,col3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
 		require.NoError(t, err)
@@ -177,7 +178,7 @@ func TestMongodbExporterConfig226(t *testing.T) {
 			"--mongodb.collstats-colls=col1,col2,col3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=col1,col2,col3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
 		require.NoError(t, err)
@@ -205,7 +206,7 @@ func TestMongodbExporterConfig226(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
 		require.NoError(t, err)
@@ -232,7 +233,7 @@ func TestMongodbExporterConfig226(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
 		require.NoError(t, err)
@@ -270,7 +271,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--compatible-mode",
 			"--discovering-mode",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 		Env: []string{
@@ -301,7 +302,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--mongodb.collstats-colls=col1,col2,col3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=col1,col2,col3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -330,7 +331,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--mongodb.collstats-colls=col1,col2,col3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=col1,col2,col3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -360,7 +361,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -389,7 +390,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -420,7 +421,7 @@ func TestMongodbExporterConfig2411(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -461,7 +462,7 @@ func TestMongodbExporterConfig2432(t *testing.T) {
 			"--compatible-mode",
 			"--discovering-mode",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 		Env: []string{
@@ -503,7 +504,7 @@ func TestMongodbExporterConfig2432(t *testing.T) {
 			"--mongodb.collstats-colls=db1.col1.one,db2.col2,db3",
 			"--mongodb.global-conn-pool",
 			"--mongodb.indexstats-colls=db1.col1.one,db2.col2,db3",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		}
 		actual, err := mongodbExporterConfig(node, mongodb, exporter, exposeSecrets, pmmAgentVersion)
@@ -569,7 +570,7 @@ func TestMongodbExporterConfig(t *testing.T) {
 			"--collect.topmetrics",
 			"--no-collect.connpoolstats",
 			"--no-collect.indexusage",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"MONGODB_URI=mongodb://username:s3cur3%20p%40$$w0r4.@1.2.3.4:27017/?connectTimeoutMS=2000&directConnection=true&serverSelectionTimeoutMS=2000",
@@ -656,7 +657,7 @@ func TestMongodbExporterConfig(t *testing.T) {
 				"--collect.database",
 				"--no-collect.connpoolstats",
 				"--no-collect.indexusage",
-				"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+				"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			},
 		}
 		require.NoError(t, err)
@@ -676,6 +677,7 @@ func TestNewMongodbExporterConfig(t *testing.T) {
 	}
 	exporter := &models.Agent{
 		AgentID:         "agent-id",
+		AgentPassword:   pointer.ToString("agent-password"),
 		AgentType:       models.MongoDBExporterType,
 		Username:        new("username"),
 		Password:        new("s3cur3 p@$$w0r4."),
@@ -691,13 +693,13 @@ func TestNewMongodbExporterConfig(t *testing.T) {
 		Args: []string{
 			"--compatible-mode",
 			"--mongodb.global-conn-pool",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"MONGODB_URI=mongodb://username:s3cur3%20p%40$$w0r4.@1.2.3.4:27017/?connectTimeoutMS=2000&directConnection=true&serverSelectionTimeoutMS=2000",
-			"HTTP_AUTH=pmm:agent-id",
+			"HTTP_AUTH=pmm:agent-password",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4."},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 	requireNoDuplicateFlags(t, actual.Args)
 	require.Equal(t, expected.Args, actual.Args)
@@ -757,7 +759,7 @@ func TestMongodbExporterConfig228_WebConfigAuth(t *testing.T) {
 		"--compatible-mode",
 		"--discovering-mode",
 		"--mongodb.global-conn-pool",
-		"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+		"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		"--web.config={{ .TextFiles.webConfig }}",
 	}
 
@@ -796,7 +798,18 @@ func TestMongodbExporterConfig228_WebConfigAuth(t *testing.T) {
 		require.Equal(t, expected, actual)
 	})
 
-	t.Run("Default_Password", func(t *testing.T) {
+	// Previously "Default_Password": an agent with no stored credential fell back
+	// to its own agent ID, and this test asserted the resulting web config
+	// contained `pmm: agent-id`. The agent ID is public -- it is stored in
+	// inventory, returned by the inventory API and written to logs -- so that made
+	// the exporter authenticated in name only. The fallback is gone; a row with no
+	// credential is now a hard error rather than a weak default, because hashing ""
+	// would grant `pmm:` access with an empty password instead.
+	//
+	// Every agent created since gets a generated credential (models.CreateAgent)
+	// and pre-existing rows are backfilled by migration 119, so reaching this state
+	// in production means the migration did not run.
+	t.Run("No_Password_Fails_Closed", func(t *testing.T) {
 		t.Parallel()
 
 		localExporter := &models.Agent{
@@ -807,23 +820,14 @@ func TestMongodbExporterConfig228_WebConfigAuth(t *testing.T) {
 			ExporterOptions: models.ExporterOptions{},
 			MongoDBOptions:  models.MongoDBOptions{},
 		}
+
 		actual, err := mongodbExporterConfig(node, mongodb, localExporter, redactSecrets, pmmAgentVersion)
 
-		expected := &agentv1.SetStateRequest_AgentProcess{
-			Type:               inventoryv1.AgentType_AGENT_TYPE_MONGODB_EXPORTER,
-			TemplateLeftDelim:  "{{",
-			TemplateRightDelim: "}}",
-			Args:               expectedArgs,
-			TextFiles: map[string]string{
-				"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
-			},
-			Env:         expectedEnv,
-			RedactWords: []string{"s3cur3 p@$$w0r4."},
-		}
-
-		require.NoError(t, err)
-		requireNoDuplicateFlags(t, actual.Args)
-		require.Equal(t, expected, actual)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "no agent password")
+		require.Nil(t, actual)
+		// The agent ID must not have leaked into a config despite the error.
+		require.NotContains(t, fmt.Sprint(actual), localExporter.AgentID)
 	})
 }
 

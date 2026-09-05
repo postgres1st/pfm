@@ -180,13 +180,30 @@ func jobName(agent *models.Agent, intervalName string) string {
 	return fmt.Sprintf("%s_%s_%s", agent.AgentType, strings.Map(jobNameMapping, agent.AgentID), intervalName)
 }
 
-func httpClientConfig(agent *models.Agent) config.HTTPClientConfig {
+// httpClientConfig builds the scraper's half of the exporter's basic auth.
+//
+// It returns an error rather than an empty password when no credential is stored.
+// Emitting `pmm:` with an empty password produces a scrape config that cannot work
+// -- the exporter 401s, the target shows down, and nothing is logged -- which is the
+// one remaining way a missing credential silently degrades instead of announcing
+// itself. The exporter side already fails closed (models.BuildWebConfigFile,
+// agents.httpAuthEnv); this makes the scraper side agree.
+//
+// Callers skip the agent rather than propagating: the scrape-config generators feed
+// one shared VictoriaMetrics config, so failing the whole build would take scraping
+// down for every other agent to punish one.
+func httpClientConfig(agent *models.Agent) (config.HTTPClientConfig, error) {
+	password := agent.GetAgentPassword()
+	if password == "" {
+		return config.HTTPClientConfig{}, fmt.Errorf("no agent password set for agent %s", agent.AgentID)
+	}
+
 	return config.HTTPClientConfig{
 		BasicAuth: &config.BasicAuth{
 			Username: "pmm",
-			Password: agent.GetAgentPassword(),
+			Password: password,
 		},
-	}
+	}, nil
 }
 
 type scrapeConfigParams struct {
@@ -206,13 +223,18 @@ func scrapeConfigForStandardExporter(intervalName string, interval time.Duration
 		return nil, err
 	}
 
+	httpCfg, err := httpClientConfig(params.agent)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &config.ScrapeConfig{
 		StreamParse:      params.streamParse,
 		JobName:          jobName(params.agent, intervalName),
 		ScrapeInterval:   config.Duration(interval),
 		ScrapeTimeout:    scrapeTimeout(interval),
 		MetricsPath:      "/metrics",
-		HTTPClientConfig: httpClientConfig(params.agent),
+		HTTPClientConfig: httpCfg,
 	}
 
 	if len(collect) != 0 {

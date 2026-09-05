@@ -99,6 +99,14 @@ func azureDatabaseExporterConfig(
 	tdp := models.TemplateDelimsPair()
 	args := []string{
 		"--config.file=" + tdp.Left + " .TextFiles.config " + tdp.Right,
+		// NOTE: unlike every other exporter, this one binds ALL interfaces and carries
+		// no authentication at all -- no getExporterListenAddress, no ensureAuthParams,
+		// no HTTP_AUTH. The loopback default and the per-agent credential introduced for
+		// the other exporters deliberately do NOT cover it, because a single process
+		// serves many (node, agent) pairs, so there is no one agent whose
+		// --expose-exporter or credential should apply. Closing it needs a decision about
+		// which of those pairs owns the listener, which is why it is tracked separately
+		// rather than changed here by omission.
 		"--web.listen-address=:" + tdp.Left + " .listen_port " + tdp.Right,
 	}
 	args = withLogLevel(args, exporter.LogLevel, pmmAgentVersion, true)

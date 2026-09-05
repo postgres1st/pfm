@@ -144,5 +144,11 @@ func nodeExporterConfig(node *models.Node, exporter *models.Agent, agentVersion 
 		return nil, err
 	}
 
+	// node_exporter was the only exporter emitting no RedactWords. On the
+	// pre-2.28 path ensureAuthParams puts the credential in HTTP_AUTH, and that
+	// value is now a real secret rather than the public agent ID, so it belongs on
+	// the redaction list like every other exporter's.
+	params.RedactWords = redactWords(exporter)
+
 	return params, nil
 }

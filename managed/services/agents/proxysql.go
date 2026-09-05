@@ -33,7 +33,7 @@ var (
 // proxysqlExporterConfig returns desired configuration of proxysql_exporter process.
 func proxysqlExporterConfig(node *models.Node, service *models.Service, exporter *models.Agent, redactMode redactMode,
 	pmmAgentVersion *version.Parsed,
-) *agentv1.SetStateRequest_AgentProcess {
+) (*agentv1.SetStateRequest_AgentProcess, error) {
 	listenAddress := getExporterListenAddress(node, exporter)
 	tdp := exporter.TemplateDelimiters(service)
 
@@ -63,6 +63,11 @@ func proxysqlExporterConfig(node *models.Node, service *models.Service, exporter
 
 	sort.Strings(args)
 
+	auth, err := httpAuthEnv(exporter)
+	if err != nil {
+		return nil, err
+	}
+
 	res := &agentv1.SetStateRequest_AgentProcess{
 		Type:               inventoryv1.AgentType_AGENT_TYPE_PROXYSQL_EXPORTER,
 		TemplateLeftDelim:  tdp.Left,
@@ -70,11 +75,11 @@ func proxysqlExporterConfig(node *models.Node, service *models.Service, exporter
 		Args:               args,
 		Env: []string{
 			"DATA_SOURCE_NAME=" + exporter.DSN(service, models.DSNParams{DialTimeout: exporter.EffectiveDialTimeout(), Database: ""}, nil, pmmAgentVersion),
-			"HTTP_AUTH=pmm:" + exporter.GetAgentPassword(),
+			auth,
 		},
 	}
 	if redactMode != exposeSecrets {
 		res.RedactWords = redactWords(exporter)
 	}
-	return res
+	return res, nil
 }

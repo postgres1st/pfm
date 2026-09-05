@@ -666,7 +666,38 @@ func CreatePMMAgent(q *reform.Querier, runsOnNodeID string, customLabels map[str
 
 // CreateNodeExporter creates NodeExporter.
 //
+// ensureAgentPassword gives a row a generated exporter credential when the caller
+// supplied none. Before this, an unset password made GetAgentPassword return the
+// agent ID -- a value the inventory API hands out and logs contain -- so the
+// exporter's basic auth could be derived by anyone able to list agents.
+//
+// It MUST be called before EncryptAgent, and deliberately is NOT a
+// reform.BeforeInserter hook: agent_password is an encrypted column
+// (DefaultAgentEncryptionColumnsV3), reform runs BeforeInsert inside q.Insert --
+// i.e. after EncryptAgent has already run -- so generating there would store
+// plaintext in a column every reader decrypts.
+//
+// Every function that inserts an Agent row calls this. There are three
+// (CreateAgent, CreateNodeExporter, CreateExternalExporter); a fourth that forgets
+// reintroduces the defect silently on whichever path it owns, which is exactly how
+// CreateNodeExporter -- the path PMM Server's own node_exporter uses on every fresh
+// install -- was missed the first time.
+//
 //nolint:unparam
+func ensureAgentPassword(row *Agent) error {
+	if pointer.GetString(row.AgentPassword) != "" {
+		return nil
+	}
+
+	pw, err := generateAgentPassword()
+	if err != nil {
+		return err
+	}
+	row.AgentPassword = &pw
+
+	return nil
+}
+
 func CreateNodeExporter(q *reform.Querier,
 	pmmAgentID string,
 	customLabels map[string]string,
@@ -703,6 +734,10 @@ func CreateNodeExporter(q *reform.Querier,
 	}
 	err = row.SetCustomLabels(customLabels)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := ensureAgentPassword(row); err != nil {
 		return nil, err
 	}
 
@@ -793,6 +828,10 @@ func CreateExternalExporter(q *reform.Querier, params *CreateExternalExporterPar
 	}
 	err = row.SetCustomLabels(params.CustomLabels)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := ensureAgentPassword(row); err != nil {
 		return nil, err
 	}
 
@@ -1006,6 +1045,10 @@ func CreateAgent(q *reform.Querier, agentType AgentType, params *CreateAgentPara
 		row.RTAOptions.Merge(&params.RTAOptions)
 	default:
 		// do nothing
+	}
+
+	if err := ensureAgentPassword(row); err != nil {
+		return nil, err
 	}
 
 	encryptedAgent := EncryptAgent(trimUnicodeNilsInCertFiles(*row))

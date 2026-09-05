@@ -69,7 +69,7 @@ func (s *PostgresExporterConfigTestSuite) SetupTest() {
 			"--collect.custom_query.lr.directory=" + pathsBase(s.pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/low-resolution",
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(s.pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=2&sslmode=disable",
@@ -201,7 +201,7 @@ func (s *PostgresExporterConfigTestSuite) TestDisabledCollectors() {
 			"--collect.custom_query.mr.directory={{ .paths_base }}/collectors/custom-queries/postgresql/medium-resolution",
 			"--exclude-databases=template0,template1,cloudsqladmin,pmm-managed-dev,azure_maintenance,rdsadmin",
 			"--no-collector.locks",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 	}
@@ -297,6 +297,7 @@ func TestAutoDiscovery(t *testing.T) {
 	}
 	exporter := &models.Agent{
 		AgentID:           "agent-id",
+		AgentPassword:     pointer.ToString("agent-password"),
 		AgentType:         models.PostgresExporterType,
 		Username:          new("username"),
 		Password:          new("s3cur3 p@$$w0r4."),
@@ -316,13 +317,13 @@ func TestAutoDiscovery(t *testing.T) {
 			"--collect.custom_query.lr.directory=" + pathsBase(pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/low-resolution",
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=2&sslmode=disable",
-			"HTTP_AUTH=pmm:agent-id",
+			"HTTP_AUTH=pmm:agent-password",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4."},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 
 	t.Run("Not supported version - disabled", func(t *testing.T) {
@@ -412,6 +413,7 @@ func TestMaxConnections(t *testing.T) {
 	}
 	exporter := &models.Agent{
 		AgentID:         "agent-id",
+		AgentPassword:   pointer.ToString("agent-password"),
 		AgentType:       models.PostgresExporterType,
 		Username:        new("username"),
 		Password:        new("s3cur3 p@$$w0r4."),
@@ -434,15 +436,15 @@ func TestMaxConnections(t *testing.T) {
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
 			"--exclude-databases=template0,template1,cloudsqladmin,pmm-managed-dev,azure_maintenance,rdsadmin",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=2&sslmode=disable",
 		},
 		TextFiles: map[string]string{
-			"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
-		}, RedactWords: []string{"s3cur3 p@$$w0r4."},
+			"webConfig": "basic_auth_users:\n    pmm: agent-password\n",
+		}, RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 
 	t.Run("Not supported version - disabled", func(t *testing.T) {
@@ -487,6 +489,7 @@ func (s *PostgresExporterConfigTestSuite) TestAzureTimeout() {
 	}
 	s.exporter = &models.Agent{
 		AgentID:         "agent-id",
+		AgentPassword:   pointer.ToString("agent-password"),
 		AgentType:       models.PostgresExporterType,
 		Username:        new("username"),
 		Password:        new("s3cur3 p@$$w0r4."),
@@ -517,13 +520,13 @@ func (s *PostgresExporterConfigTestSuite) TestAzureTimeout() {
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(s.pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
 			"--exclude-databases=template0,template1,cloudsqladmin,pmm-managed-dev,azure_maintenance,rdsadmin",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=5&sslmode=disable",
-			"HTTP_AUTH=pmm:agent-id",
+			"HTTP_AUTH=pmm:agent-password",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4.", "client_secret"},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password", "client_secret"},
 	}
 	requireNoDuplicateFlags(s.T(), actual.Args)
 	s.Require().Equal(s.expected.Args, actual.Args)
@@ -541,6 +544,7 @@ func (s *PostgresExporterConfigTestSuite) TestPrometheusWebConfig() {
 	}
 	s.exporter = &models.Agent{
 		AgentID:           "agent-id",
+		AgentPassword:     pointer.ToString("agent-password"),
 		AgentType:         models.PostgresExporterType,
 		Username:          new("username"),
 		Password:          new("s3cur3 p@$$w0r4."),
@@ -566,16 +570,16 @@ func (s *PostgresExporterConfigTestSuite) TestPrometheusWebConfig() {
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(s.pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
 			"--exclude-databases=template0,template1,cloudsqladmin,pmm-managed-dev,azure_maintenance,rdsadmin",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=2&sslmode=verify-ca",
 		},
 		TextFiles: map[string]string{
-			"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
+			"webConfig": "basic_auth_users:\n    pmm: agent-password\n",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4."},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 	requireNoDuplicateFlags(s.T(), actual.Args)
 	s.Require().Equal(s.expected.Args, actual.Args)
@@ -593,6 +597,7 @@ func (s *PostgresExporterConfigTestSuite) TestSSLSni() {
 	}
 	s.exporter = &models.Agent{
 		AgentID:           "agent-id",
+		AgentPassword:     pointer.ToString("agent-password"),
 		AgentType:         models.PostgresExporterType,
 		Username:          new("username"),
 		Password:          new("s3cur3 p@$$w0r4."),
@@ -618,16 +623,16 @@ func (s *PostgresExporterConfigTestSuite) TestSSLSni() {
 			"--collect.custom_query.mr",
 			"--collect.custom_query.mr.directory=" + pathsBase(s.pmmAgentVersion, "{{", "}}") + "/collectors/custom-queries/postgresql/medium-resolution",
 			"--exclude-databases=template0,template1,cloudsqladmin,pmm-managed-dev,azure_maintenance,rdsadmin",
-			"--web.listen-address=0.0.0.0:{{ .listen_port }}",
+			"--web.listen-address=127.0.0.1:{{ .listen_port }}",
 			"--web.config={{ .TextFiles.webConfig }}",
 		},
 		Env: []string{
 			"DATA_SOURCE_NAME=postgres://username:s3cur3%20p%40$$w0r4.@1.2.3.4:5432/postgres?connect_timeout=2&sslmode=verify-ca&sslsni=0",
 		},
 		TextFiles: map[string]string{
-			"webConfig": "basic_auth_users:\n    pmm: agent-id\n",
+			"webConfig": "basic_auth_users:\n    pmm: agent-password\n",
 		},
-		RedactWords: []string{"s3cur3 p@$$w0r4."},
+		RedactWords: []string{"s3cur3 p@$$w0r4.", "agent-password"},
 	}
 	requireNoDuplicateFlags(s.T(), actual.Args)
 	s.Require().Equal(s.expected.Args, actual.Args)

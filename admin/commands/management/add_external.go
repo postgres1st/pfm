@@ -61,6 +61,7 @@ type AddExternalCommand struct {
 	Username            string            `help:"External username"`
 	Password            string            `help:"External password"`
 	CredentialsSource   string            `type:"existingfile" help:"Credentials provider"`
+	PasswordStdin       bool              `name:"password-stdin" help:"${stdin_password_help}"`
 	Scheme              string            `placeholder:"http or https" help:"Scheme to generate URI to exporter metrics endpoints"`
 	MetricsPath         string            `placeholder:"/metrics" help:"Path under which metrics are exposed, used to generate URI"`
 	ListenPort          uint16            `placeholder:"port" required:"" help:"Listen port of external exporter for scraping metrics. (Required)"`
@@ -121,6 +122,14 @@ func (cmd *AddExternalCommand) RunCmd() (commands.Result, error) {
 			return nil, fmt.Errorf("failed to retrieve credentials from %s: %w", cmd.CredentialsSource, err)
 		}
 	}
+
+	// Applied after --credentials-source so an explicit stdin password still wins,
+	// and so the bare --password warning fires only when that is really the source.
+	password, err := resolvePasswordStdin(cmd.PasswordStdin, cmd.Password)
+	if err != nil {
+		return nil, err
+	}
+	cmd.Password = password
 
 	params := &mservice.AddServiceParams{
 		Body: mservice.AddServiceBody{
