@@ -15,9 +15,3 @@ This check does the following:
 
 Upon Warning, review the **innodb_log_file_size** and reason that caused the spike. 
 Upon Error, revise the **innodb_log_file_size**.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>

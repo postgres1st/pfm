@@ -15,10 +15,3 @@ Set **log_autovacuum_min_duration** server configuration option to the value of 
 Value >0 will mean that only runs taking longer than so many milliseconds are logged. That can be done online, and the change will reflect immediately. 
 
 Next autovacuum or autoanalyze run information will be present in the PostgreSQL logs.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

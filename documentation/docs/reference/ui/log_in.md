@@ -1,15 +1,15 @@
-# Log into PFMM
+# Log into PGF WatchTower
 
 ## Basic authentication
 
-Basic authentication is the default method, using usernames and passwords stored in PFMM.
+Basic authentication is the default method, using usernames and passwords stored in PGF WatchTower.
 
-To log into PFMM with basic authentication:
+To log into PGF WatchTower with basic authentication:
 {.power-number}
 
 1. Open a web browser and enter the server name or IP address of the PMM Server host: 
 
-   ![PFMM Login](../../images/PMM_Login.jpg)
+   ![PGF WatchTower Login](../../images/PMM_Login.jpg)
 
 2. Enter your username and password:
    - **Default credentials:** `admin`/`admin` 
@@ -19,11 +19,11 @@ To log into PFMM with basic authentication:
 
 4. On first login, you'll be prompted to set a new password. Enter a new password and click **Submit**, or click **Skip** to keep the default (not recommended for production).
 
-![PFMM Home dashboard](../../images/PMM_Home_Dashboard.png)
+![PGF WatchTower Home dashboard](../../images/PMM_Home_Dashboard.png)
 
 ## Other authentication methods
 
-PFMM supports all authentication methods available in Grafana, including:
+PGF WatchTower supports all authentication methods available in Grafana, including:
 
 - **LDAP** - Integrate with your directory service
 - **OAuth 2.0** - GitHub, GitLab, Google, Azure AD, Okta, and other providers

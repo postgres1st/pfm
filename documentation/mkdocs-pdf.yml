@@ -7,9 +7,12 @@ plugins:
     version_selector: false
   # https://github.com/orzih/mkdocs-with-pdf
   with-pdf:
-    output_path: "pdf/Postgres1st-3.8.0.pdf"
+    output_path: "pdf/Postgres1st-3.9.0-beta2.pdf"
     cover_title: "Postgres1st Documentation"
-    cover_subtitle: 3.8.1 (June 16, 2026)
-    author: "Percona Technical Documentation Team"
-    cover_logo: docs/images/Percona_Logo_Color.png
+    cover_subtitle: 3.9.0-beta2
+    author: "Postgres1st"
+    # Was docs/images/Percona_Logo_Color.png, so a PDF built from these sources carried
+    # our title, "Postgres1st Documentation", over Percona's logo and credited their
+    # documentation team.
+    cover_logo: docs/assets/pfw-logo.svg
     custom_template_path: resources/templates

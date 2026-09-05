@@ -36,7 +36,7 @@ Query Analytics data retrieval is not instantaneous because metrics are collecte
 
 ## Label-based access control
 
-Query Analytics integrates with PFMM's [label-based access control (LBAC)](../../admin/roles/access-control/intro.md) to enforce data security and user permissions.
+Query Analytics integrates with PGF WatchTower's [label-based access control (LBAC)](../../admin/roles/access-control/intro.md) to enforce data security and user permissions.
 
 When LBAC is enabled:
 

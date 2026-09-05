@@ -15,9 +15,3 @@ The **innodb_strict_mode** setting is enabled by default. Percona strongly recom
 This is an online change that you can apply with:
 
 `SET GLOBAL innodb_strict_mode=ON;`
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>

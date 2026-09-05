@@ -10,10 +10,3 @@ The current node has a READ-ONLY value of 0 and is at high risk.
 
 Set the value of READ-ONLY to 1, to prevent writes on this node.
 **SET GLOBAL READ-ONLY=1;**
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

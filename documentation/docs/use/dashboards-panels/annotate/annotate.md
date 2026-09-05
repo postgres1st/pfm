@@ -2,12 +2,12 @@
 
 Annotations mark a moment in time. They are useful for marking system changes or other significant application events. They can be set globally or for specific nodes or services.
 
-You create them on the command line with the [`pmm-admin annotate` command](../../commands/pmm-admin/config.md#pmm-admin-annotate)
+You create them on the command line with the [`pfw-admin annotate` command](../../commands/pmm-admin/config.md#pfw-admin-annotate)
 
 Annotations show as a vertical dashed line on a dashboard graph. Reveal the annotation text by mousing over the caret indicator below the line.
 
 ![!image](../../../images/pmm-server.mysql-overview.mysql-client-thread-activity.1.png)
 
-You turn annotations on or off with the **PFMM Annotations** switch in the second row menu bar.
+You turn annotations on or off with the **PGF WatchTower Annotations** switch in the second row menu bar.
 
-![!PFMM Annotations switch](../../../images/PMM_Common_Controls_Annotation_Toggle.jpg)
+![!PGF WatchTower Annotations switch](../../../images/PMM_Common_Controls_Annotation_Toggle.jpg)

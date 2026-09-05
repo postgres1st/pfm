@@ -1,16 +1,16 @@
 
 # Create access roles
 
-Roles are essential components of PFMM's access control system. They allow you to limit users' access to specific metrics based on their responsibilities and permissions.
+Roles are essential components of PGF WatchTower's access control system. They allow you to limit users' access to specific metrics based on their responsibilities and permissions.
 
 ## Before you begin
 
 - You must have administrator privileges to create roles. For more information, see [Manage users](../../manage-users/index.md).
-- Access control must be enabled in PFMM settings
+- Access control must be enabled in PGF WatchTower settings
 
 ## Create a new role
 
-To create access roles in PFMM:
+To create access roles in PGF WatchTower:
 {.power-number}
 
 1. From the [main menu](../../../reference/ui/ui_components.md), go to **Configuration > Settings > Advanced Settings** and enable the **Access control** option.

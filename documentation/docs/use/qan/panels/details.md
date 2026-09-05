@@ -72,8 +72,8 @@ Below is an illustration of the same query using values instead of placeholders.
 
 ![!image](../../../images/PMM_Query_Analytics_Tabs_Explain_With_Values.png)
 
-The image shown above illustrates a query with two placeholders. Therefore, you must enter the correct values in both fields. After filling in these values, click *Explain* to get the results like in the previous PFMM versions without data leaks.
-You will get result like in previous PFMM versions. This method of `explain` prevents data leak.
+The image shown above illustrates a query with two placeholders. Therefore, you must enter the correct values in both fields. After filling in these values, click *Explain* to get the results like in the previous PGF WatchTower versions without data leaks.
+You will get result like in previous PGF WatchTower versions. This method of `explain` prevents data leak.
 
 !!! note alert alert-primary "'Explain' for MongoDB"
 

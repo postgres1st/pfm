@@ -11,9 +11,3 @@ Data file formats may not be compatible with earlier versions of InnoDB since th
 ## Resolution
 
 Barracuda is the recommended file format.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>

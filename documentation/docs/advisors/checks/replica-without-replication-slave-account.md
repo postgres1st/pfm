@@ -12,11 +12,3 @@ Therefore, it is a good idea to create this account on your replicas to prepare 
 CREATE USER 'replication'@'192.168.0.%' IDENTIFIED BY 'password';
 GRANT REPLICATION SLAVE ON *.* to `replication'@'192.168.0.%';
 ```
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-
-

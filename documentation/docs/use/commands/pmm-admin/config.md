@@ -1,31 +1,31 @@
-# Configure PMM Client with pmm-admin
+# Configure PMM Client with pfw-admin
 
-Use these `pmm-admin` commands from the command line to configure PMM Client, register nodes with PMM Server, remove services from monitoring, and add event annotations.
+Use these `pfw-admin` commands from the command line to configure PMM Client, register nodes with PMM Server, remove services from monitoring, and add event annotations.
 
-`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PFMM Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PFMM API](../../../api/index.md).
+`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PGF WatchTower Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
 Use these commands to set up and maintain your PMM Client connection, control which services are monitored, and mark events on your dashboards:
 
-- [`pmm-admin config`](#pmm-admin-config):   Set PMM Server connection details for the local pmm-agent
+- [`pfw-admin config`](#pfw-admin-config):   Set PMM Server connection details for the local pfw-agent
 
-- [`pmm-admin register`](#pmm-admin-register):   Register this node with PMM Server
+- [`pfw-admin register`](#pfw-admin-register):   Register this node with PMM Server
 
-- [`pmm-admin remove`](#pmm-admin-remove):   Stop monitoring a service and remove it from PFMM
+- [`pfw-admin remove`](#pfw-admin-remove):   Stop monitoring a service and remove it from PGF WatchTower
 
-- [`pmm-admin annotate`](#pmm-admin-annotate):   Add event markers to dashboards (deployments, maintenance, incidents)
+- [`pfw-admin annotate`](#pfw-admin-annotate):   Add event markers to dashboards (deployments, maintenance, incidents)
 
-## pmm-admin config
+## pfw-admin config
 
-Set the PMM Server URL and credentials that pmm-agent uses to communicate with the server.
+Set the PMM Server URL and credentials that pfw-agent uses to communicate with the server.
 
 Run this after installing PMM Client or when changing server connection details.
 
 ### Syntax
 
 ```bash
-pmm-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
+pfw-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 ```
 
 ### Flags
@@ -53,25 +53,25 @@ pmm-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 - Configure PMM Client to connect to PMM Server:
 
     ```bash
-    pmm-admin config --server-url=https://admin:admin@192.168.1.100:443
+    pfw-admin config --server-url=https://admin:admin@192.168.1.100:443
     ```
 
 - Configure with self-signed certificate:
 
     ```bash
-    pmm-admin config \
+    pfw-admin config \
       --server-url=https://admin:admin@192.168.1.100:443 \
       --server-insecure-tls
     ```
 
-## pmm-admin register
+## pfw-admin register
 
 Register this node with PMM Server. Use this when setting up PMM Client for the first time or re-registering after server changes.
 
 ### Syntax
 
 ```bash
-pmm-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
+pfw-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 ```
 
 ### Flags
@@ -101,14 +101,14 @@ pmm-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 - Register node with PMM Server:
 
     ```bash
-    pmm-admin register \
+    pfw-admin register \
       --server-url=https://admin:admin@192.168.1.100:443
     ```
 
 - Register with a custom node name:
 
     ```bash
-    pmm-admin register \
+    pfw-admin register \
       db-server-01 \
       --server-url=https://admin:admin@192.168.1.100:443
     ```
@@ -116,7 +116,7 @@ pmm-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 - Register a container node:
 
     ```bash
-    pmm-admin register \
+    pfw-admin register \
       --server-url=https://admin:admin@192.168.1.100:443 \
       --container-name=mysql-prod
     ```
@@ -124,21 +124,21 @@ pmm-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 - Register with environment labels:
 
     ```bash
-    pmm-admin register \
+    pfw-admin register \
       --server-url=https://admin:admin@192.168.1.100:443 \
       --custom-labels="env=production,team=backend"
     ```
 
-## pmm-admin remove
+## pfw-admin remove
 
-Stop monitoring a service and remove it from PFMM. This removes the service and its agents from PMM Server but does not delete any collected data. 
+Stop monitoring a service and remove it from PGF WatchTower. This removes the service and its agents from PMM Server but does not delete any collected data. 
 
 Data remains on PMM Server for the configured [retention period](../../../reference/faq.md#retention).
 
 ### Syntax
 
 ```bash
-pmm-admin remove <SERVICE_TYPE> <SERVICE_NAME> [FLAGS]
+pfw-admin remove <SERVICE_TYPE> <SERVICE_NAME> [FLAGS]
 ```
 
 Where `SERVICE_TYPE` is one of: `mysql`, `postgresql`, `mongodb`, `valkey`, `proxysql`, `haproxy`, `external`, `external-serverless`.
@@ -154,25 +154,25 @@ Where `SERVICE_TYPE` is one of: `mysql`, `postgresql`, `mongodb`, `valkey`, `pro
 - Remove a MySQL service by name:
 
   ```bash
-  pmm-admin remove mysql mysql-prod
+  pfw-admin remove mysql mysql-prod
   ```
 
 - Remove a MongoDB service:
 
   ```bash
-  pmm-admin remove mongodb mongodb-prod
+  pfw-admin remove mongodb mongodb-prod
   ```
 
 - Remove a service by ID:
 
   ```bash
-  pmm-admin remove mysql --service-id=abc123
+  pfw-admin remove mysql --service-id=abc123
   ```
 
 - Force removal when service is unreachable:
 
   ```bash
-  pmm-admin remove mysql mysql-prod --force
+  pfw-admin remove mysql mysql-prod --force
   ```
 
 ### Verify removal
@@ -180,12 +180,12 @@ Where `SERVICE_TYPE` is one of: `mysql`, `postgresql`, `mongodb`, `valkey`, `pro
 After removing a service, verify it's gone:
 
 ```bash
-pmm-admin list
+pfw-admin list
 ```
 
-## pmm-admin annotate
+## pfw-admin annotate
 
-Add event annotations to PFMM dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
+Add event annotations to PGF WatchTower dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
 
 Annotations appear as vertical lines on Grafana dashboards, helping you correlate performance changes with events. 
 
@@ -194,7 +194,7 @@ For more details, see [Annotate dashboards](../../../use/dashboards-panels/annot
 ### Syntax
 
 ```bash
-pmm-admin annotate <TEXT> [FLAGS]
+pfw-admin annotate <TEXT> [FLAGS]
 ```
 
 ### Flags
@@ -232,44 +232,44 @@ If a node or service name is specified, it takes precedence over the auto-detect
 - Add a deployment annotation:
 
     ```bash
-    pmm-admin annotate "Deployed v2.1.0"
+    pfw-admin annotate "Deployed v2.1.0"
     ```
 
 - Add an annotation with tags:
 
     ```bash
-    pmm-admin annotate "Database maintenance" --tags="maintenance,scheduled"
+    pfw-admin annotate "Database maintenance" --tags="maintenance,scheduled"
     ```
 
 - Add an annotation for a specific service:
 
     ```bash
-    pmm-admin annotate "Schema migration completed" --service-name=mysql-prod
+    pfw-admin annotate "Schema migration completed" --service-name=mysql-prod
     ```
 
 - Add an annotation for a specific node:
 
     ```bash
-    pmm-admin annotate "Kernel upgrade" --node-name=db-server-01
+    pfw-admin annotate "Kernel upgrade" --node-name=db-server-01
     ```
 
 - Add an annotation for the current node only:
 
     ```bash
-    pmm-admin annotate "Memory upgrade to 64GB" --node
+    pfw-admin annotate "Memory upgrade to 64GB" --node
     ```
 
 - Combine tags and service:
 
     ```bash
-    pmm-admin annotate "Deployed hotfix v2.1.1" \
+    pfw-admin annotate "Deployed hotfix v2.1.1" \
       --tags="deployment,hotfix" \
       --service-name=mysql-prod
     ```
 
 ## See also
 
-- [`pmm-admin` command overview](../pmm-admin/pmm-admin.md)
+- [`pfw-admin` command overview](../pmm-admin/pmm-admin.md)
 - [Add database services to monitoring](../pmm-admin/add.md)
 - [Modify agent configurations to manage inventory](../pmm-admin/inventory.md)
 - [Check connection status and troubleshoot](../pmm-admin/status.md)

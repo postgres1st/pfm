@@ -25,10 +25,3 @@ With one parallel worker, the **replica_preserve_commit_order** or **slave_prese
 ## Resolution
 
 Adopt a more appropriate value like replica_parallel_workers=4 (default from MySQL 8.0.26) and execute: STOP REPLICA; START REPLICA.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

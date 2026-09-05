@@ -1,8 +1,8 @@
-# About PFMM
+# About PGF WatchTower
 
-<i info>:material-information: Info:</i> This is the documentation for the latest PFMM 3 release. For details, see the [PFMM {{release}} release notes](release-notes/{{release}}.md).
+<i info>:material-information: Info:</i> This is the documentation for the latest PGF WatchTower 3 release. For details, see the [PGF WatchTower {{release}} release notes](release-notes/pfw-{{release}}.md).
 
-Postgres1st (PFMM) is an open source database observability, monitoring, and management platform that gives you a single view of performance metrics - from entire database clusters down to individual queries.
+Postgres1st (PGF WatchTower) is an open source database observability, monitoring, and management platform that gives you a single view of performance metrics - from entire database clusters down to individual queries.
 
 Key features:
 
@@ -11,22 +11,21 @@ Key features:
 - Flexible deployment options: on-premises, cloud, or hybrid environments
 - Easy setup with just two components: Server and Client
 
-## Try PFMM Demo
-Want to see PFMM in action before installing? Visit our [live demo](https://pmmdemo.percona.com/) to explore PFMM's features and interface with sample data.
+## Try PGF WatchTower Demo
 
 <div data-grid markdown><div data-banner markdown>
 
 ## :material-telescope: Discover { .title }
 
-Discover how PFMM can help you monitor your systems and make informed decisions.
+Discover how PGF WatchTower can help you monitor your systems and make informed decisions.
 
-[Discover PFMM :material-arrow-right:](discover-pmm/features.md){ .md-button .md-button--primary }
+[Discover PGF WatchTower :material-arrow-right:](discover-pmm/features.md){ .md-button .md-button--primary }
 
 </div><div data-banner markdown>
 
 ## :material-progress-download: Install { .title }
 
-Ready to dive into PFMM? Follow our simple, step-by-step installation instructions to get started in no time!
+Ready to dive into PGF WatchTower? Follow our simple, step-by-step installation instructions to get started in no time!
 
 [Quickstart guide :material-arrow-right:](quickstart/quickstart.md){ .md-button .md-button--primary }
 
@@ -34,9 +33,9 @@ Ready to dive into PFMM? Follow our simple, step-by-step installation instructio
 
 ## :material-cog: Configure { .title }
 
-Are you ready to begin configuring PFMM  but need help figuring out how to begin? Let's dive in together.
+Are you ready to begin configuring PGF WatchTower  but need help figuring out how to begin? Let's dive in together.
 
-[Configure PFMM :material-arrow-right:](configure-pmm/configure.md){ .md-button .md-button--primary }
+[Configure PGF WatchTower :material-arrow-right:](configure-pmm/configure.md){ .md-button .md-button--primary }
 
 </div><div data-banner markdown>
 

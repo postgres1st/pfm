@@ -19,10 +19,3 @@ As a first remediation action, you can check that the shared_buffer cache is wel
 In some other scenarios, the application can be accessing historical data, which is rarely visited. Therefore, it is not present in memory so the disk reads are required. 
 
 Here the recommendation can involve setting up a separate system for the historical data to avoid impacting the OLTP workload.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

@@ -11,11 +11,3 @@ Before starting to write data into temporary files, each operation will generall
 In addition, several running sessions could be doing such operations concurrently. Therefore, the total memory used could be many times the value of **work_mem**. Make sure to consider this when choosing the value. 
 
 Sort operations are used for ORDER BY, DISTINCT, and merge joins. Hash tables are used in hash joins, hash-based aggregation, and hash-based processing of IN subqueries.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-
-

@@ -19,9 +19,3 @@ File format variables were necessary for creating tables compatible with earlier
 ## Resolution
 
 Barracuda is the recommended file format, support for Antelope is removed from MySQL 8.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>

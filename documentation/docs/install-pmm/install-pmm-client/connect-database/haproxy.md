@@ -1,8 +1,8 @@
-# Connect HAProxy databases to PFMM
-Monitor your HAProxy load balancer performance with Postgres1st (PFMM). PFMM collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
+# Connect HAProxy databases to PGF WatchTower
+Monitor your HAProxy load balancer performance with Postgres1st (PGF WatchTower). PGF WatchTower collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
 
 ## Prerequisites
-Before adding HAProxy to PFMM, ensure:
+Before adding HAProxy to PGF WatchTower, ensure:
 {.power-number}
 
 1. HAProxy configured with metrics endpoint. 
@@ -11,15 +11,15 @@ Before adding HAProxy to PFMM, ensure:
     - Verify metrics are accessible: `curl http://localhost:8404/metrics`
 
 2. PMM Client installed and configured
-  - PMM Client (pmm-agent) running on the same host as HAProxy
-  - Node registered with PMM Server using pmm-admin config
+  - PMM Client (pfw-agent) running on the same host as HAProxy
+  - Node registered with PMM Server using pfw-admin config
 
 ## Add HAProxy service
 
 Add HAProxy monitoring with the required port specification:
 
 ```sh
-pmm-admin add haproxy --listen-port=8404
+pfw-admin add haproxy --listen-port=8404
 ```
 
 where `listen-port` is the port number where HAProxy is running. This is the only required flag.
@@ -35,13 +35,13 @@ Customize the HAProxy service with additional parameters:
 
 ```sh
 # With authentication
-pmm-admin add haproxy --listen-port=8404 --username=pmm --password=pmm MyHAProxy
+pfw-admin add haproxy --listen-port=8404 --username=pmm --password=pmm MyHAProxy
 
 # With custom metrics path and HTTPS
-pmm-admin add haproxy --listen-port=8404 --metrics-path=/prom-metrics --scheme=https
+pfw-admin add haproxy --listen-port=8404 --metrics-path=/prom-metrics --scheme=https
 
 # With custom service name
-pmm-admin add haproxy --listen-port=8404 Production-HAProxy
+pfw-admin add haproxy --listen-port=8404 Production-HAProxy
 ```
 
 #### Available options
@@ -54,7 +54,7 @@ pmm-admin add haproxy --listen-port=8404 Production-HAProxy
 - `--skip-connection-check`: Skip connectivity validation
 
 ### Via web UI
-To add HAProxy through the PFMM web interface:
+To add HAProxy through the PGF WatchTower web interface:
 {.power-number}
 
 1. Go to **Inventory > Add service**.
@@ -65,7 +65,7 @@ To add HAProxy through the PFMM web interface:
 Check that HAProxy monitoring is active:
 
 ```sh
-pmm-admin status
+pfw-admin status
 ```
 
 HAProxy data is visible in the **Advanced Data Exploration** dashboard:

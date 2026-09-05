@@ -1,11 +1,11 @@
-# About label based access control (LBAC) in PFMM
+# About label based access control (LBAC) in PGF WatchTower
 
-Access control in PFMM allows you to manage access to data. By using access control you can restrict access to monitoring metrics and Query Analytics data. 
+Access control in PGF WatchTower allows you to manage access to data. By using access control you can restrict access to monitoring metrics and Query Analytics data. 
 
 This is particularly important in environments where sensitive data is involved, and it helps ensure that only authorized users can access specific information, which is crucial for maintaining security and compliance.
 
 ## How LBAC works
-PFMM uses Prometheus label selectors to control access to metrics and Query Analytics data. 
+PGF WatchTower uses Prometheus label selectors to control access to metrics and Query Analytics data. 
 
 Here's how LBAC works:
 {.power-number}
@@ -33,10 +33,10 @@ Here's how LBAC works:
 
 ## Getting started with LBAC
 
-To implement label-based access control in PFMM:
+To implement label-based access control in PGF WatchTower:
 {.power-number}
 
-1. [Enable access control](enable_access_control.md) in your PFMM settings.
+1. [Enable access control](enable_access_control.md) in your PGF WatchTower settings.
 2. Learn about the [labels available for filtering](labels.md).
 3. [Create access roles](create_roles.md) based on your organizational needs.
 4. Review common [use cases and examples](use_cases.md) for inspiration.
@@ -46,4 +46,4 @@ To implement label-based access control in PFMM:
 
 ## Related topics
 
-- [Manage PFMM users](../../manage-users/index.md)
+- [Manage PGF WatchTower users](../../manage-users/index.md)

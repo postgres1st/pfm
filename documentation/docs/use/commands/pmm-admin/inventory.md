@@ -1,25 +1,25 @@
-# Manage inventory with pmm-admin inventory
+# Manage inventory with pfw-admin inventory
 
-Use `pmm-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
+Use `pfw-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
 
-To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PFMM API](../../../api/index.md).
+To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
-- [`pmm-admin inventory list agents|nodes|services`](#pmm-admin-inventory-list)
+- [`pfw-admin inventory list agents|nodes|services`](#pfw-admin-inventory-list)
 :   Shows registered agents, nodes, or services
 
-- [`pmm-admin inventory change agent`](#pmm-admin-inventory-change-agent)
+- [`pfw-admin inventory change agent`](#pfw-admin-inventory-change-agent)
 :   Modifies agent configuration without removing the service
 
-## pmm-admin inventory list
+## pfw-admin inventory list
 
 View agents, nodes, or services registered with PMM Server. You must specify which type to list:
 
 ```bash
-pmm-admin inventory list agents
-pmm-admin inventory list nodes
-pmm-admin inventory list services
+pfw-admin inventory list agents
+pfw-admin inventory list nodes
+pfw-admin inventory list services
 ```
 
 ### Examples
@@ -27,46 +27,37 @@ pmm-admin inventory list services
 - List all agents:
 
     ```bash
-    pmm-admin inventory list agents
+    pfw-admin inventory list agents
     ```
 
 - List all nodes:
 
     ```bash
-    pmm-admin inventory list nodes
+    pfw-admin inventory list nodes
     ```
 
 - List all services:
 
     ```bash
-    pmm-admin inventory list services
+    pfw-admin inventory list services
     ```
 
-## pmm-admin inventory change agent
+## pfw-admin inventory change agent
 
 Modify agent configuration without removing and re-adding the service. Use this to update collector settings, enable or disable features, or change connection parameters.
 
-!!! note "PFMM 3.7.0+"
-    This command is available starting with PFMM 3.7.0.
+!!! note "PGF WatchTower 3.7.0+"
+    This command is available starting with PGF WatchTower 3.7.0.
 
 ### Syntax
 
 ```bash
-pmm-admin inventory change agent <AGENT_TYPE> <AGENT_ID> [FLAGS]
+pfw-admin inventory change agent <AGENT_TYPE> <AGENT_ID> [FLAGS]
 ```
 
 ### How `inventory change agent` works
 
-Currently supports MongoDB agent types only:
-
-- `mongodb-exporter`
-- `qan-mongodb-profiler-agent`
-- `qan-mongodb-mongolog-agent`
-- `rta-mongodb-agent`
-
-Only the flags you specify are updated — all other settings remain unchanged. Changes take effect immediately without restarting the agent. The command fails with a clear error if the agent ID doesn't exist or the type doesn't match.
-
-When you change connection-affecting parameters (username, password, TLS settings, etc.), PMM verifies the new settings by connecting to the database before saving them. If the connection fails (for example, wrong credentials), the command returns an error and **no changes are applied**. Use `--skip-connection-check` to bypass this verification (see [Connection and authentication](#connection-and-authentication)).
+Upstream supports this subcommand for MongoDB agent types only. This product refuses MongoDB services, so there is currently no agent type it can change here.
 
 ### When to use `change agent` vs `remove/add`
 
@@ -90,7 +81,7 @@ When you change connection-affecting parameters (username, password, TLS setting
 Get the agent ID from the inventory list:
 
 ```bash
-pmm-admin inventory list agents
+pfw-admin inventory list agents
 ```
 
 Look for the agent ID in the output:
@@ -100,7 +91,7 @@ Agent type                  Status      Metrics Mode      Agent ID              
 mongodb_exporter            Running     push             12345-67890                 abc123
 ```
 
-You can also use `pmm-admin list` to see agents alongside their services.
+You can also use `pfw-admin list` to see agents alongside their services.
 
 ### Available flags for MongoDB agents
 
@@ -148,7 +139,7 @@ You can also use `pmm-admin list` to see agents alongside their services.
 :   Comma-separated list of collectors to disable
 
 - `--max-collections-limit`
-:   Max collections to monitor (-1=PFMM decides, 0=unlimited)
+:   Max collections to monitor (-1=PGF WatchTower decides, 0=unlimited)
 
 - `--stats-collections`
 :   Limit stats to specific databases/collections
@@ -172,14 +163,14 @@ You can also use `pmm-admin list` to see agents alongside their services.
 - Update the MongoDB password for a running agent:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --password=new_secret_pass
     ```
 
 - Update the password while the database is unreachable (skip the connection check):
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --password=new_secret_pass \
       --skip-connection-check
     ```
@@ -187,14 +178,14 @@ You can also use `pmm-admin list` to see agents alongside their services.
 - Add custom labels to an agent:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --custom-labels=env=production,team=backend
     ```
 
 - Update credentials and labels together:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --password=new_secret_pass \
       --custom-labels=env=production
     ```
@@ -202,42 +193,42 @@ You can also use `pmm-admin list` to see agents alongside their services.
 - Enable all MongoDB collectors:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --enable-all-collectors
     ```
 
 - Disable a specific collector:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --disable-collectors=topmetrics
     ```
 
 - Change collection limit:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --max-collections-limit=500
     ```
 
 - Update stats collections:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --stats-collections=db1,db2.collection1
     ```
 
 - Disable an agent (stops metric collection without removing it):
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --disable
     ```
 
 - Re-enable a disabled agent:
 
     ```bash
-    pmm-admin inventory change agent mongodb-exporter 12345-67890 \
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
       --enable
     ```
 
@@ -245,13 +236,13 @@ You can also use `pmm-admin list` to see agents alongside their services.
 
 The command returns a clear error message in these cases:
 
-- **Non-existent agent ID**: The specified agent ID does not exist in PFMM inventory.
+- **Non-existent agent ID**: The specified agent ID does not exist in PGF WatchTower inventory.
 - **Mismatched agent type**: The agent ID exists but belongs to a different agent type (e.g., using a `mysqld-exporter` ID with the `mongodb-exporter` subcommand).
 - **Invalid flag value**: A flag receives a value outside its allowed range (e.g., an invalid log level).
 - **Connection check failure**: PMM could not validate the new connection-affecting settings (credentials, TLS) against the database. No changes are saved. If the database is intentionally unreachable (down, in maintenance, or you are setting a password PMM does not yet have), re-run the command with `--skip-connection-check`.
 
 ## See also
 
-- [pmm-admin add](../pmm-admin/add.md)
+- [pfw-admin add](../pmm-admin/add.md)
 - [Configuration commands](../pmm-admin/config.md)
 - [Status and diagnostics](../pmm-admin/status.md)

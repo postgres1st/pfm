@@ -42,14 +42,14 @@ For a complete list of ports and detailed network configuration options, see [Ne
 
 ## Database monitoring requirements
 
-To ensure successful database monitoring with PFMM, confirm the following:
+To ensure successful database monitoring with PGF WatchTower, confirm the following:
 
 - **Monitoring users**: Create database accounts with the required permissions  
 - **Log access**: Enable file system access to database logs (where applicable)  
 
 === ":material-database: Core databases"
 
-    - [PostgreSQL monitoring requirements](../install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pfmm)
+    - [PostgreSQL monitoring requirements](../install-pmm-client/connect-database/postgresql.md#create-a-database-account-for-pfw-watchtower)
 
 === ":material-cloud: Cloud services"
 

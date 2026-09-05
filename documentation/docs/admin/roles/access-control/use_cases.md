@@ -1,18 +1,18 @@
 # Implementing LBAC: practical scenarios
 
-Here are a few practical examples of how label-based access control can be implemented in PFMM to meet specific organizational needs.
+Here are a few practical examples of how label-based access control can be implemented in PGF WatchTower to meet specific organizational needs.
 
 ## Infrastructure overview
-The diagram below shows a sample infrastructure monitored by PFMM. Notice how the metrics stored in VictoriaMetrics include labels like **environment** and **region** that can be used for access control.
+The diagram below shows a sample infrastructure monitored by PGF WatchTower. Notice how the metrics stored in VictoriaMetrics include labels like **environment** and **region** that can be used for access control.
 
   <!-- source: https://miro.com/app/board/uXjVPfHchvM=/ -->
-  ![PFMM Access Control - Metrics collection](../../../images/lbac/pmm-lbac-collect-metrics.jpg)
+  ![PGF WatchTower Access Control - Metrics collection](../../../images/lbac/pmm-lbac-collect-metrics.jpg)
 
 ## Use case 1: Simple selectors
 
 This scenario demonstrates how to create three distinct roles with different levels of access:
 
-![PFMM Access Control - Basic Roles](../../../images/lbac/pmm-lbac-query-metrics-1.jpg)
+![PGF WatchTower Access Control - Basic Roles](../../../images/lbac/pmm-lbac-query-metrics-1.jpg)
 
 | Role | Access needs | Label selectors | Effect |
 |------|--------------|-----------------|--------|
@@ -29,7 +29,7 @@ This advanced use case demonstrates how compound selectors create more granular 
 By requiring matches on multiple labels simultaneously, you can implement sophisticated access patterns that reflect real-world organizational structures and security requirements.
 
 <!-- source: https://miro.com/app/board/uXjVPfHchvM=/ -->
-![PFMM Access Control - Roles](../../../images/lbac/pmm-lbac-query-metrics-2.jpg)
+![PGF WatchTower Access Control - Roles](../../../images/lbac/pmm-lbac-query-metrics-2.jpg)
 
 
 | Role | Access needs | Label selectors | Effect |

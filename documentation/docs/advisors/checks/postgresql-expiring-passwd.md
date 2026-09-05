@@ -16,11 +16,3 @@ Use the following syntax to  extend password expiration:
 or
 
 ```ALTER ROLE foo WITH PASSWORD ‘foobar’ VALID UNTIL '2023-12-25 00:00:00';```
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-
-

@@ -8,7 +8,15 @@ Podman is an open-source, daemonless container engine for developing, managing, 
 
 One of Podman's main benefits is that non-privileged users can run containers without elevated permissions. Podman is largely compatible with Docker commands. If needed, you can set an alias (`alias docker=podman`) and use familiar Docker workflows. 
 
-Most Docker-based PFMM steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
+Most Docker-based PGF WatchTower steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
+
+!!! info "The Watchtower updater is a third-party tool"
+    Watchtower is an independent open-source container updater
+    ([containrrr.dev](https://containrrr.dev/watchtower/)); the image installed below,
+    `percona/watchtower`, is a downstream fork of it. Neither is a Postgres1st component, and
+    neither is related to any Postgres1st product with a similar name. The updater applies
+    only to container deployments — native RPM installations upgrade with `dnf` and never
+    use it.
 
 Choose Podman deployment when:
 
@@ -19,7 +27,7 @@ Choose Podman deployment when:
 
 
 !!! tip "Recommended setup for best performance"
-    Percona recommends running PFMM with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
+    Percona recommends running PGF WatchTower with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
 
 ## Before you start
 
@@ -28,11 +36,11 @@ Before installing PMM Server with Podman, ensure you have:
 
 1. Install [Podman](https://podman.io/getting-started/installation).
 2. Configure [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) Podman.
-3. Create the Podman volume for PFMM:
+3. Create the Podman volume for PGF WatchTower:
   ```sh
   podman volume create pmm-data
   ```
-4. Create the Podman network for PFMM:
+4. Create the Podman network for PGF WatchTower:
   ```sh
   podman network create pmm_default
   ```
@@ -43,28 +51,28 @@ Before installing PMM Server with Podman, ensure you have:
     echo "net.ipv4.ip_unprivileged_port_start=443" | sudo tee /etc/sysctl.d/99-pmm.conf
     sudo sysctl -p /etc/sysctl.d/99-pmm.conf
     ```
-6. Enable the Podman socket (required for Watchtower integration):
+6. Enable the Podman socket (required for the Watchtower updater integration):
     ```sh
     systemctl --user enable --now podman.socket
     ```
-7. Configure Watchtower (if using UI updates) with these security considerations:
+7. Configure the Watchtower updater (if using UI updates) with these security considerations:
 
-    - ensure Watchtower is only accessible from within the Podman network or local host to prevent unauthorized access and enhance container security.
-    - configure network settings to expose only the PMM Server container to the external network, keeping Watchtower isolated within the Podman network.
-    - grant Watchtower access to the Podman socket (mapped to `/var/run/docker.sock` inside the container) to monitor and manage containers, and protect that socket as a sensitive host interface.
-    - verify that both Watchtower and PMM Server are on the same network, or ensure PMM Server can connect to Watchtower for communication. This network setup is essential for PMM Server to initiate updates through Watchtower.
+    - ensure the Watchtower updater is only accessible from within the Podman network or local host to prevent unauthorized access and enhance container security.
+    - configure network settings to expose only the PMM Server container to the external network, keeping the Watchtower updater isolated within the Podman network.
+    - grant the Watchtower updater access to the Podman socket (mapped to `/var/run/docker.sock` inside the container) to monitor and manage containers, and protect that socket as a sensitive host interface.
+    - verify that both the Watchtower updater and PMM Server are on the same network, or ensure PMM Server can connect to the Watchtower updater for communication. This network setup is essential for PMM Server to initiate updates through the Watchtower updater.
 
 ## Update mechanism
 
 PMM Server updates work differently in Podman compared to Docker due to security policies:
 
-- Docker updates: use a simpler flow where PMM Server directly instructs Watchtower to replace the Docker container in one step.
+- Docker updates: use a simpler flow where PMM Server directly instructs the Watchtower updater to replace the Docker container in one step.
 - Podman updates: require systemd integration and follow a multi-step process with environment file changes for better security isolation.
 
 When you initiate an update in the UI with Podman:
 
 - PMM Server updates its image reference in the environment file
-- Watchtower detects the change and pulls the new image
+- The Watchtower updater detects the change and pulls the new image
 - Systemd handles container replacement automatically
 
 ## Log driver compatibility
@@ -85,9 +93,9 @@ Use one of these log drivers instead:
 - `none`: disables logging
 
 === "Installation with UI updates"
-    This method enables updates through the PFMM web interface using Watchtower and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting Watchtower to pull the new image. 
+    This method enables updates through the PGF WatchTower web interface using the Watchtower updater and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting the Watchtower updater to pull the new image. 
 
-    Watchtower then stops the existing container, and systemd automatically restarts it with the updated image.
+    The Watchtower updater then stops the existing container, and systemd automatically restarts it with the updated image.
     {.power-number}
 
     1. Create directories for configuration files if they don't exist:
@@ -133,7 +141,7 @@ Use one of these log drivers instead:
         PMM_IMAGE=docker.io/percona/pmm-server:3
         ```
 
-    4. Create or update the Watchtower service file at `~/.config/systemd/user/watchtower.service`:
+    4. Create or update the Watchtower updater service file at `~/.config/systemd/user/watchtower.service`:
 
         ```sh
         [Unit]
@@ -158,7 +166,7 @@ Use one of these log drivers instead:
         WantedBy=default.target
         ```
 
-    5. Create the environment file for Watchtower at `~/.config/systemd/user/watchtower.env`:
+    5. Create the environment file for the Watchtower updater at `~/.config/systemd/user/watchtower.env`:
 
         ```sh
         WATCHTOWER_HTTP_API_UPDATE=1
@@ -167,14 +175,14 @@ Use one of these log drivers instead:
         WATCHTOWER_IMAGE=docker.io/percona/watchtower:latest
         ```
 
-    6. Start the PMM Server and Watchtower services:
+    6. Start the PMM Server and the Watchtower updater services:
 
         ```sh
         systemctl --user enable --now pmm-server
         systemctl --user enable --now watchtower
         ```
 
-    7. Go to `https://localhost:443` to access the PFMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    7. Go to `https://localhost:443` to access the PGF WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 === "Installation with manual updates"
     The installation with manual updates offers a straightforward setup with direct control over updates, without relying on additional services. 
@@ -228,7 +236,7 @@ Use one of these log drivers instead:
         systemctl --user enable --now pmm-server
         ```
 
-    5. Go to `https://localhost:443` to access the PFMM user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    5. Go to `https://localhost:443` to access the PGF WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 For information on manually upgrading, see [Upgrade PMM Server using Podman](../../../../pmm-upgrade/upgrade_podman.md).
 

@@ -2,15 +2,15 @@
 
 ## End of support for OVF deployment
 
-OVF virtual appliance deployment is deprecated starting with PFMM 3.7.0 and will be removed in PFMM 3.9.0 (expected July 2026). If you currently run PFMM on a virtual appliance, migrate to a supported deployment method before that date.
+OVF virtual appliance deployment is deprecated starting with PGF WatchTower 3.7.0 and will be removed in PGF WatchTower 3.9.0 (expected July 2026). If you currently run PGF WatchTower on a virtual appliance, migrate to a supported deployment method before that date.
 
 ### Before you migrate
 
 Your PMM Server stores monitoring data, dashboards, alert configurations, and user settings. To preserve this data during migration:
 {.power-number}
 
-1. Note your current PMM Server version. Run `pmm-admin status` on any connected client or check **Configuration > Updates** in the PFMM UI.
-2. Document your connected databases. Go to **Configuration > Inventory** in the PFMM UI and record all monitored services, their connection parameters, and any custom labels.
+1. Note your current PMM Server version. Run `pfw-admin status` on any connected client or check **Configuration > Updates** in the PGF WatchTower UI.
+2. Document your connected databases. Go to **Configuration > Inventory** in the PGF WatchTower UI and record all monitored services, their connection parameters, and any custom labels.
 3. Export custom dashboards. If you have created or modified dashboards, export them as JSON from the Grafana UI (**Dashboard > Share > Export**).
 4. Back up alert rules and contact points. Note any custom alert templates, notification channels, and silences you have configured.
 
@@ -26,7 +26,7 @@ Once your new PMM Server is running, complete these steps to finish the migratio
 
 1. [Configure each PMM Client](../../../install-pmm-client/package_manager.md#step-2-install-pmm-client) to point to the new server using service accounts:
 ```bash
-pmm-admin config --server-insecure-tls --server-url=https://service_token:<YOUR_GLSA_TOKEN>@<NEW_PMM_SERVER_IP>:443
+pfw-admin config --server-insecure-tls --server-url=https://service_token:<YOUR_GLSA_TOKEN>@<NEW_PMM_SERVER_IP>:443
 ```
 
 2. Verify data is flowing by logging into the new PMM Server UI and confirming that all monitored services appear in **Configuration > Inventory** with current metrics on dashboards.

@@ -1,10 +1,10 @@
 # Add users
 
-Adding users with basic authentication (username and password stored in PFMM) from **Users and access > Users** tab.
+Adding users with basic authentication (username and password stored in PGF WatchTower) from **Users and access > Users** tab.
 
 If your organization uses LDAP, OAuth, SAML, or other authentication methods, users are managed through your external authentication system. See [authentication methods](../../reference/ui/log_in.md) for more information.
 
-To add a new user in PFMM:
+To add a new user in PGF WatchTower:
 {.power-number}
 
 1. Go to **Users and access > Users > New user**.
@@ -12,7 +12,7 @@ To add a new user in PFMM:
 
 3. Click **Create user**.
 
-The new user can now log in to PFMM using the username and password you created.
+The new user can now log in to PGF WatchTower using the username and password you created.
 
 ## Assign user roles
 

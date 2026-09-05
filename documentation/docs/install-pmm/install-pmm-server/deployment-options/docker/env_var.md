@@ -37,7 +37,7 @@ Select the configuration profile for the built-in ClickHouse instance
     For details, see [ClickHouse memory issues](../../../../troubleshoot/qan_issues.md#clickhouse-memory-issues-in-low-memory-environments).
 
 ### Feature controls
-Enable or disable specific PFMM features:
+Enable or disable specific PGF WatchTower features:
 
 | Variable | Default | Effect when enabled |
 |----------|---------|-------------------|
@@ -184,7 +184,7 @@ Configure connections to external database services:
 !!! note
     To enable Nomad, you must set **both** `PMM_ENABLE_NOMAD=1` and `PMM_PUBLIC_ADDRESS=<your-pmm-server-address>`. Setting `PMM_ENABLE_NOMAD=1` alone is not sufficient — without a public address, Nomad does not start. See [Configure Nomad](../../../../reference/nomad.md#prerequisites) for details.
 
-Control Nomad client-side garbage collection (GC) directly from PFMM using environment variables. 
+Control Nomad client-side garbage collection (GC) directly from PGF WatchTower using environment variables. 
 
 These settings help you manage disk and inode usage, cleanup intervals, and allocation thresholds.
 Use these settings to control resource cleanup and usage, and keep your production environment stable.
@@ -221,23 +221,23 @@ PMM Server passes these variables to integrated components:
 
 ## Experimental variables
 
-PFMM includes experimental environment variables prefixed with `PERCONA_TEST_*` that are under development and subject to change. To see the complete list and details of experimental variables, see [Preview environment variables](preview_env_var.md).
+PGF WatchTower includes experimental environment variables prefixed with `PERCONA_TEST_*` that are under development and subject to change. To see the complete list and details of experimental variables, see [Preview environment variables](preview_env_var.md).
 
 
 !!! caution "For testing only"
     Experimental variables are not supported for production use. Use these variables for testing purposes only.
 
 
-### Variables for migrating from PFMM v2 to PFMM v3
+### Variables for migrating from PGF WatchTower v2 to PGF WatchTower v3
 
-PFMM v3 introduces several important changes to improve consistency and clarity. When migrating from PFMM v2 to PFMM v3, you'll need to update your environment variables to match the new naming convention: 
+PGF WatchTower v3 introduces several important changes to improve consistency and clarity. When migrating from PGF WatchTower v2 to PGF WatchTower v3, you'll need to update your environment variables to match the new naming convention: 
 
 For example:
 
 - `METRICS_RESOLUTION` → `PMM_METRICS_RESOLUTION`
 - `METRICS_RESOLUTION_HR` → `PMM_METRICS_RESOLUTION_HR`
 
-To see the full lists of variable name changes between PFMM v2 and PFMM v3, see the [Migration guide](../../../../pmm-upgrade/migrating_from_pmm_2.md#variables-for-migrating-from-pmm-v2-to-pmm-v3).
+To see the full lists of variable name changes between PGF WatchTower v2 and PGF WatchTower v3, see the [Migration guide](../../../../pmm-upgrade/migrating_from_pmm_2.md#variables-for-migrating-from-pmm-v2-to-pmm-v3).
 
 ## Common configuration examples
 

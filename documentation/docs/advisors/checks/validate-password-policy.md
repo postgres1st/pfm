@@ -9,10 +9,3 @@ Starting with MySQL Server 5.6, MySQL offers the 'validate_password' plugin that
 ## Resolution
 
 Adopt more complex passwords, implement  validate_password_policy at least MEDIUM value.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

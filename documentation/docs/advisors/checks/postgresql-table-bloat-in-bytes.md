@@ -8,7 +8,7 @@ It returns a WARNING if any table in the current database has a bloat over 1GB s
 
 
 !!! warning alert alert-success "Warning"
-    At the moment of creation of this advisor, the PFMM advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
+    At the moment of creation of this advisor, the PGF WatchTower advisor engine connects only to the *pmm* database, so this advisor only checks that database. We would need the engine to be able to establish connections to each database in the PostgreSQL instance to get information.
 
 Bloat is a natural side effect of how the Multiversion Concurrency Control (MVCC) works in a PostgreSQL instance. 
 
@@ -112,11 +112,4 @@ The **pg_repack** approach is much less intrusive than the VACUUM FULL, it only 
 Remember that using **pg_repack** requires the table to have a PK, or at least a UNIQUE total index on a NOT NULL column. 
 
 Also, suppose the table is the source of a logical replication (publication). 
-In that case, it is recommended to stop the replication during the repack and resume it once the operation is finished to avoid unexpected effects. 
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-
+In that case, it is recommended to stop the replication during the repack and resume it once the operation is finished to avoid unexpected effects.

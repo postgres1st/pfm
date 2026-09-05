@@ -1,21 +1,21 @@
-# PFMM installation overview
+# PGF WatchTower installation overview
 
-Installing Postgres1st (PFMM) involves setting up a central PMM Server and distributed PMM Clients that work together to monitor your database environment. 
+Installing Postgres1st (PGF WatchTower) involves setting up a central PMM Server and distributed PMM Clients that work together to monitor your database environment. 
 
 PMM Server provides the web interface with dashboards and analytics, while PMM Clients collect data from your databases with minimal performance impact and send it back to PMM Server for analysis and visualization.
 
 ## What the installation involves
 
-The PFMM installation consists of three main steps that need to be completed in sequence: 
+The PGF WatchTower installation consists of three main steps that need to be completed in sequence: 
 {.power-number}
 
 1. [Install PMM Server](#1-install-pmm-server): centralized platform that collects, analyzes, and visualizes your monitoring data
 2. [Install PMM Clients](#2-install-pmm-client): lightweight agents on each database host that collect metrics without impacting performance
-3. [Configure monitoring services](#3-add-services-for-monitoring): connect PFMM to your database instances, select which metrics to collect, and customize monitoring parameters
+3. [Configure monitoring services](#3-add-services-for-monitoring): connect PGF WatchTower to your database instances, select which metrics to collect, and customize monitoring parameters
 
 ## Plan the installation
 
-Before ou install PFMM, ensure your environment is properly prepared:
+Before ou install PGF WatchTower, ensure your environment is properly prepared:
 
 - [Choose a deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) based on your environment needs.
 - [Verify hardware requirements](../install-pmm/plan-pmm-installation/hardware_and_system.md) to ensure your system meets the necessary specifications.
@@ -37,7 +37,7 @@ Compare the available deployment methods to choose what works best for your setu
 
 ### 1. Install PMM Server
 
-Install and run at least one PMM Server using one of the following deployment methods. If you're not sure which deployment method is best for your environment, check out this [Choose a PFMM deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) topic for a comparison of your options.
+Install and run at least one PMM Server using one of the following deployment methods. If you're not sure which deployment method is best for your environment, check out this [Choose a PGF WatchTower deployment strategy](../install-pmm/plan-pmm-installation/choose-deployment.md) topic for a comparison of your options.
 
 === ":material-docker: Docker"
     Run PMM Server as a Docker container
@@ -87,7 +87,7 @@ Install and run PMM Client on every node where there is a service you want to mo
 
 After installing PMM Client, configure the nodes and services you want to monitor. 
 
-PFMM supports monitoring across the following database technologies, cloud services, proxy services, and system metrics:
+PGF WatchTower supports monitoring across the following database technologies, cloud services, proxy services, and system metrics:
 
 === ":material-database: Database services"
     Monitor PostgreSQL database instances:

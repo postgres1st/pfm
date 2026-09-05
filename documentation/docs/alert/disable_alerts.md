@@ -1,8 +1,8 @@
 # Disable Percona Alerting
 
-Percona Alerting is enabled by default in the PFMM Settings. This feature adds the **Alert templates** option on the **Alerts** menu.
+Percona Alerting is enabled by default in the PGF WatchTower Settings. This feature adds the **Alert templates** option on the **Alerts** menu.
 
-If for some reason you want to disable PFMM Alert templates and keep only Grafana-managed alerts:
+If for some reason you want to disable PGF WatchTower Alert templates and keep only Grafana-managed alerts:
 {.power-number}
 
 1. Go to **Configuration > Settings > Advanced settings**.

@@ -39,8 +39,8 @@ To deploy a specific version of the PMM Client via package manager, check the av
 === "Red Hat-based"
     ```sh
     yum --showduplicates search pmm-client
-    pmm-client-3.0.0-6.el9.x86_64 : Percona Monitoring and Management Client (pmm-agent)
-    pmm-client-3.0.1-6.el9.x86_64 : Percona Monitoring and Management Client (pmm-agent)
+    pmm-client-3.0.0-6.el9.x86_64 : Percona Monitoring and Management Client (pfw-agent)
+    pmm-client-3.0.1-6.el9.x86_64 : Percona Monitoring and Management Client (pfw-agent)
     yum update pmm-client-3.0.1-6.el9.x86_64
     ```
 
@@ -62,4 +62,4 @@ If you initially installed the PMM Client from a tarball, you can update it by r
  3. Run `./install_tarball` script with the `-u` flag.
 
 !!! caution alert alert-warning "Important"
-    The configuration file will be overwritten if you do not provide the `-u` flag while the `pmm-agent` is updated.
+    The configuration file will be overwritten if you do not provide the `-u` flag while the `pfw-agent` is updated.

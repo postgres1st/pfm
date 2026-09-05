@@ -1,25 +1,25 @@
-# Connect an external instance to PFMM
+# Connect an external instance to PGF WatchTower
 
 ## Add general external services
 
 You can collect metrics from an external (custom) exporter on a node when:
 
-- there is already a pmm-agent instance running and,
-- this node has been [configured](../index.md) using the `pmm-admin config` command.
+- there is already a pfw-agent instance running and,
+- this node has been [configured](../index.md) using the `pfw-admin config` command.
 
 ### Usage
 
 ```sh
-pmm-admin add external --service-name=<service-name> --listen-port=<listen-port> --metrics-path=<metrics-path> --scheme=<scheme>
+pfw-admin add external --service-name=<service-name> --listen-port=<listen-port> --metrics-path=<metrics-path> --scheme=<scheme>
 ```
 
 ```sh
-pmm-admin add external-serverless --external-name=<external-service-name> --host=<hostname> --listen-port=<listen-port> --metrics-path=<metrics-path> --scheme=<scheme>
+pfw-admin add external-serverless --external-name=<external-service-name> --host=<hostname> --listen-port=<listen-port> --metrics-path=<metrics-path> --scheme=<scheme>
 ```
 
 ## TLS certificate verification
 
-When connecting to external services over HTTPS, PFMM performs TLS certificate validation by default to ensure secure connections. However, in some scenarios you may need to skip this validation. Use the `--tls-skip-verify` flag when monitoring services with:
+When connecting to external services over HTTPS, PGF WatchTower performs TLS certificate validation by default to ensure secure connections. However, in some scenarios you may need to skip this validation. Use the `--tls-skip-verify` flag when monitoring services with:
 
 - self-signed certificates
 - development environments where proper certificates aren't configured
@@ -35,22 +35,22 @@ When connecting to external services over HTTPS, PFMM performs TLS certificate v
 
 ```sh
 # 🆕 External service with TLS verification skipped
-pmm-admin add external --listen-port=8008 --scheme=https --tls-skip-verify
+pfw-admin add external --listen-port=8008 --scheme=https --tls-skip-verify
 
 # 🆕 External serverless with TLS verification skipped  
-pmm-admin add external-serverless --host=example.com --listen-port=9093 --scheme=https --tls-skip-verify
+pfw-admin add external-serverless --host=example.com --listen-port=9093 --scheme=https --tls-skip-verify
 
 # 🆕 HAProxy with TLS verification skipped (useful for PostgreSQL Operator deployments)
-pmm-admin add haproxy --listen-port=8404 --scheme=https --tls-skip-verify
+pfw-admin add haproxy --listen-port=8404 --scheme=https --tls-skip-verify
 ```
 
 ## Get data from external exporters
 
 There two ways to get metrics from other exporters:
 
-- `external` will collect metrics from the exporter that is run on the same host as PMM Client's connection to it by a port. (See more details with `pmm-admin add external --help`.)
+- `external` will collect metrics from the exporter that is run on the same host as PMM Client's connection to it by a port. (See more details with `pfw-admin add external --help`.)
 
-- `external-serverless` is useful for collecting metrics from cloud services. You need a host and port number to add it to PMM Server. (See more details with `pmm-admin add external-serverless --help`.)
+- `external-serverless` is useful for collecting metrics from cloud services. You need a host and port number to add it to PMM Server. (See more details with `pfw-admin add external-serverless --help`.)
 
 Here are the differences between `external` and `external-serverless` types.
 
@@ -62,19 +62,19 @@ Connection schema of external serverless exporter:
 
 ![Connection schema of external serverless exporter](../../../images/PMM_External_Serverless_Exporter_Schema.jpg)
 
-## Add a service not supported by PFMM
+## Add a service not supported by PGF WatchTower
 
-PFMM can collect any metrics in [Open metrics](https://openmetrics.io) or [Prometheus exposition](https://prometheus.io/docs/instrumenting/exposition_formats/) format. You must specify the host and port of these metrics using the `pmm-admin add external` or `pmm-admin add external-serverless` commands.
+PGF WatchTower can collect any metrics in [Open metrics](https://openmetrics.io) or [Prometheus exposition](https://prometheus.io/docs/instrumenting/exposition_formats/) format. You must specify the host and port of these metrics using the `pfw-admin add external` or `pfw-admin add external-serverless` commands.
 
-From this point, PFMM will collect and store available metrics.
+From this point, PGF WatchTower will collect and store available metrics.
 
 To browse and visualize collected metrics as a first step, we can look at the Advanced Data Exploration dashboard and select informative services and metrics.
 
 ![Advanced Data Exploration dashboard](../../../images/PMM_Advanced_Data_Exploration.jpg)
 
-Another way is to create a [new Grafana Dashboard to PFMM as needed](https://grafana.com/docs/grafana/latest/best-practices/best-practices-for-creating-dashboards/).
+Another way is to create a [new Grafana Dashboard to PGF WatchTower as needed](https://grafana.com/docs/grafana/latest/best-practices/best-practices-for-creating-dashboards/).
 
-One more way is to search for an already created dashboard at <https://grafana.com/grafana/dashboards> for the added exporter and import it into PFMM.
+One more way is to search for an already created dashboard at <https://grafana.com/grafana/dashboards> for the added exporter and import it into PGF WatchTower.
 
 ### Third-party exporters
 
@@ -87,7 +87,7 @@ You can create a custom external exporter or extend your application to expose m
 ??? info "Example: Add an HTTP exporter"
 
     ```sh
-    root@mysql1:~# pmm-admin add external --group=processes  --listen-port=9256
+    root@mysql1:~# pfw-admin add external --group=processes  --listen-port=9256
     External Service added.
     Service ID  : 6485f4fd-745b-4dfb-8b72-328e300f8b50
     Service name: mysql1-processes
@@ -104,7 +104,7 @@ You can create a custom external exporter or extend your application to expose m
 
 
     ```sh
-    root@mysql1:~# pmm-admin add external --group=processes --listen-port=8008 --scheme=https --tls-skip-verify
+    root@mysql1:~# pfw-admin add external --group=processes --listen-port=8008 --scheme=https --tls-skip-verify
     External Service added.
     Service ID  : 7b96c5fe-856c-4efc-9c83-439f411g9c61
     Service name: mysql1-processes
@@ -120,10 +120,10 @@ You can create a custom external exporter or extend your application to expose m
 
 ## Add an external service via UI
 
-To add an external service via PFMM UI:
+To add an external service via PGF WatchTower UI:
 {.power-number}
 
-1. In the PFMM web interface, go to **Inventory > Add service > External Service**.
+1. In the PGF WatchTower web interface, go to **Inventory > Add service > External Service**.
 
     ![!Add external service UI](../../../images/PMM_External_Serverless.png)
 

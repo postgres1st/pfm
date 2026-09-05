@@ -7,9 +7,9 @@ category:
 
 ## Add a Node
 
-This section describes how to add a Node of any type to PFMM Inventory.
+This section describes how to add a Node of any type to PGF WatchTower Inventory.
 
-In PFMM version 2, we featured a separate API call for each Node type. Starting with PFMM 3.0.0, we have streamlined the process by offering a single API endpoint for all Node types. 
+In PGF WatchTower version 2, we featured a separate API call for each Node type. Starting with PGF WatchTower 3.0.0, we have streamlined the process by offering a single API endpoint for all Node types. 
 
 Previously, the Node type was defined by the endpoint, i.e. `Nodes/AddGeneric`. In the new approach, the Node type must be specified as the top-level property of the request payload. As part of this single API endpoint update, we have deprecated individual API endpoint for each Node type.
 

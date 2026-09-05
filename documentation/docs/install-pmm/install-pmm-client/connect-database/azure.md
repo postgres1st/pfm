@@ -1,4 +1,4 @@
-# Connect Azure instance to PFMM
+# Connect Azure instance to PGF WatchTower
 
 !!! caution alert alert-warning "Technical Preview"
     Microsoft Azure functionality is currently in [technical preview](../../../reference/glossary.md#technical-preview) and is subject to change.
@@ -14,9 +14,9 @@ The Microsoft Azure feature is turned off by default. To turn it on:
 
 ## Prerequisites
 
-PFMM can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
+PGF WatchTower can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
 
-By using the PFMM web interface, you connect to the Azure DB instance. Discovery is not yet implemented in PFMM but it is possible to add known instances by providing the connection parameters.
+By using the PGF WatchTower web interface, you connect to the Azure DB instance. Discovery is not yet implemented in PGF WatchTower but it is possible to add known instances by providing the connection parameters.
 {.power-number}
 
 1. Minimize network latency between PMM Server and the Azure instance.
@@ -139,15 +139,15 @@ You can find more details on how to create DB on Azure at:
 - <https://docs.microsoft.com/en-us/azure/mysql/>
 
 !!! hint alert alert-success "Tip"
-    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use PFMM Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
+    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use PGF WatchTower Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
 
 ![!](../../../images/PMM_Add_Instance_Azure_3.png)
 
-In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to PFMM.
+In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to PGF WatchTower.
 
-Fill in all required fields. To set how long PFMM waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
+Fill in all required fields. To set how long PGF WatchTower waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
 
-PFMM can use 3 exporters to collect metrics:
+PGF WatchTower can use 3 exporters to collect metrics:
 
 - Azure Metrics Exporter – collect "system" metrics related to DB.
 
@@ -162,7 +162,7 @@ PFMM can use 3 exporters to collect metrics:
 
 - `mysql_exporter` or `postgres_exporter` – to collect database related metrics.
 
-- pmm-agent to collect queries related metrics using [`pg_stat_statements`](../connect-database/postgresql.md#configure-monitoring-extension) for PostgreSQL or Performance Schema for MySQL (MariaDB)
+- pfw-agent to collect queries related metrics using [`pg_stat_statements`](../connect-database/postgresql.md#configure-monitoring-extension) for PostgreSQL or Performance Schema for MySQL (MariaDB)
 
 ### Adding an Azure instance on PMM Client side
 
@@ -176,7 +176,7 @@ TLS/SSL is enforced on Azure MySQL servers by default. Download the CA certifica
     Use this option only if you've explicitly disabled TLS/SSL on your Azure MySQL server:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=azureuser \
       --password=secure \
       --host=azuremysql.mysql.database.azure.com \
@@ -189,7 +189,7 @@ TLS/SSL is enforced on Azure MySQL servers by default. Download the CA certifica
     This is the recommended approach for most Azure MySQL instances. Provide only the CA certificate to establish encrypted connections:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=azureuser \
       --password=secure \
       --host=azuremysql.mysql.database.azure.com \
@@ -204,7 +204,7 @@ TLS/SSL is enforced on Azure MySQL servers by default. Download the CA certifica
     Use this option only if you've configured client certificate authentication on your Azure database:
     
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=azureuser \
       --password=secure \
       --host=azuremysql.mysql.database.azure.com \

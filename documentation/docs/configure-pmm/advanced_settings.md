@@ -1,4 +1,4 @@
-# Advanced PFMM settings
+# Advanced PGF WatchTower settings
 
 ![!](../images/PMM_Settings_Advanced_Settings.jpg)
 
@@ -8,13 +8,13 @@
 
 ## Telemetry
 
-The **Telemetry** switch enables gathering and sending basic **anonymous** data to Percona, which helps us to determine where to focus the development and what is the uptake for each release of PFMM. 
+The **Telemetry** switch enables gathering and sending basic **anonymous** data to Percona, which helps us to determine where to focus the development and what is the uptake for each release of PGF WatchTower. 
 Specifically, gathering this information helps determine if we need to release patches to legacy versions beyond support, determine when supporting a particular version is no longer necessary, and understand the best frequency of releases.
 
-PFMM Telemetry is based on data collected by various PFMM components and stored inside PMM Server 
+PGF WatchTower Telemetry is based on data collected by various PGF WatchTower components and stored inside PMM Server 
 
 !!! note alert alert-primary ""
-    When PFMM is installed, telemetry is not sent immediately. Before the first telemetry report is generated, PFMM provides users with a 24-hour grace period to disable telemetry.
+    When PGF WatchTower is installed, telemetry is not sent immediately. Before the first telemetry report is generated, PGF WatchTower provides users with a 24-hour grace period to disable telemetry.
 
 To see the metrics being collected by telemetry, from the [main menu](../reference/ui/ui_components.md#1-main-menu) navigate to **Configuration > Settings > Advanced settings > Telemetry** and hover over the exclamation mark.
 
@@ -31,7 +31,7 @@ The first telemetry reporting of a new PMM Server instance is delayed by 24 hour
 
 The landing page for this service, [check.percona.com](https://check.percona.com), explains what this service is.
 
-Grafana’s [anonymous usage statistics](https://grafana.com/docs/grafana/latest/administration/configuration/#reporting-enabled) is not managed by PFMM. To activate it, you must change the PMM Server container configuration after each update.
+Grafana’s [anonymous usage statistics](https://grafana.com/docs/grafana/latest/administration/configuration/#reporting-enabled) is not managed by PGF WatchTower. To activate it, you must change the PMM Server container configuration after each update.
 
 You can also disable telemetry with the `-e DISABLE_TELEMETRY=1` option in your docker run statement for the PMM Server.
 
@@ -39,11 +39,11 @@ For information on the various config parameters for telemetry, see the [config 
 
 ## Check for updates
 
-When active, PFMM will automatically check for updates and put a notification in the home page **Updates** dashboard if any are available.
+When active, PGF WatchTower will automatically check for updates and put a notification in the home page **Updates** dashboard if any are available.
 
 ## Advisors
 
-Advisors are sets of checks grouped by functionality that run a range of database health checks on a registered PFMM instance.
+Advisors are sets of checks grouped by functionality that run a range of database health checks on a registered PGF WatchTower instance.
 
 The findings are reported on the **Advisors > Advisor Insights** page, and an overview is displayed on the Home dashboard.
 
@@ -57,16 +57,16 @@ Enables [Percona Alerting](../alert/index.md) and reveals the **Percona template
 
 ## QAN for PMM Server
 
-By default, Query Analytics (QAN) does not display queries from PMM Server's internal PostgreSQL database, keeping your dashboards focused on monitored databases rather than PFMM's operational activity.
+By default, Query Analytics (QAN) does not display queries from PMM Server's internal PostgreSQL database, keeping your dashboards focused on monitored databases rather than PGF WatchTower's operational activity.
 
 Enable this setting to troubleshoot PMM Server performance issues, monitor resource usage in [High Availability (HA) deployments](../install-pmm/HA.md), or verify that applications aren't misusing the default `postgres` database.
 
 When enabled, open **Query Analytics (QAN)** from the main menu, then filter by the `pmm-server-postgresql` service to view PMM Server queries. 
 
-You'll see queries related to PFMM's inventory, settings, advisor checks, alerts, backups, and authentication. These queries are typically lightweight so any spikes in volume, latency, or unexpected entries may indicate performance issues or database misuse.
+You'll see queries related to PGF WatchTower's inventory, settings, advisor checks, alerts, backups, and authentication. These queries are typically lightweight so any spikes in volume, latency, or unexpected entries may indicate performance issues or database misuse.
 
 !!! warning
-    The default `postgres` database should only be used by PFMM's internal operations. Applications should always use dedicated databases.
+    The default `postgres` database should only be used by PGF WatchTower's internal operations. Applications should always use dedicated databases.
 
 ## Public Address
 

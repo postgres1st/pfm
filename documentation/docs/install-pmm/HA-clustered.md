@@ -1,4 +1,4 @@
-# Understand PFMM High Availability Cluster
+# Understand PGF WatchTower High Availability Cluster
 
 !!! warning "Technical Preview: Not production-ready"
     This feature is in **Technical Preview** for testing and feedback only. Expect [known issues](../install-pmm/install-HA-clustered.md#known-issues), breaking changes, and incomplete features.
@@ -13,12 +13,12 @@
     
     If your strategy requires these features, evaluate carefully before testing.
  
-Standard PFMM monitoring goes offline for minutes during server failures. PFMM HA Cluster keeps monitoring running by immediately switching to secondary servers when failures occur.
+Standard PGF WatchTower monitoring goes offline for minutes during server failures. PGF WatchTower HA Cluster keeps monitoring running by immediately switching to secondary servers when failures occur.
 
 
-PFMM HA Cluster keeps your database monitoring running continuously, even when servers fail or during maintenance windows.
+PGF WatchTower HA Cluster keeps your database monitoring running continuously, even when servers fail or during maintenance windows.
 
-Unlike [Single-Instance deployments](../install-pmm/HA-kubernetes-single-instance.md) where a server failure means minutes of monitoring downtime, PFMM HA Cluster immediately fails over to secondary servers, keeping your monitoring online.
+Unlike [Single-Instance deployments](../install-pmm/HA-kubernetes-single-instance.md) where a server failure means minutes of monitoring downtime, PGF WatchTower HA Cluster immediately fails over to secondary servers, keeping your monitoring online.
 
 Whether a server crashes, you're upgrading software, or scaling your infrastructure, your monitoring stays active with no blind spots or missed incidents.
 
@@ -39,7 +39,7 @@ Whether a server crashes, you're upgrading software, or scaling your infrastruct
 | **Setup complexity** | ● Low | ●●● Medium |
 | **Resource overhead** | 1x baseline | 3-5x baseline |
 | **Setup time** | ~5 minutes | ~20 minutes |
-| **PFMM instances** | 1 pod | 3 pods with leader election |
+| **PGF WatchTower instances** | 1 pod | 3 pods with leader election |
 | **Automatic failover routing** | No | Yes (HAProxy routes to active leader) |
 | **Databases** | Built-in | External clusters |
 | **Anti-affinity** | No | Yes (pods distributed across nodes) |
@@ -60,7 +60,7 @@ Whether a server crashes, you're upgrading software, or scaling your infrastruct
 
 ## Plan your resources
 
-Before installing PFMM HA, ensure your Kubernetes cluster has sufficient capacity to run the distributed architecture. This section helps you calculate the resources you'll need based on your monitoring requirements.
+Before installing PGF WatchTower HA, ensure your Kubernetes cluster has sufficient capacity to run the distributed architecture. This section helps you calculate the resources you'll need based on your monitoring requirements.
 
 ### Minimum cluster requirements
 
@@ -78,7 +78,7 @@ If you're planning a larger deployment, use the sizing guidelines below to calcu
 
 Use this table to estimate resources based on your monitoring scale:
 
-| Monitored services | PFMM replicas | ClickHouse replicas | VictoriaMetrics storage | Total CPU | Total memory | Total storage |
+| Monitored services | PGF WatchTower replicas | ClickHouse replicas | VictoriaMetrics storage | Total CPU | Total memory | Total storage |
 |-------------------|--------------|---------------------|------------------------|-----------|--------------|---------------|
 | 1-10 | 3 | 3 | 3 | 12 cores | 20 GB | 100 GB |
 | 11-50 | 3 | 3 | 3 | 15 cores | 30 GB | 200 GB |
@@ -97,7 +97,7 @@ Your actual resource needs may vary based on:
 
 ### Understand how resources are distributed
 
-PFMM HA spreads resource consumption across multiple components to ensure high availability. Understanding this breakdown helps you identify which components to scale as your monitoring needs grow, and where bottlenecks might occur.
+PGF WatchTower HA spreads resource consumption across multiple components to ensure high availability. Understanding this breakdown helps you identify which components to scale as your monitoring needs grow, and where bottlenecks might occur.
 
 | Component | CPU | Memory | Storage | Notes |
 |-----------|-----|--------|---------|-------|
@@ -110,7 +110,7 @@ PFMM HA spreads resource consumption across multiple components to ensure high a
 
 ## Learn the architecture
 
-The PFMM HA architecture diagram below shows how components interact and communicate. 
+The PGF WatchTower HA architecture diagram below shows how components interact and communicate. 
 
 The architecture consists of:
 
@@ -121,7 +121,7 @@ The architecture consists of:
 ![HA Clustered diagram](../images/HA-diagram.jpg)
 ### How operators manage databases
 
-PFMM HA requires three Kubernetes operators to manage distributed databases:
+PGF WatchTower HA requires three Kubernetes operators to manage distributed databases:
 
 - VictoriaMetrics Operator: Manages metrics storage
 - Altinity ClickHouse Operator: Manages query analytics data
@@ -129,12 +129,12 @@ PFMM HA requires three Kubernetes operators to manage distributed databases:
 
 These operators handle scaling, failover, and replication automatically. 
 
-When you deploy PFMM HA, the operators keep the databases healthy and available, which is how PFMM survives node failures and recovers immediately.
+When you deploy PGF WatchTower HA, the operators keep the databases healthy and available, which is how PGF WatchTower survives node failures and recovers immediately.
 
-You'll need to install these operators before deploying PFMM HA.
+You'll need to install these operators before deploying PGF WatchTower HA.
 
 ### Learn high availability mechanisms
-PFMM HA uses several mechanisms to ensure continuous operation:
+PGF WatchTower HA uses several mechanisms to ensure continuous operation:
 
 - **Leader election**: PMM servers use Raft consensus protocol for leader election (ports 9096, 9097)
 - **Automatic failover**: HAProxy detects when the active leader becomes unhealthy and routes traffic to the new leader
@@ -145,8 +145,8 @@ PFMM HA uses several mechanisms to ensure continuous operation:
 ### Known issues
 
 - Only databases deployed in the same Kubernetes cluster can be added to monitoring. Remote database monitoring will be added in a future release.
-- **[PMM-14665](https://perconadev.atlassian.net/browse/PMM-14665)**: When adding a service, the node list incorrectly includes PostgreSQL database instance nodes alongside PFMM HA nodes.
-- **[PMM-14678](https://perconadev.atlassian.net/browse/PMM-14678)**: Database dashboards don't display metrics for services added via pmm-admin, though they work correctly for services added through the UI.
+- **[PMM-14665](https://perconadev.atlassian.net/browse/PMM-14665)**: When adding a service, the node list incorrectly includes PostgreSQL database instance nodes alongside PGF WatchTower HA nodes.
+- **[PMM-14678](https://perconadev.atlassian.net/browse/PMM-14678)**: Database dashboards don't display metrics for services added via pfw-admin, though they work correctly for services added through the UI.
 - **[PMM-14680](https://perconadev.atlassian.net/browse/PMM-14680)**: PostgreSQL database instance nodes and services display with an incorrect 'pmm-' prefix in their names.
 - **[PMM-14734](https://perconadev.atlassian.net/browse/PMM-14734)**: HA cluster status always displays as "Healthy" even when follower or leader pods are deleted or not ready.
 - **[PMM-14742](https://perconadev.atlassian.net/browse/PMM-14742)**: The Inventory page shows inconsistent numbers of PostgreSQL services (4-5 instead of the expected 6 services).
@@ -154,8 +154,8 @@ PFMM HA uses several mechanisms to ensure continuous operation:
 
 ## Ready to deploy?
 
-Now that you understand how PFMM HA Cluster works, you can deploy it on your Kubernetes cluster. 
+Now that you understand how PGF WatchTower HA Cluster works, you can deploy it on your Kubernetes cluster. 
 
 The installation process uses Helm to set up all three replicas, configure HAProxy load balancing, and deploy the distributed databases automatically.
 
-[Install PFMM HA Cluster →](../install-pmm/install-HA-clustered.md){.md-button}
+[Install PGF WatchTower HA Cluster →](../install-pmm/install-HA-clustered.md){.md-button}

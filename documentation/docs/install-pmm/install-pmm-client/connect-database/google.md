@@ -1,6 +1,6 @@
-# Connect Google Cloud Platform instances to PFMM
+# Connect Google Cloud Platform instances to PGF WatchTower
 
-PFMM can monitor MySQL or PostgreSQL instances hosted on the [Google Cloud Platform][GOOGLE_CLOUD].
+PGF WatchTower can monitor MySQL or PostgreSQL instances hosted on the [Google Cloud Platform][GOOGLE_CLOUD].
 
 The connection can be direct, or indirect using [Cloud SQL Proxy][GOOGLE_CLOUD_SQL_PROXY].
 
@@ -21,7 +21,7 @@ To add a MySQL instance on Google Cloud:
 
 4. (Optional) For SSL/TLS connections, download the server CA certificate from the GCP Console under your Cloud SQL instance > **Connections > Security**.
 
-5. Log into the PFMM user interface.
+5. Log into the PGF WatchTower user interface.
 
 6. Select **Inventory > Add Service > MySQL**.
 
@@ -54,7 +54,7 @@ Google Cloud SQL MySQL requires only the CA certificate for TLS connections. Cli
     **With TLS (CA certificate only - recommended):**
     
     ```sh
-        pmm-admin add mysql \
+        pfw-admin add mysql \
         --username=pmm \
         --password=secure \
         --host=<YOUR_GCP_SQL_IP> \
@@ -67,7 +67,7 @@ Google Cloud SQL MySQL requires only the CA certificate for TLS connections. Cli
 
     **With TLS and client authentication (if configured):**
     ```sh
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=pmm \
       --password=secure \
       --host=<YOUR_GCP_SQL_IP> \
@@ -82,7 +82,7 @@ Google Cloud SQL MySQL requires only the CA certificate for TLS connections. Cli
 
     **Without TLS:**
     ```sh
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=pmm \
       --password=secure \
       --host=<YOUR_GCP_SQL_IP> \
@@ -113,7 +113,7 @@ To add a PostgreSQL instance on Google Cloud:
     CREATE EXTENSION pg_stat_statements;
     ```
 
-4. Log into the PFMM user interface.
+4. Log into the PGF WatchTower user interface.
 
 5. Select **Inventory > Add service > PostgreSQL**.
 
@@ -164,7 +164,7 @@ To add a MySQL instance:
 6. Add instance:
 
     ```sh
-    pmm-admin add mysql --host=127.0.0.1 --port=3306 \
+    pfw-admin add mysql --host=127.0.0.1 --port=3306 \
     --username=root --password=secret \
     --service-name=MySQLGCP --query-source=perfschema
     ```
@@ -198,7 +198,7 @@ To add a PostgreSQL instance:
 7. Add service:
 
     ```sh
-    pmm-admin add postgresql --host=127.0.0.1 --port=5432 \
+    pfw-admin add postgresql --host=127.0.0.1 --port=5432 \
     --username="postgres" --password=secret --service-name=PGGCP
     ```
 

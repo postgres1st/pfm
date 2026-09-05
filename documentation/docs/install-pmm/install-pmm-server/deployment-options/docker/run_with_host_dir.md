@@ -2,7 +2,7 @@
 # Run Docker with the host directory
 
 !!! danger alert alert-danger "Not recommended for production environments"
-    Using a host directory for PFMM data persistence is not recommended for production environments. This approach may lead to permission issues, inconsistent backup behavior, and potential data corruption during upgrades. 
+    Using a host directory for PGF WatchTower data persistence is not recommended for production environments. This approach may lead to permission issues, inconsistent backup behavior, and potential data corruption during upgrades. 
     
     For production deployments, we strongly recommend using [Docker volumes](./run_with_vol.md) instead, which provide better isolation, portability, and compatibility with Docker's ecosystem.
 
@@ -10,7 +10,7 @@
 Host directory mounting can be useful in specific scenarios:
 
 - development and testing environments
-- when you need direct filesystem access to PFMM data
+- when you need direct filesystem access to PGF WatchTower data
 - integration with existing host-based backup solutions
 - migration from other deployment methods
 
@@ -23,9 +23,9 @@ To deploy PMM Server using a host directory:
    docker pull percona/pmm-server:3
    ```
 
-2. Create and identify a directory on the host where to store PFMM data. For example, `/home/user/srv`.
+2. Create and identify a directory on the host where to store PGF WatchTower data. For example, `/home/user/srv`.
 
-3. Run the PMM Server with the host image mounted, making sure to replace `your_watchtower_token` with the token created during [Watchtower setup](../docker/index.md#installation-options): 
+3. Run the PMM Server with the host image mounted, making sure to replace `your_watchtower_token` with the token created during [Watchtower updater setup](../docker/index.md#installation-options): 
 
     ```sh
     docker run --detach --restart always \
@@ -44,7 +44,7 @@ To deploy PMM Server using a host directory:
     docker exec -t pmm-server change-admin-password your_secure_password
     ```
 
-5. Access the PFMM web interface at `https://localhost:443` in a web browser. If you're connecting from a different machine, replace `localhost` with your server's IP address or hostname.
+5. Access the PGF WatchTower web interface at `https://localhost:443` in a web browser. If you're connecting from a different machine, replace `localhost` with your server's IP address or hostname.
 
 ## Migrate from data container to host directory
 

@@ -1,6 +1,6 @@
-# About PFMM API
+# About PGF WatchTower API
 
-PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate PFMM operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other PFMM components. 
+PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate PGF WatchTower operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other PGF WatchTower components. 
 
 The [complete API documentation on Readme.io](https://percona-pmm.readme.io/reference/introduction) includes detailed endpoint specifications, authentication methods, example requests, and response schemas.
 
@@ -18,7 +18,7 @@ You can explore and test the API using the built-in [Swagger](https://swagger.io
 
 ## Core API resources
 
-The PFMM API organizes resources into Nodes, Services and Agents. 
+The PGF WatchTower API organizes resources into Nodes, Services and Agents. 
 
 
 ### Nodes
@@ -52,12 +52,12 @@ Agents are the monitoring components that:
 
 ## Resource types and management
 
-All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within PFMM.
+All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within PGF WatchTower.
 
 The management of these resources follows specific patterns:
 
- - **Nodes and Services**: These are inherently external resources. PFMM does not manage their actual creation or deletion. Instead, PFMM maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
-- **Agents**: Most Agents are initiated and halted by pmm-agent. The exception is the External Exporter Type, which is initiated externally. Agents are responsible for collecting and reporting monitoring data about Nodes and Services.
+ - **Nodes and Services**: These are inherently external resources. PGF WatchTower does not manage their actual creation or deletion. Instead, PGF WatchTower maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
+- **Agents**: Most Agents are initiated and halted by pfw-agent. The exception is the External Exporter Type, which is initiated externally. Agents are responsible for collecting and reporting monitoring data about Nodes and Services.
 
 ## Authentication
 

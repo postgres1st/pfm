@@ -1,11 +1,13 @@
 # MkDocs configuration for default Material-themed build
 INHERIT: mkdocs-base.yml
 
-site_url: https://docs.percona.com/percona-monitoring-and-management/
+# No site_url: this documentation is not published at a canonical address yet, and
+# mkdocs-base.yml already sets it empty. It previously pointed at
+# docs.percona.com/percona-monitoring-and-management/, which made every canonical link
+# and the whole sitemap declare this site as Percona's PMM documentation.
 
-# Google Analytics configuration
-extra:
-  analytics:
-    provider: google
-    property: G-J4J70BNH0G
+# No analytics. This carried Google Analytics property G-J4J70BNH0G -- Percona's -- so
+# every visitor to our documentation was reported to them. Removed rather than
+# re-pointed: we do not currently collect analytics, and the product force-disables
+# telemetry for the same reason.
 

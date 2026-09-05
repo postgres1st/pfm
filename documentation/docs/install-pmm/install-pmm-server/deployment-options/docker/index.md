@@ -2,9 +2,17 @@
 
 Deploy PMM Server as a Docker container for a fast, flexible and isolated setup. 
 
-While PMM Server runs independently, we highly recommend that you streamline [upgrades via the PFMM user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing [Watchtower](https://containrrr.dev/watchtower/) alongside PMM Server. 
+While PMM Server runs independently, we highly recommend that you streamline [upgrades via the PGF WatchTower user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing the [Watchtower updater](https://containrrr.dev/watchtower/) alongside PMM Server. 
 
-With Watchtower installed, you can easily update PMM Server directly from the **Upgrade** page or by clicking the **Upgrade Now** button on the **Home** dashboard.
+!!! info "The Watchtower updater is a third-party tool"
+    Watchtower is an independent open-source container updater
+    ([containrrr.dev](https://containrrr.dev/watchtower/)); the image installed below,
+    `percona/watchtower`, is a downstream fork of it. Neither is a Postgres1st component, and
+    neither is related to any Postgres1st product with a similar name. The updater applies
+    only to container deployments — native RPM installations upgrade with `dnf` and never
+    use it.
+
+With the Watchtower updater installed, you can easily update PMM Server directly from the **Upgrade** page or by clicking the **Upgrade Now** button on the **Home** dashboard.
 
 ## Prerequisites
 Before installation, ensure you have:
@@ -13,16 +21,16 @@ Before installation, ensure you have:
 - CPU with `x86-64-v2` support
 - [Sufficient system resources](../../../plan-pmm-installation/hardware_and_system.md) (recommended: 2+ CPU cores, 4+ GB RAM, 100+ GB disk space)
 
-### Watchtower security requirements
+### Watchtower updater security requirements
 
-Watchtower requires access to the Docker socket to monitor and update containers. Since the Docker socket provides root-level access to the host system, it's critical to limit Watchtower's exposure to prevent potential security vulnerabilities.
+The Watchtower updater requires access to the Docker socket to monitor and update containers. Since the Docker socket provides root-level access to the host system, it's critical to limit the Watchtower updater's exposure to prevent potential security vulnerabilities.
 
-To ensure a secure setup when using Watchtower:
+To ensure a secure setup when using the Watchtower updater:
  
- - limit Watchtower's access to Docker network or localhost to prevent unauthorized external connections. See [Container network isolation guide](https://docs.docker.com/network/drivers/bridge/#use-user-defined-bridge-networks).
+ - limit the Watchtower updater's access to Docker network or localhost to prevent unauthorized external connections. See [Container network isolation guide](https://docs.docker.com/network/drivers/bridge/#use-user-defined-bridge-networks).
  - configure network to ensure only PMM Server is exposed externally. See [Docker networking best practices](https://docs.docker.com/network/bridge/#manage-a-user-defined-bridge).
- - secure Docker socket access for Watchtower. See [Docker socket security](https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface).
- - place both Watchtower and PMM Server on the same Docker network. See [Watchtower network configuration](https://containrrr.dev/watchtower/usage-overview/#docker_host).
+ - secure Docker socket access for the Watchtower updater. See [Docker socket security](https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface).
+ - place both the Watchtower updater and PMM Server on the same Docker network. See [Watchtower updater network configuration](https://containrrr.dev/watchtower/usage-overview/#docker_host).
 
 ## Installation options
 
@@ -35,14 +43,14 @@ To ensure a secure setup when using Watchtower:
     - **Access the UI**: Navigate to `https://SERVER_IP_ADDRESS` in your browser
     - **Log in**: Default credentials `admin` / `admin`
 
-### Install PMM Server + Watchtower
+### Install PMM Server + Watchtower updater
 
-You can install PMM Server with Watchtower using one of two methods:
+You can install PMM Server with the Watchtower updater using one of two methods:
 
 
 === "Easy-install script (Recommended for simplicity)"
 
-    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower commands, enabling a one-step installation of PFMM with Watchtower. Run the following command:
+    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower updater commands, enabling a one-step installation of PGF WatchTower with the Watchtower updater. Run the following command:
 
       ```sh
       curl -fsSL https://www.percona.com/get/pmm | /bin/bash
@@ -52,14 +60,14 @@ You can install PMM Server with Watchtower using one of two methods:
     For a more customizable setup, follow these steps:
     {.power-number}
     
-    1.  Create a Docker network for PFMM and Watchtower:
+    1.  Create a Docker network for PGF WatchTower and the Watchtower updater:
          ```sh
          docker network create pmm-network
          ``` 
 
-    2. (Optional but recommended) Install Watchtower to enable PMM Server upgrades via the UI:
+    2. (Optional but recommended) Install the Watchtower updater to enable PMM Server upgrades via the UI:
 
-        - Create a user-defined token to secure Watchtower's HTTP API. You can use any value or generate a secure token using `openssl` or another method. Ensure the same token is used in both the Watchtower and PMM Server configurations:
+        - Create a user-defined token to secure the Watchtower updater's HTTP API. You can use any value or generate a secure token using `openssl` or another method. Ensure the same token is used in both the Watchtower updater and PMM Server configurations:
 
             ```sh   
             openssl rand -hex 16
@@ -67,7 +75,7 @@ You can install PMM Server with Watchtower using one of two methods:
             e09541c81e672bf0e48dbc72d4f92790
             ```
         
-        - Install Watchtower using your token: 
+        - Install the Watchtower updater using your token: 
 
             ```sh  
             docker run --detach \
@@ -120,7 +128,7 @@ You can install PMM Server with Watchtower using one of two methods:
 After installation:
 {.power-number}
 
-1. Access the PFMM interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
+1. Access the PGF WatchTower interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
 
 2. Log in with default credentials: `admin` / `admin`. 
 

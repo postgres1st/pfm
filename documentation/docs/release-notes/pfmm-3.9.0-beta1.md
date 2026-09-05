@@ -8,6 +8,14 @@ no container runtime is involved.
 This is a **beta**. It is complete and tested for the workflow described below, and the
 limitations at the end are stated plainly rather than left to be discovered.
 
+!!! note "Names on this page are beta1's"
+
+    The product was renamed to **PGF WatchTower** after beta1, and its packages,
+    units and service account moved from `pfm-*`/`pfm` to `pfw-*`/`pfw`. This page
+    keeps beta1's names on purpose: it describes the release that shipped, and the
+    commands below are the ones that work on a beta1 host. There is no upgrade path
+    from beta1 to beta2 — see the beta2 notes for a fresh install.
+
 ---
 
 ## What you get
@@ -45,9 +53,10 @@ See `INSTALL.md` inside the bundle. In outline:
 
 1. Unpack the tarball and import the signing key
 2. Point `dnf` at the bundled repository
-3. `sudo dnf --enablerepo=pfmm install pfm-server`
+3. `sudo dnf --enablerepo=pfw install pfm-server`
 4. `sudo systemctl start pfm.target`
-5. Open `https://<host>:8443/` (default `admin` / `admin` — change it)
+5. Open `https://<host>:8443/` and sign in as `admin`. The password is generated
+   during first boot; read it with the command under *Bootstrap credentials* below.
 
 The bundle carries PFMM, PostgreSQL 18 and ClickHouse: everything an EL9 repository does
 not provide. Your distribution's own packages — `nginx`, `perl`, `polkit`, `openssl` —
@@ -73,17 +82,75 @@ below a plain `3.9.0`, so upgrading from this beta to the final release works no
 
 ---
 
+## Exporter endpoint security — one breaking change
+
+**Exporters now use a real per-agent credential.** Previously, when no password was
+stored, the exporter's HTTP basic auth fell back to the agent's own ID — a value the
+inventory API returns and logs contain, so anyone able to list agents could derive
+any exporter's credential. Each agent is now issued 128 bits of random hex at
+registration, and existing agents are given one automatically when the server starts
+after upgrading. No action is required.
+
+**BREAKING — exporters now bind `127.0.0.1` by default.** This affects only services
+registered with `--metrics-mode=pull`. The default registration uses push mode, where
+the agent sends metrics over the connection it already holds to the server, and those
+exporters already bound loopback — so most deployments are unaffected and need no
+firewall change.
+
+If you do scrape a client host over the network, the failure is silent: metrics simply
+stop arriving. Three remedies, in order of preference:
+
+1. Re-register the service with `--expose-exporter` (per service, recommended).
+2. Switch it to push mode, which needs no inbound listener at all.
+3. Set `PFM_EXPOSE_EXPORTERS=true` on the **server** and restart `pfm-managed` to
+   restore the previous fleet-wide behaviour. Intended for recovering a fleet that has
+   already gone dark, while you re-register services; remove it afterwards.
+
+**Two things to be aware of:**
+
+- **Debug logging now contains real exporter credentials.** `PMM_DEBUG=1` logs the
+  agent state request, and the `HTTP_AUTH` value it carries used to be the public
+  agent ID. Treat debug logs from this release as secret-bearing.
+- **The RDS and Azure exporters are not covered.** They still bind all interfaces and
+  carry no authentication at all. A single process serves many monitored instances, so
+  there is no one agent whose credential or `--expose-exporter` setting would apply;
+  closing that needs a separate change. Firewall those ports if you use either.
+
 ## Known limitations
 
 Please read these before deploying anything you depend on.
 
-**SELinux — validation planned before general availability.** This beta has not been
-validated on a host with SELinux in enforcing mode, and we do not yet ship an SELinux
-policy module. If your policy is enforcing, expect to review denials, and treat
-`setenforce 0` as a temporary measure for evaluation only. The systemd hardening and the
-polkit rule the server depends on are in place and tested; SELinux confinement
-specifically is what remains, and validating it is planned work for the
-general-availability release.
+**SELinux — a policy module ships; automated enforcing validation does not.** The
+package installs an SELinux policy module (`pfm_nginx`) covering nginx's TLS material
+and buffers under `/srv/nginx`, and loads it on install where `semodule` is available.
+The rest of `/srv` -- the PostgreSQL, ClickHouse, Grafana and VictoriaMetrics data
+directories -- is deliberately left unlabelled by it. The earlier statement that no module
+was shipped is out of date.
+
+Enforcing mode has been exercised by hand on RHEL 9.8 (x86_64), and that run shaped
+what ships: the nginx unit relabels `/srv/nginx` before starting because a certificate
+placed with `mv` or `cp -a` keeps the wrong label and TLS then fails silently, and the
+ClickHouse unit's capability bounding set was set from measured behaviour on that host.
+Those are findings a container cannot produce.
+
+What is missing is *reproducible* validation. The automated checks are structural: the
+suites confirm the compiled module is in the bundle and owned by the `pfm-server`
+package, and that the nginx unit declares the relabel step. None of them runs with
+SELinux enforcing -- the container images have neither `semodule` nor a policy store --
+so nothing verifies that the policy actually permits what the stack needs. So the manual run is not repeated per
+release, and **aarch64 has not been covered by it** — the hand testing was x86_64 only.
+Enforcing-mode confinement is therefore not covered by any automated gate before
+general availability.
+
+If your policy is enforcing, review denials before relying on this build, and treat
+`setenforce 0` as an evaluation measure only. When checking for denials, note that
+`dontaudit` rules suppress them: run `setenforce 0`, then `semodule -DB`, then
+reproduce.
+
+The systemd hardening directives and the polkit rule the server depends on are shipped
+and installed, but no test asserts either: the hardening is enforced by systemd rather
+than by anything the suites inspect, and the polkit rule has no authorization probe.
+Treat both as configured rather than as verified.
 
 **Architecture.** This bundle installs only on the architecture it was built for. A
 bundle for another architecture is a separate download.
@@ -105,8 +172,40 @@ unauthenticated — this is upstream behaviour, on every monitored host, not jus
 server. They expose database and OS statistics. Firewall them to the PFMM server;
 `INSTALL.md` shows how.
 
-**Default credentials.** The server ships with `admin` / `admin`. Change it before the
-host is reachable by anyone else.
+**Bootstrap credentials are now generated per install.** The Grafana admin
+password and the internal PostgreSQL role passwords are generated at first boot
+and stored in `/srv/.pfm-secrets` (mode 0600). Read the initial admin password
+with:
+
+    sudo sed -n 's/^GF_SECURITY_ADMIN_PASSWORD=//p' /srv/.pfm-secrets/grafana.env
+
+That command applies to **fresh installs only**. An upgraded host keeps the admin
+user it already has, so the file carries no `GF_SECURITY_ADMIN_PASSWORD` key and
+the command prints nothing and exits 0 — keep using the password you already have.
+
+**Back up `/srv/.pfm-secrets`.** On a fresh install it is the only copy of two
+passwords the PostgreSQL roles already hold. The directory is hidden and mode 0700,
+so `cp -r /srv/*` and `tar`/`rsync` invocations that do not include `.[!.]*` skip it
+silently. A marker at `/srv/pfm-secrets-generated` records that the credentials were
+generated; if that marker is present and the secret files are gone, the server
+refuses to start rather than writing a known constant over a generated password.
+Restore the directory from a backup, or reset both roles by hand as the PostgreSQL
+superuser and write the new values back into the files.
+
+**Upgraded hosts keep their existing database passwords.** An upgrade relocates
+them out of the world-readable unit file into the same 0600 store, but does not
+rotate them: a host first provisioned by an earlier build still authenticates
+with the previous values. Rotate them by hand, or reinstall, if that matters for
+your deployment. The Grafana admin password is likewise unchanged on upgrade.
+
+On an upgraded host, `/etc/grafana/pfm.ini` retains its existing `password = grafana`
+line. The file is `%config(noreplace)`, so packaging deliberately does not overwrite it.
+`GF_DATABASE_PASSWORD` from `/srv/.pfm-secrets/grafana.env` is intended to take
+precedence, via Grafana's standard `GF_<SECTION>_<KEY>` override — confirming that
+`pfm-grafana`, a fork, still honours this is a pending native-VM item. The file is mode
+0640 `root:pfm`, so it is not world-readable either way. A fresh install ships the line
+empty; on an existing host, operators who want certainty rather than relying on the
+override should blank the value by hand.
 
 **Signing key.** This beta is signed with a key whose custody is not yet finalised. The
 key used for the general-availability release may differ; its release notes will say so,

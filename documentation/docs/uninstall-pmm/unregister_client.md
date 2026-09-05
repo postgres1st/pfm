@@ -5,7 +5,7 @@ Unregistering disconnects your PMM Client from the PMM Server and removes all mo
 To unregister PMM Client from PMM Server, run the following command:
 
 ```sh
-pmm-admin unregister --force
+pfw-admin unregister --force
 ```
 
 This command: 

@@ -1,8 +1,8 @@
 # Network and firewall requirements
 
-Before installing PFMM, ensure your network configuration allows the necessary connections between PFMM components. Here are the required ports and connectivity settings.
+Before installing PGF WatchTower, ensure your network configuration allows the necessary connections between PGF WatchTower components. Here are the required ports and connectivity settings.
 
-For guidance on selecting the best deployment method based on these requirements, see the [choosing your PFMM deployment strategy](../plan-pmm-installation/choose-deployment.md).
+For guidance on selecting the best deployment method based on these requirements, see the [choosing your PGF WatchTower deployment strategy](../plan-pmm-installation/choose-deployment.md).
 
 
 ## System requirements
@@ -15,13 +15,13 @@ Key requirements at a glance:
 - Requires 100 MB storage for installation plus caching space
 - Supports modern 64-bit Linux distributions.
 
-This is a list of ports used by the various components of PFMM. For PFMM to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
+This is a list of ports used by the various components of PGF WatchTower. For PGF WatchTower to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
 
 ### Essential ports
 
-These are the host ports that must be accessible for basic PFMM functionality:
+These are the host ports that must be accessible for basic PGF WatchTower functionality:
 
-| PFMM component | Host port     | Direction     | Description
+| PGF WatchTower component | Host port     | Direction     | Description
 |---------------|---------------|---------------|------------------------------------------------------------------------------------------
 | PMM Server    |  443 or 8443  | in            | HTTPS server for web interface and gRPC communication between PMM Client and PMM Server. Use of SSL certificates is highly encouraged.
 
@@ -29,37 +29,37 @@ These are the host ports that must be accessible for basic PFMM functionality:
 
 PMM Server containers listen on port 8443 internally. 
 
-When running PFMM in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
+When running PGF WatchTower in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
 
 If privileged ports (<1024) are not allowed in your environment, use:`-p 8443:8443` instead.
 
 ### Internal component ports 
 
-These ports are used for communication between PFMM components:
+These ports are used for communication between PGF WatchTower components:
 
-| PFMM component | TCP port      | Direction     | Description
+| PGF WatchTower component | TCP port      | Direction     | Description
 |---------------|---------------|---------------|-----------------------------------------------------------------
-| PMM Server    | 7771          | both          | gRPC, used for communication between `pmm-agent` and `pmm-admin`.
+| PMM Server    | 7771          | both          | gRPC, used for communication between `pfw-agent` and `pfw-admin`.
 | PMM Server    | 7772          | out           | HTTP1 server, used for older links like `logs.zip`.
 | PMM Server    | 7773          | out           | Debugging.
-| `pmm-agent`   | 7777          | out           | Default `pmm-agent` listen port.
+| `pfw-agent`   | 7777          | out           | Default `pfw-agent` listen port.
 | `vm-agent`    | 8428          | both          | VictoriaMetrics port.
-| `pmm-agent`   | 42000 - 51999 | in            | Default range for `pmm-agent` connected agents.
+| `pfw-agent`   | 42000 - 51999 | in            | Default range for `pfw-agent` connected agents.
 
 ## Port range configuration
 
-The default port range for `pmm-agent` is intentionally wide to accommodate various deployment sizes. You can adjust this range to fit your environment:
+The default port range for `pfw-agent` is intentionally wide to accommodate various deployment sizes. You can adjust this range to fit your environment:
 
 - Small deployments: For monitoring fewer than 20 services, you can reduce the range significantly
-- Custom range: Configure with `--ports-min` and `--ports-max` flags when starting `pmm-agent`
+- Custom range: Configure with `--ports-min` and `--ports-max` flags when starting `pfw-agent`
 - Minimum allocation: Allow at least one port per monitored service/exporter
 
 For example, to set a custom port range for 50 services:
 ```sh
-pmm-agent --ports-min=9001 --ports-max=9050
+pfw-agent --ports-min=9001 --ports-max=9050
 ```
 
-Learn more about available settings for `pmm-agent` in [Percona PMM-Agent documentation](../../use/commands/pmm-agent.md).
+Learn more about available settings for `pfw-agent` in [Percona PMM-Agent documentation](../../use/commands/pmm-agent.md).
 
 ## Network configuration for locked-down environments
 

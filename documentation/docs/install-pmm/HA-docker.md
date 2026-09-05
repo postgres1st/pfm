@@ -1,6 +1,6 @@
-# Install PFMM with Docker HA (Basic)
+# Install PGF WatchTower with Docker HA (Basic)
 
-Docker's built-in restart capabilities combined with PFMM's client-side data buffering provide basic availability improvements for single-server deployments. This approach is perfect for development, testing, and environments where brief monitoring interruptions are acceptable.
+Docker's built-in restart capabilities combined with PGF WatchTower's client-side data buffering provide basic availability improvements for single-server deployments. This approach is perfect for development, testing, and environments where brief monitoring interruptions are acceptable.
 
 !!! note "This is not true high availability"
     Docker HA provides automatic restart after container failures, but cannot protect against host-level failures. For true high availability with zero-downtime failover, see [Kubernetes HA Clustered](HA-clustered.md).
@@ -79,7 +79,7 @@ Choose the installation method that fits your needs and launch PMM Server with a
           percona/pmm-server:3
       ```
 
-    2. Access PFMM UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    2. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 === "Recommended"
 
@@ -102,11 +102,11 @@ Choose the installation method that fits your needs and launch PMM Server with a
 
         - `--restart=always`: Ensures automatic container restart after failures or reboots
         - `-p 443:8443`: Exposes HTTPS port for secure web access
-        - `-v pmm-data:/srv`: Persists PFMM data across container restarts
-        - `-e PMM_ENABLE_UPDATES=0`: Disables automatic PFMM updates (control updates manually)
+        - `-v pmm-data:/srv`: Persists PGF WatchTower data across container restarts
+        - `-e PMM_ENABLE_UPDATES=0`: Disables automatic PGF WatchTower updates (control updates manually)
         - `--ulimit=nofile=1000000:1000000`: Increases file descriptor limit for large deployments
 
-    2. Access PFMM UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    2. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 === "Docker Compose"
 
@@ -140,7 +140,7 @@ Choose the installation method that fits your needs and launch PMM Server with a
         docker-compose up -d
     ```
 
-    3. Access PFMM UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    3. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 ### Verify installation
 
@@ -171,7 +171,7 @@ Expected output should show:
 After first login, immediately change the default admin password:
 {.power-number}
 
-1. Log in to PFMM UI at `https://localhost`
+1. Log in to PGF WatchTower UI at `https://localhost`
 2. Go to **Account > Change password**
 3. Click **Change Password**
 4. Enter current password (`admin`) and new secure password
@@ -215,7 +215,7 @@ To monitor your databases, install PMM Client on each database host and connect 
 
 2. Connect to PMM Server and add your database:
 ```sh
-pmm-admin config --server-url=https://admin:password@pmm-server:443
+pfw-admin config --server-url=https://admin:password@pmm-server:443
 ```
 3. [Add a database service](../install-pmm/install-pmm-client/index.md) for monitoring.
 
@@ -352,7 +352,7 @@ docker logs pmm-server
 docker stats pmm-server --no-stream
 
 # Check which services are monitored
-docker exec pmm-server pmm-admin list
+docker exec pmm-server pfw-admin list
 ```
 
 ### Clients can't connect
@@ -415,6 +415,5 @@ Consider [Kubernetes HA Clustered](HA-clustered.md) when you:
 
 ## Get help
 
-- [Percona Community Forum](https://forums.percona.com/c/percona-monitoring-and-management-pmm/)
-- [Percona Support](https://www.percona.com/services/support) 
+- [Contact us](https://www.postgresfirst.com/about/contact)
 - [Docker deployment guide](../install-pmm/install-pmm-server/deployment-options/docker/index.md)

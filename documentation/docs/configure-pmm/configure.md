@@ -1,8 +1,8 @@
-# Configure PFMM
+# Configure PGF WatchTower
 
-This section provides the instructions to configure your PFMM instance after you have installed PFMM.
+This section provides the instructions to configure your PGF WatchTower instance after you have installed PGF WatchTower.
 
-**Configuration > Settings** gives you access to PFMM setup's settings and inventory options:
+**Configuration > Settings** gives you access to PGF WatchTower setup's settings and inventory options:
 
 * [Metrics resolution](metrics_res.md)
 * [Advanced settings](advanced_settings.md)

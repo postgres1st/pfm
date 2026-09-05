@@ -9,22 +9,13 @@
 <!-- Header -->
 <header class="{{ class }}" data-md-component="header">
 
-  <!-- Super Nav -->
-  <div class="superNav">
-    <div class="md-header__inner md-grid">
-      <a href="https://docs.percona.com/pmm" title="Percona Monitoring and Management documentation Home page">
-        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <mask id="a" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-            <path d="M0 0h24v24H0z"/>
-          </mask>
-          <g mask="url(#a)">
-            <path d="m7.825 13 5.6 5.6L12 20l-8-8 8-8 1.425 1.4-5.6 5.6H20v2H7.825Z"/>
-          </g>
-        </svg>
-        <span>PERCONA MONITORING AND MANAGEMENT DOCUMENTATION</span>
-      </a>
-    </div>
-  </div>
+  {#-
+    No "Super Nav". This rendered a bar at the top of every page: a back-arrow linking
+    to docs.percona.com/pmm, labelled "PERCONA MONITORING AND MANAGEMENT DOCUMENTATION".
+    It is a return affordance for Percona's multi-product documentation portal, which
+    this site is not part of, and its hardcoded label overrode the rebranded site_name
+    on every page.
+  -#}
 
   <nav
     class="md-header__inner md-grid"

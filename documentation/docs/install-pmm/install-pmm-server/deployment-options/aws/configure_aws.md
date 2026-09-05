@@ -31,10 +31,10 @@ Replace the self-signed certificate with a proper SSL certificate for production
     # Obtain certificate (replace yourdomain.com)
     sudo certbot certonly --standalone -d pmm.yourdomain.com
 
-    # Stop PFMM temporarily
+    # Stop PGF WatchTower temporarily
     systemctl --user stop pmm-server
 
-    # Configure PFMM to use the certificate
+    # Configure PGF WatchTower to use the certificate
     sudo cp /etc/letsencrypt/live/pmm.yourdomain.com/fullchain.pem /home/admin/volume/pmm-certs/certificate.crt
     sudo cp /etc/letsencrypt/live/pmm.yourdomain.com/privkey.pem /home/admin/volume/pmm-certs/certificate.key
     sudo chown pmm:pmm /home/admin/volume/pmm-certs/certificate.*
@@ -73,12 +73,12 @@ ssh -i /path/to/your-key.pem admin@<your-instance-ip>
 
 # Configure firewall rules
 sudo ufw allow 22/tcp    # SSH access
-sudo ufw allow 443/tcp   # HTTPS PFMM interface
+sudo ufw allow 443/tcp   # HTTPS PGF WatchTower interface
 sudo ufw --force enable
 ```
 ## Manage users and access
 
-After the initial setup, create additional user accounts in PFMM for your team members. Follow the principle of least privilege when assigning user roles.
+After the initial setup, create additional user accounts in PGF WatchTower for your team members. Follow the principle of least privilege when assigning user roles.
 {.power-number}
 
 1. Go to **Users and access > Users**.
@@ -126,7 +126,7 @@ For detailed information on EC2 instance IP addressing, see the [AWS documentati
 
 ## Expand storage capacity
 
-### Resize PFMM data volume
+### Resize PGF WatchTower data volume
 
 When monitoring more hosts or extending data retention, you may need additional storage space:
 {.power-number}
@@ -136,7 +136,7 @@ When monitoring more hosts or extending data retention, you may need additional 
 2. Expand the file system to use the additional space:
 
     ```sh
-    # SSH to your PFMM instance
+    # SSH to your PGF WatchTower instance
     ssh -i /path/to/your-key.pem admin@<pmm-server-ip>
 
     # Verify the volume size increase was detected
@@ -159,7 +159,7 @@ When monitoring more hosts or extending data retention, you may need additional 
 
     ```
 
-3. PFMM automatically detects the storage increase within ~5 minutes and adjusts its configuration.
+3. PGF WatchTower automatically detects the storage increase within ~5 minutes and adjusts its configuration.
 
 ### Resize root volume
 
@@ -169,7 +169,7 @@ If the root filesystem runs low on space:
 1. Increase the root EBS volume in the AWS Console.
 2. Expand the disk from AWS Console/CLI to the desired capacity:
 
-    - Log in to the PFMM EC2 instance and verify that the disk capacity has increased. For example, if you have expanded disk from 8G to 10G, `dmesg`:
+    - Log in to the PGF WatchTower EC2 instance and verify that the disk capacity has increased. For example, if you have expanded disk from 8G to 10G, `dmesg`:
 
         ```sh
         # dmesg | grep "capacity change"
@@ -230,11 +230,11 @@ If the root filesystem runs low on space:
 ### Upgrade EC2 instance class
 Scale your PMM Server by upgrading to a larger instance when CPU or memory usage becomes a bottleneck. 
 
-PFMM fully supports resizing EC2 instances, as long as you follow the steps outlined in the [AWS EC2 resizing guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html).
+PGF WatchTower fully supports resizing EC2 instances, as long as you follow the steps outlined in the [AWS EC2 resizing guide](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html).
 
 
 !!! note "Data safety"
-    PFMM uses a separate EBS volume for monitoring data, so changing instance types doesn't affect your collected metrics or dashboards.
+    PGF WatchTower uses a separate EBS volume for monitoring data, so changing instance types doesn't affect your collected metrics or dashboards.
 
 To upgrade the instance type:
 {.power-number}
@@ -273,7 +273,7 @@ PMM Client authentication uses the same credentials you set for the web interfac
 
 ```bash
 # Example PMM Client configuration command
-pmm-admin config --server-insecure-tls --server-url=https://admin:your-password@<pmm-server-ip>:443
+pfw-admin config --server-insecure-tls --server-url=https://admin:your-password@<pmm-server-ip>:443
 ```
 
 ### Test connection
@@ -295,13 +295,13 @@ curl -k -u admin:your-password https://<pmm-server-ip>:443/v1/readyz
 To restore PMM Server from a backup:
 {.power-number}
 
-1. Create a new volume using the latest snapshot of the PFMM data volume:
+1. Create a new volume using the latest snapshot of the PGF WatchTower data volume:
 
     ![Create Volume](../../../../images/aws-marketplace.pmm.ec2.backup2.png)
 
 2. Stop the PMM Server instance.
 
-3. Detach the current PFMM data volume:
+3. Detach the current PGF WatchTower data volume:
 
     ![Detach Volume](../../../../images/aws-marketplace.pmm.ec2.backup3.png)
 
@@ -345,15 +345,15 @@ To permanently delete your PMM Server instance and clean up resources:
     2. Disconnect all PMM clients:
        ```bash
        # On each monitored server
-       pmm-admin remove --all
+       pfw-admin remove --all
        ```
 
     3. Export configuration:
        ```bash
-       podman  exec pmm-server pmm-admin summary > pmm-final-config.txt
+       podman  exec pmm-server pfw-admin summary > pmm-final-config.txt
        ```
 
-    4. Stop PFMM services:
+    4. Stop PGF WatchTower services:
        ```bash
        podman stop pmm-server
        ```

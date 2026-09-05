@@ -1,15 +1,15 @@
-# Add databases with pmm-admin
+# Add databases with pfw-admin
 
-Use `pmm-admin add` to add database services to PFMM monitoring from the command line. This command supports MySQL, PostgreSQL, MongoDB, Valkey, ProxySQL, and HAProxy.
+Use `pfw-admin add` to add database services to PGF WatchTower monitoring from the command line. This command supports PostgreSQL. Other database types are refused: this is a PostgreSQL-only product and the server rejects them at registration.
 
-To add services through the web interface instead, see [Connect databases in the PFMM UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PFMM API](../../../api/index.md)
+To add services through the web interface instead, see [Connect databases in the PGF WatchTower UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md)
 
 ## Syntax
 
 Run the `add` command in the format below. Keep in mind that `SERVICE_TYPE` is one of: `mysql`, `postgresql`, `mongodb`, `valkey`, `proxysql`, `haproxy`, `external`, `external-serverless`:
 
 ```bash
-pmm-admin add <SERVICE_TYPE> [NAME] [ADDRESS] [FLAGS]
+pfw-admin add <SERVICE_TYPE> [NAME] [ADDRESS] [FLAGS]
 ```
 
 ## Flag reference
@@ -85,7 +85,7 @@ For a complete list of standard and custom labels, see [Labels reference](../../
 | `--agent-env-vars`<br>Environment variables for exporter | | | ✓ | | | |
 | `--metrics-mode`<br>Metrics flow mode (auto/push/pull) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `--node-id`<br>Node ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
-| `--pmm-agent-id`<br>PMM Agent ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
+| `--pfw-agent-id`<br>PMM Agent ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
 | `--service-node-id`<br>Service node ID | | | | | | ✓ |
 | `--skip-connection-check`<br>Skip connection check | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
@@ -94,7 +94,7 @@ For a complete list of standard and custom labels, see [Labels reference](../../
 Add a MySQL instance to monitoring:
 
 ```bash
-pmm-admin add mysql [NAME] [ADDRESS] [FLAGS]
+pfw-admin add mysql [NAME] [ADDRESS] [FLAGS]
 ```
 
 ### Connection options
@@ -109,7 +109,7 @@ Connect to MySQL using TCP or socket:
 | `--username` | MySQL username | |
 | `--password` | MySQL password | |
 | `--extra-dsn` | Additional DSN parameters | |
-| `--connection-timeout` | How long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
+| `--connection-timeout` | How long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
 
 Find the socket path:
 
@@ -120,7 +120,7 @@ mysql -u root -p -e "select @@socket"
 Enable cleartext authentication for PAM or external auth:
 
 ```bash
-pmm-admin add mysql --extra-dsn="allowCleartextPasswords=1" ...
+pfw-admin add mysql --extra-dsn="allowCleartextPasswords=1" ...
 ```
 
 !!! caution "Security warning"
@@ -142,11 +142,11 @@ Secure the connection with TLS:
 
 ### Query Analytics options
 
-Control how PFMM collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
-- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, PFMM needs permissions to read the slow query log file.
+- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, PGF WatchTower needs permissions to read the slow query log file.
 
-- `--disable-queryexamples`: Disable collection of query examples. Prevents PFMM from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
+- `--disable-queryexamples`: Disable collection of query examples. Prevents PGF WatchTower from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
 
 - `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PMM agent to terminate.
 
@@ -167,7 +167,7 @@ Control table statistics collection:
 - Add MySQL with slow query log:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       mysql-prod 192.168.1.10:3306 \
       --username=pmm \
       --password=pass \
@@ -177,7 +177,7 @@ Control table statistics collection:
 - Add MySQL with Performance Schema:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       mysql-prod 192.168.1.10:3306 \
       --username=pmm \
       --password=pass \
@@ -187,7 +187,7 @@ Control table statistics collection:
 - Add MySQL with TLS:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       mysql-prod 192.168.1.10:3306 \
       --username=pmm \
       --password=pass \
@@ -200,7 +200,7 @@ Control table statistics collection:
 - Add MySQL without query examples (for sensitive data):
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       mysql-prod 192.168.1.10:3306 \
       --username=pmm \
       --password=pass \
@@ -210,7 +210,7 @@ Control table statistics collection:
 - Add MySQL via socket:
 
     ```bash
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       mysql-local \
       --username=pmm \
       --password=pass \
@@ -222,7 +222,7 @@ Control table statistics collection:
 Exclude specific collectors from monitoring:
 
 ```bash
-pmm-admin add mysql \
+pfw-admin add mysql \
   mysql-prod 192.168.1.10:3306 \
   --disable-collectors='heartbeat,global_status,info_schema.innodb_cmp' \
   --username=pmm \
@@ -237,18 +237,18 @@ For available collectors, see the [mysqld_exporter repository](https://github.co
 Add a PostgreSQL instance to monitoring:
 
 ```bash
-pmm-admin add postgresql [NAME] [ADDRESS] [FLAGS]
+pfw-admin add postgresql [NAME] [ADDRESS] [FLAGS]
 ```
 
 ### Connection options
 
 Connect using `--host`, `--port`, `--username`, and `--password`. The `--database` flag specifies which database to connect to (defaults to `postgres`).
 
-Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between PFMM and your PostgreSQL instance with TLS:
+Secure the connection between PGF WatchTower and your PostgreSQL instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -262,7 +262,7 @@ Secure the connection between PFMM and your PostgreSQL instance with TLS:
 
 ### Query Analytics options
 
-Control how PFMM collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `pgstatements` (default), `pgstatmonitor`, or `none`.
 
@@ -277,7 +277,7 @@ Control how PFMM collects query data for Query Analytics (QAN):
 - Add PostgreSQL with `pg_stat_statements`:
 
     ```bash
-    pmm-admin add postgresql \
+    pfw-admin add postgresql \
       postgres-prod 192.168.1.30:5432 \
       --username=pmm \
       --password=pass \
@@ -287,7 +287,7 @@ Control how PFMM collects query data for Query Analytics (QAN):
 - Add PostgreSQL with `pg_stat_monitor`:
 
     ```bash
-    pmm-admin add postgresql \
+    pfw-admin add postgresql \
       postgres-prod 192.168.1.30:5432 \
       --username=pmm \
       --password=pass \
@@ -297,7 +297,7 @@ Control how PFMM collects query data for Query Analytics (QAN):
 - Add PostgreSQL without query examples:
 
     ```bash
-    pmm-admin add postgresql \
+    pfw-admin add postgresql \
       postgres-prod 192.168.1.30:5432 \
       --username=pmm \
       --password=pass \
@@ -308,7 +308,7 @@ Control how PFMM collects query data for Query Analytics (QAN):
 - Add PostgreSQL with TLS:
 
     ```bash
-    pmm-admin add postgresql \
+    pfw-admin add postgresql \
       postgres-prod 192.168.1.30:5432 \
       --username=pmm \
       --password=pass \
@@ -321,18 +321,18 @@ Control how PFMM collects query data for Query Analytics (QAN):
 Add a MongoDB instance to monitoring:
 
 ```bash
-pmm-admin add mongodb [NAME] [ADDRESS] [FLAGS]
+pfw-admin add mongodb [NAME] [ADDRESS] [FLAGS]
 ```
 
 ### Connection options
 
 Connect using `--host`, `--port`, `--username`, and `--password`.
 
-Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between PFMM and your MongoDB instance with TLS:
+Secure the connection between PGF WatchTower and your MongoDB instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -346,7 +346,7 @@ Secure the connection between PFMM and your MongoDB instance with TLS:
 
 ### Query Analytics options
 
-Control how PFMM collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `profiler` (default), `mongolog`, or `none`.
 
@@ -354,19 +354,19 @@ Control how PFMM collects query data for Query Analytics (QAN):
 
 ### Collector options
 
-Control which metrics PFMM collects:
+Control which metrics PGF WatchTower collects:
 
-- `--enable-all-collectors`: Enable all collectors. By default, PFMM enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
+- `--enable-all-collectors`: Enable all collectors. By default, PGF WatchTower enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
 
 - `--disable-collectors`: Comma-separated list of collectors to exclude.
 
-- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let PFMM decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
+- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let PGF WatchTower decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
 
 - `--stats-collections`: Limit stats collection to specific databases or collections, in the format `db1,db2.collection1`. Use this to reduce the scope of monitored collections.
 
 ### Collector resolution
 
-PFMM collects metrics at different intervals based on collector performance:
+PGF WatchTower collects metrics at different intervals based on collector performance:
 
 **High resolution** (fast collectors):
 
@@ -382,10 +382,10 @@ PFMM collects metrics at different intervals based on collector performance:
 
 ### Environment variables
 
-Pass environment variables to the MongoDB exporter using `--agent-env-vars`. Only variables already set in the `pmm-agent` environment will be passed:
+Pass environment variables to the MongoDB exporter using `--agent-env-vars`. Only variables already set in the `pfw-agent` environment will be passed:
 
 ```bash
-pmm-admin add mongodb \
+pfw-admin add mongodb \
   mongodb-prod 192.168.1.20:27017 \
   --username=pmm \
   --password=pass \
@@ -397,7 +397,7 @@ pmm-admin add mongodb \
 - Add MongoDB with default collectors:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass
@@ -406,7 +406,7 @@ pmm-admin add mongodb \
 - Add MongoDB with all collectors:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -416,7 +416,7 @@ pmm-admin add mongodb \
 - Add MongoDB with all collectors except topmetrics:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -427,7 +427,7 @@ pmm-admin add mongodb \
 - Add MongoDB with collection limit:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -438,7 +438,7 @@ pmm-admin add mongodb \
 - Add MongoDB with stats for specific databases:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -451,7 +451,7 @@ pmm-admin add mongodb \
 - Add MongoDB with cluster name:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -461,7 +461,7 @@ pmm-admin add mongodb \
 - Add MongoDB with unlimited collections:
 
     ```bash
-    pmm-admin add mongodb \
+    pfw-admin add mongodb \
       mongodb-prod 192.168.1.20:27017 \
       --username=pmm \
       --password=pass \
@@ -474,21 +474,21 @@ pmm-admin add mongodb \
 Add a Valkey or Redis instance to monitoring:
 
 ```bash
-pmm-admin add valkey [NAME] [ADDRESS] [FLAGS]
+pfw-admin add valkey [NAME] [ADDRESS] [FLAGS]
 ```
 
 ### Connection options
 
 Connect using `--host`, `--port`, `--username`, and `--password`. Use `--tls` and `--tls-skip-verify` to secure the connection with TLS.
 
-Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
 
 ### Examples
 
 - Add Valkey:
 
     ```bash
-    pmm-admin add valkey \
+    pfw-admin add valkey \
       valkey-prod 192.168.1.40:6379 \
       --username=pmm \
       --password=pass
@@ -497,7 +497,7 @@ Use `--connection-timeout` to set how long PFMM waits before giving up on a conn
 - Add Valkey with TLS:
 
     ```bash
-    pmm-admin add valkey \
+    pfw-admin add valkey \
       valkey-prod 192.168.1.40:6379 \
       --username=pmm \
       --password=pass \
@@ -508,7 +508,7 @@ Use `--connection-timeout` to set how long PFMM waits before giving up on a conn
 - Add Valkey with environment labels:
 
     ```bash
-    pmm-admin add valkey \
+    pfw-admin add valkey \
       valkey-prod 192.168.1.40:6379 \
       --username=pmm \
       --password=pass \
@@ -521,14 +521,14 @@ Use `--connection-timeout` to set how long PFMM waits before giving up on a conn
 Add a ProxySQL instance to monitoring:
 
 ```bash
-pmm-admin add proxysql [NAME] [ADDRESS] [FLAGS]
+pfw-admin add proxysql [NAME] [ADDRESS] [FLAGS]
 ```
 
 ### Connection options
 
 Connect using `--host`, `--port`, `--username`, and `--password` for the ProxySQL admin interface. Use `--tls` and `--tls-skip-verify` to secure the connection.
 
-Use `--connection-timeout` to set how long PFMM waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
 
 Use `--disable-collectors` with a comma-separated list to exclude specific collectors from monitoring.
 
@@ -537,7 +537,7 @@ Use `--disable-collectors` with a comma-separated list to exclude specific colle
 - Add ProxySQL:
 
     ```bash
-    pmm-admin add proxysql \
+    pfw-admin add proxysql \
       proxysql-prod 192.168.1.50:6032 \
       --username=admin \
       --password=admin
@@ -546,7 +546,7 @@ Use `--disable-collectors` with a comma-separated list to exclude specific colle
 - Add ProxySQL with TLS:
 
     ```bash
-    pmm-admin add proxysql \
+    pfw-admin add proxysql \
       proxysql-prod 192.168.1.50:6032 \
       --username=admin \
       --password=admin \
@@ -558,7 +558,7 @@ Use `--disable-collectors` with a comma-separated list to exclude specific colle
 Add an HAProxy instance to monitoring. Unlike other services, HAProxy requires `--listen-port` to specify where metrics are exposed:
 
 ```bash
-pmm-admin add haproxy [NAME] [FLAGS]
+pfw-admin add haproxy [NAME] [FLAGS]
 ```
 
 ### Connection options
@@ -576,7 +576,7 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 - Add HAProxy:
 
     ```bash
-    pmm-admin add haproxy \
+    pfw-admin add haproxy \
       haproxy-prod \
       --listen-port=8404
     ```
@@ -584,7 +584,7 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 - Add HAProxy with HTTPS:
 
     ```bash
-    pmm-admin add haproxy \
+    pfw-admin add haproxy \
       haproxy-prod \
       --listen-port=8404 \
       --scheme=https \
@@ -594,7 +594,7 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 - Add HAProxy with authentication:
 
     ```bash
-    pmm-admin add haproxy \
+    pfw-admin add haproxy \
       haproxy-prod \
       --listen-port=8404 \
       --username=admin \
@@ -603,20 +603,20 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 
 ## Add external services
 
-Add custom Prometheus exporters to PFMM.
+Add custom Prometheus exporters to PGF WatchTower.
 
 ### External service
 
 Add an external Prometheus exporter running on a known port:
 
 ```bash
-pmm-admin add external [NAME] [ADDRESS] [FLAGS]
+pfw-admin add external [NAME] [ADDRESS] [FLAGS]
 ```
 
 For example:
 
 ```bash
-pmm-admin add external \
+pfw-admin add external \
   custom-exporter \
   --listen-port=9104 \
   --scheme=https \
@@ -628,13 +628,13 @@ pmm-admin add external \
 Add an external serverless service with a full URL:
 
 ```bash
-pmm-admin add external-serverless [NAME] [ADDRESS] [FLAGS]
+pfw-admin add external-serverless [NAME] [ADDRESS] [FLAGS]
 ```
 
 For example:
 
 ```bash
-pmm-admin add external-serverless \
+pfw-admin add external-serverless \
   serverless-exporter \
   --url=https://host.docker.internal:9218 \
   --tls-skip-verify
@@ -649,7 +649,7 @@ Use these flags with any database type to organize services, control authenticat
 Group services by environment, cluster, and team:
 
 ```bash
-pmm-admin add mysql \
+pfw-admin add mysql \
   mysql-prod 192.168.1.10:3306 \
   --username=pmm \
   --password=pass \
@@ -664,7 +664,7 @@ pmm-admin add mysql \
 Set a custom password for the metrics endpoint:
 
 ```bash
-pmm-admin add mysql \
+pfw-admin add mysql \
   mysql-prod 192.168.1.10:3306 \
   --username=pmm \
   --password=pass \
@@ -679,7 +679,7 @@ pmm-admin add mysql \
 Choose how metrics travel between agent and server:
 
 ```bash
-pmm-admin add mysql \
+pfw-admin add mysql \
   mysql-prod 192.168.1.10:3306 \
   --username=pmm \
   --password=pass \
@@ -696,4 +696,4 @@ pmm-admin add mysql \
 
 - [Manage inventory to modify agent configurations](../pmm-admin/inventory.md)
 - [Remove services from monitoring](../../remove-services.md)
-- [Connect databases to PFMM](../../../install-pmm/install-pmm-client/connect-database/index.md)
+- [Connect databases to PGF WatchTower](../../../install-pmm/install-pmm-client/connect-database/index.md)

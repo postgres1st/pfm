@@ -8,10 +8,3 @@ For more information, see [MySQL Server Time Zone Support](https://dev.mysql.com
 ## Resolution
 
 Consider loading time zone data.
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

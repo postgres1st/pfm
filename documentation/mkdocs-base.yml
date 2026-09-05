@@ -2,20 +2,20 @@
 # Used as base - look for .yml files with INHERIT
 # https://www.mkdocs.org/user-guide/configuration/
 
-site_name: Postgres1st
+site_name: PGF WatchTower
 site_description: Documentation
-site_author: Percona LLC
+site_author: Postgres1st
 site_url: ""
 use_directory_urls: false
-repo_name: percona/pmm
-repo_url: https://github.com/percona/pmm/
+repo_name: postgres1st/pfm
+repo_url: https://github.com/postgres1st/pfm/
 edit_uri: edit/main/documentation/docs/
 
 theme:
   name: material
   custom_dir: overrides
-  logo: assets/pmm-mark.svg
-  favicon: assets/pmm-fav.svg
+  logo: assets/pfw-logo.svg
+  favicon: assets/pfw-fav.svg
   font:
     text: Roboto
     code: Roboto Mono
@@ -55,18 +55,17 @@ extra_css:
   - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css
   - css/nocopy.css
   - css/design.css
-  - css/osano.css
+  # css/osano.css is no longer loaded: it styled the Osano consent widget, whose script
+  # was removed from overrides/main.html. (css/kapa.css was never in this list, though the
+  # widget it styled -- js/kapa.js, an "ask-percona-ai" button -- has also been removed.)
+  # Both files are left in the tree pending a decision on removing them.
   - css/pmm.css
   - css/extra.css
-  - css/rating.css
-  - css/kapa.css
 
 extra_javascript:
   - js/extra.js
   - js/consent.js
   - js/version-select.js
-  - js/rating.js
-  - js/kapa.js
 
 markdown_extensions:
   attr_list: {}
@@ -88,10 +87,6 @@ markdown_extensions:
     alternate_style: true
   pymdownx.tasklist:
     custom_checkbox: true
-  pymdownx.snippets:
-    base_path: ["snippets"]
-    auto_append:
-      - services-banner.md
   pymdownx.highlight:
     use_pygments: true
   pymdownx.emoji:
@@ -136,14 +131,14 @@ extra:
 # Common navigation for percona.com, render.com and PDFnav:
 nav:
   - Home: index.md
-  - Get help from Percona: get-help.md
+  - Get help: get-help.md
   - Discover:
       - discover-pmm/why-pmm.md
       - discover-pmm/features.md
   - Quickstart guide: quickstart/quickstart.md
   - Install:
       - install-pmm/index.md
-      - Plan your PFMM installation:
+      - Plan your PGF WatchTower installation:
           - install-pmm/plan-pmm-installation/choose-deployment.md
           - install-pmm/plan-pmm-installation/hardware_and_system.md
           - install-pmm/plan-pmm-installation/network_and_firewall.md
@@ -183,7 +178,7 @@ nav:
                         - Initial setup: install-pmm/install-pmm-server/deployment-options/aws/configure_aws.md
                   - VM configuration: 
                         - Configure environment variables: install-pmm/install-pmm-server/deployment-options/virtual/env_var.md
-                        - Access PFMM UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
+                        - Access PGF WatchTower UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
                         - Remove VM: install-pmm/install-pmm-server/deployment-options/virtual/remove_virtual_machine.md     
                         - SSH key: install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
               - Install on Kubernetes:
@@ -215,25 +210,25 @@ nav:
                   - HAproxy: install-pmm/install-pmm-client/connect-database/haproxy.md
               - External services monitoring:
                   - Connect external instance: install-pmm/install-pmm-client/connect-database/external.md
-      - Install PFMM in HA mode: 
+      - Install PGF WatchTower in HA mode: 
         - Compare HA options: install-pmm/HA.md
         - Docker HA: install-pmm/HA-docker.md
         - Kubernetes Single-Instance: install-pmm/HA-kubernetes-single-instance.md
         - Kubernetes Cluster: 
-            - Understand PFMM HA Cluster: install-pmm/HA-clustered.md
-            - Install PFMM HA Cluster: install-pmm/install-HA-clustered.md
+            - Understand PGF WatchTower HA Cluster: install-pmm/HA-clustered.md
+            - Install PGF WatchTower HA Cluster: install-pmm/install-HA-clustered.md
 
   - Use:
       - use/using-pmm.md
-      - PFMM user interface:
+      - PGF WatchTower user interface:
           - reference/ui/ui_components.md
           - reference/ui/log_in.md
           - reference/ui/timezone.md
-      - PFMM Inventory: use/dashboard-inventory.md
+      - PGF WatchTower Inventory: use/dashboard-inventory.md
       - Remove services: use/remove-services.md
       - Metrics monitoring:
           - use/monitor.md
-          - PFMM metrics:
+          - PGF WatchTower metrics:
               - use/metrics/index.md
               - use/metrics/extend_metrics.md
           - Dashboards:
@@ -311,7 +306,7 @@ nav:
       - configure-pmm/advanced_settings.md
       - install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
 
-      - Security in PFMM:
+      - Security in PGF WatchTower:
           - admin/security/index.md
           - admin/security/ssl_encryption.md
           - admin/security/grafana_cookies.md
@@ -367,21 +362,22 @@ nav:
       - troubleshoot/data_issues.md
   - Release notes:
       - Release notes index: release-notes/index.md
-      - "PFMM 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
+      - "PGF WatchTower 3.9.0 beta2": release-notes/pfw-3.9.0-beta2.md
+      - "PGF WatchTower 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
   - Reference:
       - Architecture:
           - reference/index.md
-          - Third-party components in PFMM:
+          - Third-party components in PGF WatchTower:
               - reference/third-party/victoria.md
               - reference/third-party/clickhouse.md
               - reference/third-party/postgresql.md
           - reference/pmm_components_and_versions.md
           - reference/personal_data_handling.md
-          - PFMM API:
+          - PGF WatchTower API:
               - api/index.md
               - api/authentication.md
-          - PFMM commands:
-              - About PFMM commands: use/commands/index.md
+          - PGF WatchTower commands:
+              - About PGF WatchTower commands: use/commands/index.md
               - pmm-admin:
                 - pmm-admin overview: use/commands/pmm-admin/pmm-admin.md
                 - Add database services: use/commands/pmm-admin/add.md
@@ -389,7 +385,7 @@ nav:
                 - Configuration commands: use/commands/pmm-admin/config.md
                 - Status and diagnostics: use/commands/pmm-admin/status.md
               - pmm-agent: use/commands/pmm-agent.md
-      - PFMM dashboards:
+      - PGF WatchTower dashboards:
           - Insight:
               - reference/dashboards/dashboard-home.md
               - reference/dashboards/dashboard-advanced-data-exploration.md

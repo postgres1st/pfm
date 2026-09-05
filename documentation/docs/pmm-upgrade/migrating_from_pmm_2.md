@@ -298,7 +298,7 @@ Once your server is running PMM 2.44.1, try migrating directly to the latest PMM
 
         9. Verify that PMM 3 is working correctly with the migrated data.
         
-        10. Update PMM Client configurations by editing the `/usr/local/percona/pmm2/config/pmm-agent.yml` with the new server address, then restart the PMM Client.
+        10. Update PMM Client configurations by editing the `/usr/local/percona/pmm2/config/pfw-agent.yml` with the new server address, then restart the PMM Client.
 
         !!! note alert alert-primary "Revert AMI/OVF instance to PMM 2"
             If you need to restore to the PMM 2 instance after the migration:
@@ -339,7 +339,7 @@ How you upgrade depends on how your PMM Server was set up:
 
     1. Unregister the PMM 2 Client:
     ```sh
-    pmm-admin unregister
+    pfw-admin unregister
     ```
     2. [Upgrade to PMM 3 Client](../pmm-upgrade/upgrade_client.md).
     3. [Configure the PMM 3 Client](../install-pmm/install-pmm-client/package_manager.md#step-2-install-pmm-client) to connect to your PMM Server using service accounts.

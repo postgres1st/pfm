@@ -97,7 +97,7 @@ In the output, you can see another custom group in the `OperationSystem` filter.
     Example for adding MySQL with comments parsing on:
 
     ```sh
-    pmm-admin add mysql --username=root --password=root-password --comments-parsing="on"
+    pfw-admin add mysql --username=root --password=root-password --comments-parsing="on"
     ```
 
 - **via UI**: While adding a service through the UI you will see new checkbox to `enable/disable` comments parsing for current service.

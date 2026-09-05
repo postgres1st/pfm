@@ -9,7 +9,7 @@ Dashboards provide insightful and actionable data, enabling you to gain an overv
 
 ## Available dashboards
 
-Performance Monitoring and Management (PFMM) offers a range of dashboards you can access. Some of these dashboards are as follows:
+Performance Monitoring and Management (PGF WatchTower) offers a range of dashboards you can access. Some of these dashboards are as follows:
 
 === "Insight"
 
@@ -22,11 +22,11 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
     | [VictoriaMetrics]                                                                        | VictoriaMetrics performance and storage metrics
     | [VictoriaMetrics Agents Overview]                                                        | VictoriaMetrics agents status and data collection
 
-=== "PFMM"
+=== "PGF WatchTower"
 
     | Dashboard                                                                                | Description |
     |------------------------------------------------------------------------------------------|-------------|
-    | [PFMM Inventory]                                                                          | Manage monitored services, nodes, and agents
+    | [PGF WatchTower Inventory]                                                                          | Manage monitored services, nodes, and agents
     | [Environment Overview]                                                                   | High-level view of all monitored environments
     | [Environment Summary]                                                                    | Aggregated metrics across environments
 
@@ -44,41 +44,6 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
     | [Node Summary]                                                                           | System information and resource usage for a single node
     | [NUMA Details]                                                                           | NUMA node memory allocation and performance
     | [Processes Details]                                                                      | Process-level CPU, memory, and I/O metrics
-
-=== "MySQL"
-
-    | Dashboard                                                                                | Description |
-    |------------------------------------------------------------------------------------------|-------------|
-    | [MySQL Amazon Aurora Details]                                                            | Aurora-specific metrics and replication
-    | [MySQL Command/Handler Counters Compare]                                                 | Compare command execution patterns across instances
-    | [MySQL InnoDB Compression Details]                                                       | InnoDB compression efficiency and performance
-    | [MySQL InnoDB Details]                                                                   | InnoDB storage engine metrics and buffer pool statistics
-    | [MySQL MyISAM/Aria Details]                                                              | MyISAM and Aria storage engine performance
-    | [MySQL MyRocks Details]                                                                  | MyRocks storage engine metrics
-    | [MySQL Instance Summary]                                                                 | MySQL instance health and performance overview
-    | [MySQL Instances Compare]                                                                | Compare metrics across multiple MySQL instances
-    | [MySQL Instances Overview]                                                               | Summary of all monitored MySQL instances
-    | [MySQL Wait Event Analyses Details]                                                      | Identify and analyze wait events and bottlenecks
-    | [MySQL Performance Schema Details]                                                       | Performance Schema instrumentation and metrics
-    | [MySQL Query Response Time Details]                                                      | Query response time distribution analysis
-    | [MySQL Replication Summary]                                                              | Replication status, lag, and topology
-    | [MySQL Group Replication Summary]                                                        | Group replication health and performance
-    | [MySQL Table Details]                                                                    | Table-level statistics and performance
-    | [MySQL User Details]                                                                     | User connection and activity monitoring
-
-=== "MongoDB"
-
-    | Dashboard                                                                                | Description |
-    |------------------------------------------------------------------------------------------|-------------|
-    | [MongoDB Collection Overview]                                               | Collection-level statistics
-    | [MongoDB Oplog Details]                                                                  | Oplog operations and replication
-    | [MongoDB Cluster Summary]                                                                | Sharded cluster health and performance overview
-    | [MongoDB Instance Summary]                                                               | MongoDB instance metrics and operations
-    | [MongoDB Instances Compare]                                                              | Compare metrics across MongoDB instances
-    | [MongoDB ReplSet Summary]                                                                | Replica set health, lag, and member status
-    | [MongoDB InMemory Details]                                                               | InMemory storage engine performance
-    | [MongoDB MMAPv1 Details]                                                                 | MMAPv1 storage engine metrics
-    | [MongoDB WiredTiger Details]                                                             | WiredTiger storage engine performance and caching
 
 === "PostgreSQL"
 
@@ -103,12 +68,6 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
     | [Valkey/Redis Replication]                                                               | Replication lag and synchronization status
     | [Valkey/Redis Slowlog]                                                                   | Slow command identification and bottleneck detection
 
-=== "ProxySQL"
-
-    | Dashboard                                                                                | Description |
-    |------------------------------------------------------------------------------------------|-------------|
-    | [ProxySQL Instance Summary]                                                              | ProxySQL performance, connection pooling, and query routing
-
 === "HA"
 
     | Dashboard                                                                                | Description |
@@ -125,7 +84,7 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
 [Prometheus Exporters Overview]: ../../reference/dashboards/dashboard-prometheus-exporters-overview.md
 [VictoriaMetrics]: ../../reference/dashboards/dashboard-victoriametrics.md
 [VictoriaMetrics Agents Overview]: ../../reference/dashboards/dashboard-victoriametrics-agents-overview.md
-[PFMM Inventory]: ../../use/dashboard-inventory.md
+[PGF WatchTower Inventory]: ../../use/dashboard-inventory.md
 [Environment Overview]: ../../reference/dashboards/dashboard-env-overview.md
 [Environment Summary]: ../../reference/dashboards/dashboard-env-overview.md
 [CPU Utilization Details]: ../../reference/dashboards/dashboard-cpu-utilization-details.md
@@ -140,36 +99,9 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
 [Processes Details]: ../../reference/dashboards/dashboard-processes-details.md
 [Prometheus Exporter Status]: ../../reference/dashboards/dashboard-prometheus-exporter-status.md
 [Prometheus Exporters Overview]: ../../reference/dashboards/dashboard-prometheus-exporters-overview.md
-[MySQL Amazon Aurora Details]: ../../reference/dashboards/dashboard-mysql-amazon-aurora-details.md
-[MySQL Command/Handler Counters Compare]: ../../reference/dashboards/dashboard-mysql-command-handler-counters-compare.md
-[MySQL InnoDB Compression Details]: ../../reference/dashboards/dashboard-mysql-innodb-compression-details.md
-[MySQL InnoDB Details]: ../../reference/dashboards/dashboard-mysql-innodb-details.md
-[MySQL MyISAM/Aria Details]: ../../reference/dashboards/dashboard-mysql-myisam-aria-details.md
-[MySQL MyRocks Details]: ../../reference/dashboards/dashboard-mysql-myrocks-details.md
-[MySQL Instance Summary]: ../../reference/dashboards/dashboard-mysql-instance-summary.md
-[MySQL Instances Compare]: ../../reference/dashboards/dashboard-mysql-instances-compare.md
-[MySQL Instances Overview]: ../../reference/dashboards/dashboard-mysql-instances-overview.md
-[MySQL Wait Event Analyses Details]: ../../reference/dashboards/dashboard-mysql-wait-event-analyses-details.md
-[MySQL Performance Schema Details]: ../../reference/dashboards/dashboard-mysql-performance-schema-details.md
-[MySQL Query Response Time Details]: ../../reference/dashboards/dashboard-mysql-query-response-time-details.md
-[MySQL Replication Summary]: ../../reference/dashboards/dashboard-mysql-replication-summary.md
-[MySQL Group Replication Summary]: ../../reference/dashboards/dashboard-mysql-group-replication-summary.md
-[MySQL Table Details]: ../../reference/dashboards/dashboard-mysql-table-details.md
-[MySQL User Details]: ../../reference/dashboards/dashboard-mysql-user-details.md
-[MongoDB Collection Overview]: ../../reference/dashboards/dashboard-mongodb-collection_overview.md
-[MongoDB Oplog Details]: ../../reference/dashboards/dashboard-mongodb-oplog-details.md
-[MongoDB Cluster Summary]: ../../reference/dashboards/dashboard-mongodb-cluster-summary.md
-[MongoDB Instance Summary]: ../../reference/dashboards/dashboard-mongodb-instance-summary.md
-[MongoDB Instances Overview]: ../../reference/dashboards/dashboard-mongodb-instances-overview.md
-[MongoDB Instances Compare]: ../../reference/dashboards/dashboard-mongodb-instances-compare.md
-[MongoDB ReplSet Summary]: ../../reference/dashboards/dashboard-mongodb-replset-summary.md
-[MongoDB InMemory Details]: ../../reference/dashboards/dashboard-mongodb-inmemory-details.md
-[MongoDB MMAPv1 Details]: ../../reference/dashboards/dashboard-mongodb-mmapv1-details.md
-[MongoDB WiredTiger Details]: ../../reference/dashboards/dashboard-mongodb-wiredtiger-details.md
 [PostgreSQL Instances Overview]: ../../reference/dashboards/dashboard-postgresql-instances-overview.md
 [PostgreSQL Instance Summary]: ../../reference/dashboards/dashboard-postgresql-instance-summary.md
 [PostgreSQL Instances Compare]: ../../reference/dashboards/dashboard-postgresql-instances-compare.md
-[ProxySQL Instance Summary]: ../../reference/dashboards/dashboard-proxysql-instance-summary.md
 [Valkey/Redis Overview]: ../../reference/dashboards/dashboard-valkey-redis-overview.md
 [Valkey/Redis Clients]: ../../reference/dashboards/dashboard-valkey-redis-clients.md
 [Valkey/Redis Cluster Details]: ../../reference/dashboards/dashboard-valkey-redis-cluster-details.md
@@ -183,4 +115,3 @@ Performance Monitoring and Management (PFMM) offers a range of dashboards you ca
 [PXC/Galera Node Summary]: ../../reference/dashboards/dashboard-pxc-galera-node-summary.md
 [PXC/Galera Nodes Compare]: ../../reference/dashboards/dashboard-pxc-galera-nodes-compare.md
 [HAProxy Instance Summary]: ../../reference/dashboards/
-[PXC/Galera Cluster Summary]:../../reference/dashboards/dashboard-mongodb-cluster-summary.md

@@ -13,23 +13,23 @@ curl -X POST \
   'http://<pmm-server-address>/v1/server/updates:start' \
   -H 'Content-Type: application/json'
 ```
-3. Wait 2-5 minutes and refresh the PFMM Home page to verify the update.
+3. Wait 2-5 minutes and refresh the PGF WatchTower Home page to verify the update.
 
-## Watchtower fails with "client version is too old" error
+## Watchtower updater fails with "client version is too old" error
 
-When upgrading PMM Server via the UI, Watchtower may fail with the following error:
+When upgrading PMM Server via the UI, the Watchtower updater may fail with the following error:
 
 ```
 client version X.XX is too old. Minimum supported API version is X.XX, please upgrade your client to a newer version
 ```
 
-This occurs when your Docker installation requires a newer API version than Watchtower supports.
+This occurs when your Docker installation requires a newer API version than the Watchtower updater supports.
 
 **Solution**
 To resolve this issue:
 {.power-number}
 
-1. Update to the latest Watchtower image:
+1. Update to the latest Watchtower updater image:
 ```
 docker pull percona/watchtower:latest
 ```

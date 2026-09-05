@@ -1,8 +1,8 @@
-# Get started with PFMM
+# Get started with PGF WatchTower
 
-To get up and running with Postgres1st (PFMM) in no time, install PFMM on Bare Metal/Virtual using the Easy-install script for Docker.
+To get up and running with Postgres1st (PGF WatchTower) in no time, install PGF WatchTower on Bare Metal/Virtual using the Easy-install script for Docker.
 
-This is the simplest and most efficient way to install PFMM with Docker.
+This is the simplest and most efficient way to install PGF WatchTower with Docker.
 
 ??? info "Alternative installation options"
      For alternative setups or if you're not using Docker, explore the additional installation options detailed in the **Setting up** chapter:
@@ -11,23 +11,23 @@ This is the simplest and most efficient way to install PFMM with Docker.
     - [Deploy based on a Docker image](../install-pmm/install-pmm-server/deployment-options/docker/index.md)
     - [Deploy on Virtual Appliance](../install-pmm/install-pmm-server/deployment-options/virtual/index.md)
     - [Deploy on Kubernetes/OpenShift via Helm](../install-pmm/install-pmm-server/deployment-options/helm/index.md)
-    - [Run a PFMM instance hosted at AWS Marketplace](../install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.md)
+    - [Run a PGF WatchTower instance hosted at AWS Marketplace](../install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.md)
 
 #### Prerequisites
 
-Before you start installing PFMM, verify that your system meets the compatibility requirements:
+Before you start installing PGF WatchTower, verify that your system meets the compatibility requirements:
 
 ??? info "Verify system compatibility"
     - System: Linux-compatible system with `sudo` privileges or `root` access
-    - Network: Internet connectivity to download PFMM components
+    - Network: Internet connectivity to download PGF WatchTower components
     - Ports: Your system's firewall should allow TCP traffic on port `443`
 
-## Install PFMM
+## Install PGF WatchTower
 
 The Easy-install script only runs on Linux-compatible systems. To use it, run the command with `sudo` privileges or as `root`:
 { .power-number }
 
-1. Download and install PFMM using `cURL` or `wget`:
+1. Download and install PGF WatchTower using `cURL` or `wget`:
 
     === "cURL"
 
@@ -41,18 +41,18 @@ The Easy-install script only runs on Linux-compatible systems. To use it, run th
         wget -qO - https://raw.githubusercontent.com/percona/pmm/refs/heads/main/get-pmm.sh | /bin/bash    
         ```
 
-2. After the installation is complete, log into PFMM with the default `admin:admin` credentials.
+2. After the installation is complete, log into PGF WatchTower with the default `admin:admin` credentials.
 
 ??? info "What's happening under the hood?"
      This script does the following:
 
      * Installs Docker if it is not installed on your system.
-     * Stops and renames any currently running PFMM Docker container from `pmm-server` to `pmm-server-{timestamp}`. This old `pmm-server` container is not a recoverable backup.
-     * Pulls and runs the latest PFMM Docker image.
+     * Stops and renames any currently running PGF WatchTower Docker container from `pmm-server` to `pmm-server-{timestamp}`. This old `pmm-server` container is not a recoverable backup.
+     * Pulls and runs the latest PGF WatchTower Docker image.
 
 ## Connect database
 
-Once PFMM is set up, choose the database or the application that you want it to monitor:
+Once PGF WatchTower is set up, choose the database or the application that you want it to monitor:
 
 === ":simple-postgresql: PostgreSQL"
 
@@ -65,7 +65,7 @@ Once PFMM is set up, choose the database or the application that you want it to 
         CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD '<your_password>';
         ```
 
-    2. Ensure that PFMM can log in locally as this user to the PostgreSQL instance. To enable this, edit the `pg_hba.conf` file. If  not already enabled by an existing rule, add:
+    2. Ensure that PGF WatchTower can log in locally as this user to the PostgreSQL instance. To enable this, edit the `pg_hba.conf` file. If  not already enabled by an existing rule, add:
 
         ```conf
         local   all             pmm                                md5
@@ -144,13 +144,13 @@ Once PFMM is set up, choose the database or the application that you want it to 
     8. Register PMM Client:
         
         ```sh
-        pmm-admin config --server-insecure-tls --server-url=https://admin:admin@X.X.X.X:443
+        pfw-admin config --server-insecure-tls --server-url=https://admin:admin@X.X.X.X:443
         ```
 
     9. Add the PostgreSQL database:
 
         ```sh 
-        pmm-admin add postgresql --username=pmm --password=<your_password>
+        pfw-admin add postgresql --username=pmm --password=<your_password>
         ```
             
     For detailed instructions and advanced installation options, see [Adding a PostgreSQL database](../install-pmm/install-pmm-client/connect-database/postgresql.md).
@@ -160,7 +160,7 @@ Once PFMM is set up, choose the database or the application that you want it to 
     { .power-number}
 
     1. [Set up an HAproxy instance](https://www.haproxy.com/blog/haproxy-exposes-a-prometheus-metrics-endpoint). 
-    2. Add the instance to PFMM (default address is <http://localhost:8404/metrics>), and use the `haproxy` alias to enable HAProxy metrics monitoring.
+    2. Add the instance to PGF WatchTower (default address is <http://localhost:8404/metrics>), and use the `haproxy` alias to enable HAProxy metrics monitoring.
     3. To optimize server-side resources, install PMM Client via Package Manager on the database node: 
         
         === ":material-debian: Debian-based"
@@ -210,25 +210,25 @@ Once PFMM is set up, choose the database or the application that you want it to 
     4. Register PMM Client:
         
         ```sh
-        pmm-admin config --server-insecure-tls --server-url=https://admin:admin@X.X.X.X:443
+        pfw-admin config --server-insecure-tls --server-url=https://admin:admin@X.X.X.X:443
         ```
 
     5. Run the command below, specifying the `listen-port`` as the port number where HAProxy is running. (This flag is mandatory.)
 
         ```sh
-        pmm-admin add haproxy --listen-port=8404
+        pfw-admin add haproxy --listen-port=8404
         ```
 
     For detailed instructions and more information on the command arguments, see the [HAProxy topic](../install-pmm/install-pmm-client/connect-database/haproxy.md).
 
 ## Check database monitoring results
 
-After installing PFMM and connecting the database, go to the database's Instance Summary dashboard. This shows essential information about your database performance and an overview of your environment.
+After installing PGF WatchTower and connecting the database, go to the database's Instance Summary dashboard. This shows essential information about your database performance and an overview of your environment.
 
-For more information, see [PFMM Dashboards](../use/dashboards-panels/index.md).
+For more information, see [PGF WatchTower Dashboards](../use/dashboards-panels/index.md).
 
 ## Next steps
 
-- [Configure PFMM via the interface](../configure-pmm/configure.md)
-- [Manage users in PFMM](../admin/manage-users/index.md)
+- [Configure PGF WatchTower via the interface](../configure-pmm/configure.md)
+- [Manage users in PGF WatchTower](../admin/manage-users/index.md)
 - [Set up roles and permissions](../admin/roles/index.md)

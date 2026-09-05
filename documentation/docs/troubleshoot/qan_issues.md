@@ -8,7 +8,7 @@ This section focuses on problems with QAN, such as queries not being retrieved.
 
 There might be multiple places where the problem might come from:
 
-- connection problem between pmm-agent and pmm-managed
+- connection problem between pfw-agent and pmm-managed
 - PMM-agent cannot connect to the database.
 - data source is not properly configured.
 
@@ -49,11 +49,11 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 ### Resolution
 
-- **PFMM 3.5.0 and later:** The issue is **fixed automatically**. PFMM detects and completes the interrupted schema migration upon restart.
+- **PGF WatchTower 3.5.0 and later:** The issue is **fixed automatically**. PGF WatchTower detects and completes the interrupted schema migration upon restart.
 - **Earlier versions:** Use the following manual workaround:
     {.power-number}
 
-    1. Access the PFMM container:
+    1. Access the PGF WatchTower container:
     ```bash
     podman exec -it pmm-server /bin/bash
     ```
@@ -85,7 +85,7 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 If you're running PMM Server with less than 16 GB RAM and seeing "memory limit exceeded" errors in ClickHouse logs, switch to the low-memory configuration.
 
-PFMM includes two ClickHouse profiles:
+PGF WatchTower includes two ClickHouse profiles:
 
 - **default**: optimized for performance (16 GB+ RAM)
 - **low-memory**: optimized for constrained environments, based on [ClickHouse recommendations](https://clickhouse.com/docs/operations/tips#using-less-than-16gb-of-ram)

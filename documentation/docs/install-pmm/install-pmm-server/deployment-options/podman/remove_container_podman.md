@@ -2,7 +2,7 @@
 Remove the PMM Server Podman container, images, and data when you no longer need this installation or want to perform a complete reinstallation.
 
 !!! danger alert alert-danger "Data loss warning"
-    These steps delete the PMM Server Docker image and the associated PFMM metrics data.
+    These steps delete the PMM Server Docker image and the associated PGF WatchTower metrics data.
 
 To completely remove your container and data:
 {.power-number}
@@ -17,13 +17,13 @@ To completely remove your container and data:
     sleep 10
     ```
 
-2. If you're using Watchtower for UI upgrades, stop it too:
+2. If you're using the Watchtower updater for UI upgrades, stop it too:
 
     ```sh
     systemctl --user stop watchtower
     ```
 
-3. Remove the PFMM data volume:
+3. Remove the PGF WatchTower data volume:
 
     ```sh
     podman volume rm --force pmm-server
@@ -49,7 +49,7 @@ To completely remove your container and data:
     rm -f %h/.config/systemd/user/watchtower.env
     ```
 
-7. If you no longer need it, remove the PFMM network:
+7. If you no longer need it, remove the PGF WatchTower network:
     ```sh
     podman network rm pmm_default
     ```

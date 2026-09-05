@@ -1,94 +1,81 @@
 {# Import the theme's layout. #}
 {% extends "base.html" %}
 
-{% block announce %}
-<div class="md-banner" style="text-align: center;">
-  Where the open source database community meets:
-  Secure your spot for Percona Live.
+{#
+  No {% block announce %}. This carried a banner on every page advertising Percona Live
+  and linking to perconalive.com registration.
 
-  <a
-    class="breakdance-link button-atom button-atom--primary bde-button__button"
-    href="https://perconalive.com/2026-amsterdam/registration/"
-    target="_blank"
-    data-type="url"
-    style="
-      padding: 5px 20px;
-      display: inline-block;
-      margin-left: 10px;
-      background-color: #653df4;
-      border-radius: 999px;
-      text-decoration: none;
-    "
-  >
-    <span class="button-atom__text" style="font-size: 16px; color: #ffffff;">
-      Register
-    </span>
-  </a>
-</div>
-{% endblock %}
+  No analytics or consent-management scripts in {% block scripts %}. This template
+  previously loaded two third-party trackers on every page of our documentation:
 
-{% block scripts %}
-{{ super() }}
-<script>
-  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-  posthog.init('phc_7unoI9J6Fm0SMrfDp35xNOpCRTkOAibbffQwdGWbHnL',{api_host:'https://eu.posthog.com'})
-</script>
+    - PostHog (project key phc_7unoI9J6Fm0SMrfDp35xNOpCRTkOAibbffQwdGWbHnL, api_host
+      eu.posthog.com) -- a full product-analytics SDK, capturing events, sessions and
+      surveys.
+    - Osano CMP (cmp.osano.com/Azqe5vTyLOSbN3OuT/...) -- consent management tied to the
+      same account.
 
-<script src="https://cmp.osano.com/Azqe5vTyLOSbN3OuT/49ad85b5-0418-4794-ab81-7599dddd534c/osano.js"></script>
-{% endblock %}
+  Both reported our readers to Percona's accounts. They are removed rather than
+  re-pointed: we do not currently collect analytics, and the product force-disables
+  telemetry for the same reason. If analytics are ever wanted here, they need our own
+  account and a consent story, not an inherited one.
+#}
 
 {% block extrahead %}
 {{ super() }}
-                 {% set title = config.site_name %}
-                 {% if page and page.meta and page.meta.title %}
-                 {% set title = title ~ " - " ~ page.meta.title %}
-                 {% elif page and page.title and not page.is_homepage %}
-                 {% set title = title ~ " - " ~ page.title %}
-                 {% endif %}
-                 <meta property="og:type" content="website" />
-                 <meta property="og:title" content="{{ title }}" />
-                 <meta property="og:image" content="https://docs.percona.com/percona-monitoring-and-management/images/PMM.png">
-                 <meta property="og:url" content="https://docs.percona.com/percona-monitoring-and-management/">
-              {% endblock %}
+  {% set title = config.site_name %}
+  {% if page and page.meta and page.meta.title %}
+  {% set title = title ~ " - " ~ page.meta.title %}
+  {% elif page and page.title and not page.is_homepage %}
+  {% set title = title ~ " - " ~ page.title %}
+  {% endif %}
+  {# og:image and og:url are omitted deliberately. They pointed at
+     docs.percona.com/percona-monitoring-and-management/, so every social preview of our
+     documentation showed Percona's artwork and linked to their site. This documentation
+     has no canonical published address yet; asserting one would be a fresh false claim. #}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{{ title }}" />
+{% endblock %}
 
-              {% block site_nav %}
-              {% if nav %}
-                {% if page.meta and page.meta.hide %}
-                  {% set hidden = "hidden" if "navigation" in page.meta.hide %}
-                {% endif %}
-                <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" {{ hidden }}>
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      {% include "partials/nav.html" %}
-                      <br>
-                      <label class="md-nav__title" for="__drawer">
-                        <a href="https://learn.percona.com/download-percona-monitoring-and-management-manual-3" onclick="_gaq.push(['b._trackEvent', 'Percona Monitoring and Management', 'Download', 'Download Manual Percona Monitoring and Management']);" class="md-nav__link md-nav__link--active" style="font-size: .7rem;">
-                          Download PDF
-                        </a>
-                      </label> 
-                    </div>
-                  </div>
-                </div>
-              {% endif %}
-              {% if "toc.integrate" not in features %}
-                {% if page.meta and page.meta.hide %}
-                  {% set hidden = "hidden" if "toc" in page.meta.hide %}
-                {% endif %}
-                <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" {{ hidden }}>
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      {% include "partials/rating.html" %}
-                    </div>
-                    <div class="md-sidebar__inner">
-                      {% include "partials/edit.html" %}
-                    </div>
-                    <div class="md-sidebar__inner">
-                      {% include "partials/banner.html" %}
-                    </div>
-                    <div class="md-sidebar__inner">
-                      {% include "partials/toc.html" %}
-                    </div>
-                  </div>
-                </div>
-              {% endif %}
-            {% endblock %}
+{% block site_nav %}
+{% if nav %}
+  {% if page.meta and page.meta.hide %}
+    {% set hidden = "hidden" if "navigation" in page.meta.hide %}
+  {% endif %}
+  <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" {{ hidden }}>
+    <div class="md-sidebar__scrollwrap">
+      <div class="md-sidebar__inner">
+        {% include "partials/nav.html" %}
+        {# No "Download PDF" link. It pointed at
+           learn.percona.com/download-percona-monitoring-and-management-manual-3, a
+           lead-capture page, and fired a _gaq.push Google Analytics event on click.
+           mkdocs-pdf.yml builds our own PDF; link it here once it is published. #}
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% if "toc.integrate" not in features %}
+  {% if page.meta and page.meta.hide %}
+    {% set hidden = "hidden" if "toc" in page.meta.hide %}
+  {% endif %}
+  <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" {{ hidden }}>
+    <div class="md-sidebar__scrollwrap">
+      {# No rating widget. partials/rating.html POSTed every "was this page helpful?"
+         response to a Google Form owned by Percona
+         (docs.google.com/forms/d/e/1FAIpQLSdXWLhl1oKQqq9AgG_Ugxs5EbF3NMAiddWswL4ITyaQZZr5BA),
+         so reader feedback on our documentation went to them. The partial and js/rating.js
+         are deleted: mkdocs copies everything under docs/ into the built site whether or
+         not a page references it, so an unloaded script is still published and
+         downloadable. Unloaded is not unshipped. #}
+      <div class="md-sidebar__inner">
+        {% include "partials/edit.html" %}
+      </div>
+      <div class="md-sidebar__inner">
+        {% include "partials/banner.html" %}
+      </div>
+      <div class="md-sidebar__inner">
+        {% include "partials/toc.html" %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

@@ -4,37 +4,13 @@ Stored metrics captures queries after they complete, so you can review historica
 
 ## Supported databases
 
-Stored metrics supports MySQL, MongoDB, and PostgreSQL with the following requirements:
-
-=== "MySQL"
-    - MySQL 5.1 or later (if using the slow query log)
-    - MySQL 5.6.9 or later (if using Performance Schema)
-    - Percona Server 5.6+ (all Performance Schema and slow log features)
-    - MariaDB 5.2+ (for user statistics), 10.0+ (for Performance Schema)
-
-    Some limitations and tuning options apply when using MySQL's Performance Schema. See [Query Analytics with MySQL](mysql.md#limitations-with-performance-schema).
+Stored metrics supports PostgreSQL with the following requirements:
 
 === "PostgreSQL"
     - PostgreSQL 11 or later
     - `pg_stat_monitor` extension (recommended) or `pg_stat_statements` extension
     - Appropriate `shared_preload_libraries` configuration
-    - Superuser privileges for PFMM monitoring account
-
-=== "MongoDB"
-    - MongoDB 6.0 or later (4.4+ may work with limited features)
-
-    **Profiler requirements**
-
-    - Profiling enabled for Query Analytics
-    - Appropriate user roles: `clusterMonitor`, `read` (local), and custom monitoring roles
-    - For MongoDB 8.0+: Additional `directShardOperations` role required for sharded clusters
-
-    **Mongolog requirements**
-
-    - MongoDB configured to log slow operations to a file
-    - MongoDB server has write permissions to the log directory and file
-    - PMM agent has read permissions to the MongoDB log file
-    - Appropriate user roles: `clusterMonitor`, or custom monitoring roles (`getCmdLineOpts` privilege on `{ cluster: true }`)
+    - Superuser privileges for PGF WatchTower monitoring account
 
 ## Dashboard layout
 
@@ -61,7 +37,7 @@ To enable:
 2. Switch on the **QAN for PMM Server** option.
 3. Open **Query Analytics** and filter by `pmm-server-postgresql` to view queries.
 
-When enabled, you'll see queries related to PFMM's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
+When enabled, you'll see queries related to PGF WatchTower's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
 
 !!! warning
     Do not use PMM Server's PostgreSQL database for application workloads. Use dedicated databases for your applications.

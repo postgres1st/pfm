@@ -1,11 +1,11 @@
-# Connect Linux databases to PFMM
+# Connect Linux databases to PGF WatchTower
 
 ## Supported Linux distributions
 
 PMM Client supports collecting system metrics from various Linux distributions:
 
 - Red Hat/CentOS/Oracle Linux 8, 9 and 10
-- Amazon Linux 2023 (native support added in PFMM 3.2.0)
+- Amazon Linux 2023 (native support added in PGF WatchTower 3.2.0)
 - Debian 11 (Bullseye), 12 (Bookworm) and 13 (Trixie)
 - Ubuntu 22.04 (Jammy) and 24.04 (Noble)
 
@@ -14,7 +14,7 @@ PMM Client supports collecting system metrics from various Linux distributions:
 When you register a node using the PMM Client, system metrics collection is enabled by default:
 
 ```bash
-pmm-admin config --server-url=https://admin:admin@pmm-server-ip:443
+pfw-admin config --server-url=https://admin:admin@pmm-server-ip:443
 ```
 
 ## Viewing Linux metrics
@@ -38,4 +38,4 @@ To view collected Linux metrics:
 
 - [Install PMM Client](../../install-pmm-client/index.md)
 - [Operating System dashboard reference](../../../reference/dashboards/dashboard-node-summary.md)
-- [Troubleshooting PFMM](../../../troubleshoot/index.md)
+- [Troubleshooting PGF WatchTower](../../../troubleshoot/index.md)

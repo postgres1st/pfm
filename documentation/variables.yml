@@ -1,6 +1,8 @@
-# PMM Version for HTML
-# See also mkdocs.yml plugins.with-pdf.cover_subtitle and output_path
+# Version shown in the HTML docs and used to build release-notes links.
+# Must track PFW_VERSION in build/scripts/pfw-airgap-vars (3.9.0~beta2), with the tilde
+# folded to a hyphen the same way build-pfw-airgap folds it for the notes filename.
+# See also mkdocs-pdf.yml plugins.with-pdf.cover_subtitle and output_path.
 
-release: '3.8.1'
-version: '3.8.1'
-release_date: 2026-06-16
+release: '3.9.0-beta2'
+version: '3.9.0-beta2'
+release_date: 2026-09-06

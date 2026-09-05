@@ -1,5 +1,5 @@
-# Connect databases to PFMM
-Postgres1st (PFMM) supports monitoring for PostgreSQL and various cloud database services. 
+# Connect databases to PGF WatchTower
+Postgres1st (PGF WatchTower) supports monitoring for PostgreSQL and various cloud database services. 
 
 ## Supported database technologies
 
@@ -24,5 +24,5 @@ Postgres1st (PFMM) supports monitoring for PostgreSQL and various cloud database
 
 To change the parameters of a previously-added service, remove the service and re-add it with the new parameters.
 
-## New to PFMM?
-If you're setting up monitoring for the first time, follow the installation and setup instructions in the [PFMM installation overview](../../index.md).
+## New to PGF WatchTower?
+If you're setting up monitoring for the first time, follow the installation and setup instructions in the [PGF WatchTower installation overview](../../index.md).

@@ -21,7 +21,7 @@ To deploy PMM Server using Docker volumes:
     docker volume create pmm-data
     ```
 
-3. Run PMM Server with the volume configured, making sure to replace `your_watchtower_host` with watchtower container hostname (e.g. `--env PMM_WATCHTOWER_HOST=http://watchtower:8080`) and `your_watchtower_token` with the token created during [Watchtower setup](../docker/index.md#installation-options): 
+3. Run PMM Server with the volume configured, making sure to replace `your_watchtower_host` with watchtower container hostname (e.g. `--env PMM_WATCHTOWER_HOST=http://watchtower:8080`) and `your_watchtower_token` with the token created during [Watchtower updater setup](../docker/index.md#installation-options): 
 
     ```sh
     docker run --detach --restart always \
@@ -48,7 +48,7 @@ To deploy PMM Server using Docker volumes:
         docker exec -t pmm-server change-admin-password your_secure_password
         ```
 
-5. Access the PFMM web interface at `https://localhost` in a web browser. 
+5. Access the PGF WatchTower web interface at `https://localhost` in a web browser. 
 If you are accessing the Docker host remotely, replace `localhost` with your server's IP address or hostname.
 
 ## Additional configuration options

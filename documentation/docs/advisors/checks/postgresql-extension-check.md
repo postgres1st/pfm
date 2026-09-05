@@ -12,11 +12,3 @@ Therefore, we recommend that you always install the latest versions of extension
 Upgrading extensions is straightforward. A simple query is executed from within the database containing the extension.
 
  ALTER EXTENSION extension_name UPDATE TO ‘version’;
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-
-

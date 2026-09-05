@@ -11,10 +11,4 @@ Consider setting these two variables to the same value.
 ## Resolution
 
 Set the **tmp_table_size** to a value that is equal to or less than the **max_heap_table_size** value.
-Or increase the value of the **max_heap_table_size** value to match **tmp_table_size** value. 
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
+Or increase the value of the **max_heap_table_size** value to match **tmp_table_size** value.

@@ -2,7 +2,7 @@
 
 ## Required settings
 
-It is possible to use PFMM for monitoring [Amazon RDS](https://aws.amazon.com/rds/). In this case, the PMM Client is not installed on the host where the database server is deployed. By using the PFMM web interface, you connect to the Amazon RDS DB instance. You only need to provide the IAM user access key (or assign an IAM role) and PFMM discovers the Amazon RDS DB instances available for monitoring.
+It is possible to use PGF WatchTower for monitoring [Amazon RDS](https://aws.amazon.com/rds/). In this case, the PMM Client is not installed on the host where the database server is deployed. By using the PGF WatchTower web interface, you connect to the Amazon RDS DB instance. You only need to provide the IAM user access key (or assign an IAM role) and PGF WatchTower discovers the Amazon RDS DB instances available for monitoring.
 
 First of all, ensure that there is the minimal latency between PMM Server and the Amazon RDS instance.
 
@@ -72,11 +72,11 @@ Policies are attached to existing IAM users or groups. To create a new IAM user,
 
 ## Creating an access key for an IAM user
 
-To discover an Amazon RDS DB instance in PFMM, you either need to use the access key and secret access key of an existing IAM user or an IAM role. To create an access key for use with PFMM, open the IAM console and click **Users** on the navigation pane. Then, select your IAM user.
+To discover an Amazon RDS DB instance in PGF WatchTower, you either need to use the access key and secret access key of an existing IAM user or an IAM role. To create an access key for use with PGF WatchTower, open the IAM console and click **Users** on the navigation pane. Then, select your IAM user.
 
-To create the access key, open the **Security credentials** tab and click the **Create access key** button. The system automatically generates a new access key ID and a secret access key that you can provide on the **PFMM Add Instance** dashboard to have your Amazon RDS DB instances discovered.
+To create the access key, open the **Security credentials** tab and click the **Create access key** button. The system automatically generates a new access key ID and a secret access key that you can provide on the **PGF WatchTower Add Instance** dashboard to have your Amazon RDS DB instances discovered.
 
-In case, the PMM Server and Amazon RDS DB instance were created by using the same AWS account, you do not need create the access key ID and secret access key manually. PFMM retrieves this information automatically and attempts to discover your Amazon RDS DB instances.
+In case, the PMM Server and Amazon RDS DB instance were created by using the same AWS account, you do not need create the access key ID and secret access key manually. PGF WatchTower retrieves this information automatically and attempts to discover your Amazon RDS DB instances.
 
 ## Attaching a policy to an IAM user
 
@@ -101,7 +101,7 @@ The `AmazonRDSforPMMPolicy` is now added to your IAM user.
 
 ## Creating an IAM role
 
-Instead of creating an IAM user you can create an IAM role for a service, to discover Amazon RDS DB instances automatically without the need for access and secret keys. (But this only works if you are running PFMM through AWS.)
+Instead of creating an IAM user you can create an IAM role for a service, to discover Amazon RDS DB instances automatically without the need for access and secret keys. (But this only works if you are running PGF WatchTower through AWS.)
 
 To create an IAM role open the IAM console and click **Roles** on the navigation pane.
 {.power-number}
@@ -124,7 +124,7 @@ To create an IAM role open the IAM console and click **Roles** on the navigation
 
 9. Click the **Create role** button.
 
-After the role is created EC2 instances running PFMM will have permissions to discover RDS DB instances.
+After the role is created EC2 instances running PGF WatchTower will have permissions to discover RDS DB instances.
 
 !!! note alert alert-primary ""
     It’s also possible to create an IAM role to delegate permissions to an IAM user or to add permissions to a user belonging to another AWS account. See the [official AWS documentation on creating IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create.html).
@@ -160,28 +160,28 @@ To configure TLS for your RDS instance:
 
 2. Store the certificate file on the server where PMM Client or PMM Server is installed.
 
-3. When adding the RDS instance to PFMM, enable TLS and provide the CA certificate.
+3. When adding the RDS instance to PGF WatchTower, enable TLS and provide the CA certificate.
 
 ## Adding an Amazon RDS, Aurora or remote instance
 
 !!! caution alert alert-warning "Important"
-    It may take longer for PFMM to discover Amazon RDS instances in the `creating` state. You must wait a bit longer until PFMM discovers these instances.
+    It may take longer for PGF WatchTower to discover Amazon RDS instances in the `creating` state. You must wait a bit longer until PGF WatchTower discovers these instances.
 
 
-The preferred method of adding an Amazon RDS database instance to PFMM is via the :material-cog: **Inventory > Add service** menu option.
+The preferred method of adding an Amazon RDS database instance to PGF WatchTower is via the :material-cog: **Inventory > Add service** menu option.
 
 This method supports Amazon RDS database instances that use Amazon Aurora, MySQL, or MariaDB engines, as well as any remote PostgreSQL, ProxySQL, MySQL and MongoDB instances.
 
-The following steps are needed to add an Amazon RDS database instance to PFMM:
+The following steps are needed to add an Amazon RDS database instance to PGF WatchTower:
 {.power-number}
 
-1. In the PFMM web interface, go to **Inventory > Add service > Amazon RDS**.
+1. In the PGF WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS.png)
 
 2. Enter the access key ID and the secret access key of your IAM user or leave these fields empty if an IAM role was created.
 
-3. Click the **Discover** button for PFMM to retrieve the available Amazon RDS
+3. Click the **Discover** button for PGF WatchTower to retrieve the available Amazon RDS
 instances.
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS_Discover.png)
@@ -192,7 +192,7 @@ instances.
 
     ![!](../../../images/PMM_Add_Instance_AWS_RDS_Main_Details.png)
 
-    The **Main details** section allows you to specify the DNS hostname of your instance, the service name to use within PFMM, the port your service is listening on, the database user name and password, and optionally the **Instance ID** to match your RDS instance between PFMM and the AWS console.    
+    The **Main details** section allows you to specify the DNS hostname of your instance, the service name to use within PGF WatchTower, the port your service is listening on, the database user name and password, and optionally the **Instance ID** to match your RDS instance between PGF WatchTower and the AWS console.    
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS_Labels.png)
 
@@ -206,7 +206,7 @@ instances.
     - Use TLS for the database connection.
     - Skip TLS certificate and hostname validation.
     - Disable basic and/or enhanced metrics collection for the RDS instance to reduce costs.
-    - Set **Connection timeout** to control how long PFMM waits when connecting to the instance. Leave empty to use the default of 5s.
+    - Set **Connection timeout** to control how long PGF WatchTower waits when connecting to the instance. Leave empty to use the default of 5s.
 
     Also this section contains a database-specific flag, which would allow Query Analytics for the selected remote database:
 
@@ -220,14 +220,14 @@ instances.
 
 ### Adding an RDS instance via command line
 
-You can also add Amazon RDS MySQL instances using the `pmm-admin` command line tool.
+You can also add Amazon RDS MySQL instances using the `pfw-admin` command line tool.
 
 === "With TLS (CA certificate only - recommended)"
 
     This is the recommended approach for Amazon RDS instances. Provide only the CA certificate to establish encrypted connections:
     
     ```sh
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=pmm \
       --password=secure \
       --host=mydb.123456.us-east-1.rds.amazonaws.com \
@@ -243,7 +243,7 @@ You can also add Amazon RDS MySQL instances using the `pmm-admin` command line t
     Use this option only if you've configured client certificate authentication on your RDS instance:
     
     ```sh
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=pmm \
       --password=secure \
       --host=mydb.123456.us-east-1.rds.amazonaws.com \
@@ -260,7 +260,7 @@ You can also add Amazon RDS MySQL instances using the `pmm-admin` command line t
 
     Use this option only if TLS is not required for your connection:
     ```sh
-    pmm-admin add mysql \
+    pfw-admin add mysql \
       --username=pmm \
       --password=secure \
       --host=mydb.123456.us-east-1.rds.amazonaws.com \
@@ -282,7 +282,7 @@ When using TLS certificates with Amazon RDS MySQL, make sure to:
 For PostgreSQL, use the same method described above.
 {.power-number}
 
-1. In the PFMM web interface, go to **Inventory > Add service > Amazon RDS**.
+1. In the PGF WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
 
     ![!image](../../../images/PMM_rds_postgre_02_discover.png)
 

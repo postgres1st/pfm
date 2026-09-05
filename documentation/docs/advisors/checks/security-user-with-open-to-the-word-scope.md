@@ -2,7 +2,7 @@
 
 ## Description
 
-For more information, see [Specifying Account Names](https://dev.mysql.com/doc/refman/8.4/en/account-names.html ).
+For more information, see [Specifying Account Names](https://dev.mysql.com/doc/refman/8.4/en/account-names.html).
 
 The host name part of an account name can take many forms, and wildcards are permitted:
 
@@ -12,10 +12,3 @@ The host name part of an account name can take many forms, and wildcards are per
 ## Resolution
 
 Remove any user that does not have a name in the mysql.user table. Or change the host to something with a limited scope.
- 
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>
-

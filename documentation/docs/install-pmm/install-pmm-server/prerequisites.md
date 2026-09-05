@@ -82,15 +82,15 @@ Choose your deployment method and ensure it meets these specific requirements:
     
     **Optional but recommended:**
 
-    - Watchtower for UI-based updates
+    - Watchtower updater for UI-based updates
     - Docker Compose for multi-container setups
     
-    **Security considerations for Watchtower:**
+    **Security considerations for the Watchtower updater:**
 
-    - Limit Watchtower's access to Docker network or localhost
+    - Limit the Watchtower updater's access to Docker network or localhost
     - Configure network to ensure only PMM Server is exposed externally
-    - Secure Docker socket access for Watchtower
-    - Place both Watchtower and PMM Server on the same Docker network
+    - Secure Docker socket access for the Watchtower updater
+    - Place both the Watchtower updater and PMM Server on the same Docker network
 
 === ":simple-podman: Podman"
     **Version requirements:**
@@ -101,7 +101,7 @@ Choose your deployment method and ensure it meets these specific requirements:
     **System configuration:**
 
     - Allow non-root users to bind to privileged ports (port 443)
-    - Podman socket enabled for Watchtower integration
+    - Podman socket enabled for Watchtower updater integration
     - systemd user services enabled
     
     **Required setup commands:**
@@ -161,7 +161,7 @@ Choose your deployment method and ensure it meets these specific requirements:
 
     - Outbound internet access for updates (optional)
     - Access to monitored database instances
-    - Access from client browsers to PFMM web interface
+    - Access from client browsers to PGF WatchTower web interface
     
     **Security note:**
 

@@ -1,6 +1,6 @@
-# Why PFMM?
+# Why PGF WatchTower?
 
-Postgres1st (PFMM) delivers:
+Postgres1st (PGF WatchTower) delivers:
 
 * **Comprehensive monitoring** of PostgreSQL databases
 * **Built-in advisors and alerts** that work offline with no subscription required. Proactively detect security threats, performance issues, and configuration problems
@@ -11,4 +11,4 @@ Postgres1st (PFMM) delivers:
 * **Centralized management** of multiple database instances across different hosts
 * **Active community support** with regular updates and improvements
 
-    ![!PFMM Home Screen](../images/Home_screen.png)
+    ![!PGF WatchTower Home Screen](../images/Home_screen.png)

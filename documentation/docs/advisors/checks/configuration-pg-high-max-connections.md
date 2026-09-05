@@ -23,9 +23,3 @@ To optimize PostgreSQL connection management and maintain performance:
 - Consider changing how applications interact with the database if peaks exceed 300 connections
 - Allocate fewer connections per application when using application-side pooling
 - Implement a solution like PgBouncer when application-side pooling isn't available
-
-## Need more support from Percona?
-
-Percona experts bring years of experience in tackling tough database performance issues and design challenges.
-
-<div data-tf-live="01JKGYABNVYHQ8A91QNW69A9TP"></div><script src="//embed.typeform.com/next/embed.js"></script>

@@ -1,26 +1,26 @@
-# Check connection status with pmm-admin
+# Check connection status with pfw-admin
 
 
-Check PMM Client connection status, list monitored services, and create diagnostic archives from the command line using these `pmm-admin` commands.
+Check PMM Client connection status, list monitored services, and create diagnostic archives from the command line using these `pfw-admin` commands.
 
-To view status in the UI, see [PFMM Inventory](../pmm-admin/inventory.md). For programmatic access, see the [PFMM API](../../../api/index.md).
+To view status in the UI, see [PGF WatchTower Inventory](../pmm-admin/inventory.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
 | Command | Use it to |
 |---------|-----------|
-| [`pmm-admin status`](#pmm-admin-status) | Check if PMM Client can connect to PMM Server |
-| [`pmm-admin list`](#pmm-admin-list) | Show all monitored services and their agents |
-| [`pmm-admin summary`](#pmm-admin-summary) | Create a diagnostic archive for troubleshooting or support requests |
+| [`pfw-admin status`](#pfw-admin-status) | Check if PMM Client can connect to PMM Server |
+| [`pfw-admin list`](#pfw-admin-list) | Show all monitored services and their agents |
+| [`pfw-admin summary`](#pfw-admin-summary) | Create a diagnostic archive for troubleshooting or support requests |
 
-## pmm-admin status
+## pfw-admin status
 
 Check the connection between PMM Client and PMM Server. Use this to verify PMM Client is properly configured and can communicate with the server.
 
 ### Syntax
 
 ```bash
-pmm-admin status [FLAGS]
+pfw-admin status [FLAGS]
 ```
 
 ### Flags
@@ -28,7 +28,7 @@ pmm-admin status [FLAGS]
 | Flag | Description |
 |------|-------------|
 | `--json` | Output in JSON format |
-| `--wait=<period><unit>` | Time to wait for a successful response from pmm-agent. Use an integer followed by a unit: `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours). Example: `--wait=30s` |
+| `--wait=<period><unit>` | Time to wait for a successful response from pfw-agent. Use an integer followed by a unit: `ms` (milliseconds), `s` (seconds), `m` (minutes), `h` (hours). Example: `--wait=30s` |
 
 ### Example output
 
@@ -45,8 +45,8 @@ PMM Client:
     Connected        : true
     Time drift       : -1.234ms
     Latency          : 5.678ms
-    pmm-agent Version: 3.0.0
-    pmm-agent Uptime : 48h30m15s
+    pfw-agent Version: 3.0.0
+    pfw-agent Uptime : 48h30m15s
 ```
 
 ### Interpret the output
@@ -63,7 +63,7 @@ PMM Client:
 Use the `--wait` flag to wait for the agent to become ready, for example in automated scripts or startup sequences:
 
 ```bash
-pmm-admin status --wait=30s
+pfw-admin status --wait=30s
 ```
 
 ### Troubleshoot connection issues
@@ -71,27 +71,27 @@ pmm-admin status --wait=30s
 #### Connection refused
 
 ```bash
-pmm-admin status
+pfw-admin status
 # Error: ...connection refused
 ```
 
 Check that PMM Server is running and the URL is correct:
 
 ```bash
-pmm-admin config --server-url=https://username:password@192.168.1.100:443
+pfw-admin config --server-url=https://username:password@192.168.1.100:443
 ```
 
 #### Certificate errors
 
 ```bash
-pmm-admin status
+pfw-admin status
 # Error: ...certificate signed by unknown authority
 ```
 
 For self-signed certificates, use:
 
 ```bash
-pmm-admin config --server-url=https://admin:admin@192.168.1.100:443 --server-insecure-tls
+pfw-admin config --server-url=https://admin:admin@192.168.1.100:443 --server-insecure-tls
 ```
 
 #### High time drift
@@ -104,14 +104,14 @@ sudo systemctl start chronyd
 sudo ntpdate pool.ntp.org
 ```
 
-## pmm-admin list
+## pfw-admin list
 
 Show all services and agents registered on this node, including the agent metrics mode (push/pull). Use this to verify which databases are being monitored and check agent status.
 
 ### Syntax
 
 ```bash
-pmm-admin list [FLAGS]
+pfw-admin list [FLAGS]
 ```
 
 ### Flags
@@ -151,16 +151,16 @@ postgres_exporter           Running     push              pg123                 
 Find MySQL services:
 
 ```bash
-pmm-admin list | grep -i mysql
+pfw-admin list | grep -i mysql
 ```
 
 Find agents with issues:
 
 ```bash
-pmm-admin list | grep -v Running
+pfw-admin list | grep -v Running
 ```
 
-## pmm-admin summary
+## pfw-admin summary
 
 Create a diagnostic archive containing logs, configuration, and status information. Use this when troubleshooting issues or submitting support requests to Percona.
 
@@ -177,7 +177,7 @@ The archive includes:
 ### Syntax
 
 ```bash
-pmm-admin summary [FLAGS]
+pfw-admin summary [FLAGS]
 ```
 
 ### Flags
@@ -194,7 +194,7 @@ pmm-admin summary [FLAGS]
 Create a diagnostic archive:
 
 ```bash
-pmm-admin summary
+pfw-admin summary
 ```
 
 Output:
@@ -206,19 +206,19 @@ Created summary file: /home/user/summary_db-server-01_2024-01-15T10-30-00.zip
 Save to a specific location:
 
 ```bash
-pmm-admin summary --filename=/tmp/pmm-diagnostic.zip
+pfw-admin summary --filename=/tmp/pmm-diagnostic.zip
 ```
 
 Create archive without contacting PMM Server:
 
 ```bash
-pmm-admin summary --skip-server
+pfw-admin summary --skip-server
 ```
 
 Include profiling data for performance issues:
 
 ```bash
-pmm-admin summary --pprof
+pfw-admin summary --pprof
 ```
 
 ### What's in the archive
@@ -226,8 +226,8 @@ pmm-admin summary --pprof
 ```
 summary_db-server-01_2024-01-15T10-30-00/
 ├── client/
-│   ├── pmm-agent.log
-│   ├── pmm-agent.yaml
+│   ├── pfw-agent.log
+│   ├── pfw-agent.yaml
 │   ├── status.json
 │   └── list.txt
 ├── systeminfo/
@@ -246,7 +246,7 @@ When opening a support ticket:
 1. Create the summary archive:
 
     ```bash
-    pmm-admin summary
+    pfw-admin summary
     ```
 
 2. Attach the `.zip` file to your support ticket.
@@ -255,7 +255,7 @@ When opening a support ticket:
 
 ## See also
 
-- [pmm-admin overview](../pmm-admin/pmm-admin.md)
+- [pfw-admin overview](../pmm-admin/pmm-admin.md)
 - [Add database services to monitoring](../pmm-admin/add.md)
 - [Manage inventory](../pmm-admin/inventory.md)
 - [Configuration commands](../pmm-admin/config.md)
