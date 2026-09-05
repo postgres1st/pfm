@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+# Fail when customer-facing documents and the shipped artifacts disagree.
+#
+#   build/scripts/check-release-claims
+#
+# The release notes and the bundled INSTALL guides are what a customer reads before
+# trusting a build, and they are the easiest thing in the tree to leave behind: the
+# packaging changes, the prose does not, and nothing notices. It has happened twice
+# here already -- the notes claimed no SELinux policy module was shipped while the RPM
+# had installed one for releases, and the setup steps told people to log in with
+# admin/admin after the product started generating a password per install.
+#
+# Design rules, learned from this check's own first version:
+#
+#   * Assert the NEGATIVE only. Each check looks for a false statement and fails if it
+#     finds one. It never requires particular wording to be present, because that makes
+#     an honest reword go red while a reworded falsehood sails through -- insensitive to
+#     meaning and hypersensitive to phrasing, which is worse than no check at all.
+#   * Match loosely on prose, exactly on artifacts. A human will write "does not ship"
+#     where the last one wrote "do not ship".
+#   * Resolve paths, do not spell them. The first version asserted a literal path that
+#     the script under test assembles from variables, so it could never have matched.
+#   * Guard every input. A moved file must fail loudly, not pass vacuously.
+#
+# Needs no container, no root and no built bundle, so it runs anywhere CI does.
+set -o errexit
+set -o nounset
+
+cd "$(dirname "$0")/../.."
+
+# EVERY release-notes file, not one pinned name. A pinned filename fails loudly when the
+# file is renamed, but is silently blind when a new one is ADDED beside it -- and that is
+# what happened: this checked beta1's notes while beta2's shipped unexamined, even though
+# beta2's notes make the very credential claims policed below. Discovery closes that and
+# keeps future releases covered without anyone remembering to edit this line.
+NOTES_DIR=documentation/docs/release-notes
+INSTALL=build/packages/pfw-airgap-INSTALL.md
+INSTALL_CLIENT=build/packages/pfw-airgap-INSTALL-CLIENT.md
+SPEC=build/packages/rpm/server/SPECS/pfw-server.spec
+INIT=build/packages/config/pfw/pfw-init.sh
+DEFAULTS=build/packages/config/pfw/defaults
+
+pass=0; fail=0
+ok() { printf '  PASS  %s\n' "$*"; pass=$((pass + 1)); }
+no() { printf '  FAIL  %s\n' "$*"; fail=$((fail + 1)); }
+
+# Every input is guarded: a rename must fail the build, not silently pass. This is the
+# check that keeps all the others honest.
+[ -d "${NOTES_DIR}" ] || { printf 'missing %s -- update this check when files move\n' "${NOTES_DIR}" >&2; exit 1; }
+NOTES=()
+while IFS= read -r f; do NOTES+=("${f}"); done < <(
+    find "${NOTES_DIR}" -maxdepth 1 -type f -name '*.md' ! -name 'index.md' | sort)
+[ ${#NOTES[@]} -gt 0 ] || { printf 'no release notes under %s -- this check would pass vacuously\n' "${NOTES_DIR}" >&2; exit 1; }
+
+for f in "${NOTES[@]}" "${INSTALL}" "${INSTALL_CLIENT}" "${SPEC}" "${INIT}"; do
+    [ -f "${f}" ] || { printf 'missing %s -- update this check when files move\n' "${f}" >&2; exit 1; }
+done
+[ -d "${DEFAULTS}" ] || { printf 'missing %s -- update this check when files move\n' "${DEFAULTS}" >&2; exit 1; }
+
+DOCS=("${NOTES[@]}" "${INSTALL}" "${INSTALL_CLIENT}")
+
+# The notes for the release being built, resolved the way build-pfw-airgap resolves them
+# (tilde folded to a hyphen) rather than spelled out here -- the script's own rule, and
+# the reason the beta2 file was missed when this path was pinned by hand.
+. build/scripts/pfw-airgap-vars >/dev/null 2>&1 || true
+CURRENT_NOTES="${NOTES_DIR}/pfw-${PFW_VERSION//\~/-}.md"
+[ -f "${CURRENT_NOTES}" ] || { printf 'no notes for the current release at %s\n' "${CURRENT_NOTES}" >&2; exit 1; }
+
+# Documents a customer follows NOW. Superseded release notes are excluded from the
+# instruction checks on purpose: they are a record of what that release shipped, and
+# beta1 really did ship pfm-* names and a /srv/.pfm-secrets layout. Rewriting them to
+# satisfy a rename check would make a historical document false, which is a worse defect
+# than the one being guarded against. They stay in DOCS for the link check below, because
+# a funnel to Percona is wrong regardless of which release it sits in.
+INSTRUCTION_DOCS=("${CURRENT_NOTES}" "${INSTALL}" "${INSTALL_CLIENT}")
+
+printf '\n>>> SELinux policy module\n'
+
+# The module has to be both staged and loaded for the notes' claim to hold. Checking
+# only that its name appears somewhere in the spec passed a tree where %post had been
+# gutted and nothing loaded it.
+# Three separate facts, because any one alone is satisfiable by a tree that does not
+# ship a working module. The install line's destination sits on a continuation line, so
+# these match the filename rather than a same-line source-and-destination pair.
+staged=no;   grep -qE '^install .*pfw_nginx\.pp' "${SPEC}" && staged=yes
+packaged=no; grep -qE '^%\{_datadir\}/selinux/packages/pfw_nginx\.pp' "${SPEC}" && packaged=yes
+loaded=no;   grep -qE 'semodule .*-i .*pfw_nginx\.pp' "${SPEC}" && loaded=yes
+# Loose on purpose: "do not ship", "does not ship", "no SELinux policy module".
+claims_none=no
+grep -rqiE '(do(es)? not (yet )?ship|no) [^.]{0,40}SELinux policy module' "${DOCS[@]}" && claims_none=yes
+
+if [ "${staged}" = yes ] && [ "${packaged}" = yes ] && [ "${loaded}" = yes ]; then
+    if [ "${claims_none}" = yes ]; then
+        no "the spec stages AND loads pfw_nginx.pp, but a customer document says no policy module is shipped"
+    else
+        ok "policy-module claim matches the packaging"
+    fi
+else
+    no "pfw_nginx.pp is no longer staged (${staged}), packaged (${packaged}) and loaded (${loaded}) by ${SPEC}; the documents describe a module that ships"
+fi
+
+# The documents state that enforcing mode has no automated gate. True only while nothing
+# actually drives setenforce. Comments are excluded -- a note saying "never run
+# setenforce here" is not automation, and matching it made this fire on an unchanged
+# tree. Workflows are included: a self-hosted RHEL runner is the likeliest home for it.
+drivers=$(grep -rlE '^[^#]*\bsetenforce\b' \
+    --exclude="$(basename "$0")" \
+    build/scripts/ build/packages/ .github/workflows/ 2>/dev/null || true)
+claims_no_gate=no
+grep -rqiE 'not covered by any automated gate|covered by no automated gate' "${DOCS[@]}" && claims_no_gate=yes
+
+if [ -n "${drivers}" ] && [ "${claims_no_gate}" = yes ]; then
+    no "something now drives setenforce (${drivers}) while the documents still say enforcing mode has no automated gate"
+else
+    ok "enforcing-validation claim matches the suites"
+fi
+
+printf '\n>>> Bootstrap credentials\n'
+
+# Resolve the path the way pfw-init.sh builds it, then compare the JOINED result with
+# what the documents tell people to run. Asserting the literal path could never match
+# (the script assembles it); asserting the assignment's spelling missed a change to SRV.
+srv=$(sed -n 's/^readonly SRV=\(.*\)$/\1/p' "${INIT}" | head -1)
+secrets_dir=$(sed -n 's/^readonly SECRETS_DIR="\${SRV}\(.*\)"$/\1/p' "${INIT}" | head -1)
+grafana_file=$(sed -n 's/^readonly GRAFANA_SECRET="\${SECRETS_DIR}\(.*\)"$/\1/p' "${INIT}" | head -1)
+resolved="${srv}${secrets_dir}${grafana_file}"
+
+# Match the WRITE, not the token: the variable name also appears in a comment and a log
+# line, so grepping for it passed a tree that had stopped generating the password.
+writes_admin_pw=no
+grep -qE '"GF_SECURITY_ADMIN_PASSWORD=\$\(gen_password\)"' "${INIT}" && writes_admin_pw=yes
+
+if [ "${writes_admin_pw}" = no ]; then
+    no "${INIT} no longer generates GF_SECURITY_ADMIN_PASSWORD; every document telling a customer to read one is now wrong"
+elif [ "${resolved}" != "/srv/.pfw-secrets/grafana.env" ]; then
+    no "pfw-init.sh writes the admin password to '${resolved}', not the expected /srv/.pfw-secrets/grafana.env"
+# Checked against the SERVER install guide specifically, not "any of DOCS". Searching all
+# three passes if ANY one matches, which hides the case this check exists to catch: the
+# server guide drifting while another document happens to carry the string. The client
+# guide never mentions the server's grafana secret, and the beta1 notes deliberately
+# document the older /srv/.pfm-secrets layout, so neither can stand in for it.
+elif ! grep -qF "${resolved}" "${INSTALL}"; then
+    no "${INSTALL} does not mention '${resolved}', the path pfw-init.sh assembles"
+else
+    ok "the server install guide documents the credential path pfw-init.sh assembles (${resolved})"
+fi
+
+# The highest-value assertion, and the one whose absence let a false login instruction
+# ship: while the password is generated per install, no document may tell a customer to
+# sign in with admin/admin.
+if [ "${writes_admin_pw}" = yes ]; then
+    stale_login_docs=$(grep -rlE '`?admin`? ?/ ?`?admin`?' "${DOCS[@]}" 2>/dev/null || true)
+    if [ -z "${stale_login_docs}" ]; then
+        ok "no document tells customers to log in with admin/admin"
+    else
+        no "the admin password is generated per install, but these still document admin/admin: ${stale_login_docs}"
+    fi
+fi
+
+# No packaged seed may carry a working credential. Widened from two hardcoded values to
+# any non-empty assignment: the previous version passed on single quotes, on any other
+# constant, and on GF_DATABASE_PASSWORD, which is the very constant the notes discuss.
+leaks=$(grep -rlE '^(PMM_POSTGRES_DBPASSWORD|PMM_CLICKHOUSE_PASSWORD|GF_DATABASE_PASSWORD|GF_SECURITY_ADMIN_PASSWORD)=["'"'"']?[^"'"'"'[:space:]]' \
+    "${DEFAULTS}" 2>/dev/null || true)
+if [ -z "${leaks}" ]; then
+    ok "no packaged env seed carries a credential"
+else
+    no "packaged env seed ships a credential: ${leaks}"
+fi
+
+printf '\n>>> Rebranding: what the documents tell a customer to type\n'
+
+# The rebrand renamed everything a customer touches: binaries, units, packages, paths.
+# Prose is the half nothing compiles, so a missed rename here does not break a build --
+# it ships an instruction that fails in the customer's terminal, which is worse, because
+# they meet it instead of us.
+#
+# All three checks below assert the NEGATIVE and derive the truth from ARTIFACTS rather
+# than from a list kept in step by hand. A list is the thing that goes stale, and a stale
+# allowlist in a rename check is indistinguishable from no check.
+
+# Units are discovered from the packaging tree, so a unit added or renamed is covered
+# without editing this script.
+UNITS=()
+while IFS= read -r u; do UNITS+=("$(basename "${u}")"); done < <(
+    find build/packages/config -maxdepth 2 -type f \
+         \( -name '*.service' -o -name '*.target' \) 2>/dev/null | sort)
+[ ${#UNITS[@]} -gt 0 ] || {
+    printf 'no unit files under build/packages/config -- this check would pass vacuously\n' >&2; exit 1; }
+
+# Every unit named in a systemctl instruction must be one we actually ship. This catches
+# both directions: an instruction left on the old name, and one renamed to a unit that
+# does not exist. Tokens are taken from the same line as systemctl, which skips flags
+# like --now without having to enumerate them.
+unknown=""
+while IFS= read -r unit; do
+    [ -n "${unit}" ] || continue
+    case "${unit}" in *.service|*.target) probe="${unit}" ;; *) probe="${unit}.service" ;; esac
+    found=no
+    for u in "${UNITS[@]}"; do [ "${u}" = "${probe}" ] && { found=yes; break; }; done
+    [ "${found}" = yes ] || unknown="${unknown} ${unit}"
+done < <(grep -ohE '\bsystemctl\b[^`|;]*' "${INSTRUCTION_DOCS[@]}" 2>/dev/null \
+         | tr ' ' '\n' | grep -E '^(pfw|pmm|pfm)[A-Za-z0-9@._-]*$' | sort -u)
+
+if [ -z "${unknown}" ]; then
+    ok "every unit the documents tell a customer to control is one the packaging ships"
+else
+    no "documents instruct systemctl against units that do not ship:${unknown}"
+fi
+
+# No customer INSTRUCTION may still name a command or unit under a prefix we left behind.
+#
+# The forbidden set is DERIVED: take every pfw-<suffix> the packaging tree knows about,
+# and forbid the same suffix under the prefixes we abandoned. This check previously
+# carried a hand-written list of seven command names, which is the very thing this script
+# warns against -- it goes stale the moment a component is added, and a stale list inside
+# a rename check is indistinguishable from no check. pfm- is included because it is an
+# abandoned INTERMEDIATE prefix from a renaming that was reversed; it must never reappear
+# either, and a list written today would not have thought to include it.
+#
+# Filenames are excluded deliberately. Some pmm-* names are frozen on purpose -- stored
+# and on-the-wire identifiers like pmm-agent.log and pmm-agent.yaml, which a document may
+# legitimately name when it describes the diagnostic archive. The rename applies to what
+# a customer TYPES, not to what the product stores, so a match followed by an extension
+# is not a finding. That is why this matches a suffix boundary rather than \b.
+SUFFIXES=$(grep -rhoE '\bpfw-[a-z0-9]+(-[a-z0-9]+)*\b' build/packages/ 2>/dev/null \
+           | sed 's/^pfw-//' | sort -u)
+[ -n "${SUFFIXES}" ] || {
+    printf 'no pfw-* names found under build/packages -- this check would pass vacuously\n' >&2; exit 1; }
+alt=$(printf '%s\n' "${SUFFIXES}" | paste -sd'|' -)
+
+stale=$(grep -rnE "(pmm|pfm)-(${alt})([^.[:alnum:]-]|\$)|systemctl[^\`|;]*\b(pmm|pfm)-" \
+        "${INSTRUCTION_DOCS[@]}" 2>/dev/null || true)
+if [ -z "${stale}" ]; then
+    ok "no customer instruction names a command or unit under an abandoned prefix ($(printf '%s\n' "${SUFFIXES}" | wc -l | tr -d ' ') names derived)"
+else
+    no "customer documents still instruct abandoned-prefix commands or units:"$'\n'"${stale}"
+fi
+
+# No bundled document may route a customer to Percona. They are not our support channel,
+# cannot see our builds, and our paths and service names differ from theirs -- so such a
+# link sends someone to an organisation that cannot help them, and tells that
+# organisation who is running this. It has happened: our documentation shipped Percona's
+# sales page, complete with a live lead-capture form.
+funnel=$(grep -rnE 'https?://[A-Za-z0-9./_-]*(percona|pmm)[A-Za-z0-9./_-]*' \
+         "${DOCS[@]}" 2>/dev/null || true)
+if [ -z "${funnel}" ]; then
+    ok "no bundled customer document links to a Percona or PMM URL"
+else
+    no "bundled customer documents link to Percona/PMM URLs:"$'\n'"${funnel}"
+fi
+
+printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
+[ "${fail}" -eq 0 ]

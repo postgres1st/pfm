@@ -1,0 +1,43 @@
+---
+# Customer-facing documents must not contradict the shipped artifacts.
+#
+# This lives in its own workflow rather than in main.yml because main.yml carries
+# `paths-ignore: documentation/**`. A pull request that edits only the release note --
+# which is precisely the shape of "someone reintroduces a false claim" -- would not
+# trigger it there, leaving the check inert for its main purpose.
+#
+# The triggers below deliberately cover BOTH sides of every assertion: the prose and
+# the packaging it is checked against. A change to either can make the pair disagree.
+name: Release claims
+
+on:
+  pull_request:
+    paths:
+      - "documentation/docs/release-notes/**"
+      - "build/packages/**"
+      - "build/scripts/check-release-claims"
+      - ".github/workflows/release-claims.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "documentation/docs/release-notes/**"
+      - "build/packages/**"
+      - "build/scripts/check-release-claims"
+      - ".github/workflows/release-claims.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check documents against artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # No toolchain setup on purpose: the check is grep and sed against files in the
+      # repository, so nothing needs installing and nothing can gate it.
+      - name: Check release notes and install guides against shipped artifacts
+        run: build/scripts/check-release-claims
