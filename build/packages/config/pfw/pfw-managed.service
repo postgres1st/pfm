@@ -1,0 +1,87 @@
+# pfw-managed — the pfw control plane (was supervisord [program:pmm-managed],
+# priority=14). Serves the API, regenerates the dynamic services' config
+# (/run/pfw/*.env), and drives them via systemctl.
+#
+# ZERO-EGRESS ENFORCEMENT POINT. The telemetry/update locks are baked as image
+# ENV in the container build, but systemd units do NOT inherit image ENV, so
+# they must be re-declared here. pmm-managed treats them as runtime-immutable
+# (the API refuses to re-enable). Grafana's own phone-homes are disabled in
+# grafana.ini, applied via pfw-grafana.service.
+#
+# NOTE: pmm-managed needs its Postgres database + Grafana DB provisioned before
+# it can start cleanly (the init.yml port in pfw-init.sh — follow-on). Until
+# that lands it will fail to connect and retry (StartLimitIntervalSec=0).
+[Unit]
+Description=PGF WatchTower control plane (pfw-managed)
+After=pfw-init.service pfw-postgresql.service pfw-clickhouse.service pfw-victoriametrics.service pfw-nginx.service
+Requires=pfw-init.service pfw-postgresql.service
+PartOf=pfw.target
+# startretries=1000 -> retry indefinitely until dependencies/provisioning ready.
+StartLimitIntervalSec=0
+
+[Service]
+Type=exec
+User=pfw
+Group=pfw
+# --- least-privilege sandbox + zero-egress (validated on the real stack) ---
+# pmm-managed is the orchestrator: it renders /run/pfw/*.env, writes across /srv,
+# and rewrites the VM scrape config in /etc. Broad-but-scoped RW; still no caps,
+# no egress beyond loopback.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv /run/pfw /etc/victoriametrics-promscrape.yml
+# pmm-managed writes across its own /srv areas (prometheus rules, alerting, dump,
+# backup, logs), but must NOT be able to write other services' datadirs or secrets
+# — carve those back to read-only so a compromised pmm-managed can't tamper with
+# the PG datadir, the nginx TLS private key, or the PG superuser password file.
+ReadOnlyPaths=-/srv/postgres18 -/srv/clickhouse -/srv/grafana -/srv/nginx -/srv/.postgres_password -/srv/.pfw-secrets
+IPAddressDeny=any
+IPAddressAllow=localhost
+Environment=PERCONA_TELEMETRY_DISABLE=1
+Environment=PMM_ENABLE_TELEMETRY=false
+Environment=PMM_ENABLE_UPDATES=false
+# Assert the native backend rather than relying on auto-detection: the pfw package
+# ships no supervisord, but forcing this makes pmm-managed render /run/pfw/*.env
+# (systemd path) instead of ever falling back to writing /etc/supervisord.d.
+Environment=PFW_PROCESS_MANAGER=systemd
+# Exporters bind 127.0.0.1 by default; --expose-exporter widens one service. This
+# restores the previous fleet-wide behaviour of binding 0.0.0.0, for recovering a
+# fleet whose pull-mode scraping went dark before every service could be
+# re-registered. Uncomment, `systemctl daemon-reload`, restart, then remove it again.
+# Accepts true/false, yes/no, on/off, 1/0; an unparseable value is logged and ignored.
+#Environment=PFW_EXPOSE_EXPORTERS=true
+# The DB password comes from a 0600 file written at first boot by pfw-init.sh, or
+# at upgrade time by the RPM %post. NOT Environment= here: unit files install 0644
+# (pfw-server.spec:131), so an Environment= line publishes the credential to every
+# local user. Non-optional on purpose -- a missing secret must fail the unit closed
+# rather than start pmm-managed against an unknown password.
+EnvironmentFile=/srv/.pfw-secrets/managed-db.env
+# pmm-managed needs the ClickHouse credential for its own queries. It is read here
+# directly, NOT rendered into /run/pfw/*.env: see the note in pfw-qan-api2.service
+# for why that file's contents must not vary.
+EnvironmentFile=/srv/.pfw-secrets/clickhouse.env
+ExecStart=/usr/sbin/pfw-managed \
+    --victoriametrics-config=/etc/victoriametrics-promscrape.yml \
+    --victoriametrics-url=http://127.0.0.1:9090/prometheus \
+    --postgres-name=pmm-managed \
+    --postgres-username=pmm-managed \
+    --supervisord-config-dir=/etc/supervisord.d
+KillSignal=SIGTERM
+TimeoutStopSec=300
+Restart=on-failure
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=pfw.target

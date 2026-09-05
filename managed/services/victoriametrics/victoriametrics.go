@@ -295,7 +295,7 @@ func (svc *Service) validateConfig(ctx context.Context, cfg []byte) error {
 
 	args := make([]string, 0, 4) //nolint:mnd
 	args = append(args, "-promscrape.config.dryRun=true", "-promscrape.config", f.Name())
-	cmd := exec.CommandContext(ctx, "victoriametrics", args...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, "pfw-victoriametrics", args...) //nolint:gosec
 	pdeathsig.Set(cmd, unix.SIGKILL)
 
 	b, err := cmd.CombinedOutput()
@@ -311,7 +311,7 @@ func (svc *Service) validateConfig(ctx context.Context, cfg []byte) error {
 	svc.l.Debugf("%s", b)
 
 	args = append(args, "-promscrape.config.strictParse=true")
-	cmd = exec.CommandContext(ctx, "victoriametrics", args...) //nolint:gosec
+	cmd = exec.CommandContext(ctx, "pfw-victoriametrics", args...) //nolint:gosec
 	pdeathsig.Set(cmd, unix.SIGKILL)
 
 	b, err = cmd.CombinedOutput()

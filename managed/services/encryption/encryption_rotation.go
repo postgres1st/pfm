@@ -20,8 +20,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -29,12 +27,17 @@ import (
 	"gopkg.in/reform.v1/dialects/postgresql"
 
 	"github.com/percona/pmm/managed/models"
+	"github.com/percona/pmm/managed/services/supervisord"
 	"github.com/percona/pmm/managed/utils/encryption"
 )
 
 const (
-	retries              = 5
-	interval             = 5 * time.Second
+	retries  = 5
+	interval = 5 * time.Second
+	// The supervisord PROGRAM name, deliberately still pmm-managed: it is tier C,
+	// and the systemd backend maps it to pfw-managed.service via systemdUnitName.
+	managedServiceName = "pmm-managed"
+
 	statusRunning        = "RUNNING"
 	statusStopped        = "STOPPED"
 	codeOK               = 0
@@ -71,8 +74,7 @@ func startPMMServer() error {
 		return nil
 	}
 
-	cmd := exec.Command("supervisorctl", "start pmm-managed")
-	output, err := cmd.CombinedOutput()
+	output, err := supervisord.ControlSupervisedService("start", managedServiceName)
 	if err != nil {
 		return fmt.Errorf("%w: %s", err, output)
 	}
@@ -90,8 +92,7 @@ func stopPMMServer() error {
 		return nil
 	}
 
-	cmd := exec.Command("supervisorctl", "stop pmm-managed")
-	output, err := cmd.CombinedOutput()
+	output, err := supervisord.ControlSupervisedService("stop", managedServiceName)
 	if err != nil {
 		return fmt.Errorf("%w: %s", err, output)
 	}
@@ -104,10 +105,7 @@ func stopPMMServer() error {
 }
 
 func pmmServerStatus(status string) bool {
-	cmd := exec.Command("supervisorctl", "status pmm-managed")
-	output, _ := cmd.CombinedOutput()
-
-	return strings.Contains(string(output), strings.ToUpper(status))
+	return supervisord.SupervisedServiceHasStatus(managedServiceName, status)
 }
 
 func pmmServerStatusWithRetries(status string) bool {

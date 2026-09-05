@@ -32,16 +32,16 @@ import (
 	"github.com/percona/pmm/utils/pdeathsig"
 )
 
-// pfmEnvDir holds the per-service EnvironmentFiles pmm-managed renders for the
-// systemd units. It is a pfm-owned tmpfs dir (created by tmpfiles.d), so the
-// non-root pfm process can write it without touching root-owned systemd paths.
-const pfmEnvDir = "/run/pfm"
+// pfwEnvDir holds the per-service EnvironmentFiles pmm-managed renders for the
+// systemd units. It is a pfw-owned tmpfs dir (created by tmpfiles.d), so the
+// non-root pfw process can write it without touching root-owned systemd paths.
+const pfwEnvDir = "/run/pfw"
 
-// pfmUnitPaths are the locations the RPM installs pfm.target; their presence is
+// pfwUnitPaths are the locations the RPM installs pfw.target; their presence is
 // the positive signal that the native systemd stack is actually deployed.
-var pfmUnitPaths = []string{
-	"/usr/lib/systemd/system/pfm.target",
-	"/etc/systemd/system/pfm.target",
+var pfwUnitPaths = []string{
+	"/usr/lib/systemd/system/pfw.target",
+	"/etc/systemd/system/pfw.target",
 }
 
 // processManagerKind selects which backend launches/controls the service set.
@@ -53,13 +53,13 @@ const (
 
 	// processManagerEnv, when set to a valid kind, forces the backend; any
 	// other value falls through to auto-detection.
-	processManagerEnv = "PMM_PROCESS_MANAGER"
+	processManagerEnv = "PFW_PROCESS_MANAGER"
 )
 
 // selectProcessManager decides the backend: an explicit, valid env value wins
 // (the operator asserts intent). Otherwise auto-detect requires POSITIVE
 // evidence that the native stack is deployed — supervisorctl absent, systemctl
-// present, AND the pfm unit set installed. Gating auto on the mere absence of
+// present, AND the pfw unit set installed. Gating auto on the mere absence of
 // supervisorctl would misfire on any dev/CI box or half-provisioned host,
 // silently selecting a backend that can't control most services.
 func selectProcessManager(env string, hasSupervisorctl, hasSystemctl, hasPfmUnits bool) processManagerKind {
@@ -75,10 +75,10 @@ func selectProcessManager(env string, hasSupervisorctl, hasSystemctl, hasPfmUnit
 	return pmSupervisord
 }
 
-// pfmUnitsInstalled reports whether pfm.target is present on disk — the
+// pfwUnitsInstalled reports whether pfw.target is present on disk — the
 // positive signal used to gate auto-detection of the systemd backend.
-func pfmUnitsInstalled() bool {
-	for _, p := range pfmUnitPaths {
+func pfwUnitsInstalled() bool {
+	for _, p := range pfwUnitPaths {
 		if _, err := os.Stat(p); err == nil {
 			return true
 		}
@@ -86,21 +86,21 @@ func pfmUnitsInstalled() bool {
 	return false
 }
 
-// systemdUnitName maps a supervisord program name to the native pfm systemd
-// unit that replaces it: "victoriametrics" -> pfm-victoriametrics.service. The
+// systemdUnitName maps a supervisord program name to the native pfw systemd
+// unit that replaces it: "victoriametrics" -> pfw-victoriametrics.service. The
 // redundant "pmm-" prefix is dropped so the control-plane services read
-// pfm-managed / pfm-agent (not pfm-pmm-managed), consistent with pfm-init.
+// pfw-managed / pfw-agent (not pfw-pmm-managed), consistent with pfw-init.
 //
-// The agent is the one exception: pfm-agent.service belongs to the pfm-client
-// package (a monitored host runs it directly), so pfm-server ships its own
-// self-monitoring agent as pfm-server-agent.service and masks the client's unit
-// to stop the two competing. Mapping "pmm-agent" to pfm-agent.service here would
+// The agent is the one exception: pfw-agent.service belongs to the pfw-client
+// package (a monitored host runs it directly), so pfw-server ships its own
+// self-monitoring agent as pfw-server-agent.service and masks the client's unit
+// to stop the two competing. Mapping "pmm-agent" to pfw-agent.service here would
 // target that masked unit and the server's agent would never start.
 func systemdUnitName(name string) string {
 	if name == "pmm-agent" {
-		return "pfm-server-agent.service"
+		return "pfw-server-agent.service"
 	}
-	return "pfm-" + strings.TrimPrefix(name, "pmm-") + ".service"
+	return "pfw-" + strings.TrimPrefix(name, "pmm-") + ".service"
 }
 
 // envQuote renders v as a systemd EnvironmentFile value that survives the
@@ -125,8 +125,8 @@ func envQuote(v string) string {
 // envTemplates renders the systemd EnvironmentFile (KEY=value) for each dynamic
 // service, using the same params as the supervisord templates. Only the
 // settings-driven values live here; stable defaults are static args in the unit
-// (see build/packages/config/pfm/*.service). The pfm-* units read these from
-// /run/pfm/<name>.env. Keep the KEY names in lockstep with those units.
+// (see build/packages/config/pfw/*.service). The pfw-* units read these from
+// /run/pfw/<name>.env. Keep the KEY names in lockstep with those units.
 //
 // Free-form settings values on their own line (passwords, names, SSL paths,
 // server host) go through `envq` so a hostile value cannot break out of its
@@ -151,7 +151,6 @@ PMM_BIND_ADDRESS={{ .InterfaceToBind }}
 PMM_CLICKHOUSE_ADDR={{ .ClickhouseAddr }}
 PMM_CLICKHOUSE_DATABASE={{ .ClickhouseDatabase | envq }}
 PMM_CLICKHOUSE_USER={{ .ClickhouseUser | envq }}
-PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword | envq }}
 {{end}}
 
 {{define "grafana"}}GF_ANALYTICS_REPORTING_ENABLED=false
@@ -172,7 +171,6 @@ PMM_POSTGRES_SSL_CERT_PATH={{ .PostgresSSLCertPath | envq }}
 PMM_CLICKHOUSE_HOST={{ .ClickhouseHost }}
 PMM_CLICKHOUSE_PORT={{ .ClickhousePort }}
 PMM_CLICKHOUSE_USER={{ .ClickhouseUser | envq }}
-PMM_CLICKHOUSE_PASSWORD={{ .ClickhousePassword | envq }}
 {{- if .HAEnabled }}
 GF_UNIFIED_ALERTING_HA_LISTEN_ADDRESS=0.0.0.0:{{ .GrafanaGossipPort }}
 GF_UNIFIED_ALERTING_HA_ADVERTISE_ADDRESS={{ .HAAdvertiseAddress }}:{{ .GrafanaGossipPort }}
@@ -182,8 +180,8 @@ GF_UNIFIED_ALERTING_HA_PEERS={{ .HANodes }}
 `))
 
 // marshalEnvConfig renders the systemd EnvironmentFile for a dynamic service,
-// reusing the shared config params. The pfm-<name>.service unit reads the
-// result from /run/pfm/<name>.env.
+// reusing the shared config params. The pfw-<name>.service unit reads the
+// result from /run/pfw/<name>.env.
 func (s *Service) marshalEnvConfig(name string, settings *models.Settings) ([]byte, error) {
 	tmpl := envTemplates.Lookup(name)
 	if tmpl == nil {
@@ -228,8 +226,8 @@ func sanitizeEnvValues(params map[string]any) {
 // services — the systemd analogue of the old `supervisorctlPath == ""` guard,
 // used to degrade gracefully when the backend binary is absent.
 //
-// Privilege model (committed target): pmm-managed stays non-root (User=pfm);
-// authorization to run `systemctl` against pfm-*.service is granted by a
+// Privilege model (committed target): pmm-managed stays non-root (User=pfw);
+// authorization to run `systemctl` against pfw-*.service is granted by a
 // shipped polkit rule, implemented alongside the SELinux policy (T6). Until
 // then this only proves the binary exists, not that the caller is authorized —
 // TODO(T6): replace with a real authorization probe (a benign systemctl/D-Bus
@@ -272,7 +270,7 @@ func (s *Service) updateEnvConfig(name string, settings *models.Settings) error 
 	reenabled := false
 	switch {
 	case name == "nomad-server":
-		// No pfm-nomad-server unit exists under the systemd backend yet. Surface
+		// No pfw-nomad-server unit exists under the systemd backend yet. Surface
 		// the gap rather than silently ignoring an enabled setting.
 		if settings.IsNomadEnabled() {
 			s.l.Warnf("Nomad is enabled but has no native systemd unit; it will not run under the systemd backend.")
@@ -320,10 +318,10 @@ func removeIfExists(path string) (bool, error) {
 	}
 }
 
-// pfmDataDir is the persistent data root the units live under (/srv). A package
+// pfwDataDir is the persistent data root the units live under (/srv). A package
 // var so tests can redirect it; the disable marker must be here (persistent), not
 // in the tmpfs env dir, or the disable would not survive a reboot.
-var pfmDataDir = "/srv"
+var pfwDataDir = "/srv"
 
 // disabledMarkerPath is the persistent flag whose PRESENCE makes the unit's
 // `ConditionPathExists=!<marker>` skip it on every (re)start. It lives in a
@@ -331,19 +329,19 @@ var pfmDataDir = "/srv"
 // service's data (e.g. resetting metrics) can't silently drop the disable flag.
 // Keep this in lockstep with the unit's ConditionPathExists= path.
 func disabledMarkerPath(name string) string {
-	return filepath.Join(pfmDataDir, ".pfm-disabled", name)
+	return filepath.Join(pfwDataDir, ".pfw-disabled", name)
 }
 
 // disableDynamicService stops a dynamic unit and durably keeps it down when an
 // embedded service is replaced by an external one (e.g. an external VM). A plain
-// `stop` is not durable — the unit stays in pfm.target's static Wants= and
-// pfm-tmpfiles re-seeds its EnvironmentFile every boot, so it would restart on
+// `stop` is not durable — the unit stays in pfw.target's static Wants= and
+// pfw-tmpfiles re-seeds its EnvironmentFile every boot, so it would restart on
 // reboot. Durability is provided by a persistent marker file the unit's
 // `ConditionPathExists=!<marker>` checks, NOT by `systemctl mask`: masking needs
 // the coarse manage-unit-files polkit action, which systemd exposes with no
-// per-unit detail and so cannot be scoped to pfm-* — granting it would let a
-// compromised pfm process `link` an attacker unit and start it as root. This path
-// needs only a file write (pfm owns /srv) plus a scoped `stop` (manage-units).
+// per-unit detail and so cannot be scoped to pfw-* — granting it would let a
+// compromised pfw process `link` an attacker unit and start it as root. This path
+// needs only a file write (pfw owns /srv) plus a scoped `stop` (manage-units).
 //
 // The marker is written BEFORE the stop so a crash in between still leaves the
 // unit condition-blocked from restarting, never running-without-marker.
@@ -403,7 +401,7 @@ func (s *Service) saveEnvAndReload(name string, cfg []byte) (bool, error) {
 // passwords: a fresh temp file + rename means the secret content is never
 // visible at a looser mode (WriteFile does not tighten an existing file) and
 // readers never see a partial file. systemd's manager reads EnvironmentFile as
-// root before dropping to User=pfm, so owner-only (pfm) is sufficient.
+// root before dropping to User=pfw, so owner-only (pfw) is sufficient.
 func (s *Service) writeEnvFile(path string, cfg []byte) error {
 	tmp := path + ".tmp"
 	_ = os.Remove(tmp)                                    // clear any stale temp so the create below starts fresh

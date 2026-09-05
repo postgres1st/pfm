@@ -277,6 +277,11 @@ func TestUpdater(t *testing.T) {
 	})
 
 	t.Run("TestLatest", func(t *testing.T) {
+		// Asks the Percona Platform what the latest release is. The airgapped test
+		// host has no route off-box by design, so without this the test fails for
+		// want of a network rather than for anything about the updater.
+		tests.SkipIfHostUnreachable(t, "check-dev.percona.com:443", "Percona Platform")
+
 		version.Version = "2.41.0"
 		u := NewUpdater(db)
 

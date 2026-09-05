@@ -34,33 +34,45 @@ import (
 )
 
 var commonExpectedFiles = []string{
-	"clickhouse-server.log",
-	"grafana.log",
 	"installed.json",
 	"nginx.conf",
-	"nginx.log",
-	"pmm-agent.log",
-	"pmm-agent.yaml",
-	"pmm-init.log",
-	"pmm-managed.log",
-	"pmm-ssl.conf",
+	// The .log names come from supervisord PROGRAM names, which stay pmm-* by
+	// design (see systemdUnitName). This is the agent CONFIG file, which the
+	// packaging renamed -- models.AgentConfigFilePath is pfw-agent.yaml. Keep the
+	// list sorted: the test compares it against a sorted actual.
+	"pfw-agent.yaml",
+	"pfw-ssl.conf",
+	"pfw.conf",
 	"pmm-version.txt",
-	"pmm.conf",
-	"pmm.ini",
-	"postgresql18.log",
-	"qan-api2.ini",
-	"qan-api2.log",
-	"supervisorctl_status.log",
-	"supervisord.conf",
-	"supervisord.log",
 	"victoriametrics-promscrape.yml",
-	"victoriametrics.ini",
-	"victoriametrics.log",
 	"victoriametrics_targets.json",
-	"vmalert.ini",
-	"vmalert.log",
-	"vmproxy.ini",
-	"vmproxy.log",
+}
+
+// The archive collects the config of whichever process manager governs the host, so the
+// expected names differ by backend. Asserting the supervisord set unconditionally fails
+// on a systemd-native install -- where those files legitimately do not exist and the
+// units are collected instead.
+func processManagerFileNames() []string {
+	if _, err := os.Stat("/etc/supervisord.conf"); err == nil {
+		return []string{
+			"supervisorctl_status.log",
+			"pmm.ini", "qan-api2.ini", "supervisord.conf",
+			"victoriametrics.ini", "vmalert.ini", "vmproxy.ini",
+			// .log names come from supervisord PROGRAM names on this backend.
+			"clickhouse-server.log", "grafana.log", "nginx.log", "pmm-agent.log",
+			"pmm-init.log", "pmm-managed.log", "postgresql18.log", "qan-api2.log",
+			"supervisord.log", "victoriametrics.log", "vmalert.log", "vmproxy.log",
+		}
+	}
+	return []string{
+		"systemctl_status.log",
+		"pfw.target", "pfw-managed.service", "pfw-qan-api2.service",
+		"pfw-victoriametrics.service", "pfw-vmalert.service", "pfw-vmproxy.service",
+		// .log names come from systemd UNIT names: the journal is the log here.
+		"pfw-managed.log", "pfw-server-agent.log", "pfw-qan-api2.log", "pfw-grafana.log",
+		"pfw-victoriametrics.log", "pfw-vmalert.log", "pfw-vmproxy.log", "pfw-nginx.log",
+		"pfw-clickhouse.log", "pfw-postgresql.log", "pfw-init.log",
+	}
 }
 
 func TestReadLog(t *testing.T) {
@@ -194,7 +206,9 @@ func TestFiles(t *testing.T) {
 	}
 
 	sort.Strings(actual)
-	assert.Equal(t, commonExpectedFiles, actual)
+	expected := append(append([]string{}, commonExpectedFiles...), processManagerFileNames()...)
+	sort.Strings(expected)
+	assert.Equal(t, expected, actual)
 }
 
 func TestZip(t *testing.T) {
@@ -214,15 +228,16 @@ func TestZip(t *testing.T) {
 
 	additionalFiles := []string{
 		"client/list.txt",
-		"client/pmm-admin-version.txt",
-		"client/pmm-agent-config.yaml",
-		"client/pmm-agent-version.txt",
+		"client/pfw-admin-version.txt",
+		"client/pfw-agent-config.yaml",
+		"client/pfw-agent-version.txt",
 		"client/status.json",
 		"client/pmm-agent/pmm-agent.log",
 		"prometheus.base.yml",
 	}
 	// zip file includes client files
-	expected := append(commonExpectedFiles, additionalFiles...) //nolint:gocritic
+	expected := append(append([]string{}, commonExpectedFiles...), additionalFiles...)
+	expected = append(expected, processManagerFileNames()...)
 
 	actual := make([]string, 0, len(r.File))
 	for _, f := range r.File {

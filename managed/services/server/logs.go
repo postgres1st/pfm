@@ -30,6 +30,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"sync"
 	"time"
 
@@ -148,6 +149,12 @@ func (l *Logs) files(ctx context.Context, pprofConfig *PprofConfig, logReadLines
 	if err != nil {
 		logger.Get(ctx).WithField("component", "logs").Error(err)
 	}
+	// A systemd-native install writes no files here: every service logs to the journal,
+	// so /srv/logs is empty and the archive used to arrive with no service logs at all
+	// -- the one thing a support engineer opens it for. Fall back to the journal.
+	if len(logs) == 0 {
+		files = append(files, journalFiles(ctx)...)
+	}
 	for _, f := range logs {
 		switch logReadLines {
 		case -1: // unlimited line count
@@ -165,24 +172,17 @@ func (l *Logs) files(ctx context.Context, pprofConfig *PprofConfig, logReadLines
 		})
 	}
 	// add configs
-	for _, f := range []string{
+	for _, f := range append([]string{
 		"/etc/nginx/nginx.conf",
-		"/etc/nginx/conf.d/pmm.conf",
-		"/etc/nginx/conf.d/pmm-ssl.conf",
+		"/etc/nginx/conf.d/pfw.conf",
+		"/etc/nginx/conf.d/pfw-ssl.conf",
 
 		"/srv/prometheus/prometheus.base.yml",
 
 		"/etc/victoriametrics-promscrape.yml",
 
-		"/etc/supervisord.conf",
-		"/etc/supervisord.d/pmm.ini",
-		"/etc/supervisord.d/qan-api2.ini",
-		"/etc/supervisord.d/victoriametrics.ini",
-		"/etc/supervisord.d/vmalert.ini",
-		"/etc/supervisord.d/vmproxy.ini",
-
 		models.AgentConfigFilePath,
-	} {
+	}, processManagerConfigFiles()...) {
 		b, m, err := readFile(f)
 		files = append(files, fileContent{
 			Name:     filepath.Base(f),
@@ -199,9 +199,10 @@ func (l *Logs) files(ctx context.Context, pprofConfig *PprofConfig, logReadLines
 	})
 
 	// add supervisord status
-	b, err = readCmdOutput(ctx, "supervisorctl", "status")
+	statusName, statusArgs := processManagerStatusCommand()
+	b, err = readCmdOutput(ctx, statusArgs...)
 	files = append(files, fileContent{
-		Name: "supervisorctl_status.log",
+		Name: statusName,
 		Data: b,
 		Err:  err,
 	})
@@ -420,7 +421,7 @@ func addAdminSummary(ctx context.Context, zw *zip.Writer) error {
 	}
 	defer os.Remove(sf.Name()) //nolint:errcheck
 
-	cmd := exec.CommandContext(ctx, "pfm-admin", "summary", "--skip-server", "--filename", sf.Name()) //nolint:gosec
+	cmd := exec.CommandContext(ctx, "pfw-admin", "summary", "--skip-server", "--filename", sf.Name()) //nolint:gosec
 	pdeathsig.Set(cmd, unix.SIGKILL)
 	cmd.Stdout = os.Stderr // stdout to stderr
 	cmd.Stderr = os.Stderr
@@ -463,4 +464,72 @@ func addAdminSummary(ctx context.Context, zw *zip.Writer) error {
 	}
 
 	return nil
+}
+
+// processManagerConfigFiles returns the process-manager configuration the diagnostic
+// archive should collect, which differs by backend.
+//
+// The list used to be the supervisord ini files unconditionally. On a systemd-native
+// install none of them exist, so the archive a customer sends to support carried five
+// "no such file or directory" entries in place of the configuration that actually
+// governs their services -- worse than useless, because it looks like something is
+// broken when nothing is.
+func processManagerConfigFiles() []string {
+	if _, err := os.Stat("/etc/supervisord.conf"); err == nil {
+		return []string{
+			"/etc/supervisord.conf",
+			"/etc/supervisord.d/pmm.ini",
+			"/etc/supervisord.d/qan-api2.ini",
+			"/etc/supervisord.d/victoriametrics.ini",
+			"/etc/supervisord.d/vmalert.ini",
+			"/etc/supervisord.d/vmproxy.ini",
+		}
+	}
+	// systemd: the units that replace those programs, plus the target that owns them.
+	return []string{
+		"/usr/lib/systemd/system/pfw.target",
+		"/usr/lib/systemd/system/pfw-managed.service",
+		"/usr/lib/systemd/system/pfw-qan-api2.service",
+		"/usr/lib/systemd/system/pfw-victoriametrics.service",
+		"/usr/lib/systemd/system/pfw-vmalert.service",
+		"/usr/lib/systemd/system/pfw-vmproxy.service",
+	}
+}
+
+// processManagerStatusCommand returns the archive entry name and the command that lists
+// service state, which differs by backend.
+//
+// This used to be `supervisorctl status` unconditionally. On a systemd-native install
+// there is no supervisorctl, so the entry a support engineer opens first held "executable
+// file not found" instead of the state of the services.
+func processManagerStatusCommand() (string, []string) {
+	if _, err := exec.LookPath("supervisorctl"); err == nil {
+		return "supervisorctl_status.log", []string{"supervisorctl", "status"}
+	}
+	return "systemctl_status.log", []string{"systemctl", "list-units", "pfw*", "--all", "--no-pager"}
+}
+
+// journalUnits are the units whose logs the archive collects on a systemd host. They
+// mirror the supervisord programs whose .log files it collects on the container image,
+// so an archive from either platform answers the same questions.
+var journalUnits = []string{
+	"pfw-managed", "pfw-server-agent", "pfw-qan-api2", "pfw-grafana",
+	"pfw-victoriametrics", "pfw-vmalert", "pfw-vmproxy", "pfw-nginx",
+	"pfw-clickhouse", "pfw-postgresql", "pfw-init",
+}
+
+// journalFiles collects each unit's journal as one archive entry. A unit that has never
+// run yields an empty entry rather than an error: on a given host some are legitimately
+// absent, and an archive full of errors is harder to read than one with empty sections.
+func journalFiles(ctx context.Context) []fileContent {
+	out := make([]fileContent, 0, len(journalUnits))
+	for _, unit := range journalUnits {
+		b, err := readCmdOutput(ctx, "journalctl", "-u", unit, "--no-pager", "-n", strconv.Itoa(maxLogReadLines))
+		out = append(out, fileContent{
+			Name: unit + ".log",
+			Data: b,
+			Err:  err,
+		})
+	}
+	return out
 }
