@@ -1,0 +1,77 @@
+# Readiness for GA — the internal TODO
+
+Things deliberately **not** done for beta2, each with the decision that put it here rather
+than a vague "later". beta2 is a beta precisely so these can wait; GA is where they cannot.
+
+Blockers for **beta2** live in `docs/beta2-release-readiness.md`. This list is the next
+horizon.
+
+---
+
+## 1. Follow the full release process, as beta1 did
+
+beta2 has been built, signed and validated from a working tree rather than through the
+release process beta1 went through. The artefacts are sound — every suite passes against
+the bundle, and it is signed with the release key — but "we ran the process" and "the
+output looks right" are different claims, and only the second is currently true.
+
+Do the whole process for GA: the release tag, the recorded provenance, and the archived
+artefacts, so the build is reproducible from a tag rather than from whatever was in the
+tree that afternoon.
+
+## 2. Rename the internal database and role
+
+The server's own PostgreSQL database and its role are still literally `pmm-managed`:
+
+```
+build/packages/config/pfw/pfw-init.sh:356
+    provision_app_db pmm-managed pmm-managed \
+        "$(read_secret "${MANAGED_DB_SECRET}" PMM_POSTGRES_DBPASSWORD)"
+```
+
+The **password is not** — it is generated per install and read from a secret file. Only
+the database name and the role remain. `LEGACY_MANAGED_DB_PASSWORD=pmm-managed`
+(`pfw-init.sh:62`) survives solely to adopt an installation created before credentials
+were generated.
+
+Note `docs/pfw-identifier-map.md` §C.1 still says "database, role **and password** — all
+literally `pmm-managed`". That was true when written and is now stale: correct it when
+this item is picked up.
+
+Tier C: stored inside the cluster, so renaming needs `ALTER DATABASE` and `ALTER ROLE`
+coordinated across the unit, the init script and Grafana's environment file.
+
+The service name was renamed for beta2 (`watchtower-postgresql`, `watchtower-db`) because
+it is visible in Inventory and cost nothing. This one is not visible and does cost
+something, so it waits — but it should not survive GA, and the free window closes the
+moment a customer has an installation to migrate.
+
+## 3. Negative-control `test-pfw-client`
+
+`build/scripts/test-pfw-client` is the only suite that executes the documented customer
+install — `pfw-admin config` then `pfw-admin add` with no `--server-url`, on a separate
+host. It passes 9/0.
+
+It has also never failed, and unlike `test-pfw-airgap` and `test-pfw-upgrade` its
+assertions have not been through `test-pfw-negative-control`. A suite that has only ever
+been green has not yet shown it can go red, and two of its assertions were wrong on the
+first run in a way that looked like product failure. Break each one deliberately —
+uninstall the agent, feed a bad password, point it at the wrong host — and require each to
+notice, before relying on it as the evidence that a customer's first contact works.
+
+## 4. Rewrite the documentation site
+
+Covered in full in `docs/deferred-documentation-rebrand.md`. Its conclusion is the part
+worth repeating here: it is a **rewrite, not a rename**. The install section documents five
+deployment paths this product does not ship and omits the one it does, so renaming
+binaries inside those pages would make wrong instructions look more authoritative.
+
+Shipping beta2 rather than GA is what buys the time for this.
+
+---
+
+## Recorded as done elsewhere
+
+- **x86_64 bundle** — built in a separate session. Not verified from this working tree;
+  `docs/beta2-release-readiness.md` still lists it under hardware-gated items and should be
+  reconciled against that build rather than against this note.

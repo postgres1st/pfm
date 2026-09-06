@@ -63,6 +63,10 @@ built from source and `stage_s3` is gone.
    cannot prove it, because SELinux transitions are inert in Docker.
 3. **Reboot persistence and scale.** Neither has been exercised.
 
+Work deferred past beta2 is tracked in `docs/ga-readiness.md`: the full release process,
+the internal `pmm-managed` database/role rename, negative-controlling `test-pfw-client`,
+and the documentation rewrite.
+
 Not blockers, and deliberately out of scope: everything in
 `docs/deferred-container-path.md` and `docs/deferred-documentation-rebrand.md` (the
 documentation site still carries Percona links and pre-rename names; the bundled customer
