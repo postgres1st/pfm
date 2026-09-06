@@ -159,7 +159,18 @@ _testdata:
 	# to make mongolog tests work
 	mkdir -p testdata/mongo/var/log/mongodb
 	touch testdata/mongo/var/log/mongodb/mongo.log testdata/mongo/var/log/mongodb/mongo_tls.log
-	chmod -R 0777 testdata
+	# 0770, not 0777. This tree exists so the containerised MySQL and MongoDB can write
+	# into a bind mount, and upstream reached for world-writable to sidestep the
+	# container UID not matching the host user. World-writable is worth avoiding even in
+	# test scaffolding: on a shared machine any local user can plant or replace files
+	# here, and these paths are fed to a log parser.
+	#
+	# Nothing this product tests needs it. The documented suites start PostgreSQL
+	# directly rather than through this target, and the PostgreSQL parser fixtures are a
+	# separate, checked-in, read-only testdata directory. If the MySQL/MongoDB dev flow
+	# ever matters again, match the container UID or add a shared group -- do not widen
+	# the mode.
+	chmod -R 0770 testdata
 
 env-up:                         ## Start development environment
 	rm -fr testdata
@@ -168,7 +179,18 @@ env-up:                         ## Start development environment
 	# to make mongolog tests work
 	mkdir -p testdata/mongo/var/log/mongodb
 	touch testdata/mongo/var/log/mongodb/mongo.log testdata/mongo/var/log/mongodb/mongo_tls.log
-	chmod -R 0777 testdata
+	# 0770, not 0777. This tree exists so the containerised MySQL and MongoDB can write
+	# into a bind mount, and upstream reached for world-writable to sidestep the
+	# container UID not matching the host user. World-writable is worth avoiding even in
+	# test scaffolding: on a shared machine any local user can plant or replace files
+	# here, and these paths are fed to a log parser.
+	#
+	# Nothing this product tests needs it. The documented suites start PostgreSQL
+	# directly rather than through this target, and the PostgreSQL parser fixtures are a
+	# separate, checked-in, read-only testdata directory. If the MySQL/MongoDB dev flow
+	# ever matters again, match the container UID or add a shared group -- do not widen
+	# the mode.
+	chmod -R 0770 testdata
 
 	docker compose up $(ENV_UP_FLAGS) -d
 

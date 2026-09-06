@@ -932,6 +932,27 @@ telemetry_never_requested_on() {
 }
 telemetry_never_requested_on
 
+# No shipped or scaffolding file may be created world-writable.
+#
+# `chmod -R 0777 testdata` sat in agent/Makefile because the containerised MySQL and
+# MongoDB run as a UID that does not match the host user, and world-writable is the lazy
+# way past that. It is worth refusing even in test scaffolding: on a shared machine any
+# local user can plant or replace files under such a tree, and those particular paths are
+# fed to a log parser.
+#
+# Matches the mode as an ARGUMENT to chmod/install, not the digits 777 anywhere -- port
+# 7771 and 7772 appear in the nginx config and the SELinux policy, and an earlier version
+# of this guard flagged both.
+no_world_writable_modes() {
+    local desc="nothing is created world-writable" hits
+    hits=$(git grep -nE '(chmod|install)( +-[A-Za-z-]+)* +0?7[0-7]7( |$)' -- . \
+             ':!build/scripts/test-frozen-identifiers' 2>/dev/null || true)
+    if [ -z "${hits}" ]; then ok "${desc}"; else
+        no "${desc}:"; printf '        %s\n' "${hits}" | head -5
+    fi
+}
+no_world_writable_modes
+
 log "Regression guards for defects already fixed once"
 
 # The pmm-* to pfw-* rename left user-facing text naming binaries that no longer
