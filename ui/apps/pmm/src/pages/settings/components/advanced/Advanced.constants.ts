@@ -73,3 +73,16 @@ export const FEATURE_MANAGEMENT_SETTINGS = [
     testId: 'enable-internal-pg-qan',
   },
 ];
+
+// Technical preview features are hidden for now.
+//
+// The section offers exactly two switches, and neither applies to this product: Azure
+// Discover finds Azure-hosted MySQL/PostgreSQL instances through a flow the postgres-only
+// allowlist does not complete, and Access Control is upstream RBAC that has not been
+// exercised here. Its "read more" link also points at docs.postgresfirst.com, which is not
+// published yet.
+//
+// A flag rather than a deletion: this is "for now", and re-enabling should be one line.
+// Hiding the controls does not change the stored settings -- the fields stay in the form's
+// defaultValues, so toPayload echoes the server's current values back unchanged.
+export const SHOW_TECHNICAL_PREVIEW = false;

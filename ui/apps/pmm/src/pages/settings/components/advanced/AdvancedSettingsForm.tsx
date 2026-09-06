@@ -317,97 +317,99 @@ export const AdvancedSettingsForm: FC<AdvancedSettingsFormProps> = ({
           )}
         </Stack>
 
-        <Stack gap={2}>
-          <SettingsFieldLabel
-            label={
-              <>
-                <WarningIcon
-                  color="warning"
-                  sx={{ fontSize: 26, verticalAlign: '-6px' }}
-                />{' '}
-                {m.technicalPreviewLegend}
-              </>
-            }
-            description={
-              <>
-                {m.technicalPreviewDescription}
-                <strong>{m.technicalPreviewWarning}</strong>
-                {m.technicalPreviewDescriptionSuffix}{' '}
-              </>
-            }
-            readMoreLink={TECHNICAL_PREVIEW_DOC_URL}
-            readMoreText={m.technicalPreviewLinkText}
-          />
-          <Stack
-            gap={2}
-            sx={{
-              [`.${formControlLabelClasses.root}`]: {
-                marginRight: 0,
-              },
-            }}
-          >
+          {SHOW_TECHNICAL_PREVIEW && (
+          <Stack gap={2}>
+            <SettingsFieldLabel
+              label={
+                <>
+                  <WarningIcon
+                    color="warning"
+                    sx={{ fontSize: 26, verticalAlign: '-6px' }}
+                  />{' '}
+                  {m.technicalPreviewLegend}
+                </>
+              }
+              description={
+                <>
+                  {m.technicalPreviewDescription}
+                  <strong>{m.technicalPreviewWarning}</strong>
+                  {m.technicalPreviewDescriptionSuffix}{' '}
+                </>
+              }
+              readMoreLink={TECHNICAL_PREVIEW_DOC_URL}
+              readMoreText={m.technicalPreviewLinkText}
+            />
             <Stack
-              direction="row"
-              alignItems="center"
-              data-testid="advanced-azure-discover"
+              gap={2}
+              sx={{
+                [`.${formControlLabelClasses.root}`]: {
+                  marginRight: 0,
+                },
+              }}
             >
-              <SwitchInput name="azureDiscover" label={m.azureDiscoverLabel} />
-              <Tooltip
-                title={
-                  <Box data-testid="info-tooltip">
-                    <Typography variant="caption">
-                      {m.azureDiscoverTooltip}{' '}
-                      <Link
-                        href={m.azureDiscoverLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        color="inherit"
-                        sx={{ textDecorationColor: 'inherit' }}
-                      >
-                        {Messages.tooltipLinkText}
-                      </Link>
-                    </Typography>
-                  </Box>
-                }
-                arrow
+              <Stack
+                direction="row"
+                alignItems="center"
+                data-testid="advanced-azure-discover"
               >
-                <IconButton size="small" data-testid="info-icon">
-                  <InfoOutlinedIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              data-testid="access-control"
-            >
-              <SwitchInput name="accessControl" label={m.accessControl} />
-              <Tooltip
-                title={
-                  <Box data-testid="info-tooltip">
-                    <Typography variant="caption">
-                      {m.accessControlTooltip}{' '}
-                      <Link
-                        href={m.accessControlLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        color="inherit"
-                        sx={{ textDecorationColor: 'inherit' }}
-                      >
-                        {Messages.tooltipLinkText}
-                      </Link>
-                    </Typography>
-                  </Box>
-                }
-                arrow
+                <SwitchInput name="azureDiscover" label={m.azureDiscoverLabel} />
+                <Tooltip
+                  title={
+                    <Box data-testid="info-tooltip">
+                      <Typography variant="caption">
+                        {m.azureDiscoverTooltip}{' '}
+                        <Link
+                          href={m.azureDiscoverLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          color="inherit"
+                          sx={{ textDecorationColor: 'inherit' }}
+                        >
+                          {Messages.tooltipLinkText}
+                        </Link>
+                      </Typography>
+                    </Box>
+                  }
+                  arrow
+                >
+                  <IconButton size="small" data-testid="info-icon">
+                    <InfoOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+              <Stack
+                direction="row"
+                alignItems="center"
+                data-testid="access-control"
               >
-                <IconButton size="small" data-testid="info-icon">
-                  <InfoOutlinedIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
+                <SwitchInput name="accessControl" label={m.accessControl} />
+                <Tooltip
+                  title={
+                    <Box data-testid="info-tooltip">
+                      <Typography variant="caption">
+                        {m.accessControlTooltip}{' '}
+                        <Link
+                          href={m.accessControlLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          color="inherit"
+                          sx={{ textDecorationColor: 'inherit' }}
+                        >
+                          {Messages.tooltipLinkText}
+                        </Link>
+                      </Typography>
+                    </Box>
+                  }
+                  arrow
+                >
+                  <IconButton size="small" data-testid="info-icon">
+                    <InfoOutlinedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
             </Stack>
           </Stack>
-        </Stack>
+          )}
 
         <SettingsSubmitButton testId="advanced-button" />
       </Stack>
