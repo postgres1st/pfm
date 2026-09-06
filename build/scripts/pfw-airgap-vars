@@ -46,7 +46,7 @@ PFW_DIST=${PFW_DIST:-.el9}
 # build/packages/rpm/server/SPECS/grafana.spec (preflight enforces it).
 PFW_GRAFANA_REPO=${PFW_GRAFANA_REPO:-https://github.com/postgres1st/grafana.git}
 PFW_GRAFANA_FORK=${PFW_GRAFANA_FORK:-}
-PFW_GRAFANA_COMMIT=${PFW_GRAFANA_COMMIT:-aa2b9b24c72031d7daa59461fd08fa349b9a6b48}
+PFW_GRAFANA_COMMIT=${PFW_GRAFANA_COMMIT:-95667356a928f669b147e0af5f5338f9b618e7b2}
 
 # --- client-side components built from source ---------------------------------
 # Percona's exporter forks + toolkit. Upstream tracks these as submodule branches
