@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+# Follows pfw-airgap-INSTALL-CLIENT.md literally, on a SEPARATE host.
+#
+#   build/scripts/test-pfw-client
+#
+# WHY THIS EXISTS
+#
+# Nothing else executes the documented client procedure. Every other suite runs
+# `pfw-admin` ON THE SERVER and passes credentials explicitly:
+#
+#     SRV="--server-url=https://admin:${ADMIN_PW}@127.0.0.1:8443 --server-insecure-tls"
+#
+# `--server-url` bypasses the agent config entirely, so across 14 suites and ~290
+# assertions `pfw-admin` never once read pfw-agent.yaml -- and no suite ever ran
+# `pfw-admin config`, installed pfw-agent on a host that is not the server, or registered
+# a database that is not 127.0.0.1.
+#
+# That is the whole of step 5 of INSTALL-CLIENT.md, the first commands a customer types,
+# with no behavioural coverage. The only existing check is test-frozen-identifiers
+# asserting that the STRING "pfw-admin config" in the docs names a real binary -- it
+# verifies the instruction is spelled correctly, not that it works.
+#
+# So this suite deliberately does NOT pass --server-url to `pfw-admin add`. If credential
+# discovery through the agent config breaks, the suite must be what notices.
+#
+# Requires a running server (test-pfw-airgap leaves one) and the built bundle.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+bin_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+repo_dir=$(cd "${bin_dir}/../.." && pwd -P)
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-airgap-vars"
+# shellcheck source=/dev/null
+source "${bin_dir}/pfw-test-lib"
+
+server=${PFW_AIRGAP_CONTAINER:-pfw-airgap-test}
+# pfw-test-lib's inc() and set_srv_from_secrets() both operate on ${container}. This suite
+# drives TWO hosts, so ${container} stays the server and the client gets its own helper.
+container=${server}
+keep=${KEEP:-1}
+client=pfw-client-test
+db=pfw-client-db
+repo=${1:-${PFW_OUT}/pfw-repo}
+db_password=clientpw
+db_user=pfw
+service_name=client-canary-$(date -u +%y%m%d%H%M%S)
+node_name=client-node-$(date -u +%y%m%d%H%M%S)
+
+cleanup() { [ "${keep}" = 1 ] || docker rm -f "${client}" "${db}" >/dev/null 2>&1 || true; }
+trap cleanup EXIT
+
+cli() { docker exec "${client}" sh -c "$*"; }
+
+[ -d "${repo}/repodata" ] || die "no yum repo at ${repo} (run build-pfw-airgap first)"
+docker inspect "${server}" >/dev/null 2>&1 \
+    || die "no container ${server}; run build/scripts/test-pfw-airgap first (it keeps the host by default)"
+set_srv_from_secrets
+
+net=$(docker inspect "${server}" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}')
+
+log "starting a monitored PostgreSQL on a host that is not the server"
+docker rm -f "${db}" >/dev/null 2>&1 || true
+docker run -d --name "${db}" --network "${net}" \
+    -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres \
+    "${PFW_QAN_DB_IMAGE:-percona/percona-distribution-postgresql:18}" \
+    -c shared_preload_libraries=pg_stat_monitor >/dev/null || die "could not start the database"
+for _ in $(seq 1 60); do
+    docker exec "${db}" psql -U postgres -tAc 'SELECT 1' >/dev/null 2>&1 && break
+    sleep 2
+done
+docker exec "${db}" psql -U postgres -tAc 'SELECT 1' >/dev/null 2>&1 \
+    || die "the database never accepted connections"
+
+# Step 1 of INSTALL-CLIENT.md: a monitoring role with pg_monitor, NOT a superuser. If the
+# documented grant is insufficient the agent fails later, which is the point of using it.
+docker exec "${db}" psql -U postgres -q \
+    -c "CREATE USER ${db_user} WITH PASSWORD '${db_password}'" >/dev/null
+docker exec "${db}" psql -U postgres -q -c "GRANT pg_monitor TO ${db_user}" >/dev/null
+docker exec "${db}" psql -U postgres -q \
+    -c "CREATE EXTENSION IF NOT EXISTS pg_stat_monitor" >/dev/null
+ok "monitored database up, with a pg_monitor role and pg_stat_monitor"
+
+log "installing pfw-agent on a separate host, from the bundle only"
+start_container_named() {
+    build_systemd_image
+    docker rm -f "${client}" >/dev/null 2>&1 || true
+    docker run -d --name "${client}" --privileged --cgroupns=host \
+        --network "${net}" -e container=docker \
+        --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+        -v "${repo}":/pfw-repo:ro "${PFW_SYSTEMD_IMAGE}" >/dev/null
+    local i state
+    for i in $(seq 1 60); do
+        state=$(docker exec "${client}" systemctl is-system-running 2>/dev/null || true)
+        case "${state}" in running|degraded) return ;; esac
+        sleep 2
+    done
+    die "systemd did not come up in the client container (last state: ${state:-unknown})"
+}
+start_container_named
+
+# Steps 3 and 4, exactly as written: import the key, point yum at the repo, install ONLY
+# pfw-agent. If the client half of the bundle ever stops being installable on its own --
+# a dependency that only the server package pulls in, say -- this is what catches it.
+cli "rpm --import /pfw-repo/RPM-GPG-KEY-postgres1st"
+cli "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file:///pfw-repo\nenabled=1\ngpgcheck=1\ngpgkey=file:///pfw-repo/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
+if cli "dnf --disablerepo='*' --enablerepo=pfw -y install pfw-agent >/tmp/install.log 2>&1"; then
+    ok "dnf install pfw-agent, offline, on a host with no server packages"
+else
+    cli 'tail -20 /tmp/install.log' || true
+    no "installing pfw-agent alone"; exit 1
+fi
+
+# "The package enables and starts pfw-agent for you; there is nothing to start by hand."
+if cli "systemctl is-active pfw-agent.service >/dev/null 2>&1"; then
+    ok "pfw-agent.service started by the package, as INSTALL-CLIENT.md states"
+else
+    cli "systemctl status pfw-agent.service --no-pager -l 2>&1 | tail -15" || true
+    no "pfw-agent.service is not running after install"
+fi
+
+log "step 5: register the node, then the database"
+# NO --server-url on `add`. That is the entire point: the credentials must come from the
+# config `pfw-admin config` just wrote. Every other suite passes them on the command line
+# and so proves nothing about this path.
+if cli "pfw-admin config --server-url='https://admin:${ADMIN_PW}@${server}:8443' \
+        --server-insecure-tls ${client} generic ${node_name} >/tmp/config.log 2>&1"; then
+    ok "pfw-admin config registered the node"
+else
+    cli 'tail -15 /tmp/config.log' || true; no "pfw-admin config"; exit 1
+fi
+
+if cli "printf '%s' '${db_password}' | pfw-admin add postgresql --host=${db} --port=5432 \
+        --username=${db_user} --password-stdin --query-source=pgstatmonitor \
+        ${service_name} >/tmp/add.log 2>&1"; then
+    ok "pfw-admin add postgresql, using ONLY the stored config (no --server-url)"
+else
+    cli 'tail -15 /tmp/add.log' || true
+    no "pfw-admin add without --server-url -- credential discovery through the agent config is broken"
+fi
+
+# The config the agent actually uses must now carry the server address. Read the path from
+# the running agent rather than assuming one: pfw-admin resolves it that way too, and
+# hardcoding a path here would make the suite agree with itself instead of with the product.
+cfg=$(cli "pfw-admin status 2>/dev/null | sed -n 's/^Config file *: *//p'" | tr -d '\r')
+[ -n "${cfg}" ] || cfg=/opt/postgres1st/watchtower/config/pfw-agent.yaml
+if cli "grep -q 'address: *${server}:8443' '${cfg}'"; then
+    ok "the agent config records the server address (${cfg})"
+else
+    no "the agent config does not record the server address"
+fi
+
+log "the server sees it"
+# Asked of the SERVER, not the client: the client reporting success is not evidence that
+# anything was stored.
+#
+# The inventory API, not `pfw-admin list`. That command is NODE-scoped -- its own help says
+# "Show Services and Agents running on this Node" -- so run on the server it can never show
+# a client's service, and asserting on it fails against a product that is working. That is
+# what the first version of this suite did.
+if inc "curl -sk -u 'admin:${ADMIN_PW}' https://127.0.0.1:8443/v1/inventory/services 2>/dev/null | grep -q '${service_name}'"; then
+    ok "the server's inventory carries the service"
+else
+    no "the server's inventory does not carry ${service_name}"
+fi
+if inc "curl -sk -u 'admin:${ADMIN_PW}' https://127.0.0.1:8443/v1/inventory/nodes 2>/dev/null | grep -q '${node_name}'"; then
+    ok "the server's inventory carries the node"
+else
+    no "the server's inventory does not carry ${node_name}"
+fi
+
+# The service must point at the DATABASE host, not at the server. A registration that
+# silently recorded 127.0.0.1 would satisfy a name check while monitoring the wrong host.
+if inc "curl -sk -u 'admin:${ADMIN_PW}' https://127.0.0.1:8443/v1/inventory/services 2>/dev/null | grep -q '\"address\": *\"${db}\"'"; then
+    ok "the service records the monitored host (${db}), not the server"
+else
+    no "the service does not record ${db} as its address"
+fi
+
+summary

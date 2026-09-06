@@ -477,7 +477,36 @@ migration shape (match both tags), not a substitution.
 | Fork-added env var | `PFW_DB_TYPES` | The only `PFW_`-prefixed variable. Nothing has shipped, so renaming to `PFW_` is free — but it is read by `api-tests/helpers.go` and the negative-control suite, and the frozen-identifier guard's "no `PFW_*` env var appeared" assertion would fire on it. A decision, not a defect. |
 | Grafana page title | "Postgres1st Monitoring and Management" | Served by the `postgres1st/grafana` fork, a separate repository. Until that is rebranded, `/graph/login` and `/pfw-ui` show different product names. |
 | Config filenames | `pfw-agent.yaml`, `/etc/nginx/pfw.conf`, `/etc/grafana/pfw.ini` | Renaming a config file orphans the existing one on upgrade. `pfw-agent.yaml` in particular carries the agent ID and server URL. |
-| Data directories | `/usr/share/pfw`, `/usr/share/pfw-managed`, `/srv/pfw-agent` | `%{_datadir}` paths are pinned deliberately (see B.1); `/srv` is persistent data needing a migration. |
+| Data directories | `/usr/share/pfw`, `/usr/share/pfw-managed`, `/srv/pfw-agent` | `%{_datadir}` paths are pinned deliberately (see B.1). `/srv/pfw-agent` is **settled, not pending** — see B.6. |
+
+### B.6 The agent config lives in two places, and that is correct
+
+`/srv/pfw-agent/config/pfw-agent.yaml` and
+`/opt/postgres1st/watchtower/config/pfw-agent.yaml` both exist on a server. This looks
+like a rename that was left half-done. It is not, and the reasoning is recorded here
+because the inconsistency invites a "fix" that would break the server.
+
+They belong to **two different agents running as two different accounts**:
+
+| File | Unit | Account | State |
+|---|---|---|---|
+| `/srv/pfw-agent/config/pfw-agent.yaml` | `pfw-server-agent.service` | `pfw` (996) | the server's self-monitoring agent; provisioned by `pfw-init.sh` |
+| `/opt/postgres1st/watchtower/config/pfw-agent.yaml` | `pfw-agent.service` — **masked** on a server | `pfw-agent` (995) | shipped by the `pfw-agent` RPM, a dependency; an empty skeleton here |
+
+Unifying them means merging two service accounts, because the file is mode 0660 owned by
+whichever account writes it. `/srv` is also the persistent volume, so the server agent's
+identity survives a package replacement there; the package-owned root gives no such
+guarantee.
+
+`pfw-admin` is not confused by this. It does not assume a path: `pfw-admin config` shells
+out to `pfw-agent setup`, which asks the RUNNING agent for its config path over the local
+API on 7777 (`agent/commands/setup.go`). On a server `pfw-admin status` correctly reports
+the server agent.
+
+What DOES require `--server-url` on a server is any command that calls the server API,
+such as `pfw-admin list`. That is by design and not a path problem: the agent config holds
+an agent **token**, not admin credentials, so there is nothing for the CLI to authenticate
+the API call with. The install suites pass `--server-url` for exactly this reason.
 
 ### C.1 Surfaces found in review pass 5 — previously uninventoried
 
