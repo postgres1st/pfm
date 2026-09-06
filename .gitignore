@@ -65,3 +65,11 @@ encryption.key
 .cursorrules/
 CLAUDE.md
 docs/scratch
+
+# Per-proto swagger specs are intermediates: `buf generate` writes them and the
+# `swagger mixin` step in api/Makefile consumes them to build the aggregate
+# swagger/swagger.json. They have never been tracked; ignoring them keeps a
+# regeneration from sweeping 52 files into a commit, which is how they first got in.
+api/**/*.swagger.json
+!api/swagger/swagger.json
+!api/swagger/swagger-dev.json
