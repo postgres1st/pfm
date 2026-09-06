@@ -565,7 +565,7 @@ func TestRemoveNode(t *testing.T) {
 		t.Parallel()
 
 		removeResp, err := client.Default.NodesService.RemoveNode(&nodes.RemoveNodeParams{
-			NodeID:  "pmm-server",
+			NodeID:  "watchtower-server",
 			Force:   new(true),
 			Context: context.Background(),
 		})

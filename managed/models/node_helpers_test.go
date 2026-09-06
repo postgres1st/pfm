@@ -198,7 +198,7 @@ func TestNodeHelpers(t *testing.T) {
 		}, {
 			NodeID:          models.PMMServerNodeID,
 			NodeType:        models.GenericNodeType,
-			NodeName:        "pmm-server",
+			NodeName:        "watchtower-server",
 			Address:         "127.0.0.1",
 			CreatedAt:       now,
 			UpdatedAt:       now,

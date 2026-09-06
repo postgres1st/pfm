@@ -161,7 +161,7 @@ fi
 pmm-managed-init
 
 declare AGENT_CONFIG_DIR="/opt/postgres1st/watchtower/config"
-declare AGENT_ID=pmm-server
+declare AGENT_ID=watchtower-server
 
 if is_enabled "$PMM_HA_ENABLE"; then
     echo "High Availability mode is enabled."

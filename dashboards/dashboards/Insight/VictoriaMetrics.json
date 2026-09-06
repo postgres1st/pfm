@@ -3502,7 +3502,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -3573,7 +3573,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -3635,7 +3635,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -3697,7 +3697,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -3759,7 +3759,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -3829,7 +3829,7 @@
                 {
                     "targetBlank": true,
                     "title": "System Overview",
-                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=pmm-server\n\n"
+                    "url": "/graph/d/node-instance-summary/node-summary?$__url_time_range&$__all_variables&var-node_name=watchtower-server\n\n"
                 }
             ],
             "options": {
@@ -4009,8 +4009,8 @@
             {
                 "current": {
                     "selected": false,
-                    "text": "pmm-server",
-                    "value": "pmm-server"
+                    "text": "watchtower-server",
+                    "value": "watchtower-server"
                 },
                 "datasource": {
                     "uid": "$ds"

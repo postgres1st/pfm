@@ -62,13 +62,13 @@ func TestRoster(t *testing.T) {
 			},
 		}
 
-		const expected = "pmm-server:rds/aws"
-		groupID := r.add("pmm-server", rdsPrefix+awsAccessKey, exporters)
+		const expected = "watchtower-server:rds/aws"
+		groupID := r.add("watchtower-server", rdsPrefix+awsAccessKey, exporters)
 		assert.Equal(t, expected, groupID)
 
 		PMMAgentID, agentIDs, err := r.get(groupID)
 		require.NoError(t, err)
-		assert.Equal(t, "pmm-server", PMMAgentID)
+		assert.Equal(t, "watchtower-server", PMMAgentID)
 		assert.Equal(t, []string{"agent1"}, agentIDs)
 	})
 
@@ -76,11 +76,11 @@ func TestRoster(t *testing.T) {
 		r, teardown := setup(t)
 		defer teardown(t)
 
-		const groupID = "pmm-server:rds/AWSAccessKey"
+		const groupID = "watchtower-server:rds/AWSAccessKey"
 
 		PMMAgentID, agentIDs, err := r.get(groupID)
 		require.NoError(t, err)
-		assert.Equal(t, "pmm-server", PMMAgentID)
+		assert.Equal(t, "watchtower-server", PMMAgentID)
 		assert.Equal(t, []string{}, agentIDs)
 	})
 
@@ -102,8 +102,8 @@ func TestRoster(t *testing.T) {
 			},
 		}
 
-		const expectedGroupID = "pmm-server:rds/aws"
-		PMMAgentID := "pmm-server"
+		const expectedGroupID = "watchtower-server:rds/aws"
+		PMMAgentID := "watchtower-server"
 		groupID := r.add(PMMAgentID, rdsPrefix+awsAccessKey, exporters)
 		assert.Equal(t, expectedGroupID, groupID)
 
@@ -111,7 +111,7 @@ func TestRoster(t *testing.T) {
 		PMMAgentID, agentIDs, err := r.get(groupID)
 
 		require.NoError(t, err)
-		assert.Equal(t, "pmm-server", PMMAgentID)
+		assert.Equal(t, "watchtower-server", PMMAgentID)
 		assert.Equal(t, []string{}, agentIDs)
 	})
 }

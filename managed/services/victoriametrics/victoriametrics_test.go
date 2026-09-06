@@ -322,7 +322,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9090
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: vmalert
       honor_timestamps: false
@@ -333,7 +333,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:8880
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: grafana
       honor_timestamps: false
@@ -344,7 +344,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:3000
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: pmm-managed
       honor_timestamps: false
@@ -355,7 +355,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:7773
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: qan-api2
       honor_timestamps: false
@@ -366,7 +366,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9933
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: clickhouse
       honor_timestamps: false
@@ -377,7 +377,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9363
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: nomad
       honor_timestamps: false
@@ -389,7 +389,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:4646
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       tls_config:
         insecure_skip_verify: true
       follow_redirects: false
@@ -869,7 +869,7 @@ scrape_configs:
   - targets:
     - 127.0.0.1:9090
     labels:
-      instance: pmm-server
+      instance: watchtower-server
   follow_redirects: false
 - job_name: vmalert
   honor_timestamps: false
@@ -880,7 +880,7 @@ scrape_configs:
   - targets:
     - 127.0.0.1:8880
     labels:
-      instance: pmm-server
+      instance: watchtower-server
   follow_redirects: false`)))
 		require.NoError(t, err)
 	})
@@ -931,7 +931,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:1234
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: victoriametrics
       honor_timestamps: false
@@ -942,7 +942,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9090
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: vmalert
       honor_timestamps: false
@@ -953,7 +953,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:8880
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: grafana
       honor_timestamps: false
@@ -964,7 +964,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:3000
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: pmm-managed
       honor_timestamps: false
@@ -975,7 +975,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:7773
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: qan-api2
       honor_timestamps: false
@@ -986,7 +986,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9933
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
     - job_name: clickhouse
       honor_timestamps: false
@@ -997,7 +997,7 @@ scrape_configs:
         - targets:
             - 127.0.0.1:9363
           labels:
-            instance: pmm-server
+            instance: watchtower-server
       follow_redirects: false
 `) + "\n"
 	newcfg, err := svc.marshalConfig(svc.loadBaseConfig())

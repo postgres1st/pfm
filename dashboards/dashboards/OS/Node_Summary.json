@@ -5024,8 +5024,8 @@
       },
       {
         "current": {
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
         "datasource": "Metrics",
         "definition": "label_values(up{node_name=~\"$node_name\"}, node_id)",

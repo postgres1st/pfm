@@ -473,7 +473,7 @@ prepare_runtime() {
         /usr/sbin/pfw-agent setup \
             --config-file="${agent_cfg}" \
             --skip-registration \
-            --id=pmm-server \
+            --id=watchtower-server \
             --paths-tempdir=/srv/pfw-agent/tmp \
             --paths-nomad-data-dir=/srv/nomad/data \
             --server-address=127.0.0.1:8443 \

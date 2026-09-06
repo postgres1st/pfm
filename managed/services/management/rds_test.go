@@ -289,7 +289,7 @@ func TestRDSService(t *testing.T) {
 			PostgresqlDisableCollectors:      []string{"stat_database", "stat_bgwriter"},
 		}
 
-		state.On("RequestStateUpdate", ctx, "pmm-server")
+		state.On("RequestStateUpdate", ctx, "watchtower-server")
 		resp, err := s.addRDS(ctx, req)
 		require.NoError(t, err)
 
@@ -310,7 +310,7 @@ func TestRDSService(t *testing.T) {
 					},
 					RdsExporter: &inventoryv1.RDSExporter{
 						AgentId:      "00000000-0000-4000-8000-000000000006",
-						PmmAgentId:   "pmm-server",
+						PmmAgentId:   "watchtower-server",
 						NodeId:       "00000000-0000-4000-8000-000000000005",
 						AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 						Status:       inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
@@ -331,7 +331,7 @@ func TestRDSService(t *testing.T) {
 					},
 					PostgresqlExporter: &inventoryv1.PostgresExporter{
 						AgentId:                "00000000-0000-4000-8000-000000000008",
-						PmmAgentId:             "pmm-server",
+						PmmAgentId:             "watchtower-server",
 						ServiceId:              "00000000-0000-4000-8000-000000000007",
 						Username:               "username",
 						Status:                 inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
@@ -341,7 +341,7 @@ func TestRDSService(t *testing.T) {
 					},
 					QanPostgresqlPgstatements: &inventoryv1.QANPostgreSQLPgStatementsAgent{
 						AgentId:    "00000000-0000-4000-8000-000000000009",
-						PmmAgentId: "pmm-server",
+						PmmAgentId: "watchtower-server",
 						ServiceId:  "00000000-0000-4000-8000-000000000007",
 						Username:   "username",
 						Status:     inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
@@ -387,7 +387,7 @@ func TestRDSService(t *testing.T) {
 			TablestatsGroupTableLimit: 0,
 		}
 
-		state.On("RequestStateUpdate", ctx, "pmm-server")
+		state.On("RequestStateUpdate", ctx, "watchtower-server")
 		resp, err := s.addRDS(ctx, req)
 		require.NoError(t, err)
 
@@ -408,7 +408,7 @@ func TestRDSService(t *testing.T) {
 					},
 					RdsExporter: &inventoryv1.RDSExporter{
 						AgentId:      "00000000-0000-4000-8000-00000000000b",
-						PmmAgentId:   "pmm-server",
+						PmmAgentId:   "watchtower-server",
 						NodeId:       "00000000-0000-4000-8000-00000000000a",
 						AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 						Status:       inventoryv1.AgentStatus_AGENT_STATUS_UNKNOWN,
@@ -428,7 +428,7 @@ func TestRDSService(t *testing.T) {
 					},
 					MysqldExporter: &inventoryv1.MySQLdExporter{
 						AgentId:                   "00000000-0000-4000-8000-00000000000d",
-						PmmAgentId:                "pmm-server",
+						PmmAgentId:                "watchtower-server",
 						ServiceId:                 "00000000-0000-4000-8000-00000000000c",
 						Username:                  "username",
 						TablestatsGroupTableLimit: 1000,
@@ -436,7 +436,7 @@ func TestRDSService(t *testing.T) {
 					},
 					QanMysqlPerfschema: &inventoryv1.QANMySQLPerfSchemaAgent{
 						AgentId:               "00000000-0000-4000-8000-00000000000e",
-						PmmAgentId:            "pmm-server",
+						PmmAgentId:            "watchtower-server",
 						ServiceId:             "00000000-0000-4000-8000-00000000000c",
 						Username:              "username",
 						QueryExamplesDisabled: true,

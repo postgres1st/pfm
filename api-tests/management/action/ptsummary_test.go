@@ -36,7 +36,7 @@ func TestPTSummary(t *testing.T) {
 	explainActionOK, err := client.Default.ActionsService.StartPTSummaryAction(&actions.StartPTSummaryActionParams{
 		Context: ctx,
 		Body: actions.StartPTSummaryActionBody{
-			NodeID: "pmm-server",
+			NodeID: "watchtower-server",
 		},
 	})
 	require.NoError(t, err)

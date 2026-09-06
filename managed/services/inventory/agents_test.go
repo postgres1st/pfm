@@ -323,10 +323,10 @@ func TestAgents(t *testing.T) {
 		}
 		assert.Equal(t, expectedNode, node)
 
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		agent, err := as.AddRDSExporter(ctx, &inventoryv1.AddRDSExporterParams{
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       node.NodeId,
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			AwsSecretKey: "EXAMPLE_SECRET_KEY",
@@ -335,7 +335,7 @@ func TestAgents(t *testing.T) {
 		require.NoError(t, err)
 		expectedAgent := &inventoryv1.RDSExporter{
 			AgentId:      "00000000-0000-4000-8000-000000000006",
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       "00000000-0000-4000-8000-000000000005",
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			CustomLabels: map[string]string{"baz": "qux"},
@@ -343,13 +343,13 @@ func TestAgents(t *testing.T) {
 		}
 		assert.Equal(t, expectedAgent, agent.GetRdsExporter())
 
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		changedAgent, err := as.ChangeRDSExporter(ctx, "00000000-0000-4000-8000-000000000006", &inventoryv1.ChangeRDSExporterParams{})
 		require.NoError(t, err)
 		expectedAgent = &inventoryv1.RDSExporter{
 			AgentId:      "00000000-0000-4000-8000-000000000006",
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       "00000000-0000-4000-8000-000000000005",
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			CustomLabels: map[string]string{"baz": "qux"},
@@ -357,13 +357,13 @@ func TestAgents(t *testing.T) {
 		}
 		assert.Equal(t, expectedAgent, changedAgent.GetRdsExporter())
 
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		changedAgent, err = as.ChangeRDSExporter(ctx, "00000000-0000-4000-8000-000000000006", &inventoryv1.ChangeRDSExporterParams{})
 		require.NoError(t, err)
 		expectedAgent = &inventoryv1.RDSExporter{
 			AgentId:      "00000000-0000-4000-8000-000000000006",
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       "00000000-0000-4000-8000-000000000005",
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			CustomLabels: map[string]string{"baz": "qux"},
@@ -672,10 +672,10 @@ func TestAgents(t *testing.T) {
 		}
 		assert.Equal(t, expectedNode, node)
 
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		agent, err := as.AddRDSExporter(ctx, &inventoryv1.AddRDSExporterParams{
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       node.NodeId,
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			AwsSecretKey: "EXAMPLE_SECRET_KEY",
@@ -685,7 +685,7 @@ func TestAgents(t *testing.T) {
 		require.NoError(t, err)
 		expectedAgent := &inventoryv1.RDSExporter{
 			AgentId:            "00000000-0000-4000-8000-000000000006",
-			PmmAgentId:         "pmm-server",
+			PmmAgentId:         "watchtower-server",
 			NodeId:             "00000000-0000-4000-8000-000000000005",
 			AwsAccessKey:       "EXAMPLE_ACCESS_KEY",
 			CustomLabels:       map[string]string{"baz": "qux"},
@@ -698,7 +698,7 @@ func TestAgents(t *testing.T) {
 	t.Run("PushMetricsExternalExporter", func(t *testing.T) {
 		ss, as, _, teardown, ctx, _ := setup(t)
 		t.Cleanup(func() { teardown(t) })
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		service, err := ss.AddExternalService(ctx, &models.AddDBMSServiceParams{
 			ServiceName:   "External service",
@@ -830,7 +830,7 @@ func TestChangeQANPostgreSQLPgStatementsAgentWithEnvVar(t *testing.T) {
 		t.Setenv(env.EnableInternalPgQAN, "")
 
 		// Mock the state update request
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 
 		// Try to change the internal PostgreSQL QAN agent
 		agent, err := as.ChangeQANPostgreSQLPgStatementsAgent(ctx, "00000000-0000-4000-8000-000000000004", &inventoryv1.ChangeQANPostgreSQLPgStatementsAgentParams{
@@ -842,7 +842,7 @@ func TestChangeQANPostgreSQLPgStatementsAgentWithEnvVar(t *testing.T) {
 		assert.True(t, agent.GetQanPostgresqlPgstatementsAgent().Disabled)
 
 		// Change it back to enabled
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 		agent, err = as.ChangeQANPostgreSQLPgStatementsAgent(ctx, "00000000-0000-4000-8000-000000000004", &inventoryv1.ChangeQANPostgreSQLPgStatementsAgentParams{
 			Enable: new(true),
 		})

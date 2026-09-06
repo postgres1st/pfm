@@ -446,7 +446,7 @@ func TestPMMAgent(t *testing.T) {
 
 		removeResp, err := client.Default.AgentsService.RemoveAgent(
 			&agents.RemoveAgentParams{
-				AgentID: "pmm-server",
+				AgentID: "watchtower-server",
 				Force:   new(true),
 				Context: context.Background(),
 			},

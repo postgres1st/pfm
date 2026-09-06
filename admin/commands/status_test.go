@@ -27,8 +27,8 @@ import (
 
 func TestStatus(t *testing.T) {
 	res := newStatusResult(&agentlocal.Status{
-		AgentID:       "pmm-server",
-		NodeID:        "pmm-server",
+		AgentID:       "watchtower-server",
+		NodeID:        "watchtower-server",
 		NodeName:      "pmm-server-node",
 		ServerURL:     "https://username:password@address/",
 		ServerVersion: "2.4.0",

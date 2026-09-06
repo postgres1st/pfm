@@ -778,7 +778,7 @@ func TestSettings(t *testing.T) {
 
 		var internalPgQANAgent *agents.ListAgentsOKBodyQANPostgresqlPgstatementsAgentItems0
 		for _, agent := range listAgentsRes.Payload.QANPostgresqlPgstatementsAgent {
-			if agent.PMMAgentID == "pmm-server" {
+			if agent.PMMAgentID == "watchtower-server" {
 				internalPgQANAgent = agent
 				break
 			}
@@ -813,7 +813,7 @@ func TestSettings(t *testing.T) {
 		require.NoError(t, err)
 
 		for _, agent := range listAgentsRes.Payload.QANPostgresqlPgstatementsAgent {
-			if agent.PMMAgentID == "pmm-server" {
+			if agent.PMMAgentID == "watchtower-server" {
 				assert.True(t, agent.Disabled, "QAN agent should be disabled after changing settings")
 				break
 			}
@@ -840,7 +840,7 @@ func TestSettings(t *testing.T) {
 		require.NoError(t, err)
 
 		for _, agent := range listAgentsRes.Payload.QANPostgresqlPgstatementsAgent {
-			if agent.PMMAgentID == "pmm-server" {
+			if agent.PMMAgentID == "watchtower-server" {
 				assert.False(t, agent.Disabled, "QAN agent should be enabled after changing settings")
 				break
 			}

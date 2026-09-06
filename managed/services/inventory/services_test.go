@@ -165,7 +165,7 @@ func TestServices(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, actualServices, 1) // PMM Server PostgreSQL
 
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server")
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server")
 		as.vmdb.(*mockPrometheusService).On("RequestConfigurationUpdate")
 		as.cc.(*mockConnectionChecker).On("CheckConnectionToService", ctx,
 			mock.AnythingOfType(reflect.TypeFor[*reform.TX]().Name()),
@@ -180,7 +180,7 @@ func TestServices(t *testing.T) {
 		require.NoError(t, err)
 
 		rdsAgent, err := as.AddRDSExporter(ctx, &inventoryv1.AddRDSExporterParams{
-			PmmAgentId:   "pmm-server",
+			PmmAgentId:   "watchtower-server",
 			NodeId:       node.NodeId,
 			AwsAccessKey: "EXAMPLE_ACCESS_KEY",
 			AwsSecretKey: "EXAMPLE_SECRET_KEY",
@@ -197,7 +197,7 @@ func TestServices(t *testing.T) {
 		require.NoError(t, err)
 
 		mySQLAgent, err := as.AddMySQLdExporter(ctx, &inventoryv1.AddMySQLdExporterParams{
-			PmmAgentId: "pmm-server",
+			PmmAgentId: "watchtower-server",
 			ServiceId:  mySQLService.ServiceId,
 			Username:   "username",
 		})
@@ -232,7 +232,7 @@ func TestServices(t *testing.T) {
 		require.Len(t, actualServices, 1) // PMM Server PostgreSQL
 
 		as.vmdb.(*mockPrometheusService).On("RequestConfigurationUpdate")
-		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "pmm-server").Times(0)
+		as.state.(*mockAgentsStateUpdater).On("RequestStateUpdate", ctx, "watchtower-server").Times(0)
 		as.cc.(*mockConnectionChecker).On("CheckConnectionToService", ctx,
 			mock.AnythingOfType(reflect.TypeFor[*reform.TX]().Name()),
 			mock.AnythingOfType(reflect.TypeFor[*models.Service]().Name()),
@@ -246,7 +246,7 @@ func TestServices(t *testing.T) {
 		require.NoError(t, err)
 
 		azureAgent, err := as.AddAzureDatabaseExporter(ctx, &inventoryv1.AddAzureDatabaseExporterParams{
-			PmmAgentId:    "pmm-server",
+			PmmAgentId:    "watchtower-server",
 			NodeId:        node.NodeId,
 			PushMetrics:   true,
 			AzureClientId: "test",
@@ -262,7 +262,7 @@ func TestServices(t *testing.T) {
 		require.NoError(t, err)
 
 		mySQLAgent, err := as.AddMySQLdExporter(ctx, &inventoryv1.AddMySQLdExporterParams{
-			PmmAgentId: "pmm-server",
+			PmmAgentId: "watchtower-server",
 			ServiceId:  mySQLService.ServiceId,
 			Username:   "username",
 		})

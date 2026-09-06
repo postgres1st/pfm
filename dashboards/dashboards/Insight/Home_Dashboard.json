@@ -4437,8 +4437,8 @@
       },
       {
         "current": {
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
         "definition": "label_values(pg_up{node_name=~\"$node_name\"}, node_name)",
         "hide": 2,

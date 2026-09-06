@@ -1714,7 +1714,7 @@ func setupPMMServerHAAgents(q *reform.Querier, params SetupDBParams) error {
 func setupPMMServerAgents(q *reform.Querier, params SetupDBParams) error {
 	// create PMM Server Node and associated Agents
 	node, err := createNodeWithID(q, PMMServerNodeID, GenericNodeType, &CreateNodeParams{
-		NodeName:        "pmm-server",
+		NodeName:        "watchtower-server",
 		Address:         LocalhostAddr,
 		IsPMMServerNode: true,
 	})

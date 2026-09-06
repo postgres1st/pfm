@@ -400,7 +400,7 @@ telemetry:
   # PMM - Usage
   - id: PMMUsageNodesCount
     source: PMMDB_SELECT
-    query: count(*) AS nodes_count FROM nodes where node_name != 'pmm-server'
+    query: count(*) AS nodes_count FROM nodes where node_name != 'watchtower-server'
     summary: "Monitored nodes count"
     data:
       - metric_name: "pmm_server_usage_nodes_count"
@@ -408,7 +408,7 @@ telemetry:
 
   - id: PMMUsageServicesCount
     source: PMMDB_SELECT
-    query: count(*) AS services_count FROM services where node_id != 'pmm-server'
+    query: count(*) AS services_count FROM services where node_id != 'watchtower-server'
     summary: "Monitored services count"
     data:
       - metric_name: "pmm_server_usage_services_count"
@@ -457,7 +457,7 @@ telemetry:
   # Nodes information
   - id: NodesInfoPMMAgentEmbedded
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'pmm-agent' and runs_on_node_id = 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'pmm-agent' and runs_on_node_id = 'watchtower-server'
     summary: "Agents version PMM_AGENT running on PMM server"
     data:
       - metric_name: "pmm_server_pmm_agent_version"
@@ -465,7 +465,7 @@ telemetry:
 
   - id: NodesInfoPMMAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'pmm-agent' and runs_on_node_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'pmm-agent' and runs_on_node_id != 'watchtower-server'
     summary: "Agents version PMM_AGENT"
     data:
       - metric_name: "pmm_client_pmm_agent_version"
@@ -473,7 +473,7 @@ telemetry:
 
   - id: NodesInfoVMAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'vmagent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'vmagent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version VM_AGENT"
     data:
       - metric_name: "pmm_client_vm_agent_version"
@@ -481,7 +481,7 @@ telemetry:
 
   - id: NodesInfoNodeExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'node_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'node_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version NODE_EXPORTER"
     data:
       - metric_name: "pmm_client_node_exporter_version"
@@ -489,7 +489,7 @@ telemetry:
 
   - id: NodesInfoMysqldExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'mysqld_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'mysqld_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version MYSQLD_EXPORTER"
     data:
       - metric_name: "pmm_client_mysqld_exporter_version"
@@ -497,7 +497,7 @@ telemetry:
 
   - id: NodesInfoMongodbExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'mongodb_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'mongodb_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version MONGODB_EXPORTER"
     data:
       - metric_name: "pmm_client_mongodb_exporter_version"
@@ -505,7 +505,7 @@ telemetry:
 
   - id: NodesInfoPostgresExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'postgres_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'postgres_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version POSTGRES_EXPORTER"
     data:
       - metric_name: "pmm_client_postgres_exporter_version"
@@ -513,7 +513,7 @@ telemetry:
 
   - id: NodesInfoProxysqlExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'proxysql_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'proxysql_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version PROXYSQL_EXPORTER"
     data:
       - metric_name: "pmm_client_proxysql_exporter_version"
@@ -521,7 +521,7 @@ telemetry:
 
   - id: NodesInfoQANMysqlPerfschemaAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'qan-mysql-perfschema-agent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'qan-mysql-perfschema-agent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version QAN_MYSQL_PERFSCHEMA_AGENT"
     data:
       - metric_name: "pmm_client_qan_mysql_perfschema_agent_version"
@@ -529,7 +529,7 @@ telemetry:
 
   - id: NodesInfoQANMysqlSlowlogAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'qan-mysql-slowlog-agent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'qan-mysql-slowlog-agent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version QAN_MYSQL_SLOWLOG_AGENT"
     data:
       - metric_name: "pmm_client_qan_mysql_slowlog_agent_version"
@@ -537,7 +537,7 @@ telemetry:
 
   - id: NodesInfoQANMongodbProfilerAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'qan-mongodb-profiler-agent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'qan-mongodb-profiler-agent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version QAN_MONGODB_PROFILER_AGENT"
     data:
       - metric_name: "pmm_client_qan_mongodb_profiler_agent_version"
@@ -545,7 +545,7 @@ telemetry:
 
   - id: NodesInfoQANPostgresqlPgstatementsAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'qan-postgresql-pgstatements-agent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'qan-postgresql-pgstatements-agent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version QAN_POSTGRESQL_PGSTATEMENTS_AGENT"
     data:
       - metric_name: "pmm_client_qan_postgresql_pgstatements_agent_version"
@@ -553,7 +553,7 @@ telemetry:
 
   - id: NodesInfoQANPostgresqlPgstatmonitorAgent
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'qan-postgresql-pgstatmonitor-agent' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'qan-postgresql-pgstatmonitor-agent' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version QAN_POSTGRESQL_PGSTATMONITOR_AGENT"
     data:
       - metric_name: "pmm_client_qan_postgresql_pgstatmonitor_agent_version"
@@ -561,7 +561,7 @@ telemetry:
 
   - id: NodesInfoRDSExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'rds_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'rds_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version RDS_EXPORTER"
     data:
       - metric_name: "pmm_client_rds_exporter_version"
@@ -569,7 +569,7 @@ telemetry:
 
   - id: NodesInfoExternalExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'external-exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'external-exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version EXTERNAL_EXPORTER"
     data:
       - metric_name: "pmm_client_external_exporter_version"
@@ -577,7 +577,7 @@ telemetry:
 
   - id: NodesInfoAzureDatabaseExporter
     source: PMMDB_SELECT
-    query: version FROM agents WHERE agent_type = 'azure_database_exporter' and pmm_agent_id != 'pmm-server'
+    query: version FROM agents WHERE agent_type = 'azure_database_exporter' and pmm_agent_id != 'watchtower-server'
     summary: "Agents version AZURE_DATABASE_EXPORTER"
     data:
       - metric_name: "pmm_client_azure_database_exporter_version"
@@ -585,7 +585,7 @@ telemetry:
 
   - id: PMMNodesInfoNodeType
     source: PMMDB_SELECT
-    query: node_type FROM nodes WHERE node_name = 'pmm-server'
+    query: node_type FROM nodes WHERE node_name = 'watchtower-server'
     summary: "PMM Node type"
     data:
       - metric_name: "pmm_server_node_type"
@@ -593,7 +593,7 @@ telemetry:
 
   - id: NodesInfoNodeType
     source: PMMDB_SELECT
-    query: node_type FROM nodes WHERE node_name != 'pmm-server'
+    query: node_type FROM nodes WHERE node_name != 'watchtower-server'
     summary: "Node type"
     data:
       - metric_name: "pmm_client_node_type"
@@ -601,7 +601,7 @@ telemetry:
 
   - id: PMMNodeCPUUsage
     source: VM
-    query: clamp_max(sum by () ((avg by (mode) (  (clamp_max(rate(node_cpu_seconds_total{node_name=~"pmm-server",mode!="idle",mode!="iowait"}[5m]),1)) or  (clamp_max(irate(node_cpu_seconds_total{node_name=~"pmm-server",mode!="idle",mode!="iowait"}[5m]),1)) )) *100 or  sum by () (avg_over_time(node_cpu_average{node_name=~"pmm-server",mode!="total",mode!="idle"}[5m]) or   avg_over_time(node_cpu_average{node_name=~"pmm-server",mode!="total",mode!="idle"}[5m])) unless   (avg_over_time(node_cpu_average{node_name=~"pmm-server",mode="total",job="rds-basic"}[5m]) or  avg_over_time(node_cpu_average{node_name=~"pmm-server",mode="total",job="rds-basic"}[5m]))   ),100)
+    query: clamp_max(sum by () ((avg by (mode) (  (clamp_max(rate(node_cpu_seconds_total{node_name=~"watchtower-server",mode!="idle",mode!="iowait"}[5m]),1)) or  (clamp_max(irate(node_cpu_seconds_total{node_name=~"watchtower-server",mode!="idle",mode!="iowait"}[5m]),1)) )) *100 or  sum by () (avg_over_time(node_cpu_average{node_name=~"watchtower-server",mode!="total",mode!="idle"}[5m]) or   avg_over_time(node_cpu_average{node_name=~"watchtower-server",mode!="total",mode!="idle"}[5m])) unless   (avg_over_time(node_cpu_average{node_name=~"watchtower-server",mode="total",job="rds-basic"}[5m]) or  avg_over_time(node_cpu_average{node_name=~"watchtower-server",mode="total",job="rds-basic"}[5m]))   ),100)
     summary: "PMM node CPU Usage"
     data:
       - metric_name: "pmm_server_node_cpu_usage"
@@ -617,7 +617,7 @@ telemetry:
 
   - id: PMMNodeCPUCoreCount
     source: VM
-    query: sum by (value) (count by(cpu) (node_cpu_seconds_total{mode="idle",node_id="pmm-server"}))
+    query: sum by (value) (count by(cpu) (node_cpu_seconds_total{mode="idle",node_id="watchtower-server"}))
     summary: "PMM node CPU core count"
     data:
       - metric_name: "pmm_server_node_cpu_core_count"
@@ -625,7 +625,7 @@ telemetry:
 
   - id: PMMNodeMemorySize
     source: VM
-    query: avg by (node_name) (avg_over_time(node_memory_MemTotal_bytes{node_name=~"pmm-server"}[5m]) or avg_over_time(node_memory_MemTotal_bytes{node_name=~"pmm-server"}[5m]))
+    query: avg by (node_name) (avg_over_time(node_memory_MemTotal_bytes{node_name=~"watchtower-server"}[5m]) or avg_over_time(node_memory_MemTotal_bytes{node_name=~"watchtower-server"}[5m]))
     summary: "PMM node memory size"
     data:
       - metric_name: "pmm_server_node_memory_size"
@@ -633,7 +633,7 @@ telemetry:
 
   - id: PMMNodeMemoryUsage
     source: VM
-    query: clamp_min(avg by (node_name) (((avg_over_time(node_memory_MemTotal_bytes{node_name=~"pmm-server"}[5m]) or avg_over_time(node_memory_MemTotal_bytes{node_name=~"pmm-server"}[5m])) - ((avg_over_time(node_memory_MemFree_bytes{node_name=~"pmm-server"}[5m]) or avg_over_time(node_memory_MemFree_bytes{node_name=~"pmm-server"}[5m]))+(avg_over_time(node_memory_Buffers_bytes{node_name=~"pmm-server"}[5m]) or avg_over_time(node_memory_Buffers_bytes{node_name=~"pmm-server"}[5m]))+(avg_over_time(node_memory_Cached_bytes{node_name=~"pmm-server"}[5m]) or avg_over_time(node_memory_Cached_bytes{node_name=~"pmm-server"}[5m]))))),0)
+    query: clamp_min(avg by (node_name) (((avg_over_time(node_memory_MemTotal_bytes{node_name=~"watchtower-server"}[5m]) or avg_over_time(node_memory_MemTotal_bytes{node_name=~"watchtower-server"}[5m])) - ((avg_over_time(node_memory_MemFree_bytes{node_name=~"watchtower-server"}[5m]) or avg_over_time(node_memory_MemFree_bytes{node_name=~"watchtower-server"}[5m]))+(avg_over_time(node_memory_Buffers_bytes{node_name=~"watchtower-server"}[5m]) or avg_over_time(node_memory_Buffers_bytes{node_name=~"watchtower-server"}[5m]))+(avg_over_time(node_memory_Cached_bytes{node_name=~"watchtower-server"}[5m]) or avg_over_time(node_memory_Cached_bytes{node_name=~"watchtower-server"}[5m]))))),0)
     summary: "PMM node memory usage"
     data:
       - metric_name: "pmm_server_node_memory_usage"
@@ -641,7 +641,7 @@ telemetry:
 
   - id: PMMNodeDiskCapacity
     source: VM
-    query: sum(sum(avg(node_filesystem_size_bytes{node_name=~"pmm-server",fstype=~"(ext.|xfs|vfat|)"}) without (mountpoint)) without (device,fstype))
+    query: sum(sum(avg(node_filesystem_size_bytes{node_name=~"watchtower-server",fstype=~"(ext.|xfs|vfat|)"}) without (mountpoint)) without (device,fstype))
     summary: "PMM node disk capacity"
     data:
       - metric_name: "pmm_server_node_disk_capacity"
@@ -649,7 +649,7 @@ telemetry:
 
   - id: PMMNodeOSName
     source: VM
-    query: node_uname_info{node_id=~"pmm-server"}
+    query: node_uname_info{node_id=~"watchtower-server"}
     summary: "PMM node OS name"
     data:
       - metric_name: "pmm_server_node_os_name"
@@ -657,7 +657,7 @@ telemetry:
 
   - id: PMMNodeOSVersion
     source: VM
-    query: node_uname_info{node_id=~"pmm-server"}
+    query: node_uname_info{node_id=~"watchtower-server"}
     summary: "PMM node OS version"
     data:
       - metric_name: "pmm_server_node_os_version"
@@ -665,7 +665,7 @@ telemetry:
 
   - id: PMMClientNodeOSName
     source: VM
-    query: node_uname_info{node_id!="pmm-server"}
+    query: node_uname_info{node_id!="watchtower-server"}
     summary: "PMM Client node OS name"
     data:
       - metric_name: "pmm_client_node_os_name"
@@ -673,7 +673,7 @@ telemetry:
 
   - id: PMMClientNodeOSVersion
     source: VM
-    query: node_uname_info{node_id!="pmm-server"}
+    query: node_uname_info{node_id!="watchtower-server"}
     summary: "PMM Client node OS version"
     data:
       - metric_name: "pmm_client_node_os_version"
@@ -681,7 +681,7 @@ telemetry:
 
   - id: PMMOSNameAndVersion
     source: VM
-    query: node_os_info{node_id=~"pmm-server"}
+    query: node_os_info{node_id=~"watchtower-server"}
     summary: "PMM node OS name and version"
     data:
       - metric_name: "pmm_server_node_os_pretty_name_and_version"

@@ -954,6 +954,27 @@ no_world_writable_modes() {
 }
 no_world_writable_modes
 
+# admin and managed must agree on the server's reserved node ID.
+#
+# admin is the client CLI and deliberately does not import managed/, so the value is
+# duplicated: models.PMMServerNodeID's default in managed, and a literal comparison in
+# admin/helpers/helpers.go's IsOnPmmServer(). Nothing links them, so a rename of one
+# silently breaks the other -- pfw-admin would stop recognising that it runs on the
+# server, and change behaviour with no error.
+server_node_id_agrees() {
+    local desc="admin and managed agree on the reserved server node ID" m a
+    m=$(sed -n 's/^var PMMServerNodeID = string("\(.*\)")$/\1/p' managed/models/node_model.go)
+    a=$(sed -n 's/.*status.NodeID == "\([^"]*\)".*/\1/p' admin/helpers/helpers.go | head -1)
+    if [ -z "${m}" ] || [ -z "${a}" ]; then
+        no "${desc} -- could not read one of them (managed='${m}' admin='${a}')"
+    elif [ "${m}" = "${a}" ]; then
+        ok "${desc} (${m})"
+    else
+        no "${desc} -- managed says '${m}', admin says '${a}'"
+    fi
+}
+server_node_id_agrees
+
 log "Regression guards for defects already fixed once"
 
 # The pmm-* to pfw-* rename left user-facing text naming binaries that no longer

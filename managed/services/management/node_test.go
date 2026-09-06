@@ -306,7 +306,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,
@@ -322,9 +322,9 @@ func TestNodeService(t *testing.T) {
 			expected := &managementv1.ListNodesResponse{
 				Nodes: []*managementv1.UniversalNode{
 					{
-						NodeId:          "pmm-server",
+						NodeId:          "watchtower-server",
 						NodeType:        "generic",
-						NodeName:        "pmm-server",
+						NodeName:        "watchtower-server",
 						MachineId:       "",
 						Distro:          "",
 						NodeModel:       "",
@@ -390,7 +390,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,
@@ -408,9 +408,9 @@ func TestNodeService(t *testing.T) {
 			expected := &managementv1.ListNodesResponse{
 				Nodes: []*managementv1.UniversalNode{
 					{
-						NodeId:          "pmm-server",
+						NodeId:          "watchtower-server",
 						NodeType:        "generic",
-						NodeName:        "pmm-server",
+						NodeName:        "watchtower-server",
 						MachineId:       "",
 						Distro:          "",
 						NodeModel:       "",
@@ -460,7 +460,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,
@@ -488,7 +488,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,
@@ -579,7 +579,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,
@@ -589,9 +589,9 @@ func TestNodeService(t *testing.T) {
 
 			expected := &managementv1.GetNodeResponse{
 				Node: &managementv1.UniversalNode{
-					NodeId:          "pmm-server",
+					NodeId:          "watchtower-server",
 					NodeType:        "generic",
-					NodeName:        "pmm-server",
+					NodeName:        "watchtower-server",
 					MachineId:       "",
 					Distro:          "",
 					NodeModel:       "",
@@ -624,7 +624,7 @@ func TestNodeService(t *testing.T) {
 				&model.Sample{
 					Metric: model.Metric{
 						"__name__": "up",
-						"node_id":  "pmm-server",
+						"node_id":  "watchtower-server",
 					},
 					Timestamp: 1,
 					Value:     1,

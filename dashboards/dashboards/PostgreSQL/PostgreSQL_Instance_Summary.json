@@ -4754,8 +4754,8 @@
       {
         "current": {
           "selected": false,
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
         "definition": "label_values(pg_up{service_name=~\"$service_name\"},node_name)",
         "hide": 2,
@@ -4985,8 +4985,8 @@
       },
       {
         "current": {
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
         "definition": "label_values(pg_up{service_name=~\"$service_name\"},node_id)",
         "hide": 2,

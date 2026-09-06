@@ -7848,14 +7848,14 @@
       },
       {
         "current": {
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
-        "description": "pmm-server",
+        "description": "watchtower-server",
         "hide": 2,
         "label": "Node Name",
         "name": "node_name",
-        "query": "pmm-server",
+        "query": "watchtower-server",
         "skipUrlSync": true,
         "type": "constant"
       },
@@ -7864,7 +7864,7 @@
           "text": "watchtower-postgresql",
           "value": "watchtower-postgresql"
         },
-        "description": "pmm-server",
+        "description": "watchtower-server",
         "hide": 2,
         "label": "Service Name",
         "name": "service_name",
@@ -7906,12 +7906,12 @@
       },
       {
         "current": {
-          "text": "pmm-server",
-          "value": "pmm-server"
+          "text": "watchtower-server",
+          "value": "watchtower-server"
         },
         "hide": 2,
         "name": "instance",
-        "query": "pmm-server",
+        "query": "watchtower-server",
         "skipUrlSync": true,
         "type": "constant"
       }

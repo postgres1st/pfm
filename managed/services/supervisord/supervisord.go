@@ -604,7 +604,7 @@ func (s *Service) addClusterParams(templateParams map[string]any) {
 		templateParams["HANodes"] = strings.Join(nodes, ",")
 	}
 	// - GF_UNIFIED_ALERTING_HA_ADVERTISE_ADDRESS=172.20.0.5:9095
-	// - GF_UNIFIED_ALERTING_HA_PEERS=pmm-server-active:9095,pmm-server-passive:9095
+	// - GF_UNIFIED_ALERTING_HA_PEERS=watchtower-server-active:9095,watchtower-server-passive:9095
 }
 
 // saveConfigAndReload saves given supervisord program configuration to file and reloads it.

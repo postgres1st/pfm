@@ -91,5 +91,13 @@ func IsOnPmmServer() (bool, error) {
 		return false, fmt.Errorf("can't get local pfw-agent status: %w", err)
 	}
 
-	return status.NodeID == "pmm-server", nil
+	// Must match models.PMMServerNodeID's default in managed/models/node_model.go.
+	// admin is the client CLI and deliberately does not import managed/, so the value is
+	// duplicated rather than shared; test-frozen-identifiers asserts the two agree.
+	//
+	// Pre-existing limitation, unchanged by the rename: in Active/Active HA the server's
+	// node ID is a generated UUID, so this comparison is false there and IsOnPmmServer()
+	// under-reports. Fixing that needs the ID to come from the server rather than a
+	// constant.
+	return status.NodeID == "watchtower-server", nil
 }

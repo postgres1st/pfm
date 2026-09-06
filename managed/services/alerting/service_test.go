@@ -330,7 +330,7 @@ func TestConvertTemplate(t *testing.T) {
           (1 - avg by(node_name) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100
       - ref_id: B
         expr: |-
-          label_replace(vector(10), "node_name", "pmm-server", "", "") or (group by(node_name) (node_cpu_seconds_total) * 0 + [[ .threshold ]])
+          label_replace(vector(10), "node_name", "watchtower-server", "", "") or (group by(node_name) (node_cpu_seconds_total) * 0 + [[ .threshold ]])
     expressions:
       - ref_id: C
         type: math
