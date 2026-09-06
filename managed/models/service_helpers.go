@@ -163,7 +163,7 @@ func FindActiveServiceTypes(q *reform.Querier) ([]ServiceType, error) {
 	return res, nil
 }
 
-// FindActiveUserServiceTypes returns all active Service Types, excluding pmm-server-postgresql service.
+// FindActiveUserServiceTypes returns all active Service Types, excluding watchtower-postgresql service.
 func FindActiveUserServiceTypes(q *reform.Querier) ([]ServiceType, error) {
 	query := fmt.Sprintf(`SELECT DISTINCT service_type FROM %s WHERE service_name != $1`, ServiceTable.s.SQLName)
 	rows, err := q.Query(query, PMMServerPostgreSQLServiceName)

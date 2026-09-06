@@ -153,7 +153,7 @@ export const useFilters = (): [any, boolean] => [
     service_name: {
       name: [
         {
-          value: 'pmm-server-postgresql',
+          value: 'watchtower-postgresql',
           main_metric_percent: 1,
           main_metric_per_sec: 0.0017590816,
           checked: false,

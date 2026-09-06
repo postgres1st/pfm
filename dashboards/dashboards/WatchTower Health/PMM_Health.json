@@ -309,7 +309,7 @@
         {
           "datasource": "Metrics",
           "editorMode": "builder",
-          "expr": "min by(service_name) (up{service_name=\"pmm-server-postgresql\"})",
+          "expr": "min by(service_name) (up{service_name=\"watchtower-postgresql\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -7861,14 +7861,14 @@
       },
       {
         "current": {
-          "text": "pmm-server-postgresql",
-          "value": "pmm-server-postgresql"
+          "text": "watchtower-postgresql",
+          "value": "watchtower-postgresql"
         },
         "description": "pmm-server",
         "hide": 2,
         "label": "Service Name",
         "name": "service_name",
-        "query": "pmm-server-postgresql",
+        "query": "watchtower-postgresql",
         "skipUrlSync": true,
         "type": "constant"
       },

@@ -61,7 +61,7 @@ By default, Query Analytics (QAN) does not display queries from PMM Server's int
 
 Enable this setting to troubleshoot PMM Server performance issues, monitor resource usage in [High Availability (HA) deployments](../install-pmm/HA.md), or verify that applications aren't misusing the default `postgres` database.
 
-When enabled, open **Query Analytics (QAN)** from the main menu, then filter by the `pmm-server-postgresql` service to view PMM Server queries. 
+When enabled, open **Query Analytics (QAN)** from the main menu, then filter by the `watchtower-postgresql` service to view PMM Server queries. 
 
 You'll see queries related to PGF WatchTower's inventory, settings, advisor checks, alerts, backups, and authentication. These queries are typically lightweight so any spikes in volume, latency, or unexpected entries may indicate performance issues or database misuse.
 

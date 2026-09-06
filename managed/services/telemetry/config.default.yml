@@ -66,7 +66,7 @@ telemetry:
 
   - id: PMMServerFirstServiceAdded
     source: PMMDB_SELECT
-    query:  EXTRACT(EPOCH FROM y.created_at::timestamp) - EXTRACT(EPOCH FROM x.created_at::timestamp)  AS value_difference_sec FROM services x JOIN services y ON y.service_name != 'pmm-server-postgresql' WHERE x.service_name = 'pmm-server-postgresql' AND y.created_at = (SELECT MIN(created_at) FROM services WHERE service_name != 'pmm-server-postgresql');
+    query:  EXTRACT(EPOCH FROM y.created_at::timestamp) - EXTRACT(EPOCH FROM x.created_at::timestamp)  AS value_difference_sec FROM services x JOIN services y ON y.service_name != 'watchtower-postgresql' WHERE x.service_name = 'watchtower-postgresql' AND y.created_at = (SELECT MIN(created_at) FROM services WHERE service_name != 'watchtower-postgresql');
     summary: "Difference between PMM installation and the first real service added to PMM"
     data:
       - metric_name: "pmm_server_first_service_added_sec"
@@ -269,7 +269,7 @@ telemetry:
 
   - id: PMMPostgresDBVersion
     source: VM
-    query: pg_static{service_name="pmm-server-postgresql", service_type="postgresql"}
+    query: pg_static{service_name="watchtower-postgresql", service_type="postgresql"}
     summary: "PostgreSQL version inside PMM server"
     data:
       - metric_name: "pmm_server_postgresql_version"
@@ -277,7 +277,7 @@ telemetry:
 
   - id: PostgresDBVersion
     source: VM
-    query: pg_static{service_name!="pmm-server-postgresql", service_type="postgresql"}
+    query: pg_static{service_name!="watchtower-postgresql", service_type="postgresql"}
     summary: "Monitored PostgreSQL services version"
     data:
       - metric_name: "postgresql_version"
@@ -285,7 +285,7 @@ telemetry:
 
   - id: PostgresDBInstalledExtensions
     source: VM
-    query: pg_extensions{service_name!="pmm-server-postgresql"}
+    query: pg_extensions{service_name!="watchtower-postgresql"}
     transform:
       type: JSON
       metric: postgresql_installed_extensions
@@ -302,7 +302,7 @@ telemetry:
 
   - id: PostgresDBAvailableExtensions
     source: VM
-    query: pg_available_extensions{service_name!="pmm-server-postgresql"}
+    query: pg_available_extensions{service_name!="watchtower-postgresql"}
     transform:
       type: JSON
       metric: postgresql_available_extensions
@@ -953,7 +953,7 @@ telemetry:
 
   - id: PostgresDBCount
     source: VM
-    query: count by (service_id) (pg_stat_database_tup_fetched{service_name!="pmm-server-postgresql", datname!~"template.*|postgres", datid!="0"})
+    query: count by (service_id) (pg_stat_database_tup_fetched{service_name!="watchtower-postgresql", datname!~"template.*|postgres", datid!="0"})
     summary: "Number of databases monitored per PostgreSQL server"
     data:
       - metric_name: "postgresql_db_count"

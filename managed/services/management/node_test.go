@@ -355,7 +355,7 @@ func TestNodeService(t *testing.T) {
 							{
 								ServiceId:   postgresqlServiceID,
 								ServiceType: "postgresql",
-								ServiceName: "pmm-server-postgresql",
+								ServiceName: "watchtower-postgresql",
 							},
 						},
 						Status: managementv1.UniversalNode_STATUS_UP,
@@ -441,7 +441,7 @@ func TestNodeService(t *testing.T) {
 							{
 								ServiceId:   postgresqlServiceID,
 								ServiceType: "postgresql",
-								ServiceName: "pmm-server-postgresql",
+								ServiceName: "watchtower-postgresql",
 							},
 						},
 						Status: managementv1.UniversalNode_STATUS_UP,

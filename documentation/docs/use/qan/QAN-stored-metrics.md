@@ -35,7 +35,7 @@ To enable:
 
 1. Go to **Configuration > Settings > Advanced settings**.
 2. Switch on the **QAN for PMM Server** option.
-3. Open **Query Analytics** and filter by `pmm-server-postgresql` to view queries.
+3. Open **Query Analytics** and filter by `watchtower-postgresql` to view queries.
 
 When enabled, you'll see queries related to PGF WatchTower's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
 

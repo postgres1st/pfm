@@ -43,14 +43,16 @@ import (
 )
 
 const (
-	// PMMServerPostgreSQLServiceName is a special Service Name representing PMM Server's PostgreSQL Service.
-	PMMServerPostgreSQLServiceName = "pmm-server-postgresql"
-	// - minPGVersion stands for minimal required PostgreSQL server version for PMM Server.
+	// PMMServerPostgreSQLServiceName is a special Service Name representing the WatchTower
+	// server's own PostgreSQL Service.
+	PMMServerPostgreSQLServiceName = "watchtower-postgresql"
+	// - minPGVersion stands for minimal required PostgreSQL server version for the server.
 	minPGVersion float64 = 14
 	// DefaultPostgreSQLAddr represent default local PostgreSQL database server address.
 	DefaultPostgreSQLAddr = "127.0.0.1:5432"
-	// PMMServerPostgreSQLNodeName is a special Node Name representing PMM Server's External PostgreSQL Node.
-	PMMServerPostgreSQLNodeName = "pmm-server-db"
+	// PMMServerPostgreSQLNodeName is a special Node Name representing the WatchTower server's
+	// external PostgreSQL Node.
+	PMMServerPostgreSQLNodeName = "watchtower-db"
 
 	// DisableSSLMode represent disable PostgreSQL ssl mode.
 	DisableSSLMode string = "disable"
@@ -1152,7 +1154,7 @@ var databaseSchema = [][]string{
 		`UPDATE agents SET valkey_options = '{}'::jsonb`,
 	},
 	112: {
-		`UPDATE agents SET disabled = true WHERE agent_type = 'qan-postgresql-pgstatements-agent' AND service_id = (SELECT service_id FROM services WHERE service_name = 'pmm-server-postgresql' LIMIT 1);`,
+		`UPDATE agents SET disabled = true WHERE agent_type = 'qan-postgresql-pgstatements-agent' AND service_id = (SELECT service_id FROM services WHERE service_name = 'watchtower-postgresql' LIMIT 1);`,
 	},
 	113: {
 		// Reset product tour for new navigation

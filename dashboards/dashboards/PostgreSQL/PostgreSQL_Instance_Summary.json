@@ -4775,8 +4775,8 @@
       {
         "current": {
           "selected": false,
-          "text": "pmm-server-postgresql",
-          "value": "pmm-server-postgresql"
+          "text": "watchtower-postgresql",
+          "value": "watchtower-postgresql"
         },
         "definition": "label_values(pg_up, service_name)",
         "includeAll": false,
