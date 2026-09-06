@@ -29,7 +29,7 @@ Layer 2   build the bundle            Docker + ~30 GB    25-40 min cold
 Layer 3   test-pfw-airgap             the bundle         leaves a server running
               |
 Layer 1b  managed/… , api-tests/…     that server        <- needs Layers 2 and 3
-Layer 3   upgrade, negative-control, qan
+Layer 3   client, upgrade, negative-control, qan
 
 Aside     test-docs-site              Docker + network    ~2 min, NOT a release gate
 ```
@@ -42,6 +42,7 @@ build/scripts/test-frozen-identifiers && build/scripts/check-release-claims   # 
 build/scripts/build-pfw-airgap                                                # Layer 2
 build/scripts/test-pfw-airgap                                                 # Layer 3
 #   ... now run managed/… and api-tests/… against the server it left up       # Layer 1b
+build/scripts/test-pfw-client
 build/scripts/test-pfw-upgrade
 docker rm -f pfw-airgap-test && build/scripts/test-pfw-airgap                 # fresh host
 build/scripts/test-pfw-negative-control
@@ -487,10 +488,24 @@ Run in this order. Each leaves its container up for inspection; `KEEP=0` removes
 
 ```bash
 build/scripts/test-pfw-airgap             # expect: 46 passed, 0 failed
+build/scripts/test-pfw-client             # expect:  9 passed, 0 failed
 build/scripts/test-pfw-upgrade            # expect: 34 passed, 0 failed
 build/scripts/test-pfw-negative-control   # expect: 58 passed, 0 failed
 build/scripts/test-pfw-qan                # expect:  5 passed, 0 failed
 ```
+
+`test-pfw-client` is the only suite that executes the documented CLIENT procedure. Every
+other one runs `pfw-admin` on the server and passes `--server-url`, which bypasses the
+agent config entirely — so nothing else ever reads `pfw-agent.yaml`, runs `pfw-admin
+config`, installs `pfw-agent` on a host that is not the server, or registers a database
+that is not `127.0.0.1`. It deliberately passes **no** `--server-url` to `add`, so the
+credentials must come from the config that `pfw-admin config` just wrote.
+
+Two traps if you extend it. `pfw-admin list` is **node-scoped** ("Show Services and Agents
+running on this Node"), so asking the server about a client's service always comes back
+empty against a product that is working; use the inventory API. And that API is
+`GET /v1/inventory/services`, not a `:list` POST. Both mistakes were made the first time
+this suite ran, and both looked like product failures.
 
 `test-pfw-negative-control` reads as the most valuable of the four: it breaks each
 condition the airgap suite asserts and confirms the assertion goes red. Read its
