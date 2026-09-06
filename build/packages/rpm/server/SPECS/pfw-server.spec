@@ -135,6 +135,7 @@ done
 install -p -m 0644 pfw-tmpfiles.conf  %{buildroot}%{_tmpfilesdir}/pfw.conf
 install -p -m 0644 pfw-sysusers.conf  %{buildroot}%{_sysusersdir}/pfw.conf
 install -p -m 0755 pfw-init.sh        %{buildroot}%{_datadir}/pfw/pfw-init.sh
+install -p -m 0755 pfw-secrets-perms.sh        %{buildroot}%{_datadir}/pfw/pfw-secrets-perms.sh
 
 # ClickHouse custom config (data under /srv/clickhouse to match pfw-clickhouse's
 # ReadWritePaths). Staged here; %post deploys it to /etc/clickhouse-server and
@@ -524,6 +525,7 @@ fi
 # would conflict.
 %{_datadir}/selinux/packages/pfw_nginx.pp
 %attr(0755, root, root) %{_datadir}/pfw/pfw-init.sh
+%attr(0755, root, root) %{_datadir}/pfw/pfw-secrets-perms.sh
 %{_datadir}/pfw/clickhouse
 %{_datadir}/pfw/grafana
 %dir %{_prefix}/lib/pfw

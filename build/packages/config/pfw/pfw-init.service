@@ -38,6 +38,23 @@ ReadWritePaths=/srv /run/postgresql
 # never briefly group-readable in the window before the explicit chmod.
 UMask=0077
 ExecStart=/usr/share/pfw/pfw-init.sh
+# Hand the secret store to root, group pfw, AFTER pfw-init has generated it.
+#
+# systemd loads EnvironmentFile= in the child AFTER applying CapabilityBoundingSet
+# but BEFORE dropping to User=. pfw-managed, pfw-grafana and pfw-qan-api2 all set an
+# empty CapabilityBoundingSet, so that reader is root with no CAP_DAC_OVERRIDE and
+# cannot read a pfw-owned 0600 file: the three units failed with "Failed to load
+# environment files: Permission denied" and restarted forever. root:pfw 0640 lets
+# root read as owner and pfw read via group, with no capability needed by either and
+# no other local user able to.
+#
+# The `+` prefix runs this line as root even though the unit is User=pfw; pfw itself
+# must not own the store, or the files it creates would be pfw-owned again.
+#
+# Docker cannot reproduce the failure this fixes: a privileged container keeps
+# cap_dac_override in its bounding set, so every container suite read these files
+# happily. See docs/beta2-release-readiness.md on native-only failures.
+ExecStartPost=+/usr/share/pfw/pfw-secrets-perms.sh
 # /dev/stdout is not openable under a systemd unit; send everything to journald.
 StandardOutput=journal
 StandardError=journal

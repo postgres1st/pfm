@@ -213,7 +213,11 @@ sync_generated_marker() {
 # values, and provision_srv returns early on an already-provisioned host, which is
 # exactly the host that still needs its credential relocated out of the 0644 unit.
 ensure_secrets() {
-    install -d -m 0700 "${SECRETS_DIR}"
+    # Create it only when missing. After the first boot the store is root-owned
+    # (pfw-init.service's root ExecStartPost hands it over so systemd can read
+    # EnvironmentFile= without CAP_DAC_OVERRIDE), and `install -d` on an existing
+    # directory tries to chmod it -- which this process, running as pfw, cannot do.
+    [ -d "${SECRETS_DIR}" ] || install -d -m 0700 "${SECRETS_DIR}"
     assert_secret_store_intact
     ensure_clickhouse_secret
 
