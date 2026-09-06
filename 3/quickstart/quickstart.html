@@ -7,13 +7,11 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="To get up and running with Postgres1st (PFMM) in no time, install PFMM on Bare Metal/Virtual using the Easy-install script for Docker.">
+        <meta name="description" content="To get up and running with Postgres1st (PGF WatchTower) in no time, install PGF WatchTower on Bare Metal/Virtual using the Easy-install script for Docker.">
       
       
-        <meta name="author" content="Percona LLC">
+        <meta name="author" content="Postgres1st">
       
-      
-        <link rel="canonical" href="https://docs.percona.com/percona-monitoring-and-management/3/quickstart/quickstart.html">
       
       
         <link rel="prev" href="../discover-pmm/features.html">
@@ -25,12 +23,12 @@
         
       
       
-      <link rel="icon" href="../assets/pmm-fav.svg">
+      <link rel="icon" href="../assets/pfw-fav.svg">
       <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.7">
     
     
       
-        <title>Quickstart guide - Postgres1st</title>
+        <title>Quickstart guide - PGF WatchTower</title>
       
     
     
@@ -64,42 +62,25 @@
     
       <link rel="stylesheet" href="../css/design.css">
     
-      <link rel="stylesheet" href="../css/osano.css">
-    
       <link rel="stylesheet" href="../css/pmm.css">
     
       <link rel="stylesheet" href="../css/extra.css">
     
-      <link rel="stylesheet" href="../css/rating.css">
-    
-      <link rel="stylesheet" href="../css/kapa.css">
-    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-  
-
-
-  
-  
-
-<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-J4J70BNH0G"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-J4J70BNH0G",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-J4J70BNH0G",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
-  
-    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
-  
 
     
     
 
-                 
-                 
-                 
-                 
-                 <meta property="og:type" content="website" />
-                 <meta property="og:title" content="Postgres1st - Quickstart guide" />
-                 <meta property="og:image" content="https://docs.percona.com/percona-monitoring-and-management/images/PMM.png">
-                 <meta property="og:url" content="https://docs.percona.com/percona-monitoring-and-management/">
-              
+  
+  
+  
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PGF WatchTower - Quickstart guide" />
+
   </head>
   
   
@@ -119,44 +100,12 @@
     <div data-md-component="skip">
       
         
-        <a href="#get-started-with-pfmm" class="md-skip">
+        <a href="#get-started-with-pgf-watchtower" class="md-skip">
           Skip to content
         </a>
       
     </div>
     <div data-md-component="announce">
-      
-        <aside class="md-banner">
-          <div class="md-banner__inner md-grid md-typeset">
-            
-            
-<div class="md-banner" style="text-align: center;">
-  Where the open source database community meets:
-  Secure your spot for Percona Live.
-
-  <a
-    class="breakdance-link button-atom button-atom--primary bde-button__button"
-    href="https://perconalive.com/2026-amsterdam/registration/"
-    target="_blank"
-    data-type="url"
-    style="
-      padding: 5px 20px;
-      display: inline-block;
-      margin-left: 10px;
-      background-color: #653df4;
-      border-radius: 999px;
-      text-decoration: none;
-    "
-  >
-    <span class="button-atom__text" style="font-size: 16px; color: #ffffff;">
-      Register
-    </span>
-  </a>
-</div>
-
-          </div>
-          
-        </aside>
       
     </div>
     
@@ -172,26 +121,7 @@
 
 
 <!-- Header -->
-<header class="md-header md-header--shadow" data-md-component="header">
-
-  <!-- Super Nav -->
-  <div class="superNav">
-    <div class="md-header__inner md-grid">
-      <a href="https://docs.percona.com/pmm" title="Percona Monitoring and Management documentation Home page">
-        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <mask id="a" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-            <path d="M0 0h24v24H0z"/>
-          </mask>
-          <g mask="url(#a)">
-            <path d="m7.825 13 5.6 5.6L12 20l-8-8 8-8 1.425 1.4-5.6 5.6H20v2H7.825Z"/>
-          </g>
-        </svg>
-        <span>PERCONA MONITORING AND MANAGEMENT DOCUMENTATION</span>
-      </a>
-    </div>
-  </div>
-
-  <nav
+<header class="md-header md-header--shadow" data-md-component="header"><nav
     class="md-header__inner md-grid"
     aria-label="Header"
   >
@@ -199,13 +129,13 @@
     <!-- Link to home -->
     <a
       href="../index.html"
-      title="Postgres1st"
+      title="PGF WatchTower"
       class="md-header__button md-logo"
-      aria-label="Postgres1st"
+      aria-label="PGF WatchTower"
       data-md-component="logo"
     >
       
-  <img src="../assets/pmm-mark.svg" alt="logo">
+  <img src="../assets/pfw-logo.svg" alt="logo">
 
     </a>
 
@@ -220,7 +150,7 @@
       <div class="md-header__ellipsis">
         <a href="../index.html" class="md-header__topic">
           <span class="md-ellipsis">
-            Postgres1st
+            PGF WatchTower
           </span>
         </a>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -325,13 +255,13 @@
     <!-- Repository information -->
     
       <div class="md-header__source">
-        <a href="https://github.com/percona/pmm/" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/postgres1st/pfm/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    percona/pmm
+    postgres1st/pfm
   </div>
 </a>
       </div>
@@ -354,33 +284,33 @@
       <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
           
-              
-                
-                <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      
+
+  
+  <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+    <div class="md-sidebar__scrollwrap">
+      <div class="md-sidebar__inner">
+        
 
 
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../index.html" title="Postgres1st" class="md-nav__button md-logo" aria-label="Postgres1st" data-md-component="logo">
+    <a href="../index.html" title="PGF WatchTower" class="md-nav__button md-logo" aria-label="PGF WatchTower" data-md-component="logo">
       
-  <img src="../assets/pmm-mark.svg" alt="logo">
+  <img src="../assets/pfw-logo.svg" alt="logo">
 
     </a>
-    Postgres1st
+    PGF WatchTower
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/percona/pmm/" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/postgres1st/pfm/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    percona/pmm
+    postgres1st/pfm
   </div>
 </a>
     </div>
@@ -428,7 +358,7 @@
   <span class="md-ellipsis">
     
   
-    Get help from Percona
+    Get help
   
 
     
@@ -502,7 +432,7 @@
   <span class="md-ellipsis">
     
   
-    Why PFMM?
+    Why PGF WatchTower?
   
 
     
@@ -629,10 +559,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-pfmm" class="md-nav__link">
+  <a href="#install-pgf-watchtower" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install PFMM
+        Install PGF WatchTower
       
     </span>
   </a>
@@ -741,7 +671,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM installation overview
+    PGF WatchTower installation overview
   
 
     
@@ -780,7 +710,7 @@
   <span class="md-ellipsis">
     
   
-    Plan your PFMM installation
+    Plan your PGF WatchTower installation
   
 
     
@@ -796,7 +726,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Plan your PFMM installation
+    Plan your PGF WatchTower installation
   
 
           </label>
@@ -816,7 +746,7 @@
   <span class="md-ellipsis">
     
   
-    Choose a PFMM deployment strategy
+    Choose a PGF WatchTower deployment strategy
   
 
     
@@ -2208,7 +2138,7 @@
   <span class="md-ellipsis">
     
   
-    Access PFMM UI
+    Access PGF WatchTower UI
   
 
     
@@ -3389,7 +3319,7 @@
   <span class="md-ellipsis">
     
   
-    Install PFMM in HA mode
+    Install PGF WatchTower in HA mode
   
 
     
@@ -3405,7 +3335,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Install PFMM in HA mode
+    Install PGF WatchTower in HA mode
   
 
           </label>
@@ -3556,7 +3486,7 @@
   <span class="md-ellipsis">
     
   
-    Understand PFMM HA Cluster
+    Understand PGF WatchTower HA Cluster
   
 
     
@@ -3584,7 +3514,7 @@
   <span class="md-ellipsis">
     
   
-    Install PFMM HA Cluster
+    Install PGF WatchTower HA Cluster
   
 
     
@@ -3682,7 +3612,7 @@
   <span class="md-ellipsis">
     
   
-    About using PFMM
+    About using PGF WatchTower
   
 
     
@@ -3721,7 +3651,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM user interface
+    PGF WatchTower user interface
   
 
     
@@ -3737,7 +3667,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM user interface
+    PGF WatchTower user interface
   
 
           </label>
@@ -3785,7 +3715,7 @@
   <span class="md-ellipsis">
     
   
-    Log into PFMM
+    Log into PGF WatchTower
   
 
     
@@ -3849,7 +3779,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM Inventory
+    PGF WatchTower Inventory
   
 
     
@@ -3952,7 +3882,7 @@
   <span class="md-ellipsis">
     
   
-    About monitoring in PFMM
+    About monitoring in PGF WatchTower
   
 
     
@@ -3991,7 +3921,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM metrics
+    PGF WatchTower metrics
   
 
     
@@ -4007,7 +3937,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM metrics
+    PGF WatchTower metrics
   
 
           </label>
@@ -4027,7 +3957,7 @@
   <span class="md-ellipsis">
     
   
-    About PFMM metrics
+    About PGF WatchTower metrics
   
 
     
@@ -6651,7 +6581,7 @@
   <span class="md-ellipsis">
     
   
-    Configure PFMM
+    Configure PGF WatchTower
   
 
     
@@ -6707,7 +6637,7 @@
   <span class="md-ellipsis">
     
   
-    Advanced PFMM settings
+    Advanced PGF WatchTower settings
   
 
     
@@ -6774,7 +6704,7 @@
   <span class="md-ellipsis">
     
   
-    Security in PFMM
+    Security in PGF WatchTower
   
 
     
@@ -6790,7 +6720,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Security in PFMM
+    Security in PGF WatchTower
   
 
           </label>
@@ -6810,7 +6740,7 @@
   <span class="md-ellipsis">
     
   
-    About security in PFMM
+    About security in PGF WatchTower
   
 
     
@@ -6894,7 +6824,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM data encryption
+    PGF WatchTower data encryption
   
 
     
@@ -7087,7 +7017,7 @@
   <span class="md-ellipsis">
     
   
-    User management in PFMM
+    User management in PGF WatchTower
   
 
     
@@ -7329,7 +7259,7 @@
   <span class="md-ellipsis">
     
   
-    About label based access control (LBAC) in PFMM
+    About label based access control (LBAC) in PGF WatchTower
   
 
     
@@ -7698,7 +7628,7 @@
   <span class="md-ellipsis">
     
   
-    Migrate external PostgreSQL configuration for PFMM 3.2.0+ upgrades
+    Migrate external PostgreSQL configuration for PGF WatchTower 3.2.0+ upgrades
   
 
     
@@ -8066,7 +7996,7 @@
   <span class="md-ellipsis">
     
   
-    About uninstalling PFMM
+    About uninstalling PGF WatchTower
   
 
     
@@ -8315,7 +8245,7 @@
   <span class="md-ellipsis">
     
   
-    Troubleshoot PFMM
+    Troubleshoot PGF WatchTower
   
 
     
@@ -8539,7 +8469,7 @@
   <span class="md-ellipsis">
     
   
-    Export PFMM data with PFMM Dump
+    Export PGF WatchTower data with PGF WatchTower Dump
   
 
     
@@ -8670,14 +8600,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../release-notes/3.8.1.html" class="md-nav__link">
+      <a href="../release-notes/pfw-3.9.0-beta2.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM 3.8.1 (2026-05-10)
+    PGF WatchTower 3.9.0 beta2
   
 
     
@@ -8698,350 +8628,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../release-notes/3.8.0.html" class="md-nav__link">
+      <a href="../release-notes/pfmm-3.9.0-beta1.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM 3.8.0 (2026-05-28)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.7.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.7.1 (2026-04-30)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.7.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.7.0 (2026-04-01)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.6.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.6.0 (2026-02-05)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.5.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.5.0 (2025-11-19)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.4.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.4.1 (2025-10-13)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.4.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.4.0 (2025-09-15)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.3.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.3.1 (2025-07-30)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.3.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.3.0 (2025-07-09)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.2.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.2.0 (2025-05-29)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.1.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.1.0 (2025-03-31)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.0.0_1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.0.0-1 (2025-02-10)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../release-notes/3.0.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.0.0 (2025-01-30)
+    PGF WatchTower 3.9.0 beta1 (2026-08-07)
   
 
     
@@ -9170,7 +8764,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM Architecture
+    PGF WatchTower Architecture
   
 
     
@@ -9209,7 +8803,7 @@
   <span class="md-ellipsis">
     
   
-    Third-party components in PFMM
+    Third-party components in PGF WatchTower
   
 
     
@@ -9225,7 +8819,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Third-party components in PFMM
+    Third-party components in PGF WatchTower
   
 
           </label>
@@ -9273,7 +8867,7 @@
   <span class="md-ellipsis">
     
   
-    Use external ClickHouse with PFMM
+    Use external ClickHouse with PGF WatchTower
   
 
     
@@ -9301,7 +8895,7 @@
   <span class="md-ellipsis">
     
   
-    Configure PFMM with external PostgreSQL
+    Configure PGF WatchTower with external PostgreSQL
   
 
     
@@ -9337,7 +8931,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM components and versions
+    PGF WatchTower components and versions
   
 
     
@@ -9365,7 +8959,7 @@
   <span class="md-ellipsis">
     
   
-    Data handling in PFMM
+    Data handling in PGF WatchTower
   
 
     
@@ -9404,7 +8998,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM API
+    PGF WatchTower API
   
 
     
@@ -9420,7 +9014,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM API
+    PGF WatchTower API
   
 
           </label>
@@ -9440,7 +9034,7 @@
   <span class="md-ellipsis">
     
   
-    About PFMM API
+    About PGF WatchTower API
   
 
     
@@ -9515,7 +9109,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM commands
+    PGF WatchTower commands
   
 
     
@@ -9531,7 +9125,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM commands
+    PGF WatchTower commands
   
 
           </label>
@@ -9551,7 +9145,7 @@
   <span class="md-ellipsis">
     
   
-    About PFMM commands
+    About PGF WatchTower commands
   
 
     
@@ -9829,7 +9423,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM dashboards
+    PGF WatchTower dashboards
   
 
     
@@ -9845,7 +9439,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM dashboards
+    PGF WatchTower dashboards
   
 
           </label>
@@ -10970,7 +10564,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM HA Health Overview
+    PGF WatchTower HA Health Overview
   
 
     
@@ -11205,246 +10799,21 @@
     
   </ul>
 </nav>
-                      <br>
-                      <label class="md-nav__title" for="__drawer">
-                        <a href="https://learn.percona.com/download-percona-monitoring-and-management-manual-3" onclick="_gaq.push(['b._trackEvent', 'Percona Monitoring and Management', 'Download', 'Download Manual Percona Monitoring and Management']);" class="md-nav__link md-nav__link--active" style="font-size: .7rem;">
-                          Download PDF
-                        </a>
-                      </label> 
-                    </div>
-                  </div>
-                </div>
-              
-              
-                
-                <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      <!-- Feedback Widget -->
-<div class="rating-widget" style="
-  background: var(--md-default-bg-color);
-  border: 0.05rem solid var(--md-default-fg-color--lightest);
-  padding: 10px 15px;
-  border-radius: 0.2rem;
-  margin-bottom: 16px;
-  font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-  font-size: 16px;
-  text-align: center;
-  transition: all 0.2s ease-out;
-">
-
-  <div class="rating-title" style="
-    margin-bottom: 4px;
-    font-size: 15px;
-    font-weight: bold;
-    /* Removed inline color to use CSS */
-  ">
-    Rate this page
+        
+      </div>
+    </div>
   </div>
 
-  <div class="rating-stars" style="display: inline-block;">
-    
-      <span class="star" data-rating="1" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="2" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="3" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="4" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="5" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-  </div>
 
-  <div id="feedback-notification" style="
-    display: none;
-    margin-top: 10px;
-    color: var(--md-typeset-a-color);
-    font-weight: 500;
-    font-size: 14px;
-  ">Thanks for your feedback</div>
-
-<div id="feedback-submit-notification" style="
-display: none;
-margin-top: 10px;
-color: var(--md-typeset-a-color);
-font-weight: 500;
-font-size: 14px;
-">Thank you! The feedback has been submitted.</div>
-
-  <div id="feedback-form" style="
-    display: none;
-    margin-top: 12px;
-    text-align: left;
-    position: relative;
-    border: 0.05rem solid var(--md-default-fg-color--lightest);
-    padding: 12px;
-    border-radius: 6px;
-    background: var(--md-default-bg-color);
-    width: 100%;
-    box-sizing: border-box;
-    transition: all 0.2s ease-out;
-  ">
-<button id="close-feedback" title="Close" style="
-position: absolute;
-top: -10px;
-right: -10px;
-background: var(--md-default-bg-color);
-border: 0.05rem solid var(--md-default-fg-color--lightest);
-border-radius: 50%;
-width: 24px;
-height: 24px;
-font-size: 18px;
-font-weight: bold;
-cursor: pointer;
-color: var(--md-default-fg-color--light);
-line-height: 1;
-display: flex;
-align-items: center;
-justify-content: center;
-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-">
-×
-</button>
-
-    <textarea id="feedback-text" rows="3" placeholder="Write your feedback here..." style="
-      width: 100%;
-      font-size: 14px;
-      padding: 6px;
-      margin-bottom: 12px;
-      resize: vertical;
-      font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-      color: var(--md-default-fg-color);
-      background: var(--md-default-bg-color);
-      border: 0.05rem solid var(--md-default-fg-color--lightest);
-    "></textarea>
-
-    <label for="feedback-email" style="
-      display: block;
-      font-size: 15px;
-      margin-bottom: 4px;
-    ">
-      Email <span style="color: var(--md-default-fg-color--light);">(optional)</span>
-    </label>
-
-    <input type="email" id="feedback-email" placeholder="you@example.com" style="
-      width: 100%;
-      font-size: 14px;
-      padding: 6px;
-      margin-bottom: 12px;
-      font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-      color: var(--md-default-fg-color);
-      background: var(--md-default-bg-color);
-      border: 0.05rem solid var(--md-default-fg-color--lightest);
-    " />
-
-<button id="submit-feedback" style="
-  padding: 5px 10px;
-  font-size: 14px;
-  background-color: var(--md-typeset-a-color);
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-">
-  Send
-</button>
-
-    <div id="feedback-status" style="
-      margin-top: 8px;
-      font-size: 13px;
-    "></div>
-  </div>
-</div>
-
-<style>
-  /* Hover shadow like data-banner */
-  .rating-widget:hover,
-  #feedback-form:hover {
-    box-shadow:
-      0px 1px 10px 0px rgba(0, 0, 0, 0.12),
-      0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-      0px 2px 4px -1px rgba(0, 0, 0, 0.20);
-  }
-
-  /* Default star colors */
-  .rating-stars .star {
-    color: var(--md-default-fg-color);
-    transition: color 0.2s ease-out;
-  }
-
-  /* Active/hovered stars */
-  .rating-stars .star.active,
-  .rating-stars .star.hovered {
-    color: var(--md-typeset-a-color, #0E5FB5);
-  }
-
-  /* Rate this page text color matches stars in light mode */
-  .rating-widget .rating-title {
-    color: var(--md-typeset-a-color, #0E5FB5);
-  }
-
-  /* Dark mode */
-  @media (prefers-color-scheme: dark) {
-    /* Rate this page text */
-    .rating-widget .rating-title {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-    /* Stars active and hovered fill color */
-    .rating-stars .star.active,
-    .rating-stars .star.hovered {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-
-    /* Feedback form text */
-    #feedback-form,
-    #feedback-form textarea,
-    #feedback-form input,
-    #feedback-form label,
-    #feedback-form button,
-    #feedback-form div {
-      color: var(--md-typeset-a-color, #93C7FF);
-      border-color: #666;
-      background: var(--md-default-bg-color);
-    }
-
-    /* Close button color */
-    #close-feedback {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-  }
-</style>
-                    </div>
-                    <div class="md-sidebar__inner">
-                      <div data-banner="data-banner" class="edit-contrib-banner">
+  
+  <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+    <div class="md-sidebar__scrollwrap">
+      
+      <div class="md-sidebar__inner">
+        <div data-banner="data-banner" class="edit-contrib-banner">
   <div class="banner-content">
     <!-- Edit link centered -->
-    <a href="https://github.com/percona/pmm/edit/main/documentation/docs/quickstart/quickstart.md" title="Edit this page on GitHub" class="edit-page-link">
+    <a href="https://github.com/postgres1st/pfm/edit/main/documentation/docs/quickstart/quickstart.md" title="Edit this page on GitHub" class="edit-page-link">
       <span class="edit-page-icon">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
@@ -11456,7 +10825,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     <div class="banner-divider"></div>
 
     <!-- Contributing Guide below, smaller -->
-    <a href="https://github.com/percona/pmm/blob/main/documentation/docs-contributing.md"
+    <a href="https://github.com/postgres1st/pfm/blob/main/documentation/docs-contributing.md"
        title="Contributing guide"
        class="contrib-link"
        target="_blank"
@@ -11466,20 +10835,18 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   </div>
 </div>
 
-                    </div>
-                    <div class="md-sidebar__inner">
-                      <div data-banner="data-banner">
-    <p><svg style="display:block;margin:-1em 0 0.75em" width="78" height="69" viewBox="0 0 78 69" fill="none" xmlns="http://www.w3.org/2000/svg"><path style="fill:var(--md-typeset-color)" d="M56.7281 30.7666C62.6528 26.8938 64.5914 18.9942 61.0059 12.7854C59.2094 9.67113 56.3053 7.44082 52.8311 6.50951C49.6122 5.64535 46.2502 5.99872 43.2912 7.49366L39.251 0.5L30.8648 15.0245L11.4811 48.5937H67.021L56.7281 30.7666ZM51.881 10.0674C54.4064 10.7401 56.5079 12.3616 57.8168 14.6194C60.3895 19.0701 59.053 24.7153 54.8808 27.5665L45.1362 10.6905C47.2355 9.68104 49.6034 9.46087 51.881 10.0674ZM39.251 7.87125L60.6339 44.907H48.1228L32.9927 18.7102L39.2499 7.87235L39.251 7.87125ZM17.8682 44.907L30.8637 22.4035L43.8592 44.907H17.8682Z"></path><path style="fill:var(--md-typeset-color)" d="M4.981 64.943H3.157V68.207H.756V57.323H5.217C7.822 57.323 9.397 58.861 9.397 61.086V61.116C9.397 63.635 7.433 64.94 4.984 64.94L4.981 64.943V64.943ZM6.961 61.134C6.961 60.061 6.213 59.485 5.011 59.485H3.154V62.812H5.056C6.258 62.812 6.958 62.096 6.958 61.163V61.134H6.961ZM10.738 68.208V57.323H18.973V59.455H13.124V61.664H18.27V63.796H13.124V66.082H19.051V68.214H10.738V68.208 68.208ZM27.557 68.208 25.218 64.726H23.332V68.208H20.931V57.323H25.921C28.496 57.323 30.039 58.677 30.039 60.915V60.945C30.039 62.702 29.088 63.807 27.7 64.32L30.367 68.207H27.556L27.557 68.208ZM27.605 61.041C27.605 60.016 26.887 59.485 25.719 59.485H23.333V62.61H25.767C26.936 62.61 27.605 61.987 27.605 61.071V61.042 61.041ZM36.922 68.499C33.668 68.499 31.249 65.994 31.249 62.825V62.795C31.249 59.659 33.619 57.091 37.019 57.091 39.105 57.091 40.356 57.783 41.383 58.792L39.834 60.571C38.98 59.798 38.113 59.327 37.004 59.327 35.141 59.327 33.795 60.871 33.795 62.762V62.793C33.795 64.684 35.107 66.257 37.004 66.257 38.268 66.257 39.043 65.753 39.913 64.964L41.462 66.524C40.322 67.738 39.059 68.493 36.925 68.493L36.922 68.499ZM47.885 68.499C44.47 68.499 42.021 65.962 42.021 62.825V62.795C42.021 59.659 44.503 57.091 47.915 57.091 51.327 57.091 53.779 59.628 53.779 62.765V62.795C53.779 65.931 51.297 68.499 47.885 68.499ZM51.237 62.795C51.237 60.904 49.846 59.331 47.885 59.331 45.925 59.331 44.567 60.874 44.567 62.766V62.796C44.567 64.688 45.959 66.261 47.919 66.261 49.879 66.261 51.237 64.717 51.237 62.826V62.795 62.795ZM67.001 68.217 72.374 57.091 77.746 68.218H75.052L72.374 62.681 69.705 68.218H67.001V68.217ZM66.007 57.327V68.5L57.813 61.884V68.199H55.264V57.091L63.458 63.681V57.327H66.007Z"></path></svg></p>
-    <p>Get free database assistance or contact our experts for personalized support.</p>
+      </div>
+      <div class="md-sidebar__inner">
+        <div data-banner="data-banner">
+  <p>Stuck, or something looks wrong?</p>
 
-    <div class="actions">
-
-    <a href="https://docs.percona.com/percona-monitoring-and-management/3/get-help.html" style="color: var(--md-typeset-a-color);">Get help from Percona</a>
-    </div>
-    </div>
-                    </div>
-                    <div class="md-sidebar__inner">
-                      
+  <div class="actions">
+    <a href="../get-help.html" style="color: var(--md-typeset-a-color);">Get help</a>
+  </div>
+</div>
+      </div>
+      <div class="md-sidebar__inner">
+        
 
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
@@ -11506,10 +10873,10 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-pfmm" class="md-nav__link">
+  <a href="#install-pgf-watchtower" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install PFMM
+        Install PGF WatchTower
       
     </span>
   </a>
@@ -11552,11 +10919,11 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     </ul>
   
 </nav>
-                    </div>
-                  </div>
-                </div>
-              
-            
+      </div>
+    </div>
+  </div>
+
+
           
             <div class="md-content" data-md-component="content">
               
@@ -11570,16 +10937,16 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     
       
     
-    <a href="https://github.com/percona/pmm/raw/main/documentation/docs/quickstart/quickstart.md" title="View source of this page" class="md-content__button md-icon">
+    <a href="https://github.com/postgres1st/pfm/raw/main/documentation/docs/quickstart/quickstart.md" title="View source of this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 18c.56 0 1 .44 1 1s-.44 1-1 1-1-.44-1-1 .44-1 1-1m0-3c-2.73 0-5.06 1.66-6 4 .94 2.34 3.27 4 6 4s5.06-1.66 6-4c-.94-2.34-3.27-4-6-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5 2.5 2.5 0 0 1 2.5-2.5 2.5 2.5 0 0 1 2.5 2.5 2.5 2.5 0 0 1-2.5 2.5M9.27 20H6V4h7v5h5v4.07c.7.08 1.36.25 2 .49V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5a8.2 8.2 0 0 1-1.23-2"/></svg>
     </a>
   
 
 
-<h1 id="get-started-with-pfmm">Get started with PFMM<a class="headerlink" href="#get-started-with-pfmm" title="Permanent link">&para;</a></h1>
-<p>To get up and running with Postgres1st (PFMM) in no time, install PFMM on Bare Metal/Virtual using the Easy-install script for Docker.</p>
-<p>This is the simplest and most efficient way to install PFMM with Docker.</p>
+<h1 id="get-started-with-pgf-watchtower">Get started with PGF WatchTower<a class="headerlink" href="#get-started-with-pgf-watchtower" title="Permanent link">&para;</a></h1>
+<p>To get up and running with Postgres1st (PGF WatchTower) in no time, install PGF WatchTower on Bare Metal/Virtual using the Easy-install script for Docker.</p>
+<p>This is the simplest and most efficient way to install PGF WatchTower with Docker.</p>
 <details class="info">
 <summary>Alternative installation options</summary>
 <p>For alternative setups or if you&rsquo;re not using Docker, explore the additional installation options detailed in the <strong>Setting up</strong> chapter:</p>
@@ -11588,24 +10955,24 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 <li><a href="../install-pmm/install-pmm-server/deployment-options/docker/index.html">Deploy based on a Docker image</a></li>
 <li><a href="../install-pmm/install-pmm-server/deployment-options/virtual/index.html">Deploy on Virtual Appliance</a></li>
 <li><a href="../install-pmm/install-pmm-server/deployment-options/helm/index.html">Deploy on Kubernetes/OpenShift via Helm</a></li>
-<li><a href="../install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.html">Run a PFMM instance hosted at AWS Marketplace</a></li>
+<li><a href="../install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.html">Run a PGF WatchTower instance hosted at AWS Marketplace</a></li>
 </ul>
 </details>
 <h4 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h4>
-<p>Before you start installing PFMM, verify that your system meets the compatibility requirements:</p>
+<p>Before you start installing PGF WatchTower, verify that your system meets the compatibility requirements:</p>
 <details class="info">
 <summary>Verify system compatibility</summary>
 <ul>
 <li>System: Linux-compatible system with <code>sudo</code> privileges or <code>root</code> access</li>
-<li>Network: Internet connectivity to download PFMM components</li>
+<li>Network: Internet connectivity to download PGF WatchTower components</li>
 <li>Ports: Your system&rsquo;s firewall should allow TCP traffic on port <code>443</code></li>
 </ul>
 </details>
-<h2 id="install-pfmm">Install PFMM<a class="headerlink" href="#install-pfmm" title="Permanent link">&para;</a></h2>
+<h2 id="install-pgf-watchtower">Install PGF WatchTower<a class="headerlink" href="#install-pgf-watchtower" title="Permanent link">&para;</a></h2>
 <p class="power-number">The Easy-install script only runs on Linux-compatible systems. To use it, run the command with <code>sudo</code> privileges or as <code>root</code>:</p>
 <ol>
 <li>
-<p>Download and install PFMM using <code>cURL</code> or <code>wget</code>:</p>
+<p>Download and install PGF WatchTower using <code>cURL</code> or <code>wget</code>:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">cURL</label><label for="__tabbed_1_2">wget</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -11620,7 +10987,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 </div>
 </li>
 <li>
-<p>After the installation is complete, log into PFMM with the default <code>admin:admin</code> credentials.</p>
+<p>After the installation is complete, log into PGF WatchTower with the default <code>admin:admin</code> credentials.</p>
 </li>
 </ol>
 <details class="info">
@@ -11628,12 +10995,12 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 <p>This script does the following:</p>
 <ul>
 <li>Installs Docker if it is not installed on your system.</li>
-<li>Stops and renames any currently running PFMM Docker container from <code>pmm-server</code> to <code>pmm-server-{timestamp}</code>. This old <code>pmm-server</code> container is not a recoverable backup.</li>
-<li>Pulls and runs the latest PFMM Docker image.</li>
+<li>Stops and renames any currently running PGF WatchTower Docker container from <code>pmm-server</code> to <code>pmm-server-{timestamp}</code>. This old <code>pmm-server</code> container is not a recoverable backup.</li>
+<li>Pulls and runs the latest PGF WatchTower Docker image.</li>
 </ul>
 </details>
 <h2 id="connect-database">Connect database<a class="headerlink" href="#connect-database" title="Permanent link">&para;</a></h2>
-<p>Once PFMM is set up, choose the database or the application that you want it to monitor:</p>
+<p>Once PGF WatchTower is set up, choose the database or the application that you want it to monitor:</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.56 14.723a.5.5 0 0 0-.057-.12q-.21-.395-1.007-.231c-1.654.34-2.294.13-2.526-.02 1.342-2.048 2.445-4.522 3.041-6.83.272-1.05.798-3.523.122-4.73a1.6 1.6 0 0 0-.15-.236C21.693.91 19.8.025 17.51.001c-1.495-.016-2.77.346-3.116.479a10 10 0 0 0-.516-.082 8 8 0 0 0-1.312-.127c-1.182-.019-2.203.264-3.05.84C8.66.79 4.729-.534 2.296 1.19.935 2.153.309 3.873.43 6.304c.041.818.507 3.334 1.243 5.744q.69 2.26 1.433 3.582.83 1.493 1.714 1.79c.448.148 1.133.143 1.858-.729a56 56 0 0 1 1.945-2.206c.435.235.906.362 1.39.377v.004a11 11 0 0 0-.247.305c-.339.43-.41.52-1.5.745-.31.064-1.134.233-1.146.811a.6.6 0 0 0 .091.327c.227.423.922.61 1.015.633 1.335.333 2.505.092 3.372-.679-.017 2.231.077 4.418.345 5.088.221.553.762 1.904 2.47 1.904q.375.001.829-.094c1.782-.382 2.556-1.17 2.855-2.906.15-.87.402-2.875.539-4.101.017-.07.036-.12.057-.136 0 0 .07-.048.427.03l.044.007.254.022.015.001c.847.039 1.911-.142 2.531-.43.644-.3 1.806-1.033 1.595-1.67M2.37 11.876c-.744-2.435-1.178-4.885-1.212-5.571-.109-2.172.417-3.683 1.562-4.493 1.837-1.299 4.84-.54 6.108-.13l-.01.01C6.795 3.734 6.843 7.226 6.85 7.44c0 .082.006.199.016.36.034.586.1 1.68-.074 2.918-.16 1.15.194 2.276.973 3.089q.12.126.252.237c-.347.371-1.1 1.193-1.903 2.158-.568.682-.96.551-1.088.508-.392-.13-.813-.587-1.239-1.322-.48-.839-.963-2.032-1.415-3.512m6.007 5.088a1.6 1.6 0 0 1-.432-.178c.089-.039.237-.09.483-.14 1.284-.265 1.482-.451 1.915-1 .099-.127.211-.27.367-.443a.4.4 0 0 0 .074-.13c.17-.151.272-.11.436-.042.156.065.308.26.37.475.03.102.062.295-.045.445-.904 1.266-2.222 1.25-3.168 1.013m2.094-3.988-.052.14c-.133.357-.257.689-.334 1.004-.667-.002-1.317-.288-1.81-.803-.628-.655-.913-1.566-.783-2.5.183-1.308.116-2.447.08-3.059l-.013-.22c.296-.262 1.666-.996 2.643-.772.446.102.718.406.83.928.585 2.704.078 3.83-.33 4.736a9 9 0 0 0-.23.546m7.364 4.572q-.024.266-.062.596l-.146.438a.4.4 0 0 0-.018.108c-.006.475-.054.649-.115.87-.064.229-.135.488-.18 1.057-.11 1.414-.878 2.227-2.417 2.556-1.515.325-1.784-.496-2.02-1.221a7 7 0 0 0-.078-.227c-.215-.586-.19-1.412-.157-2.555.016-.561-.025-1.901-.33-2.646q.006-.44.019-.892a.4.4 0 0 0-.016-.113 2 2 0 0 0-.044-.208c-.122-.428-.42-.786-.78-.935-.142-.059-.403-.167-.717-.087.067-.276.183-.587.309-.925l.053-.142c.06-.16.134-.325.213-.5.426-.948 1.01-2.246.376-5.178-.237-1.098-1.03-1.634-2.232-1.51-.72.075-1.38.366-1.709.532a6 6 0 0 0-.196.104c.092-1.106.439-3.174 1.736-4.482a4 4 0 0 1 .303-.276.35.35 0 0 0 .145-.064c.752-.57 1.695-.85 2.802-.833q.616.01 1.174.081c1.94.355 3.244 1.447 4.036 2.383.814.962 1.255 1.931 1.431 2.454-1.323-.134-2.223.127-2.68.78-.992 1.418.544 4.172 1.282 5.496.135.242.252.452.289.54.24.583.551.972.778 1.256.07.087.138.171.189.245-.4.116-1.12.383-1.055 1.717-.013.156-.043.447-.084.815-.046.208-.07.46-.1.766m.89-1.621c-.04-.832.27-.919.597-1.01l.135-.041a1 1 0 0 0 .134.103c.57.376 1.583.421 3.007.134-.202.177-.519.4-.953.601-.41.19-1.096.333-1.747.364-.72.034-1.086-.08-1.173-.151m.57-9.271c-.006.35-.054.669-.105 1.001-.055.358-.112.728-.127 1.177-.014.436.04.89.093 1.33.107.887.216 1.8-.207 2.701a4 4 0 0 1-.188-.385 8 8 0 0 0-.325-.617c-.616-1.104-2.057-3.69-1.32-4.744.38-.543 1.342-.566 2.179-.463m.228 7.013-.085-.107-.035-.044c.726-1.2.584-2.387.457-3.439-.052-.432-.1-.84-.088-1.222.013-.407.066-.755.118-1.092.064-.415.13-.844.111-1.35a.6.6 0 0 0 .012-.19c-.046-.486-.6-1.938-1.73-3.253a7.8 7.8 0 0 0-2.688-2.04A9.3 9.3 0 0 1 17.62.746c2.052.046 3.675.814 4.824 2.283a1 1 0 0 1 .067.1c.723 1.356-.276 6.275-2.987 10.54m-8.816-6.116c-.025.18-.31.423-.621.423a1 1 0 0 1-.081-.006.8.8 0 0 1-.506-.315c-.046-.06-.12-.178-.106-.285a.22.22 0 0 1 .093-.149c.118-.089.352-.122.61-.086.316.044.642.193.61.418m7.93-.411c.011.08-.049.2-.153.31a.72.72 0 0 1-.408.223 1 1 0 0 1-.075.005c-.293 0-.541-.234-.56-.371-.024-.177.264-.31.56-.352.298-.042.612.009.636.185"/></svg></span> PostgreSQL</label><label for="__tabbed_2_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.83 13.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4m-9.41 5.17L5.41 4 4 5.41l5.17 5.17z"/></svg></span> HAProxy</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -11645,7 +11012,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 </code></pre></div>
 </li>
 <li>
-<p>Ensure that PFMM can log in locally as this user to the PostgreSQL instance. To enable this, edit the <code>pg_hba.conf</code> file. If  not already enabled by an existing rule, add:</p>
+<p>Ensure that PGF WatchTower can log in locally as this user to the PostgreSQL instance. To enable this, edit the <code>pg_hba.conf</code> file. If  not already enabled by an existing rule, add:</p>
 <div class="highlight"><pre><span></span><code>local   all             pmm                                md5
 # TYPE  DATABASE        USER        ADDRESS                METHOD
 </code></pre></div>
@@ -11720,12 +11087,12 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
 </li>
 <li>
 <p>Register PMM Client:</p>
-<div class="highlight"><pre><span></span><code>pmm-admin<span class="w"> </span>config<span class="w"> </span>--server-insecure-tls<span class="w"> </span>--server-url<span class="o">=</span>https://admin:admin@X.X.X.X:443
+<div class="highlight"><pre><span></span><code>pfw-admin<span class="w"> </span>config<span class="w"> </span>--server-insecure-tls<span class="w"> </span>--server-url<span class="o">=</span>https://admin:admin@X.X.X.X:443
 </code></pre></div>
 </li>
 <li>
 <p>Add the PostgreSQL database:</p>
-<div class="highlight"><pre><span></span><code>pmm-admin<span class="w"> </span>add<span class="w"> </span>postgresql<span class="w"> </span>--username<span class="o">=</span>pmm<span class="w"> </span>--password<span class="o">=</span>&lt;your_password&gt;
+<div class="highlight"><pre><span></span><code>pfw-admin<span class="w"> </span>add<span class="w"> </span>postgresql<span class="w"> </span>--username<span class="o">=</span>pmm<span class="w"> </span>--password<span class="o">=</span>&lt;your_password&gt;
 </code></pre></div>
 </li>
 </ol>
@@ -11735,7 +11102,7 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
 <p class="power-number">To connect an HAProxy service:</p>
 <ol>
 <li><a href="https://www.haproxy.com/blog/haproxy-exposes-a-prometheus-metrics-endpoint">Set up an HAproxy instance</a>. </li>
-<li>Add the instance to PFMM (default address is <a href="http://localhost:8404/metrics">http://localhost:8404/metrics</a>), and use the <code>haproxy</code> alias to enable HAProxy metrics monitoring.</li>
+<li>Add the instance to PGF WatchTower (default address is <a href="http://localhost:8404/metrics">http://localhost:8404/metrics</a>), and use the <code>haproxy</code> alias to enable HAProxy metrics monitoring.</li>
 <li>
 <p>To optimize server-side resources, install PMM Client via Package Manager on the database node: </p>
 <div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m18.5 10.57-.2.37c.26-.78.11-1.63.15-2.37l-.07-.02c-.07-1.85-1.67-3.82-3.09-4.48-1.23-.57-3.12-.67-3.99-.24.12-.11.6-.15.45-.23-1.37.13-1.06.47-2.11.74-.29.28.86-.22.23.16-.56.13-.82-.12-1.65.74.07.12.53-.35.15.12-.79-.09-2.48 1.8-2.84 2.42l.19.04c-.31.77-.72 1.26-.77 1.72-.08 1.14-.45 3.21.08 3.85l-.06.53.23.45-.12.01c.58 1.83.62.04 1.39 1.94-.11-.04-.23-.08-.39-.32-.02.19.24.69.54 1.08l-.12.14c.16.31.32.38.43.49-.63-.35.57 1.13.7 1.32l.1-.17c-.02.24.17.56.53 1.01l.3-.01c.13.24.58.68.85.7l-.18.24c.69.2.33.29 1.18.59l-.17-.3c.43.37.56.7 1.17.98.85.3.96.18 1.82.43-.73 0-1.59 0-2.17-.22-3.96-1.07-7.56-5.72-7.32-10.5-.06-.97.1-2.18-.06-2.42.22-.74.48-1.64 1.01-2.71-.04-.07.09.21.36-.24.16-.36.29-.75.5-1.1l.1-.03c.11-.61 1.43-1.55 1.85-2.02v.18c.86-.81 2.4-1.35 3.26-1.73-.23.25.51-.03 1.04-.06l-.49.28c.63-.16.6.07 1.25-.03-.23.03-.5.1-.46.16.72.08.84-.22 1.51 0l-.05-.2c.94.34 1.13.28 2.14.82.36.01.4-.22.93 0 .1.16-.02.19.64.59.07-.03-.13-.22-.27-.37 1.3.71 2.75 2.22 3.18 3.84-.41-.74-.04.39-.18.33.18.49.33 1 .43 1.53-.12-.43-.39-1.48-.86-2.15-.03.43-.6-.3-.29.66.22.34.05-.35.34.25 0 .29.11.58.18.95-.1-.02-.22-.41-.3-.31.1.5.27.72.33.76-.03.08-.12-.08-.12.24.04.74.21.43.29.46-.09.37-.41.79-.25 1.42l-.2-.56c-.05.53.11.63-.13 1.28.18-.6.16-1.1-.01-.85.09.82-.65 1.45-.58 1.98l-.21-.29c-.57.83-.01.45-.4 1.06.14-.23-.07-.08.11-.36-.12.01-.55.53-.94.83-1.54 1.23-3.39 1.4-5.15.73h-.01c.01-.04 0-.09-.12-.17-1.51-1.15-2.4-2.13-2.11-4.41.25-.17.31-1.12.84-1.45.32-.71 1.28-1.36 2.31-1.38 1.05-.06 1.94.56 2.39 1.14-.82-.75-2.14-.98-3.28-.43-1.15.53-1.84 1.8-1.76 3.07.06-.07.1-.02.12-.18-.03 2.47 2.66 4.28 4.6 3.37l.03.05c.78-.22.68-.39 1.19-.75-.04.09-.34.3-.16.3.25-.06 1.03-.79 1.42-1.13.17-.38-.1-.23.15-.69l.3-.15c.17-.48.35-.75.35-1.32"/></svg></span> Debian-based</label><label for="__tabbed_4_2"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.34 13.16c1.32 0 3.22-.27 3.22-1.84q.015-.18-.03-.36l-.78-3.4c-.18-.75-.34-1.09-1.66-1.75-1.02-.52-3.24-1.38-3.9-1.38-.61 0-.79.79-1.52.79-.7 0-1.22-.59-1.88-.59-.63 0-1.04.43-1.36 1.31 0 0-.88 2.5-1 2.86-.01.07-.02.13-.02.2 0 .97 3.82 4.15 8.93 4.15m3.43-1.19c.18.86.18.95.18 1.04 0 1.5-1.66 2.31-3.83 2.31-4.92 0-9.23-2.88-9.23-4.78 0-.27.06-.53.16-.77-1.77.08-4.05.4-4.05 2.42 0 3.32 7.84 7.39 14.05 7.39 4.76 0 5.95-2.15 5.95-3.85 0-1.34-1.15-2.86-3.23-3.76"/></svg></span> Red Hat-based</label></div>
@@ -11787,12 +11154,12 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
 </li>
 <li>
 <p>Register PMM Client:</p>
-<div class="highlight"><pre><span></span><code>pmm-admin<span class="w"> </span>config<span class="w"> </span>--server-insecure-tls<span class="w"> </span>--server-url<span class="o">=</span>https://admin:admin@X.X.X.X:443
+<div class="highlight"><pre><span></span><code>pfw-admin<span class="w"> </span>config<span class="w"> </span>--server-insecure-tls<span class="w"> </span>--server-url<span class="o">=</span>https://admin:admin@X.X.X.X:443
 </code></pre></div>
 </li>
 <li>
 <p>Run the command below, specifying the `listen-port`` as the port number where HAProxy is running. (This flag is mandatory.)</p>
-<div class="highlight"><pre><span></span><code>pmm-admin<span class="w"> </span>add<span class="w"> </span>haproxy<span class="w"> </span>--listen-port<span class="o">=</span><span class="m">8404</span>
+<div class="highlight"><pre><span></span><code>pfw-admin<span class="w"> </span>add<span class="w"> </span>haproxy<span class="w"> </span>--listen-port<span class="o">=</span><span class="m">8404</span>
 </code></pre></div>
 </li>
 </ol>
@@ -11801,12 +11168,12 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
 </div>
 </div>
 <h2 id="check-database-monitoring-results">Check database monitoring results<a class="headerlink" href="#check-database-monitoring-results" title="Permanent link">&para;</a></h2>
-<p>After installing PFMM and connecting the database, go to the database&rsquo;s Instance Summary dashboard. This shows essential information about your database performance and an overview of your environment.</p>
-<p>For more information, see <a href="../use/dashboards-panels/index.html">PFMM Dashboards</a>.</p>
+<p>After installing PGF WatchTower and connecting the database, go to the database&rsquo;s Instance Summary dashboard. This shows essential information about your database performance and an overview of your environment.</p>
+<p>For more information, see <a href="../use/dashboards-panels/index.html">PGF WatchTower Dashboards</a>.</p>
 <h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../configure-pmm/configure.html">Configure PFMM via the interface</a></li>
-<li><a href="../admin/manage-users/index.html">Manage users in PFMM</a></li>
+<li><a href="../configure-pmm/configure.html">Configure PGF WatchTower via the interface</a></li>
+<li><a href="../admin/manage-users/index.html">Manage users in PGF WatchTower</a></li>
 <li><a href="../admin/roles/index.html">Set up roles and permissions</a></li>
 </ul>
 
@@ -11831,7 +11198,7 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 22, 2026 10:58:56 UTC">July 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 5, 2026 23:30:40 UTC">September 5, 2026</span>
   </span>
 
     
@@ -11849,8 +11216,6 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
     
   </aside>
 
-
-  
 
 
 
@@ -11879,9 +11244,7 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
     <div class="md-copyright__highlight">
-      <a href="https://percona.com/about" target='_blank'>Percona LLC</a> and its affiliates &copy; 2026 —
-      <a href="#" onclick="Osano.cm.showDrawer('osano-cm-dom-info-dialog-open')">Cookie Preferences</a>
-
+      <a href="https://postgresfirst.com" target="_blank" rel="noopener">Postgres1st</a> &copy; 2026
     </div>
   
     Made with
@@ -11907,7 +11270,6 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["search.highlight", "navigation.top", "content.tabs.link", "content.code.copy", "content.images.zoom", "navigation.tracking", "content.action.view"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-
       <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../js/extra.js"></script>
@@ -11916,17 +11278,6 @@ apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </s
       
         <script src="../js/version-select.js"></script>
       
-        <script src="../js/rating.js"></script>
-      
-        <script src="../js/kapa.js"></script>
-      
     
-<script>
-  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-  posthog.init('phc_7unoI9J6Fm0SMrfDp35xNOpCRTkOAibbffQwdGWbHnL',{api_host:'https://eu.posthog.com'})
-</script>
-
-<script src="https://cmp.osano.com/Azqe5vTyLOSbN3OuT/49ad85b5-0418-4794-ab81-7599dddd534c/osano.js"></script>
-
   </body>
 </html>

@@ -10,7 +10,7 @@
         <meta name="description" content="Documentation">
       
       
-        <meta name="author" content="Percona LLC">
+        <meta name="author" content="Postgres1st">
       
       
       
@@ -19,19 +19,19 @@
         
       
       
-      <link rel="icon" href="/percona-monitoring-and-management/3/assets/pmm-fav.svg">
+      <link rel="icon" href="/assets/pfw-fav.svg">
       <meta name="generator" content="mkdocs-ProperDocs 1.6.7, mkdocs-material-9.7.7">
     
     
       
-        <title>Postgres1st</title>
+        <title>PGF WatchTower</title>
       
     
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="/assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="/percona-monitoring-and-management/3/assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="/assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -54,44 +54,27 @@
     
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css">
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/nocopy.css">
+      <link rel="stylesheet" href="/css/nocopy.css">
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/design.css">
+      <link rel="stylesheet" href="/css/design.css">
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/osano.css">
+      <link rel="stylesheet" href="/css/pmm.css">
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/pmm.css">
+      <link rel="stylesheet" href="/css/extra.css">
     
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/extra.css">
-    
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/rating.css">
-    
-      <link rel="stylesheet" href="/percona-monitoring-and-management/3/css/kapa.css">
-    
-    <script>__md_scope=new URL("/percona-monitoring-and-management/3",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-  
-
-
-  
-  
-
-<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-J4J70BNH0G"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-J4J70BNH0G",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-J4J70BNH0G",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
-  
-    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
-  
 
     
     
 
-                 
-                 
-                 <meta property="og:type" content="website" />
-                 <meta property="og:title" content="Postgres1st" />
-                 <meta property="og:image" content="https://docs.percona.com/percona-monitoring-and-management/images/PMM.png">
-                 <meta property="og:url" content="https://docs.percona.com/percona-monitoring-and-management/">
-              
+  
+  
+  
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="PGF WatchTower" />
+
   </head>
   
   
@@ -113,38 +96,6 @@
     </div>
     <div data-md-component="announce">
       
-        <aside class="md-banner">
-          <div class="md-banner__inner md-grid md-typeset">
-            
-            
-<div class="md-banner" style="text-align: center;">
-  Where the open source database community meets:
-  Secure your spot for Percona Live.
-
-  <a
-    class="breakdance-link button-atom button-atom--primary bde-button__button"
-    href="https://perconalive.com/2026-amsterdam/registration/"
-    target="_blank"
-    data-type="url"
-    style="
-      padding: 5px 20px;
-      display: inline-block;
-      margin-left: 10px;
-      background-color: #653df4;
-      border-radius: 999px;
-      text-decoration: none;
-    "
-  >
-    <span class="button-atom__text" style="font-size: 16px; color: #ffffff;">
-      Register
-    </span>
-  </a>
-</div>
-
-          </div>
-          
-        </aside>
-      
     </div>
     
       <div data-md-color-scheme="default" data-md-component="outdated" hidden>
@@ -159,40 +110,21 @@
 
 
 <!-- Header -->
-<header class="md-header md-header--shadow" data-md-component="header">
-
-  <!-- Super Nav -->
-  <div class="superNav">
-    <div class="md-header__inner md-grid">
-      <a href="https://docs.percona.com/pmm" title="Percona Monitoring and Management documentation Home page">
-        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <mask id="a" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-            <path d="M0 0h24v24H0z"/>
-          </mask>
-          <g mask="url(#a)">
-            <path d="m7.825 13 5.6 5.6L12 20l-8-8 8-8 1.425 1.4-5.6 5.6H20v2H7.825Z"/>
-          </g>
-        </svg>
-        <span>PERCONA MONITORING AND MANAGEMENT DOCUMENTATION</span>
-      </a>
-    </div>
-  </div>
-
-  <nav
+<header class="md-header md-header--shadow" data-md-component="header"><nav
     class="md-header__inner md-grid"
     aria-label="Header"
   >
 
     <!-- Link to home -->
     <a
-      href="/percona-monitoring-and-management/3/index.html"
-      title="Postgres1st"
+      href="/index.html"
+      title="PGF WatchTower"
       class="md-header__button md-logo"
-      aria-label="Postgres1st"
+      aria-label="PGF WatchTower"
       data-md-component="logo"
     >
       
-  <img src="/percona-monitoring-and-management/3/assets/pmm-mark.svg" alt="logo">
+  <img src="/assets/pfw-logo.svg" alt="logo">
 
     </a>
 
@@ -205,9 +137,9 @@
     <!-- Header title -->
     <div class="md-header__title">
       <div class="md-header__ellipsis">
-        <a href="/percona-monitoring-and-management/3/index.html" class="md-header__topic">
+        <a href="/index.html" class="md-header__topic">
           <span class="md-ellipsis">
-            Postgres1st
+            PGF WatchTower
           </span>
         </a>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -312,13 +244,13 @@
     <!-- Repository information -->
     
       <div class="md-header__source">
-        <a href="https://github.com/percona/pmm/" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/postgres1st/pfm/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    percona/pmm
+    postgres1st/pfm
   </div>
 </a>
       </div>
@@ -341,33 +273,33 @@
       <main class="md-main" data-md-component="main">
         <div class="md-main__inner md-grid">
           
-              
-                
-                <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      
+
+  
+  <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+    <div class="md-sidebar__scrollwrap">
+      <div class="md-sidebar__inner">
+        
 
 
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/percona-monitoring-and-management/3/index.html" title="Postgres1st" class="md-nav__button md-logo" aria-label="Postgres1st" data-md-component="logo">
+    <a href="/index.html" title="PGF WatchTower" class="md-nav__button md-logo" aria-label="PGF WatchTower" data-md-component="logo">
       
-  <img src="/percona-monitoring-and-management/3/assets/pmm-mark.svg" alt="logo">
+  <img src="/assets/pfw-logo.svg" alt="logo">
 
     </a>
-    Postgres1st
+    PGF WatchTower
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/percona/pmm/" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/postgres1st/pfm/" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
   <div class="md-source__repository">
-    percona/pmm
+    postgres1st/pfm
   </div>
 </a>
     </div>
@@ -381,7 +313,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/index.html" class="md-nav__link">
+      <a href="/index.html" class="md-nav__link">
         
   
   
@@ -408,14 +340,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/get-help.html" class="md-nav__link">
+      <a href="/get-help.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Get help from Percona
+    Get help
   
 
     
@@ -482,14 +414,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/discover-pmm/why-pmm.html" class="md-nav__link">
+      <a href="/discover-pmm/why-pmm.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Why PFMM?
+    Why PGF WatchTower?
   
 
     
@@ -510,7 +442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/discover-pmm/features.html" class="md-nav__link">
+      <a href="/discover-pmm/features.html" class="md-nav__link">
         
   
   
@@ -545,7 +477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/quickstart/quickstart.html" class="md-nav__link">
+      <a href="/quickstart/quickstart.html" class="md-nav__link">
         
   
   
@@ -619,14 +551,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/index.html" class="md-nav__link">
+      <a href="/install-pmm/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM installation overview
+    PGF WatchTower installation overview
   
 
     
@@ -665,7 +597,7 @@
   <span class="md-ellipsis">
     
   
-    Plan your PFMM installation
+    Plan your PGF WatchTower installation
   
 
     
@@ -681,7 +613,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Plan your PFMM installation
+    Plan your PGF WatchTower installation
   
 
           </label>
@@ -694,14 +626,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/plan-pmm-installation/choose-deployment.html" class="md-nav__link">
+      <a href="/install-pmm/plan-pmm-installation/choose-deployment.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Choose a PFMM deployment strategy
+    Choose a PGF WatchTower deployment strategy
   
 
     
@@ -722,7 +654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/plan-pmm-installation/hardware_and_system.html" class="md-nav__link">
+      <a href="/install-pmm/plan-pmm-installation/hardware_and_system.html" class="md-nav__link">
         
   
   
@@ -750,7 +682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/plan-pmm-installation/network_and_firewall.html" class="md-nav__link">
+      <a href="/install-pmm/plan-pmm-installation/network_and_firewall.html" class="md-nav__link">
         
   
   
@@ -833,7 +765,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/index.html" class="md-nav__link">
         
   
   
@@ -861,7 +793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/prerequisites.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/prerequisites.html" class="md-nav__link">
         
   
   
@@ -983,7 +915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/index.html" class="md-nav__link">
         
   
   
@@ -1011,7 +943,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/easy-install.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/easy-install.html" class="md-nav__link">
         
   
   
@@ -1086,7 +1018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/run_with_vol.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/run_with_vol.html" class="md-nav__link">
         
   
   
@@ -1114,7 +1046,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/run_with_host_dir.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/run_with_host_dir.html" class="md-nav__link">
         
   
   
@@ -1197,7 +1129,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/env_var.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/env_var.html" class="md-nav__link">
         
   
   
@@ -1225,7 +1157,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/preview_env_var.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/preview_env_var.html" class="md-nav__link">
         
   
   
@@ -1253,7 +1185,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/isolated_hosts.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/isolated_hosts.html" class="md-nav__link">
         
   
   
@@ -1336,7 +1268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/backup_container.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/backup_container.html" class="md-nav__link">
         
   
   
@@ -1364,7 +1296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/restore_container.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/restore_container.html" class="md-nav__link">
         
   
   
@@ -1392,7 +1324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/remove_container.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/remove_container.html" class="md-nav__link">
         
   
   
@@ -1420,7 +1352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/docker/upgrade_container.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/docker/upgrade_container.html" class="md-nav__link">
         
   
   
@@ -1511,7 +1443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/podman/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/podman/index.html" class="md-nav__link">
         
   
   
@@ -1586,7 +1518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/podman/backup_container_podman.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/podman/backup_container_podman.html" class="md-nav__link">
         
   
   
@@ -1614,7 +1546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/podman/restore_container_podman.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/podman/restore_container_podman.html" class="md-nav__link">
         
   
   
@@ -1642,7 +1574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/podman/remove_container_podman.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/podman/remove_container_podman.html" class="md-nav__link">
         
   
   
@@ -1780,7 +1712,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/index.html" class="md-nav__link">
         
   
   
@@ -1808,7 +1740,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/download_ova.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/download_ova.html" class="md-nav__link">
         
   
   
@@ -1836,7 +1768,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/virtualbox.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/virtualbox.html" class="md-nav__link">
         
   
   
@@ -1919,7 +1851,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/aws/plan_aws.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/aws/plan_aws.html" class="md-nav__link">
         
   
   
@@ -1947,7 +1879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/aws/deploy_aws.html" class="md-nav__link">
         
   
   
@@ -1975,7 +1907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/aws/configure_aws.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/aws/configure_aws.html" class="md-nav__link">
         
   
   
@@ -2058,7 +1990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/env_var.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/env_var.html" class="md-nav__link">
         
   
   
@@ -2086,14 +2018,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/login_UI.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/login_UI.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Access PFMM UI
+    Access PGF WatchTower UI
   
 
     
@@ -2114,7 +2046,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/remove_virtual_machine.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/remove_virtual_machine.html" class="md-nav__link">
         
   
   
@@ -2142,7 +2074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/ssh.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/ssh.html" class="md-nav__link">
         
   
   
@@ -2233,7 +2165,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/helm/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/helm/index.html" class="md-nav__link">
         
   
   
@@ -2308,7 +2240,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/helm/backup_container_helm.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/helm/backup_container_helm.html" class="md-nav__link">
         
   
   
@@ -2336,7 +2268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/helm/restore_container_helm.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/helm/restore_container_helm.html" class="md-nav__link">
         
   
   
@@ -2443,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/index.html" class="md-nav__link">
         
   
   
@@ -2471,7 +2403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/prerequisites.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/prerequisites.html" class="md-nav__link">
         
   
   
@@ -2546,7 +2478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/package_manager.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/package_manager.html" class="md-nav__link">
         
   
   
@@ -2574,7 +2506,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/binary_package.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/binary_package.html" class="md-nav__link">
         
   
   
@@ -2602,7 +2534,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/docker.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/docker.html" class="md-nav__link">
         
   
   
@@ -2630,7 +2562,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/kubernetes.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/kubernetes.html" class="md-nav__link">
         
   
   
@@ -2760,7 +2692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/index.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/index.html" class="md-nav__link">
         
   
   
@@ -2788,7 +2720,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/postgresql.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/postgresql.html" class="md-nav__link">
         
   
   
@@ -2871,7 +2803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/aws.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/aws.html" class="md-nav__link">
         
   
   
@@ -2899,7 +2831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/azure.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/azure.html" class="md-nav__link">
         
   
   
@@ -2927,7 +2859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/google.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/google.html" class="md-nav__link">
         
   
   
@@ -3010,7 +2942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/linux.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/linux.html" class="md-nav__link">
         
   
   
@@ -3038,7 +2970,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/remote.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/remote.html" class="md-nav__link">
         
   
   
@@ -3121,7 +3053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/haproxy.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/haproxy.html" class="md-nav__link">
         
   
   
@@ -3204,7 +3136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-client/connect-database/external.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-client/connect-database/external.html" class="md-nav__link">
         
   
   
@@ -3274,7 +3206,7 @@
   <span class="md-ellipsis">
     
   
-    Install PFMM in HA mode
+    Install PGF WatchTower in HA mode
   
 
     
@@ -3290,7 +3222,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Install PFMM in HA mode
+    Install PGF WatchTower in HA mode
   
 
           </label>
@@ -3303,7 +3235,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/HA.html" class="md-nav__link">
+      <a href="/install-pmm/HA.html" class="md-nav__link">
         
   
   
@@ -3331,7 +3263,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/HA-docker.html" class="md-nav__link">
+      <a href="/install-pmm/HA-docker.html" class="md-nav__link">
         
   
   
@@ -3359,7 +3291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/HA-kubernetes-single-instance.html" class="md-nav__link">
+      <a href="/install-pmm/HA-kubernetes-single-instance.html" class="md-nav__link">
         
   
   
@@ -3434,14 +3366,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/HA-clustered.html" class="md-nav__link">
+      <a href="/install-pmm/HA-clustered.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Understand PFMM HA Cluster
+    Understand PGF WatchTower HA Cluster
   
 
     
@@ -3462,14 +3394,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-HA-clustered.html" class="md-nav__link">
+      <a href="/install-pmm/install-HA-clustered.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Install PFMM HA Cluster
+    Install PGF WatchTower HA Cluster
   
 
     
@@ -3560,14 +3492,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/using-pmm.html" class="md-nav__link">
+      <a href="/use/using-pmm.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About using PFMM
+    About using PGF WatchTower
   
 
     
@@ -3606,7 +3538,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM user interface
+    PGF WatchTower user interface
   
 
     
@@ -3622,7 +3554,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM user interface
+    PGF WatchTower user interface
   
 
           </label>
@@ -3635,7 +3567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/ui/ui_components.html" class="md-nav__link">
+      <a href="/reference/ui/ui_components.html" class="md-nav__link">
         
   
   
@@ -3663,14 +3595,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/ui/log_in.html" class="md-nav__link">
+      <a href="/reference/ui/log_in.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Log into PFMM
+    Log into PGF WatchTower
   
 
     
@@ -3691,7 +3623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/ui/timezone.html" class="md-nav__link">
+      <a href="/reference/ui/timezone.html" class="md-nav__link">
         
   
   
@@ -3727,14 +3659,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboard-inventory.html" class="md-nav__link">
+      <a href="/use/dashboard-inventory.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM Inventory
+    PGF WatchTower Inventory
   
 
     
@@ -3755,7 +3687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/remove-services.html" class="md-nav__link">
+      <a href="/use/remove-services.html" class="md-nav__link">
         
   
   
@@ -3830,14 +3762,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/monitor.html" class="md-nav__link">
+      <a href="/use/monitor.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About monitoring in PFMM
+    About monitoring in PGF WatchTower
   
 
     
@@ -3876,7 +3808,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM metrics
+    PGF WatchTower metrics
   
 
     
@@ -3892,7 +3824,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM metrics
+    PGF WatchTower metrics
   
 
           </label>
@@ -3905,14 +3837,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/metrics/index.html" class="md-nav__link">
+      <a href="/use/metrics/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About PFMM metrics
+    About PGF WatchTower metrics
   
 
     
@@ -3933,7 +3865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/metrics/extend_metrics.html" class="md-nav__link">
+      <a href="/use/metrics/extend_metrics.html" class="md-nav__link">
         
   
   
@@ -4016,7 +3948,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/index.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/index.html" class="md-nav__link">
         
   
   
@@ -4091,7 +4023,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/manage-dashboards/create-folders.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/manage-dashboards/create-folders.html" class="md-nav__link">
         
   
   
@@ -4119,7 +4051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/manage-dashboards/manage-folders.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/manage-dashboards/manage-folders.html" class="md-nav__link">
         
   
   
@@ -4147,7 +4079,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/manage-dashboards/set-custom-dashboard.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/manage-dashboards/set-custom-dashboard.html" class="md-nav__link">
         
   
   
@@ -4183,7 +4115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/share-dashboards/share_dashboard.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/share-dashboards/share_dashboard.html" class="md-nav__link">
         
   
   
@@ -4211,7 +4143,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/dashboards-panels/annotate/annotate.html" class="md-nav__link">
+      <a href="/use/dashboards-panels/annotate/annotate.html" class="md-nav__link">
         
   
   
@@ -4302,7 +4234,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/qan/index.html" class="md-nav__link">
+      <a href="/use/qan/index.html" class="md-nav__link">
         
   
   
@@ -4377,7 +4309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/qan/QAN-stored-metrics.html" class="md-nav__link">
+      <a href="/use/qan/QAN-stored-metrics.html" class="md-nav__link">
         
   
   
@@ -4452,7 +4384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/qan/panels/overview.html" class="md-nav__link">
+      <a href="/use/qan/panels/overview.html" class="md-nav__link">
         
   
   
@@ -4480,7 +4412,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/qan/panels/filters.html" class="md-nav__link">
+      <a href="/use/qan/panels/filters.html" class="md-nav__link">
         
   
   
@@ -4508,7 +4440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/qan/panels/details.html" class="md-nav__link">
+      <a href="/use/qan/panels/details.html" class="md-nav__link">
         
   
   
@@ -4607,7 +4539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/advisors.html" class="md-nav__link">
+      <a href="/advisors/advisors.html" class="md-nav__link">
         
   
   
@@ -4635,7 +4567,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/develop-advisor-checks.html" class="md-nav__link">
+      <a href="/advisors/develop-advisor-checks.html" class="md-nav__link">
         
   
   
@@ -4710,7 +4642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/advisor-details.html" class="md-nav__link">
+      <a href="/advisors/advisor-details.html" class="md-nav__link">
         
   
   
@@ -4832,7 +4764,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-eol-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-eol-check.html" class="md-nav__link">
         
   
   
@@ -4860,7 +4792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-extension-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-extension-check.html" class="md-nav__link">
         
   
   
@@ -4888,7 +4820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-unsupported-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-unsupported-check.html" class="md-nav__link">
         
   
   
@@ -4916,7 +4848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-version-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-version-check.html" class="md-nav__link">
         
   
   
@@ -4999,7 +4931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/configuration-pg-check-fsync-enabled.html" class="md-nav__link">
+      <a href="/advisors/checks/configuration-pg-check-fsync-enabled.html" class="md-nav__link">
         
   
   
@@ -5027,7 +4959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/configuration-pg-log-checkpoints-disabled.html" class="md-nav__link">
+      <a href="/advisors/checks/configuration-pg-log-checkpoints-disabled.html" class="md-nav__link">
         
   
   
@@ -5055,7 +4987,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-logging-recommendations.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-logging-recommendations.html" class="md-nav__link">
         
   
   
@@ -5083,7 +5015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-wal-retention-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-wal-retention-check.html" class="md-nav__link">
         
   
   
@@ -5111,7 +5043,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/performance-pg-archiver-failing.html" class="md-nav__link">
+      <a href="/advisors/checks/performance-pg-archiver-failing.html" class="md-nav__link">
         
   
   
@@ -5194,7 +5126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/configuration-pg-high-max-connections.html" class="md-nav__link">
+      <a href="/advisors/checks/configuration-pg-high-max-connections.html" class="md-nav__link">
         
   
   
@@ -5277,7 +5209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/configuration-pg-log-autovacuum-disabled.html" class="md-nav__link">
+      <a href="/advisors/checks/configuration-pg-log-autovacuum-disabled.html" class="md-nav__link">
         
   
   
@@ -5305,7 +5237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-tables-per-table-vacuum-settings.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-tables-per-table-vacuum-settings.html" class="md-nav__link">
         
   
   
@@ -5333,7 +5265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-transaction-id-wraparound-is-approaching.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-transaction-id-wraparound-is-approaching.html" class="md-nav__link">
         
   
   
@@ -5361,7 +5293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-vacuum-sanity-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-vacuum-sanity-check.html" class="md-nav__link">
         
   
   
@@ -5499,7 +5431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/performance-pg-low-cache-hit-ratio.html" class="md-nav__link">
+      <a href="/advisors/checks/performance-pg-low-cache-hit-ratio.html" class="md-nav__link">
         
   
   
@@ -5527,7 +5459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/configuration-pg-settings-changed.html" class="md-nav__link">
+      <a href="/advisors/checks/configuration-pg-settings-changed.html" class="md-nav__link">
         
   
   
@@ -5555,7 +5487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-tmpfiles-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-tmpfiles-check.html" class="md-nav__link">
         
   
   
@@ -5638,7 +5570,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-table-bloat-in-bytes.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-table-bloat-in-bytes.html" class="md-nav__link">
         
   
   
@@ -5666,7 +5598,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-table-bloat-in-percentage-of-table-size.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-table-bloat-in-percentage-of-table-size.html" class="md-nav__link">
         
   
   
@@ -5749,7 +5681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/performance-pg-stale-replication-slot.html" class="md-nav__link">
+      <a href="/advisors/checks/performance-pg-stale-replication-slot.html" class="md-nav__link">
         
   
   
@@ -5887,7 +5819,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-cve-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-cve-check.html" class="md-nav__link">
         
   
   
@@ -5970,7 +5902,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-expiring-passwd.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-expiring-passwd.html" class="md-nav__link">
         
   
   
@@ -6108,7 +6040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/tables-found-without-primary-keys.html" class="md-nav__link">
+      <a href="/advisors/checks/tables-found-without-primary-keys.html" class="md-nav__link">
         
   
   
@@ -6136,7 +6068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-high-number-of-indexes-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-high-number-of-indexes-check.html" class="md-nav__link">
         
   
   
@@ -6164,7 +6096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-sequential-scan-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-sequential-scan-check.html" class="md-nav__link">
         
   
   
@@ -6192,7 +6124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/advisors/checks/postgresql-unused-index-check.html" class="md-nav__link">
+      <a href="/advisors/checks/postgresql-unused-index-check.html" class="md-nav__link">
         
   
   
@@ -6299,7 +6231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/index.html" class="md-nav__link">
+      <a href="/alert/index.html" class="md-nav__link">
         
   
   
@@ -6327,7 +6259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/alert_rules.html" class="md-nav__link">
+      <a href="/alert/alert_rules.html" class="md-nav__link">
         
   
   
@@ -6355,7 +6287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/contact_points.html" class="md-nav__link">
+      <a href="/alert/contact_points.html" class="md-nav__link">
         
   
   
@@ -6383,7 +6315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/templates_list.html" class="md-nav__link">
+      <a href="/alert/templates_list.html" class="md-nav__link">
         
   
   
@@ -6411,7 +6343,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/silence_alerts.html" class="md-nav__link">
+      <a href="/alert/silence_alerts.html" class="md-nav__link">
         
   
   
@@ -6439,7 +6371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/alert/disable_alerts.html" class="md-nav__link">
+      <a href="/alert/disable_alerts.html" class="md-nav__link">
         
   
   
@@ -6529,14 +6461,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/configure-pmm/configure.html" class="md-nav__link">
+      <a href="/configure-pmm/configure.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configure PFMM
+    Configure PGF WatchTower
   
 
     
@@ -6557,7 +6489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/configure-pmm/metrics_res.html" class="md-nav__link">
+      <a href="/configure-pmm/metrics_res.html" class="md-nav__link">
         
   
   
@@ -6585,14 +6517,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/configure-pmm/advanced_settings.html" class="md-nav__link">
+      <a href="/configure-pmm/advanced_settings.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Advanced PFMM settings
+    Advanced PGF WatchTower settings
   
 
     
@@ -6613,7 +6545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/install-pmm/install-pmm-server/deployment-options/virtual/ssh.html" class="md-nav__link">
+      <a href="/install-pmm/install-pmm-server/deployment-options/virtual/ssh.html" class="md-nav__link">
         
   
   
@@ -6659,7 +6591,7 @@
   <span class="md-ellipsis">
     
   
-    Security in PFMM
+    Security in PGF WatchTower
   
 
     
@@ -6675,7 +6607,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Security in PFMM
+    Security in PGF WatchTower
   
 
           </label>
@@ -6688,14 +6620,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/security/index.html" class="md-nav__link">
+      <a href="/admin/security/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About security in PFMM
+    About security in PGF WatchTower
   
 
     
@@ -6716,7 +6648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/security/ssl_encryption.html" class="md-nav__link">
+      <a href="/admin/security/ssl_encryption.html" class="md-nav__link">
         
   
   
@@ -6744,7 +6676,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/security/grafana_cookies.html" class="md-nav__link">
+      <a href="/admin/security/grafana_cookies.html" class="md-nav__link">
         
   
   
@@ -6772,14 +6704,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/security/data_encryption.html" class="md-nav__link">
+      <a href="/admin/security/data_encryption.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM data encryption
+    PGF WatchTower data encryption
   
 
     
@@ -6800,7 +6732,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/security/client_config_encryption.html" class="md-nav__link">
+      <a href="/admin/security/client_config_encryption.html" class="md-nav__link">
         
   
   
@@ -6890,7 +6822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/index.html" class="md-nav__link">
+      <a href="/admin/index.html" class="md-nav__link">
         
   
   
@@ -6965,14 +6897,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/manage-users/index.html" class="md-nav__link">
+      <a href="/admin/manage-users/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    User management in PFMM
+    User management in PGF WatchTower
   
 
     
@@ -6993,7 +6925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/manage-users/add_users.html" class="md-nav__link">
+      <a href="/admin/manage-users/add_users.html" class="md-nav__link">
         
   
   
@@ -7021,7 +6953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/manage-users/edit_users.html" class="md-nav__link">
+      <a href="/admin/manage-users/edit_users.html" class="md-nav__link">
         
   
   
@@ -7049,7 +6981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/manage-users/delete_users.html" class="md-nav__link">
+      <a href="/admin/manage-users/delete_users.html" class="md-nav__link">
         
   
   
@@ -7132,7 +7064,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/index.html" class="md-nav__link">
+      <a href="/admin/roles/index.html" class="md-nav__link">
         
   
   
@@ -7207,14 +7139,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/intro.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/intro.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About label based access control (LBAC) in PFMM
+    About label based access control (LBAC) in PGF WatchTower
   
 
     
@@ -7235,7 +7167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/labels.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/labels.html" class="md-nav__link">
         
   
   
@@ -7263,7 +7195,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/enable_access_control.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/enable_access_control.html" class="md-nav__link">
         
   
   
@@ -7291,7 +7223,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/create_roles.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/create_roles.html" class="md-nav__link">
         
   
   
@@ -7319,7 +7251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/manage_roles.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/manage_roles.html" class="md-nav__link">
         
   
   
@@ -7347,7 +7279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/assign_roles.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/assign_roles.html" class="md-nav__link">
         
   
   
@@ -7375,7 +7307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/admin/roles/access-control/use_cases.html" class="md-nav__link">
+      <a href="/admin/roles/access-control/use_cases.html" class="md-nav__link">
         
   
   
@@ -7520,7 +7452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/index.html" class="md-nav__link">
+      <a href="/pmm-upgrade/index.html" class="md-nav__link">
         
   
   
@@ -7548,7 +7480,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/ui_upgrade.html" class="md-nav__link">
+      <a href="/pmm-upgrade/ui_upgrade.html" class="md-nav__link">
         
   
   
@@ -7576,14 +7508,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/external_postgres_pmm_upgrade.html" class="md-nav__link">
+      <a href="/pmm-upgrade/external_postgres_pmm_upgrade.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Migrate external PostgreSQL configuration for PFMM 3.2.0+ upgrades
+    Migrate external PostgreSQL configuration for PGF WatchTower 3.2.0+ upgrades
   
 
     
@@ -7651,7 +7583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/upgrade_docker.html" class="md-nav__link">
+      <a href="/pmm-upgrade/upgrade_docker.html" class="md-nav__link">
         
   
   
@@ -7679,7 +7611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/upgrade_podman.html" class="md-nav__link">
+      <a href="/pmm-upgrade/upgrade_podman.html" class="md-nav__link">
         
   
   
@@ -7762,7 +7694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/upgrade_helm.html" class="md-nav__link">
+      <a href="/pmm-upgrade/upgrade_helm.html" class="md-nav__link">
         
   
   
@@ -7798,7 +7730,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/migrating_from_pmm_2.html" class="md-nav__link">
+      <a href="/pmm-upgrade/migrating_from_pmm_2.html" class="md-nav__link">
         
   
   
@@ -7826,7 +7758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/upgrade_aws.html" class="md-nav__link">
+      <a href="/pmm-upgrade/upgrade_aws.html" class="md-nav__link">
         
   
   
@@ -7862,7 +7794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/pmm-upgrade/upgrade_client.html" class="md-nav__link">
+      <a href="/pmm-upgrade/upgrade_client.html" class="md-nav__link">
         
   
   
@@ -7944,14 +7876,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/uninstall-pmm/index.html" class="md-nav__link">
+      <a href="/uninstall-pmm/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About uninstalling PFMM
+    About uninstalling PGF WatchTower
   
 
     
@@ -7972,7 +7904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/uninstall-pmm/unregister_client.html" class="md-nav__link">
+      <a href="/uninstall-pmm/unregister_client.html" class="md-nav__link">
         
   
   
@@ -8047,7 +7979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/uninstall-pmm/uninstall_docker.html" class="md-nav__link">
+      <a href="/uninstall-pmm/uninstall_docker.html" class="md-nav__link">
         
   
   
@@ -8075,7 +8007,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/uninstall-pmm/uninstall_helm.html" class="md-nav__link">
+      <a href="/uninstall-pmm/uninstall_helm.html" class="md-nav__link">
         
   
   
@@ -8103,7 +8035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/uninstall-pmm/uninstall_package_manager.html" class="md-nav__link">
+      <a href="/uninstall-pmm/uninstall_package_manager.html" class="md-nav__link">
         
   
   
@@ -8193,14 +8125,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/index.html" class="md-nav__link">
+      <a href="/troubleshoot/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Troubleshoot PFMM
+    Troubleshoot PGF WatchTower
   
 
     
@@ -8221,7 +8153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/checklist.html" class="md-nav__link">
+      <a href="/troubleshoot/checklist.html" class="md-nav__link">
         
   
   
@@ -8249,7 +8181,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/upgrade_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/upgrade_issues.html" class="md-nav__link">
         
   
   
@@ -8277,7 +8209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/config_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/config_issues.html" class="md-nav__link">
         
   
   
@@ -8305,7 +8237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/exporter_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/exporter_issues.html" class="md-nav__link">
         
   
   
@@ -8333,7 +8265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/alerting_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/alerting_issues.html" class="md-nav__link">
         
   
   
@@ -8361,7 +8293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/qan_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/qan_issues.html" class="md-nav__link">
         
   
   
@@ -8389,7 +8321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/plugin_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/plugin_issues.html" class="md-nav__link">
         
   
   
@@ -8417,14 +8349,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/pmm_dump.html" class="md-nav__link">
+      <a href="/troubleshoot/pmm_dump.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Export PFMM data with PFMM Dump
+    Export PGF WatchTower data with PGF WatchTower Dump
   
 
     
@@ -8445,7 +8377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/troubleshoot/data_issues.html" class="md-nav__link">
+      <a href="/troubleshoot/data_issues.html" class="md-nav__link">
         
   
   
@@ -8527,7 +8459,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/index.html" class="md-nav__link">
+      <a href="/release-notes/index.html" class="md-nav__link">
         
   
   
@@ -8555,14 +8487,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.8.1.html" class="md-nav__link">
+      <a href="/release-notes/pfw-3.9.0-beta2.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM 3.8.1 (2026-05-10)
+    PGF WatchTower 3.9.0 beta2
   
 
     
@@ -8583,350 +8515,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.8.0.html" class="md-nav__link">
+      <a href="/release-notes/pfmm-3.9.0-beta1.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM 3.8.0 (2026-05-28)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.7.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.7.1 (2026-04-30)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.7.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.7.0 (2026-04-01)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.6.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.6.0 (2026-02-05)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.5.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.5.0 (2025-11-19)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.4.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.4.1 (2025-10-13)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.4.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.4.0 (2025-09-15)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.3.1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.3.1 (2025-07-30)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.3.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.3.0 (2025-07-09)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.2.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.2.0 (2025-05-29)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.1.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.1.0 (2025-03-31)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.0.0_1.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.0.0-1 (2025-02-10)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/release-notes/3.0.0.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    PFMM 3.0.0 (2025-01-30)
+    PGF WatchTower 3.9.0 beta1 (2026-08-07)
   
 
     
@@ -9048,14 +8644,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/index.html" class="md-nav__link">
+      <a href="/reference/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM Architecture
+    PGF WatchTower Architecture
   
 
     
@@ -9094,7 +8690,7 @@
   <span class="md-ellipsis">
     
   
-    Third-party components in PFMM
+    Third-party components in PGF WatchTower
   
 
     
@@ -9110,7 +8706,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Third-party components in PFMM
+    Third-party components in PGF WatchTower
   
 
           </label>
@@ -9123,7 +8719,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/third-party/victoria.html" class="md-nav__link">
+      <a href="/reference/third-party/victoria.html" class="md-nav__link">
         
   
   
@@ -9151,14 +8747,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/third-party/clickhouse.html" class="md-nav__link">
+      <a href="/reference/third-party/clickhouse.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Use external ClickHouse with PFMM
+    Use external ClickHouse with PGF WatchTower
   
 
     
@@ -9179,14 +8775,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/third-party/postgresql.html" class="md-nav__link">
+      <a href="/reference/third-party/postgresql.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Configure PFMM with external PostgreSQL
+    Configure PGF WatchTower with external PostgreSQL
   
 
     
@@ -9215,14 +8811,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/pmm_components_and_versions.html" class="md-nav__link">
+      <a href="/reference/pmm_components_and_versions.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM components and versions
+    PGF WatchTower components and versions
   
 
     
@@ -9243,14 +8839,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/personal_data_handling.html" class="md-nav__link">
+      <a href="/reference/personal_data_handling.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Data handling in PFMM
+    Data handling in PGF WatchTower
   
 
     
@@ -9289,7 +8885,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM API
+    PGF WatchTower API
   
 
     
@@ -9305,7 +8901,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM API
+    PGF WatchTower API
   
 
           </label>
@@ -9318,14 +8914,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/api/index.html" class="md-nav__link">
+      <a href="/api/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About PFMM API
+    About PGF WatchTower API
   
 
     
@@ -9346,7 +8942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/api/authentication.html" class="md-nav__link">
+      <a href="/api/authentication.html" class="md-nav__link">
         
   
   
@@ -9400,7 +8996,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM commands
+    PGF WatchTower commands
   
 
     
@@ -9416,7 +9012,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM commands
+    PGF WatchTower commands
   
 
           </label>
@@ -9429,14 +9025,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/index.html" class="md-nav__link">
+      <a href="/use/commands/index.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    About PFMM commands
+    About PGF WatchTower commands
   
 
     
@@ -9504,7 +9100,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-admin/pmm-admin.html" class="md-nav__link">
+      <a href="/use/commands/pmm-admin/pmm-admin.html" class="md-nav__link">
         
   
   
@@ -9532,7 +9128,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-admin/add.html" class="md-nav__link">
+      <a href="/use/commands/pmm-admin/add.html" class="md-nav__link">
         
   
   
@@ -9560,7 +9156,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-admin/inventory.html" class="md-nav__link">
+      <a href="/use/commands/pmm-admin/inventory.html" class="md-nav__link">
         
   
   
@@ -9588,7 +9184,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-admin/config.html" class="md-nav__link">
+      <a href="/use/commands/pmm-admin/config.html" class="md-nav__link">
         
   
   
@@ -9616,7 +9212,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-admin/status.html" class="md-nav__link">
+      <a href="/use/commands/pmm-admin/status.html" class="md-nav__link">
         
   
   
@@ -9652,7 +9248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/use/commands/pmm-agent.html" class="md-nav__link">
+      <a href="/use/commands/pmm-agent.html" class="md-nav__link">
         
   
   
@@ -9714,7 +9310,7 @@
   <span class="md-ellipsis">
     
   
-    PFMM dashboards
+    PGF WatchTower dashboards
   
 
     
@@ -9730,7 +9326,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    PFMM dashboards
+    PGF WatchTower dashboards
   
 
           </label>
@@ -9790,7 +9386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-home.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-home.html" class="md-nav__link">
         
   
   
@@ -9818,7 +9414,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-advanced-data-exploration.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-advanced-data-exploration.html" class="md-nav__link">
         
   
   
@@ -9846,7 +9442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-victoriametrics.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-victoriametrics.html" class="md-nav__link">
         
   
   
@@ -9874,7 +9470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-victoriametrics-agents-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-victoriametrics-agents-overview.html" class="md-nav__link">
         
   
   
@@ -9957,7 +9553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-env-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-env-overview.html" class="md-nav__link">
         
   
   
@@ -10040,7 +9636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/kubernetes_cluster_summary.html" class="md-nav__link">
+      <a href="/reference/dashboards/kubernetes_cluster_summary.html" class="md-nav__link">
         
   
   
@@ -10068,7 +9664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/kubernetes_monitor_operators.html" class="md-nav__link">
+      <a href="/reference/dashboards/kubernetes_monitor_operators.html" class="md-nav__link">
         
   
   
@@ -10096,7 +9692,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/kubernetes_monitor_db_clusters_managed.html" class="md-nav__link">
+      <a href="/reference/dashboards/kubernetes_monitor_db_clusters_managed.html" class="md-nav__link">
         
   
   
@@ -10179,7 +9775,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-cpu-utilization-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-cpu-utilization-details.html" class="md-nav__link">
         
   
   
@@ -10207,7 +9803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-disk-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-disk-details.html" class="md-nav__link">
         
   
   
@@ -10235,7 +9831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-network-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-network-details.html" class="md-nav__link">
         
   
   
@@ -10263,7 +9859,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-memory-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-memory-details.html" class="md-nav__link">
         
   
   
@@ -10291,7 +9887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-node-temperature-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-node-temperature-details.html" class="md-nav__link">
         
   
   
@@ -10319,7 +9915,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-nodes-compare.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-nodes-compare.html" class="md-nav__link">
         
   
   
@@ -10347,7 +9943,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-nodes-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-nodes-overview.html" class="md-nav__link">
         
   
   
@@ -10375,7 +9971,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-node-summary.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-node-summary.html" class="md-nav__link">
         
   
   
@@ -10403,7 +9999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-numa-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-numa-details.html" class="md-nav__link">
         
   
   
@@ -10431,7 +10027,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-processes-details.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-processes-details.html" class="md-nav__link">
         
   
   
@@ -10514,7 +10110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-prometheus-exporter-status.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-prometheus-exporter-status.html" class="md-nav__link">
         
   
   
@@ -10542,7 +10138,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-prometheus-exporters-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-prometheus-exporters-overview.html" class="md-nav__link">
         
   
   
@@ -10625,7 +10221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-instance-summary.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-instance-summary.html" class="md-nav__link">
         
   
   
@@ -10653,7 +10249,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-instances-compare.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-instances-compare.html" class="md-nav__link">
         
   
   
@@ -10681,7 +10277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-instances-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-instances-overview.html" class="md-nav__link">
         
   
   
@@ -10709,7 +10305,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-instances-overview-extended.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-instances-overview-extended.html" class="md-nav__link">
         
   
   
@@ -10737,7 +10333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-replication.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-replication.html" class="md-nav__link">
         
   
   
@@ -10765,7 +10361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-postgresql-topqueries.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-postgresql-topqueries.html" class="md-nav__link">
         
   
   
@@ -10848,14 +10444,14 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-ha-health-overview.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-ha-health-overview.html" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    PFMM HA Health Overview
+    PGF WatchTower HA Health Overview
   
 
     
@@ -10876,7 +10472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/dashboards/dashboard-haproxy-instance-summary.html" class="md-nav__link">
+      <a href="/reference/dashboards/dashboard-haproxy-instance-summary.html" class="md-nav__link">
         
   
   
@@ -10920,7 +10516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/labels-reference.html" class="md-nav__link">
+      <a href="/reference/labels-reference.html" class="md-nav__link">
         
   
   
@@ -10948,7 +10544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/nomad.html" class="md-nav__link">
+      <a href="/reference/nomad.html" class="md-nav__link">
         
   
   
@@ -10976,7 +10572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/glossary.html" class="md-nav__link">
+      <a href="/reference/glossary.html" class="md-nav__link">
         
   
   
@@ -11004,7 +10600,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/faq.html" class="md-nav__link">
+      <a href="/reference/faq.html" class="md-nav__link">
         
   
   
@@ -11032,7 +10628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/trademark-policy.html" class="md-nav__link">
+      <a href="/reference/trademark-policy.html" class="md-nav__link">
         
   
   
@@ -11060,7 +10656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/percona-monitoring-and-management/3/reference/copyright.html" class="md-nav__link">
+      <a href="/reference/copyright.html" class="md-nav__link">
         
   
   
@@ -11090,243 +10686,18 @@
     
   </ul>
 </nav>
-                      <br>
-                      <label class="md-nav__title" for="__drawer">
-                        <a href="https://learn.percona.com/download-percona-monitoring-and-management-manual-3" onclick="_gaq.push(['b._trackEvent', 'Percona Monitoring and Management', 'Download', 'Download Manual Percona Monitoring and Management']);" class="md-nav__link md-nav__link--active" style="font-size: .7rem;">
-                          Download PDF
-                        </a>
-                      </label> 
-                    </div>
-                  </div>
-                </div>
-              
-              
-                
-                <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                  <div class="md-sidebar__scrollwrap">
-                    <div class="md-sidebar__inner">
-                      <!-- Feedback Widget -->
-<div class="rating-widget" style="
-  background: var(--md-default-bg-color);
-  border: 0.05rem solid var(--md-default-fg-color--lightest);
-  padding: 10px 15px;
-  border-radius: 0.2rem;
-  margin-bottom: 16px;
-  font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-  font-size: 16px;
-  text-align: center;
-  transition: all 0.2s ease-out;
-">
-
-  <div class="rating-title" style="
-    margin-bottom: 4px;
-    font-size: 15px;
-    font-weight: bold;
-    /* Removed inline color to use CSS */
-  ">
-    Rate this page
+        
+      </div>
+    </div>
   </div>
 
-  <div class="rating-stars" style="display: inline-block;">
-    
-      <span class="star" data-rating="1" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="2" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="3" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="4" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-      <span class="star" data-rating="5" style="
-        font-size: 24px;
-        cursor: pointer;
-        margin: 0 2px;
-        display: inline-block;
-      ">☆</span>
-    
-  </div>
 
-  <div id="feedback-notification" style="
-    display: none;
-    margin-top: 10px;
-    color: var(--md-typeset-a-color);
-    font-weight: 500;
-    font-size: 14px;
-  ">Thanks for your feedback</div>
-
-<div id="feedback-submit-notification" style="
-display: none;
-margin-top: 10px;
-color: var(--md-typeset-a-color);
-font-weight: 500;
-font-size: 14px;
-">Thank you! The feedback has been submitted.</div>
-
-  <div id="feedback-form" style="
-    display: none;
-    margin-top: 12px;
-    text-align: left;
-    position: relative;
-    border: 0.05rem solid var(--md-default-fg-color--lightest);
-    padding: 12px;
-    border-radius: 6px;
-    background: var(--md-default-bg-color);
-    width: 100%;
-    box-sizing: border-box;
-    transition: all 0.2s ease-out;
-  ">
-<button id="close-feedback" title="Close" style="
-position: absolute;
-top: -10px;
-right: -10px;
-background: var(--md-default-bg-color);
-border: 0.05rem solid var(--md-default-fg-color--lightest);
-border-radius: 50%;
-width: 24px;
-height: 24px;
-font-size: 18px;
-font-weight: bold;
-cursor: pointer;
-color: var(--md-default-fg-color--light);
-line-height: 1;
-display: flex;
-align-items: center;
-justify-content: center;
-box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-">
-×
-</button>
-
-    <textarea id="feedback-text" rows="3" placeholder="Write your feedback here..." style="
-      width: 100%;
-      font-size: 14px;
-      padding: 6px;
-      margin-bottom: 12px;
-      resize: vertical;
-      font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-      color: var(--md-default-fg-color);
-      background: var(--md-default-bg-color);
-      border: 0.05rem solid var(--md-default-fg-color--lightest);
-    "></textarea>
-
-    <label for="feedback-email" style="
-      display: block;
-      font-size: 15px;
-      margin-bottom: 4px;
-    ">
-      Email <span style="color: var(--md-default-fg-color--light);">(optional)</span>
-    </label>
-
-    <input type="email" id="feedback-email" placeholder="you@example.com" style="
-      width: 100%;
-      font-size: 14px;
-      padding: 6px;
-      margin-bottom: 12px;
-      font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-      color: var(--md-default-fg-color);
-      background: var(--md-default-bg-color);
-      border: 0.05rem solid var(--md-default-fg-color--lightest);
-    " />
-
-<button id="submit-feedback" style="
-  padding: 5px 10px;
-  font-size: 14px;
-  background-color: var(--md-typeset-a-color);
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Poppins','Roboto',Arial,Helvetica,sans-serif;
-">
-  Send
-</button>
-
-    <div id="feedback-status" style="
-      margin-top: 8px;
-      font-size: 13px;
-    "></div>
-  </div>
-</div>
-
-<style>
-  /* Hover shadow like data-banner */
-  .rating-widget:hover,
-  #feedback-form:hover {
-    box-shadow:
-      0px 1px 10px 0px rgba(0, 0, 0, 0.12),
-      0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-      0px 2px 4px -1px rgba(0, 0, 0, 0.20);
-  }
-
-  /* Default star colors */
-  .rating-stars .star {
-    color: var(--md-default-fg-color);
-    transition: color 0.2s ease-out;
-  }
-
-  /* Active/hovered stars */
-  .rating-stars .star.active,
-  .rating-stars .star.hovered {
-    color: var(--md-typeset-a-color, #0E5FB5);
-  }
-
-  /* Rate this page text color matches stars in light mode */
-  .rating-widget .rating-title {
-    color: var(--md-typeset-a-color, #0E5FB5);
-  }
-
-  /* Dark mode */
-  @media (prefers-color-scheme: dark) {
-    /* Rate this page text */
-    .rating-widget .rating-title {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-    /* Stars active and hovered fill color */
-    .rating-stars .star.active,
-    .rating-stars .star.hovered {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-
-    /* Feedback form text */
-    #feedback-form,
-    #feedback-form textarea,
-    #feedback-form input,
-    #feedback-form label,
-    #feedback-form button,
-    #feedback-form div {
-      color: var(--md-typeset-a-color, #93C7FF);
-      border-color: #666;
-      background: var(--md-default-bg-color);
-    }
-
-    /* Close button color */
-    #close-feedback {
-      color: var(--md-typeset-a-color, #93C7FF);
-    }
-  }
-</style>
-                    </div>
-                    <div class="md-sidebar__inner">
-                      <div data-banner="data-banner" class="edit-contrib-banner">
+  
+  <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+    <div class="md-sidebar__scrollwrap">
+      
+      <div class="md-sidebar__inner">
+        <div data-banner="data-banner" class="edit-contrib-banner">
   <div class="banner-content">
     <!-- Edit link centered -->
     <a href="" title="Edit this page on GitHub" class="edit-page-link">
@@ -11341,7 +10712,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     <div class="banner-divider"></div>
 
     <!-- Contributing Guide below, smaller -->
-    <a href="https://github.com/percona/pmm/blob/main/documentation/docs-contributing.md"
+    <a href="https://github.com/postgres1st/pfm/blob/main/documentation/docs-contributing.md"
        title="Contributing guide"
        class="contrib-link"
        target="_blank"
@@ -11351,20 +10722,18 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   </div>
 </div>
 
-                    </div>
-                    <div class="md-sidebar__inner">
-                      <div data-banner="data-banner">
-    <p><svg style="display:block;margin:-1em 0 0.75em" width="78" height="69" viewBox="0 0 78 69" fill="none" xmlns="http://www.w3.org/2000/svg"><path style="fill:var(--md-typeset-color)" d="M56.7281 30.7666C62.6528 26.8938 64.5914 18.9942 61.0059 12.7854C59.2094 9.67113 56.3053 7.44082 52.8311 6.50951C49.6122 5.64535 46.2502 5.99872 43.2912 7.49366L39.251 0.5L30.8648 15.0245L11.4811 48.5937H67.021L56.7281 30.7666ZM51.881 10.0674C54.4064 10.7401 56.5079 12.3616 57.8168 14.6194C60.3895 19.0701 59.053 24.7153 54.8808 27.5665L45.1362 10.6905C47.2355 9.68104 49.6034 9.46087 51.881 10.0674ZM39.251 7.87125L60.6339 44.907H48.1228L32.9927 18.7102L39.2499 7.87235L39.251 7.87125ZM17.8682 44.907L30.8637 22.4035L43.8592 44.907H17.8682Z"></path><path style="fill:var(--md-typeset-color)" d="M4.981 64.943H3.157V68.207H.756V57.323H5.217C7.822 57.323 9.397 58.861 9.397 61.086V61.116C9.397 63.635 7.433 64.94 4.984 64.94L4.981 64.943V64.943ZM6.961 61.134C6.961 60.061 6.213 59.485 5.011 59.485H3.154V62.812H5.056C6.258 62.812 6.958 62.096 6.958 61.163V61.134H6.961ZM10.738 68.208V57.323H18.973V59.455H13.124V61.664H18.27V63.796H13.124V66.082H19.051V68.214H10.738V68.208 68.208ZM27.557 68.208 25.218 64.726H23.332V68.208H20.931V57.323H25.921C28.496 57.323 30.039 58.677 30.039 60.915V60.945C30.039 62.702 29.088 63.807 27.7 64.32L30.367 68.207H27.556L27.557 68.208ZM27.605 61.041C27.605 60.016 26.887 59.485 25.719 59.485H23.333V62.61H25.767C26.936 62.61 27.605 61.987 27.605 61.071V61.042 61.041ZM36.922 68.499C33.668 68.499 31.249 65.994 31.249 62.825V62.795C31.249 59.659 33.619 57.091 37.019 57.091 39.105 57.091 40.356 57.783 41.383 58.792L39.834 60.571C38.98 59.798 38.113 59.327 37.004 59.327 35.141 59.327 33.795 60.871 33.795 62.762V62.793C33.795 64.684 35.107 66.257 37.004 66.257 38.268 66.257 39.043 65.753 39.913 64.964L41.462 66.524C40.322 67.738 39.059 68.493 36.925 68.493L36.922 68.499ZM47.885 68.499C44.47 68.499 42.021 65.962 42.021 62.825V62.795C42.021 59.659 44.503 57.091 47.915 57.091 51.327 57.091 53.779 59.628 53.779 62.765V62.795C53.779 65.931 51.297 68.499 47.885 68.499ZM51.237 62.795C51.237 60.904 49.846 59.331 47.885 59.331 45.925 59.331 44.567 60.874 44.567 62.766V62.796C44.567 64.688 45.959 66.261 47.919 66.261 49.879 66.261 51.237 64.717 51.237 62.826V62.795 62.795ZM67.001 68.217 72.374 57.091 77.746 68.218H75.052L72.374 62.681 69.705 68.218H67.001V68.217ZM66.007 57.327V68.5L57.813 61.884V68.199H55.264V57.091L63.458 63.681V57.327H66.007Z"></path></svg></p>
-    <p>Get free database assistance or contact our experts for personalized support.</p>
+      </div>
+      <div class="md-sidebar__inner">
+        <div data-banner="data-banner">
+  <p>Stuck, or something looks wrong?</p>
 
-    <div class="actions">
-
-    <a href="https://docs.percona.com/percona-monitoring-and-management/3/get-help.html" style="color: var(--md-typeset-a-color);">Get help from Percona</a>
-    </div>
-    </div>
-                    </div>
-                    <div class="md-sidebar__inner">
-                      
+  <div class="actions">
+    <a href="//get-help.html" style="color: var(--md-typeset-a-color);">Get help</a>
+  </div>
+</div>
+      </div>
+      <div class="md-sidebar__inner">
+        
 
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
@@ -11372,11 +10741,11 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
   
   
 </nav>
-                    </div>
-                  </div>
-                </div>
-              
-            
+      </div>
+    </div>
+  </div>
+
+
           
             <div class="md-content" data-md-component="content">
               
@@ -11407,9 +10776,7 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
     <div class="md-copyright__highlight">
-      <a href="https://percona.com/about" target='_blank'>Percona LLC</a> and its affiliates &copy; 2026 —
-      <a href="#" onclick="Osano.cm.showDrawer('osano-cm-dom-info-dialog-open')">Cookie Preferences</a>
-
+      <a href="https://postgresfirst.com" target="_blank" rel="noopener">Postgres1st</a> &copy; 2026
     </div>
   
     Made with
@@ -11432,29 +10799,17 @@ box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "/percona-monitoring-and-management/3", "features": ["search.highlight", "navigation.top", "content.tabs.link", "content.code.copy", "content.images.zoom", "navigation.tracking", "content.action.view"], "search": "/percona-monitoring-and-management/3/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "/", "features": ["search.highlight", "navigation.top", "content.tabs.link", "content.code.copy", "content.images.zoom", "navigation.tracking", "content.action.view"], "search": "/assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-
-      <script src="/percona-monitoring-and-management/3/assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="/assets/javascripts/bundle.d7400e89.min.js"></script>
       
-        <script src="/percona-monitoring-and-management/3/js/extra.js"></script>
+        <script src="/js/extra.js"></script>
       
-        <script src="/percona-monitoring-and-management/3/js/consent.js"></script>
+        <script src="/js/consent.js"></script>
       
-        <script src="/percona-monitoring-and-management/3/js/version-select.js"></script>
-      
-        <script src="/percona-monitoring-and-management/3/js/rating.js"></script>
-      
-        <script src="/percona-monitoring-and-management/3/js/kapa.js"></script>
+        <script src="/js/version-select.js"></script>
       
     
-<script>
-  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-  posthog.init('phc_7unoI9J6Fm0SMrfDp35xNOpCRTkOAibbffQwdGWbHnL',{api_host:'https://eu.posthog.com'})
-</script>
-
-<script src="https://cmp.osano.com/Azqe5vTyLOSbN3OuT/49ad85b5-0418-4794-ab81-7599dddd534c/osano.js"></script>
-
   </body>
 </html>
