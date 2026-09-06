@@ -3,7 +3,7 @@
 
 Check PMM Client connection status, list monitored services, and create diagnostic archives from the command line using these `pfw-admin` commands.
 
-To view status in the UI, see [PGF WatchTower Inventory](../pmm-admin/inventory.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
+To view status in the UI, see [Postgres1st WatchTower Inventory](../pmm-admin/inventory.md). For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
 
 ## Commands
 

@@ -43,7 +43,7 @@ const (
 	agentPrefix     = "/agent_id/"
 )
 
-// Server represents PGF WatchTower Server configuration.
+// Server represents Postgres1st WatchTower Server configuration.
 type Server struct {
 	Address     string `yaml:"address"`
 	Username    string `yaml:"username"`
@@ -53,7 +53,7 @@ type Server struct {
 	WithoutTLS bool `yaml:"without-tls,omitempty"` // for development and testing
 }
 
-// URL returns base PGF WatchTower Server URL for JSON APIs.
+// URL returns base Postgres1st WatchTower Server URL for JSON APIs.
 func (s *Server) URL() *url.URL {
 	if s.Address == "" {
 		return nil
@@ -311,7 +311,7 @@ func get(args []string, cfg *Config, l *logrus.Entry) (string, error) { //nolint
 			if e != nil {
 				host := cfg.Server.Address
 				cfg.Server.Address = net.JoinHostPort(host, "443")
-				l.Infof("Updating PGF WatchTower Server address from %q to %q.", host, cfg.Server.Address)
+				l.Infof("Updating Postgres1st WatchTower Server address from %q to %q.", host, cfg.Server.Address)
 			}
 		}
 
@@ -386,13 +386,13 @@ func Application(cfg *Config) (*kingpin.Application, *string) {
 	app.Flag("runner-max-connections-per-service", "Agent internal action/job runner connection limit per DB instance").
 		Envar("PFW_AGENT_RUNNER_MAX_CONNECTIONS_PER_SERVICE").Uint16Var(&cfg.RunnerMaxConnectionsPerService)
 
-	app.Flag("server-address", "PGF WatchTower Server address [PFW_AGENT_SERVER_ADDRESS]").
+	app.Flag("server-address", "Postgres1st WatchTower Server address [PFW_AGENT_SERVER_ADDRESS]").
 		Envar("PFW_AGENT_SERVER_ADDRESS").PlaceHolder("<host:port>").StringVar(&cfg.Server.Address)
-	app.Flag("server-username", "Username to connect to PGF WatchTower Server [PFW_AGENT_SERVER_USERNAME]").
+	app.Flag("server-username", "Username to connect to Postgres1st WatchTower Server [PFW_AGENT_SERVER_USERNAME]").
 		Envar("PFW_AGENT_SERVER_USERNAME").StringVar(&cfg.Server.Username)
-	app.Flag("server-password", "Password to connect to PGF WatchTower Server [PFW_AGENT_SERVER_PASSWORD]").
+	app.Flag("server-password", "Password to connect to Postgres1st WatchTower Server [PFW_AGENT_SERVER_PASSWORD]").
 		Envar("PFW_AGENT_SERVER_PASSWORD").StringVar(&cfg.Server.Password)
-	app.Flag("server-insecure-tls", "Skip PGF WatchTower Server TLS certificate validation [PFW_AGENT_SERVER_INSECURE_TLS]").
+	app.Flag("server-insecure-tls", "Skip Postgres1st WatchTower Server TLS certificate validation [PFW_AGENT_SERVER_INSECURE_TLS]").
 		Envar("PFW_AGENT_SERVER_INSECURE_TLS").BoolVar(&cfg.Server.InsecureTLS)
 	// no flag for WithoutTLS - it is only for development and testing
 
@@ -514,7 +514,7 @@ func Application(cfg *Config) (*kingpin.Application, *string) {
 
 	setupCmd.Flag("force", "Remove Node with that name with all dependent Services and Agents if one exist [PFW_AGENT_SETUP_FORCE]").
 		Envar("PFW_AGENT_SETUP_FORCE").BoolVar(&cfg.Setup.Force)
-	setupCmd.Flag("skip-registration", "Skip registration on PGF WatchTower Server [PFW_AGENT_SETUP_SKIP_REGISTRATION]").
+	setupCmd.Flag("skip-registration", "Skip registration on Postgres1st WatchTower Server [PFW_AGENT_SETUP_SKIP_REGISTRATION]").
 		Envar("PFW_AGENT_SETUP_SKIP_REGISTRATION").BoolVar(&cfg.Setup.SkipRegistration)
 	setupCmd.Flag("metrics-mode", "Metrics flow mode for agents node-exporter, can be push - agent will push metrics,"+
 		"pull - server scrape metrics from agent  or auto - chosen by server. [PFW_AGENT_SETUP_METRICS_MODE]").

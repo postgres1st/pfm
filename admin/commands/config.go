@@ -55,7 +55,7 @@ type ConfigCommand struct {
 	Force             bool     `help:"Remove Node with that name with all dependent Services and Agents if one exist"`
 	DisableCollectors []string `help:"Comma-separated list of collector names to exclude from exporter"`
 	CustomLabels      string   `placeholder:"KEY=VALUE,KEY=VALUE,..." help:"Custom user-assigned labels"`
-	BasePath          string   `name:"paths-base" help:"Base path where all binaries, tools and collectors of the PGF WatchTower Agent are located"`
+	BasePath          string   `name:"paths-base" help:"Base path where all binaries, tools and collectors of the Postgres1st WatchTower Agent are located"`
 	LogLinesCount     uint     `help:"Take and return N most recent log lines in logs.zip for each: server, every configured exporters and agents" default:"1024"`
 }
 
@@ -80,7 +80,7 @@ func (cmd *ConfigCommand) args(globals *flags.GlobalFlags) ([]string, bool) {
 		res = append(res, "--server-username="+globals.ServerURL.User.Username())
 		// The password is deliberately NOT here. It goes to pfw-agent through its
 		// environment instead -- see serverPasswordEnv. Passing it as an argument put
-		// the PGF WatchTower admin credential into a second process's command line,
+		// the Postgres1st WatchTower admin credential into a second process's command line,
 		// and /proc/<pid>/cmdline is world-readable (0444) on a default Linux host,
 		// whereas /proc/<pid>/environ is owner-only (0400).
 	}

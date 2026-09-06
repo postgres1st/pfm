@@ -161,7 +161,7 @@ Choose your deployment method and ensure it meets these specific requirements:
 
     - Outbound internet access for updates (optional)
     - Access to monitored database instances
-    - Access from client browsers to PGF WatchTower web interface
+    - Access from client browsers to Postgres1st WatchTower web interface
     
     **Security note:**
 

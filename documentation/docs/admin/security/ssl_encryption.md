@@ -1,6 +1,6 @@
 # SSL encryption
 
-Securing your PGF WatchTower deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PMM Server and PMM Clients.
+Securing your Postgres1st WatchTower deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PMM Server and PMM Clients.
 
 You have several certificate options:
 
@@ -10,7 +10,7 @@ You have several certificate options:
 
 ## Configure SSL encryption
 
-Configure both the Server and Client to implement SSL/TLS encryption in your PGF WatchTower environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
+Configure both the Server and Client to implement SSL/TLS encryption in your Postgres1st WatchTower environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
 {.power-number}
 
 1. **Prepare your certificates**: Choose one method to provide certificates to PMM Server:

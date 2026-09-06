@@ -70,12 +70,12 @@ Most options can be set via environment variables (shown in parentheses).
 | `--region=REGION`                      | `PFW_AGENT_SETUP_REGION`            | Node region.
 | `--skip-registration`                  | `PFW_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PMM Server.
 | `--trace`                              | `PFW_AGENT_TRACE`                   | Enable trace output (implies `--debug`).
-| `--version`                            |                                     | Show application version, PGF WatchTower version, time-stamp, git commit hash and branch.
+| `--version`                            |                                     | Show application version, Postgres1st WatchTower version, time-stamp, git commit hash and branch.
 | `-h`, `--help`                         |                                     | Show help (synonym for `pfw-agent help`).
 
 ## Config file
 
-PGF WatchTower manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
+Postgres1st WatchTower manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
 
 To do this, set the username to `service_token` and add your service token as the password. For more information about service account authorization, see [Service accounts authentication](../../api/authentication.md).
 
@@ -87,7 +87,7 @@ Since 2.23.0 this flag could be used for easier setup of PMM agent. With this fl
 
 **Examples:**
 
-- **Case 1:** There are no root permissions for `/opt/postgres1st/watchtower` folder or there is a need to change default folder for PGF WatchTower files.
+- **Case 1:** There are no root permissions for `/opt/postgres1st/watchtower` folder or there is a need to change default folder for Postgres1st WatchTower files.
 Command:
 ````
 pfw-agent setup --paths-base=/home/user/custom/pmm --config-file=pfw-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
@@ -127,7 +127,7 @@ debug: false
 trace: false
 
 ````
-As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PGF WatchTower that doesn't require root access could be specified.
+As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for Postgres1st WatchTower that doesn't require root access could be specified.
 
 - **Case 2:** The older `--paths-exporters_base` flag could be passed along with the `--paths-base`
 Command:

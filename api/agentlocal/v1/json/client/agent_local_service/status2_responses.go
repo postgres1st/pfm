@@ -102,6 +102,7 @@ func (o *Status2OK) GetPayload() *Status2OKBody {
 }
 
 func (o *Status2OK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
 	o.Payload = new(Status2OKBody)
 
 	// response payload
@@ -175,6 +176,7 @@ func (o *Status2Default) GetPayload() *Status2DefaultBody {
 }
 
 func (o *Status2Default) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
 	o.Payload = new(Status2DefaultBody)
 
 	// response payload
@@ -190,6 +192,7 @@ Status2DefaultBody status2 default body
 swagger:model Status2DefaultBody
 */
 type Status2DefaultBody struct {
+
 	// code
 	Code int32 `json:"code,omitempty"`
 
@@ -259,7 +262,9 @@ func (o *Status2DefaultBody) ContextValidate(ctx context.Context, formats strfmt
 }
 
 func (o *Status2DefaultBody) contextValidateDetails(ctx context.Context, formats strfmt.Registry) error {
+
 	for i := 0; i < len(o.Details); i++ {
+
 		if o.Details[i] != nil {
 
 			if swag.IsZero(o.Details[i]) { // not required
@@ -279,6 +284,7 @@ func (o *Status2DefaultBody) contextValidateDetails(ctx context.Context, formats
 				return err
 			}
 		}
+
 	}
 
 	return nil
@@ -307,6 +313,7 @@ Status2DefaultBodyDetailsItems0 status2 default body details items0
 swagger:model Status2DefaultBodyDetailsItems0
 */
 type Status2DefaultBodyDetailsItems0 struct {
+
 	// at type
 	AtType string `json:"@type,omitempty"`
 
@@ -318,6 +325,7 @@ type Status2DefaultBodyDetailsItems0 struct {
 func (o *Status2DefaultBodyDetailsItems0) UnmarshalJSON(data []byte) error {
 	// stage 1, bind the properties
 	var stage1 struct {
+
 		// at type
 		AtType string `json:"@type,omitempty"`
 	}
@@ -355,6 +363,7 @@ func (o *Status2DefaultBodyDetailsItems0) UnmarshalJSON(data []byte) error {
 // MarshalJSON marshals this object with additional properties into a JSON object
 func (o Status2DefaultBodyDetailsItems0) MarshalJSON() ([]byte, error) {
 	var stage1 struct {
+
 		// at type
 		AtType string `json:"@type,omitempty"`
 	}
@@ -418,6 +427,7 @@ Status2OKBody status2 OK body
 swagger:model Status2OKBody
 */
 type Status2OKBody struct {
+
 	// agent id
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -433,7 +443,7 @@ type Status2OKBody struct {
 	// Config file path if pfw-agent was started with one.
 	ConfigFilepath string `json:"config_filepath,omitempty"`
 
-	// PGF WatchTower Agent version.
+	// Postgres1st WatchTower Agent version.
 	AgentVersion string `json:"agent_version,omitempty"`
 
 	// Shows connection uptime in percentage between agent and server
@@ -533,7 +543,9 @@ func (o *Status2OKBody) ContextValidate(ctx context.Context, formats strfmt.Regi
 }
 
 func (o *Status2OKBody) contextValidateAgentsInfo(ctx context.Context, formats strfmt.Registry) error {
+
 	for i := 0; i < len(o.AgentsInfo); i++ {
+
 		if o.AgentsInfo[i] != nil {
 
 			if swag.IsZero(o.AgentsInfo[i]) { // not required
@@ -553,12 +565,14 @@ func (o *Status2OKBody) contextValidateAgentsInfo(ctx context.Context, formats s
 				return err
 			}
 		}
+
 	}
 
 	return nil
 }
 
 func (o *Status2OKBody) contextValidateServerInfo(ctx context.Context, formats strfmt.Registry) error {
+
 	if o.ServerInfo != nil {
 
 		if swag.IsZero(o.ServerInfo) { // not required
@@ -605,6 +619,7 @@ Status2OKBodyAgentsInfoItems0 AgentInfo contains information about Agent managed
 swagger:model Status2OKBodyAgentsInfoItems0
 */
 type Status2OKBodyAgentsInfoItems0 struct {
+
 	// agent id
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -830,26 +845,27 @@ func (o *Status2OKBodyAgentsInfoItems0) UnmarshalBinary(b []byte) error {
 }
 
 /*
-Status2OKBodyServerInfo ServerInfo contains information about the PGF WatchTower Server.
+Status2OKBodyServerInfo ServerInfo contains information about the Postgres1st WatchTower Server.
 swagger:model Status2OKBodyServerInfo
 */
 type Status2OKBodyServerInfo struct {
-	// PGF WatchTower Server URL in a form https://HOST:PORT/.
+
+	// Postgres1st WatchTower Server URL in a form https://HOST:PORT/.
 	URL string `json:"url,omitempty"`
 
-	// PGF WatchTower Server's TLS certificate validation should be skipped if true.
+	// Postgres1st WatchTower Server's TLS certificate validation should be skipped if true.
 	InsecureTLS bool `json:"insecure_tls,omitempty"`
 
 	// True if pfw-agent is currently connected to the server.
 	Connected bool `json:"connected,omitempty"`
 
-	// PGF WatchTower Server version (if agent is connected).
+	// Postgres1st WatchTower Server version (if agent is connected).
 	Version string `json:"version,omitempty"`
 
 	// Ping time from pfw-agent to pmm-managed (if agent is connected).
 	Latency string `json:"latency,omitempty"`
 
-	// Clock drift from PGF WatchTower Server (if agent is connected).
+	// Clock drift from Postgres1st WatchTower Server (if agent is connected).
 	ClockDrift string `json:"clock_drift,omitempty"`
 }
 

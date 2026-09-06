@@ -7,10 +7,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/percona/pmm/api/realtimeanalytics/v1/json/client/realtime_analytics_service"
+	"github.com/percona/pmm/api/qan/v1/json/client/qan_service"
 )
 
-// Default p g f watch tower real time analytics API HTTP client.
+// Default postgres1st watch tower QAN API HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -25,14 +25,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new p g f watch tower real time analytics API HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *PGFWatchTowerRealTimeAnalyticsAPI {
+// NewHTTPClient creates a new postgres1st watch tower QAN API HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Postgres1stWatchTowerQANAPI {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new p g f watch tower real time analytics API HTTP client,
+// NewHTTPClientWithConfig creates a new postgres1st watch tower QAN API HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGFWatchTowerRealTimeAnalyticsAPI {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Postgres1stWatchTowerQANAPI {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -43,16 +43,16 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGF
 	return New(transport, formats)
 }
 
-// New creates a new p g f watch tower real time analytics API client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *PGFWatchTowerRealTimeAnalyticsAPI {
+// New creates a new postgres1st watch tower QAN API client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Postgres1stWatchTowerQANAPI {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(PGFWatchTowerRealTimeAnalyticsAPI)
+	cli := new(Postgres1stWatchTowerQANAPI)
 	cli.Transport = transport
-	cli.RealtimeAnalyticsService = realtime_analytics_service.New(transport, formats)
+	cli.QANService = qan_service.New(transport, formats)
 	return cli
 }
 
@@ -95,15 +95,15 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// PGFWatchTowerRealTimeAnalyticsAPI is a client for p g f watch tower real time analytics API
-type PGFWatchTowerRealTimeAnalyticsAPI struct {
-	RealtimeAnalyticsService realtime_analytics_service.ClientService
+// Postgres1stWatchTowerQANAPI is a client for postgres1st watch tower QAN API
+type Postgres1stWatchTowerQANAPI struct {
+	QANService qan_service.ClientService
 
 	Transport runtime.ClientTransport
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *PGFWatchTowerRealTimeAnalyticsAPI) SetTransport(transport runtime.ClientTransport) {
+func (c *Postgres1stWatchTowerQANAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.RealtimeAnalyticsService.SetTransport(transport)
+	c.QANService.SetTransport(transport)
 }

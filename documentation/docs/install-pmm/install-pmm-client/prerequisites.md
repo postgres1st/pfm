@@ -42,7 +42,7 @@ For a complete list of ports and detailed network configuration options, see [Ne
 
 ## Database monitoring requirements
 
-To ensure successful database monitoring with PGF WatchTower, confirm the following:
+To ensure successful database monitoring with Postgres1st WatchTower, confirm the following:
 
 - **Monitoring users**: Create database accounts with the required permissions  
 - **Log access**: Enable file system access to database logs (where applicable)  

@@ -1,13 +1,13 @@
-# About uninstalling PGF WatchTower 
+# About uninstalling Postgres1st WatchTower 
 
-To completely remove PGF WatchTower from your system:
+To completely remove Postgres1st WatchTower from your system:
 {.power-number}
 
 1. [Unregister PMM Client from PMM Server](unregister_client.md) to disconnect from PMM Server and clean up monitoring
 2. Uninstall PMM Client to remove the software using your installation method:
 
     - [Uninstall PMM client with Docker container](uninstall_docker.md)
-    - [Uninstall PGF WatchTower using Helm](uninstall_helm.md)
+    - [Uninstall Postgres1st WatchTower using Helm](uninstall_helm.md)
     - [Uninstall PMM client with package manager](uninstall_package_manager.md)
 
 !!! warning

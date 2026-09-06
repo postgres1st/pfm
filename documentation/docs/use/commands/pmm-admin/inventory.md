@@ -2,7 +2,7 @@
 
 Use `pfw-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
 
-To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
+To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
 
 ## Commands
 
@@ -46,8 +46,8 @@ pfw-admin inventory list services
 
 Modify agent configuration without removing and re-adding the service. Use this to update collector settings, enable or disable features, or change connection parameters.
 
-!!! note "PGF WatchTower 3.7.0+"
-    This command is available starting with PGF WatchTower 3.7.0.
+!!! note "Postgres1st WatchTower 3.7.0+"
+    This command is available starting with Postgres1st WatchTower 3.7.0.
 
 ### Syntax
 
@@ -139,7 +139,7 @@ You can also use `pfw-admin list` to see agents alongside their services.
 :   Comma-separated list of collectors to disable
 
 - `--max-collections-limit`
-:   Max collections to monitor (-1=PGF WatchTower decides, 0=unlimited)
+:   Max collections to monitor (-1=Postgres1st WatchTower decides, 0=unlimited)
 
 - `--stats-collections`
 :   Limit stats to specific databases/collections
@@ -236,7 +236,7 @@ You can also use `pfw-admin list` to see agents alongside their services.
 
 The command returns a clear error message in these cases:
 
-- **Non-existent agent ID**: The specified agent ID does not exist in PGF WatchTower inventory.
+- **Non-existent agent ID**: The specified agent ID does not exist in Postgres1st WatchTower inventory.
 - **Mismatched agent type**: The agent ID exists but belongs to a different agent type (e.g., using a `mysqld-exporter` ID with the `mongodb-exporter` subcommand).
 - **Invalid flag value**: A flag receives a value outside its allowed range (e.g., an invalid log level).
 - **Connection check failure**: PMM could not validate the new connection-affecting settings (credentials, TLS) against the database. No changes are saved. If the database is intentionally unreachable (down, in maintenance, or you are setting a password PMM does not yet have), re-run the command with `--skip-connection-check`.

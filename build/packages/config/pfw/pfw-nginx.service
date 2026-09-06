@@ -8,7 +8,7 @@
 # effect) to the journal, so a non-root master doesn't fail opening the compiled-in
 # /var/log/nginx/error.log.
 [Unit]
-Description=PGF WatchTower nginx (TLS reverse proxy)
+Description=Postgres1st WatchTower nginx (TLS reverse proxy)
 After=pfw-init.service
 Requires=pfw-init.service
 PartOf=pfw.target

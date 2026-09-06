@@ -1,4 +1,4 @@
-# Connect Azure instance to PGF WatchTower
+# Connect Azure instance to Postgres1st WatchTower
 
 !!! caution alert alert-warning "Technical Preview"
     Microsoft Azure functionality is currently in [technical preview](../../../reference/glossary.md#technical-preview) and is subject to change.
@@ -14,9 +14,9 @@ The Microsoft Azure feature is turned off by default. To turn it on:
 
 ## Prerequisites
 
-PGF WatchTower can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
+Postgres1st WatchTower can monitor [Azure](https://azure.microsoft.com) database instances similar to other remote instances. In this case, the PMM Client is not installed on the host where the database server is deployed. 
 
-By using the PGF WatchTower web interface, you connect to the Azure DB instance. Discovery is not yet implemented in PGF WatchTower but it is possible to add known instances by providing the connection parameters.
+By using the Postgres1st WatchTower web interface, you connect to the Azure DB instance. Discovery is not yet implemented in Postgres1st WatchTower but it is possible to add known instances by providing the connection parameters.
 {.power-number}
 
 1. Minimize network latency between PMM Server and the Azure instance.
@@ -139,15 +139,15 @@ You can find more details on how to create DB on Azure at:
 - <https://docs.microsoft.com/en-us/azure/mysql/>
 
 !!! hint alert alert-success "Tip"
-    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use PGF WatchTower Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
+    You must set `pg_stat_statements.track = all` in your PostgreSQL Server settings to use Postgres1st WatchTower Query Analytics. [Read more](../connect-database/postgresql.md#configure-monitoring-extension).
 
 ![!](../../../images/PMM_Add_Instance_Azure_3.png)
 
-In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to PGF WatchTower.
+In the list of databases on the **Discovery** page click **Start Monitoring** to add the selected Azure Database to Postgres1st WatchTower.
 
-Fill in all required fields. To set how long PGF WatchTower waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
+Fill in all required fields. To set how long Postgres1st WatchTower waits when connecting, enter a value in **Connection timeout**. Leave it empty to use the default of 2s. Click **Add service**.
 
-PGF WatchTower can use 3 exporters to collect metrics:
+Postgres1st WatchTower can use 3 exporters to collect metrics:
 
 - Azure Metrics Exporter – collect "system" metrics related to DB.
 

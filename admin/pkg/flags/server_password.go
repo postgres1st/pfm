@@ -42,7 +42,7 @@ var (
 
 // ResolveServerPassword moves the server credential off the command line.
 //
-// --server-url takes https://username:password@host/, so the PGF WatchTower admin
+// --server-url takes https://username:password@host/, so the Postgres1st WatchTower admin
 // password appears in pfw-admin's own argv on every invocation -- readable by any
 // local user through /proc/<pid>/cmdline, and written to shell history. With
 // --server-password-stdin the URL carries only the username and the password arrives

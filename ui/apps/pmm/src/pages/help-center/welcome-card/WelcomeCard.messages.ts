@@ -1,7 +1,7 @@
 export const Messages = {
-  title: 'Welcome to PGF WatchTower',
+  title: 'Welcome to Postgres1st WatchTower',
   description:
-    'PGF WatchTower is your open-source solution to monitor, manage, and optimize your PostgreSQL databases. With PGF WatchTower, you can:',
+    'Postgres1st WatchTower is your open-source solution to monitor, manage, and optimize your PostgreSQL databases. With Postgres1st WatchTower, you can:',
   points: {
     spot: 'Spot and fix issues faster with detailed insights into performance and incidents.',
     keep: 'Keep databases healthy with automated checks and alerts for security, performance, and data risks.',
@@ -9,10 +9,10 @@ export const Messages = {
       'Optimize query performance with deep insights down to individual PostgreSQL queries.',
   },
   ready: 'Ready to begin?',
-  tour: 'Take the PGF WatchTower tour to learn your way around. For immediate value, add your first database service and explore our Help Center resources below.',
+  tour: 'Take the Postgres1st WatchTower tour to learn your way around. For immediate value, add your first database service and explore our Help Center resources below.',
   tourNonAdmin:
-    'Take the PGF WatchTower tour to learn your way around or explore our Help Center resources below.',
-  startTour: 'Start PGF WatchTower tour',
+    'Take the Postgres1st WatchTower tour to learn your way around or explore our Help Center resources below.',
+  startTour: 'Start Postgres1st WatchTower tour',
   addService: 'Add service',
   dismiss: 'Dismiss message',
 };

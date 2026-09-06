@@ -9,8 +9,8 @@ Build-Depends: debhelper
 Package: pfw-client
 Architecture: any
 Description: Postgres1st Monitoring and Management Client
- PGF WatchTower is an open-source platform for managing and monitoring
+ Postgres1st WatchTower is an open-source platform for managing and monitoring
  PostgreSQL performance.
- PGF WatchTower is a free and open-source solution that you can run in your own environment for maximum security and
+ Postgres1st WatchTower is a free and open-source solution that you can run in your own environment for maximum security and
  reliability. It provides thorough time-based analysis for PostgreSQL servers to ensure that your data works
  as efficiently as possible.

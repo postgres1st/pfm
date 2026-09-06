@@ -1,7 +1,7 @@
 # About PMM Server upgrade
 
 !!! caution alert alert-warning "Upgrade PMM Server before Clients"
-    - When upgrading PGF WatchTower, always upgrade the PMM Server before upgrading any PMM Clients.
+    - When upgrading Postgres1st WatchTower, always upgrade the PMM Server before upgrading any PMM Clients.
     - Make sure that the PMM Server version is higher than or equal to the PMM Client version. Mismatched versions can lead to configuration issues and failures in Client-Server communication, as the PMM Server may not recognize all parameters in the client configuration.
 
 ## Available upgrade methods
@@ -12,4 +12,4 @@ Choose your preferred upgrade method based on your setup:
 * [Upgrade PMM Server using Docker](upgrade_docker.md)
 * [Upgrade PMM Server using Helm](upgrade_helm.md)
 * [Upgrade PMM Server from the UI](ui_upgrade.md) (deprecated)
-* [Migrate from PGF WatchTower 2](migrating_from_pmm_2.md) (direct migration deprecated)
+* [Migrate from Postgres1st WatchTower 2](migrating_from_pmm_2.md) (direct migration deprecated)

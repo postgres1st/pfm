@@ -1,6 +1,6 @@
-# PGF WatchTower — air-gapped installation (RHEL / Rocky Linux 9, @ARCH@)
+# Postgres1st WatchTower — air-gapped installation (RHEL / Rocky Linux 9, @ARCH@)
 
-PGF WatchTower, delivered as a yum repository.
+Postgres1st WatchTower, delivered as a yum repository.
 **No internet access is required on any host.**
 
 **This document covers the monitoring server.** To monitor a PostgreSQL host, install the
@@ -11,7 +11,7 @@ One bundle serves both: `pfw-server-el9-@ARCH@.tar.gz` contains the server and t
 The filename says `server` because that is the larger part of it; there is no separate
 client download.
 
-The bundle carries PGF WatchTower itself, PostgreSQL (PGDG) and ClickHouse — none of which your
+The bundle carries Postgres1st WatchTower itself, PostgreSQL (PGDG) and ClickHouse — none of which your
 distribution provides. It does **not** carry your distribution's own packages: `nginx`,
 `perl`, `polkit` and the rest are the OS vendor's to supply, and a current EL9 host
 already has them. If the server cannot reach your OS repositories, step 4 fetches them
@@ -64,7 +64,7 @@ gpg --show-keys --with-fingerprint pfw-repo/RPM-GPG-KEY-postgres1st
 ```bash
 sudo tee /etc/yum.repos.d/pfw.repo >/dev/null <<'EOF'
 [pfw]
-name=PGF WatchTower Server (air-gapped)
+name=Postgres1st WatchTower Server (air-gapped)
 baseurl=file:///absolute/path/to/pfw-repo
 enabled=1
 gpgcheck=1
@@ -81,7 +81,7 @@ Use the **absolute** path to the unpacked `pfw-repo` directory, in both fields.
 
 ## 4. Make the operating-system packages available
 
-This bundle ships PGF WatchTower, PostgreSQL and ClickHouse. It does **not** ship your
+This bundle ships Postgres1st WatchTower, PostgreSQL and ClickHouse. It does **not** ship your
 distribution's own packages — `nginx`, `perl`, `polkit`, `openssl` and friends are the
 OS vendor's to supply.
 
@@ -100,7 +100,7 @@ result across:
 # copy the resulting pfw-os-deps/ directory to this server, then:
 sudo tee /etc/yum.repos.d/pfw-os-deps.repo >/dev/null <<'EOF'
 [pfw-os-deps]
-name=PGF WatchTower OS dependencies
+name=Postgres1st WatchTower OS dependencies
 baseurl=file:///absolute/path/to/pfw-os-deps
 enabled=1
 gpgcheck=0
@@ -117,7 +117,7 @@ architecture or EL version rather than producing a set that fails here.
 sudo dnf --enablerepo=pfw install pfw-server
 ```
 
-`--enablerepo=pfw` names where PGF WatchTower, PostgreSQL and ClickHouse come from — and works
+`--enablerepo=pfw` names where Postgres1st WatchTower, PostgreSQL and ClickHouse come from — and works
 whether or not you left `enabled=1` in the repository file, so it is safe if your site
 adds repositories disabled by default. Your own repositories stay enabled, which is how
 `nginx`, `perl` and the other operating-system packages get resolved, exactly as they
@@ -370,7 +370,7 @@ Grafana 3000, qan-api2 9911/9922 — binds to **loopback only**.
 > The exporter ports carry database and OS statistics. They require HTTP basic auth
 > with a credential generated per agent at registration, and bind **loopback by
 > default**. They only bind all interfaces for services registered
-> `--metrics-mode=pull --expose-exporter`; firewall those to the PGF WatchTower
+> `--metrics-mode=pull --expose-exporter`; firewall those to the Postgres1st WatchTower
 > server (see *Restrict what is reachable*).
 
 ## Operations
@@ -451,7 +451,7 @@ re-runs first-boot provisioning from scratch.
 
 `pfw-admin add postgresql` defaults to `--query-source=pgstatmonitor`, and
 **`pg_stat_monitor` is not part of this bundle**. It belongs on the database you are
-monitoring, not on the PGF WatchTower server, so installing it is the operator's step —
+monitoring, not on the Postgres1st WatchTower server, so installing it is the operator's step —
 the bundle would have no way to reach a monitored host anyway.
 
 Either install `pg_stat_monitor` on the monitored PostgreSQL and keep the default, or

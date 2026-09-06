@@ -21,7 +21,7 @@
 Name:		  pfw-dashboards
 Version:	%{version}
 Release:	%{rpm_release}
-Summary:	PGF WatchTower dashboards for PostgreSQL monitoring
+Summary:	Postgres1st WatchTower dashboards for PostgreSQL monitoring
 
 License:	AGPLv3
 URL:		  https://%{provider}
@@ -35,7 +35,7 @@ Source1:	https://github.com/grafana/clickhouse-datasource/releases/download/v%{c
 Source2:	https://github.com/grafana/grafana-polystat-panel/releases/download/v%{polystat_panel_version}/grafana-polystat-panel-%{polystat_panel_version}.zip
 
 %description
-This package provides a set of PGF WatchTower dashboards for PostgreSQL and system monitoring
+This package provides a set of Postgres1st WatchTower dashboards for PostgreSQL and system monitoring
 using VictoriaMetrics datasource.
 
 
@@ -69,4 +69,4 @@ echo %{version} > %{buildroot}/opt/postgres1st/watchtower/dashboards/VERSION
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

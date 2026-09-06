@@ -25,7 +25,7 @@ describe('ClientsModal', () => {
     expect(onCloseMock).toHaveBeenCalled();
   });
 
-  it('navigates home when "Go to PGF WatchTower Home" is clicked', () => {
+  it('navigates home when "Go to Postgres1st WatchTower Home" is clicked', () => {
     render(<ClientsModal isOpen onClose={onCloseMock} />);
 
     expect(screen.getByTestId('modal-pmm-home-link')).toHaveAttribute(

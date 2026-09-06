@@ -12,7 +12,7 @@
         "iconColor": "#e0752d",
         "limit": 100,
         "matchAny": true,
-        "name": "PGF WatchTower Annotations",
+        "name": "Postgres1st WatchTower Annotations",
         "showIn": 0,
         "tags": [
           "pfw_annotation",
@@ -74,7 +74,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core component up and running?",
+      "description": "Is the Postgres1st WatchTower Core component up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -320,7 +320,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core element up and running?",
+      "description": "Is the Postgres1st WatchTower Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -566,7 +566,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core element up and running?",
+      "description": "Is the Postgres1st WatchTower Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2181,7 +2181,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core element up and running?",
+      "description": "Is the Postgres1st WatchTower Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2936,12 +2936,12 @@
       },
       "id": 1056,
       "panels": [],
-      "title": "PGF WatchTower ManageD",
+      "title": "Postgres1st WatchTower ManageD",
       "type": "row"
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core element up and running?",
+      "description": "Is the Postgres1st WatchTower Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3023,7 +3023,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Number of Advisors checks loaded in PGF WatchTower ",
+      "description": "Number of Advisors checks loaded in Postgres1st WatchTower ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3150,7 +3150,7 @@
           "refId": "A"
         }
       ],
-      "title": "Connected PGF WatchTower Agents",
+      "title": "Connected Postgres1st WatchTower Agents",
       "type": "stat"
     },
     {
@@ -5501,7 +5501,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Is the PGF WatchTower Core element up and running?",
+      "description": "Is the Postgres1st WatchTower Core element up and running?",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -6410,7 +6410,7 @@
     },
     {
       "datasource": "Metrics",
-      "description": "Reports whether PGF WatchTower Server can connect to the PostgreSQL instance.",
+      "description": "Reports whether Postgres1st WatchTower Server can connect to the PostgreSQL instance.",
       "fieldConfig": {
         "defaults": {
           "color": {

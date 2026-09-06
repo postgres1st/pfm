@@ -105,7 +105,7 @@ start_container_named
 # pfw-agent. If the client half of the bundle ever stops being installable on its own --
 # a dependency that only the server package pulls in, say -- this is what catches it.
 cli "rpm --import /pfw-repo/RPM-GPG-KEY-postgres1st"
-cli "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file:///pfw-repo\nenabled=1\ngpgcheck=1\ngpgkey=file:///pfw-repo/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
+cli "printf '[pfw]\nname=Postgres1st WatchTower\nbaseurl=file:///pfw-repo\nenabled=1\ngpgcheck=1\ngpgkey=file:///pfw-repo/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
 if cli "dnf --disablerepo='*' --enablerepo=pfw -y install pfw-agent >/tmp/install.log 2>&1"; then
     ok "dnf install pfw-agent, offline, on a host with no server packages"
 else

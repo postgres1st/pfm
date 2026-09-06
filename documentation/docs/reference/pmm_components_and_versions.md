@@ -1,4 +1,4 @@
-# PGF WatchTower components and versions
+# Postgres1st WatchTower components and versions
 
 The following table lists all the PMM client/server components and their versions:
 

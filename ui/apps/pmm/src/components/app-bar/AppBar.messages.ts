@@ -1,4 +1,4 @@
 export const Messages = {
-  title: 'PGF WatchTower',
+  title: 'Postgres1st WatchTower',
   support: 'Support',
 };

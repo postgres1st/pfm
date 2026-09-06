@@ -6,9 +6,9 @@ category:
 position: 2
 ---
 
-In order to get a Database (or Service in PGF WatchTower terminology) monitored you need:
+In order to get a Database (or Service in Postgres1st WatchTower terminology) monitored you need:
 
-- [Install PGF WatchTower](https://per.co.na/pmm/quickstart)
+- [Install Postgres1st WatchTower](https://per.co.na/pmm/quickstart)
 - [PMM Server Configuration](ref:pmm-server-configuration)
 - [Register Node](ref:registernode)
 - [Add Service to Monitoring](ref:add-service)

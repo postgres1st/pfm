@@ -1,7 +1,7 @@
 # QAN App (pmm-app) Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../../AGENTS.md) — product overview, architecture, domain model, global conventions
-> **Related**: [dashboards/dashboards/AGENTS.md](../dashboards/AGENTS.md) (dashboard JSON definitions bundled by this plugin) · [ui/AGENTS.md](../../ui/AGENTS.md) (main PGF WatchTower frontend) · [api/AGENTS.md](../../api/AGENTS.md) (API definitions consumed by QAN) · [qan-api2/AGENTS.md](../../qan-api2/AGENTS.md) (QAN backend)
+> **Related**: [dashboards/dashboards/AGENTS.md](../dashboards/AGENTS.md) (dashboard JSON definitions bundled by this plugin) · [ui/AGENTS.md](../../ui/AGENTS.md) (main Postgres1st WatchTower frontend) · [api/AGENTS.md](../../api/AGENTS.md) (API definitions consumed by QAN) · [qan-api2/AGENTS.md](../../qan-api2/AGENTS.md) (QAN backend)
 
 The `dashboards/pmm-app/` directory contains a **Grafana application plugin** (`type: app`, `id: pmm-app`) that bundles the dashboard JSON definitions and provides the custom **Query Analytics (QAN) panel** (`pmm-qan-app-panel`). It is built with TypeScript and React on top of Grafana's plugin SDK.
 
@@ -23,7 +23,7 @@ plugin.json includes[]:
   - panel: pmm-qan-app-panel
 
 Build (webpack) → dist/
-  → deployed to Grafana plugins directory on PGF WatchTower Server
+  → deployed to Grafana plugins directory on Postgres1st WatchTower Server
 ```
 
 ### Key Technology Choices
@@ -113,7 +113,7 @@ yarn lint && yarn typecheck
 
 ### Docker Development
 
-`pmm-app/docker-compose.yaml` provides a local Grafana environment that mounts `./dist` into the PGF WatchTower Server plugin directory:
+`pmm-app/docker-compose.yaml` provides a local Grafana environment that mounts `./dist` into the Postgres1st WatchTower Server plugin directory:
 
 ```bash
 cd dashboards/pmm-app

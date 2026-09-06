@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the air-gapped PGF WatchTower server bundle end to end.
+# Build the air-gapped Postgres1st WatchTower server bundle end to end.
 #
 #   build/scripts/build-pfw-airgap [stage ...]
 #
@@ -662,11 +662,11 @@ write_fetch_tooling() {
 
     sed -e "s/@ARCH@/${arch}/g" -e "s/@PACKAGES@/${pkgs}/g" > "${out}/fetch-os-dependencies.sh" <<'FETCH'
 #!/usr/bin/env bash
-# Fetch the operating-system packages PGF WatchTower needs.
+# Fetch the operating-system packages Postgres1st WatchTower needs.
 #
 #   ./fetch-os-dependencies.sh [output-directory]
 #
-# PGF WatchTower does not ship your distribution's own packages. Run this on an INTERNET-CONNECTED
+# Postgres1st WatchTower does not ship your distribution's own packages. Run this on an INTERNET-CONNECTED
 # EL9 host of the SAME architecture as the bundle, then copy the output directory to the
 # air-gapped server alongside pfw-repo/.
 #
@@ -719,7 +719,7 @@ Next:
 
      sudo tee /etc/yum.repos.d/pfw-os-deps.repo >/dev/null <<'EOF'
      [pfw-os-deps]
-     name=PGF WatchTower OS dependencies
+     name=Postgres1st WatchTower OS dependencies
      baseurl=file:///absolute/path/to/$(basename "${OUT}")
      enabled=1
      gpgcheck=0
@@ -728,7 +728,7 @@ Next:
   3. Continue with INSTALL.md.
 
 gpgcheck=0 because these are your distribution's packages, signed by your distribution's
-key, which PGF WatchTower does not re-sign. Import your vendor key and set gpgcheck=1 if you prefer.
+key, which Postgres1st WatchTower does not re-sign. Import your vendor key and set gpgcheck=1 if you prefer.
 EOM
 FETCH
     chmod +x "${out}/fetch-os-dependencies.sh"
@@ -902,7 +902,7 @@ stage_bundle() {
     write_install_md "${repo_dir}/build/packages/pfw-airgap-INSTALL.md"        "${PFW_OUT}/INSTALL.md"
     write_install_md "${repo_dir}/build/packages/pfw-airgap-INSTALL-CLIENT.md" "${PFW_OUT}/INSTALL-CLIENT.md"
     # Release notes live with the rest of the product documentation, one file per
-    # release, prefixed pfw- to distinguish genuine PGF WatchTower notes from the upstream Percona
+    # release, prefixed pfw- to distinguish genuine Postgres1st WatchTower notes from the upstream Percona
     # ones inherited in the same directory. Copied verbatim -- unlike INSTALL.md they
     # carry no @ARCH@ substitution and no signed/unsigned variation, and they ship in the
     # tarball because the operator running dnf is the one who needs the limitations and

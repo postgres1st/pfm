@@ -2,7 +2,7 @@
 
 ## Required settings
 
-It is possible to use PGF WatchTower for monitoring [Amazon RDS](https://aws.amazon.com/rds/). In this case, the PMM Client is not installed on the host where the database server is deployed. By using the PGF WatchTower web interface, you connect to the Amazon RDS DB instance. You only need to provide the IAM user access key (or assign an IAM role) and PGF WatchTower discovers the Amazon RDS DB instances available for monitoring.
+It is possible to use Postgres1st WatchTower for monitoring [Amazon RDS](https://aws.amazon.com/rds/). In this case, the PMM Client is not installed on the host where the database server is deployed. By using the Postgres1st WatchTower web interface, you connect to the Amazon RDS DB instance. You only need to provide the IAM user access key (or assign an IAM role) and Postgres1st WatchTower discovers the Amazon RDS DB instances available for monitoring.
 
 First of all, ensure that there is the minimal latency between PMM Server and the Amazon RDS instance.
 
@@ -72,11 +72,11 @@ Policies are attached to existing IAM users or groups. To create a new IAM user,
 
 ## Creating an access key for an IAM user
 
-To discover an Amazon RDS DB instance in PGF WatchTower, you either need to use the access key and secret access key of an existing IAM user or an IAM role. To create an access key for use with PGF WatchTower, open the IAM console and click **Users** on the navigation pane. Then, select your IAM user.
+To discover an Amazon RDS DB instance in Postgres1st WatchTower, you either need to use the access key and secret access key of an existing IAM user or an IAM role. To create an access key for use with Postgres1st WatchTower, open the IAM console and click **Users** on the navigation pane. Then, select your IAM user.
 
-To create the access key, open the **Security credentials** tab and click the **Create access key** button. The system automatically generates a new access key ID and a secret access key that you can provide on the **PGF WatchTower Add Instance** dashboard to have your Amazon RDS DB instances discovered.
+To create the access key, open the **Security credentials** tab and click the **Create access key** button. The system automatically generates a new access key ID and a secret access key that you can provide on the **Postgres1st WatchTower Add Instance** dashboard to have your Amazon RDS DB instances discovered.
 
-In case, the PMM Server and Amazon RDS DB instance were created by using the same AWS account, you do not need create the access key ID and secret access key manually. PGF WatchTower retrieves this information automatically and attempts to discover your Amazon RDS DB instances.
+In case, the PMM Server and Amazon RDS DB instance were created by using the same AWS account, you do not need create the access key ID and secret access key manually. Postgres1st WatchTower retrieves this information automatically and attempts to discover your Amazon RDS DB instances.
 
 ## Attaching a policy to an IAM user
 
@@ -101,7 +101,7 @@ The `AmazonRDSforPMMPolicy` is now added to your IAM user.
 
 ## Creating an IAM role
 
-Instead of creating an IAM user you can create an IAM role for a service, to discover Amazon RDS DB instances automatically without the need for access and secret keys. (But this only works if you are running PGF WatchTower through AWS.)
+Instead of creating an IAM user you can create an IAM role for a service, to discover Amazon RDS DB instances automatically without the need for access and secret keys. (But this only works if you are running Postgres1st WatchTower through AWS.)
 
 To create an IAM role open the IAM console and click **Roles** on the navigation pane.
 {.power-number}
@@ -124,7 +124,7 @@ To create an IAM role open the IAM console and click **Roles** on the navigation
 
 9. Click the **Create role** button.
 
-After the role is created EC2 instances running PGF WatchTower will have permissions to discover RDS DB instances.
+After the role is created EC2 instances running Postgres1st WatchTower will have permissions to discover RDS DB instances.
 
 !!! note alert alert-primary ""
     It’s also possible to create an IAM role to delegate permissions to an IAM user or to add permissions to a user belonging to another AWS account. See the [official AWS documentation on creating IAM roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create.html).
@@ -160,28 +160,28 @@ To configure TLS for your RDS instance:
 
 2. Store the certificate file on the server where PMM Client or PMM Server is installed.
 
-3. When adding the RDS instance to PGF WatchTower, enable TLS and provide the CA certificate.
+3. When adding the RDS instance to Postgres1st WatchTower, enable TLS and provide the CA certificate.
 
 ## Adding an Amazon RDS, Aurora or remote instance
 
 !!! caution alert alert-warning "Important"
-    It may take longer for PGF WatchTower to discover Amazon RDS instances in the `creating` state. You must wait a bit longer until PGF WatchTower discovers these instances.
+    It may take longer for Postgres1st WatchTower to discover Amazon RDS instances in the `creating` state. You must wait a bit longer until Postgres1st WatchTower discovers these instances.
 
 
-The preferred method of adding an Amazon RDS database instance to PGF WatchTower is via the :material-cog: **Inventory > Add service** menu option.
+The preferred method of adding an Amazon RDS database instance to Postgres1st WatchTower is via the :material-cog: **Inventory > Add service** menu option.
 
 This method supports Amazon RDS database instances that use Amazon Aurora, MySQL, or MariaDB engines, as well as any remote PostgreSQL, ProxySQL, MySQL and MongoDB instances.
 
-The following steps are needed to add an Amazon RDS database instance to PGF WatchTower:
+The following steps are needed to add an Amazon RDS database instance to Postgres1st WatchTower:
 {.power-number}
 
-1. In the PGF WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
+1. In the Postgres1st WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS.png)
 
 2. Enter the access key ID and the secret access key of your IAM user or leave these fields empty if an IAM role was created.
 
-3. Click the **Discover** button for PGF WatchTower to retrieve the available Amazon RDS
+3. Click the **Discover** button for Postgres1st WatchTower to retrieve the available Amazon RDS
 instances.
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS_Discover.png)
@@ -192,7 +192,7 @@ instances.
 
     ![!](../../../images/PMM_Add_Instance_AWS_RDS_Main_Details.png)
 
-    The **Main details** section allows you to specify the DNS hostname of your instance, the service name to use within PGF WatchTower, the port your service is listening on, the database user name and password, and optionally the **Instance ID** to match your RDS instance between PGF WatchTower and the AWS console.    
+    The **Main details** section allows you to specify the DNS hostname of your instance, the service name to use within Postgres1st WatchTower, the port your service is listening on, the database user name and password, and optionally the **Instance ID** to match your RDS instance between Postgres1st WatchTower and the AWS console.    
 
     ![!image](../../../images/PMM_Add_Instance_AWS_RDS_Labels.png)
 
@@ -206,7 +206,7 @@ instances.
     - Use TLS for the database connection.
     - Skip TLS certificate and hostname validation.
     - Disable basic and/or enhanced metrics collection for the RDS instance to reduce costs.
-    - Set **Connection timeout** to control how long PGF WatchTower waits when connecting to the instance. Leave empty to use the default of 5s.
+    - Set **Connection timeout** to control how long Postgres1st WatchTower waits when connecting to the instance. Leave empty to use the default of 5s.
 
     Also this section contains a database-specific flag, which would allow Query Analytics for the selected remote database:
 
@@ -282,7 +282,7 @@ When using TLS certificates with Amazon RDS MySQL, make sure to:
 For PostgreSQL, use the same method described above.
 {.power-number}
 
-1. In the PGF WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
+1. In the Postgres1st WatchTower web interface, go to **Inventory > Add service > Amazon RDS**.
 
     ![!image](../../../images/PMM_rds_postgre_02_discover.png)
 

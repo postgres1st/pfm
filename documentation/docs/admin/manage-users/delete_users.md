@@ -1,6 +1,6 @@
 ## Delete users
 
-You can delete a user in PGF WatchTower as follows:
+You can delete a user in Postgres1st WatchTower as follows:
 {.power-number}
 
 1. Go to **Users and access > Users** tab.

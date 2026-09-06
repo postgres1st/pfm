@@ -4,7 +4,7 @@ The PMM Client configuration file, [`pfw-agent.yaml`](../../use/commands/pmm-age
 
 To protect this data, you can encrypt the configuration file so that its contents are unreadable on disk. 
 
-This involves generating an RSA private key and passing it to PMM Client during setup. PGF WatchTower then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
+This involves generating an RSA private key and passing it to PMM Client during setup. Postgres1st WatchTower then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
 
 Encryption is optional. Without an encryption key, PMM Client continues to read and write the configuration file in plain text.
 

@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower Dump API",
+    "title": "Postgres1st WatchTower Dump API",
     "version": "v1beta1"
   },
   "paths": {

@@ -8,7 +8,6 @@ package serverv1
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -34,24 +33,24 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// Server service provides generic PGF WatchTower Server public APIs.
+// Server service provides generic Postgres1st WatchTower Server public APIs.
 type ServerServiceClient interface {
-	// Version returns PGF WatchTower Server versions.
+	// Version returns Postgres1st WatchTower Server versions.
 	Version(ctx context.Context, in *VersionRequest, opts ...grpc.CallOption) (*VersionResponse, error)
 	// Readiness returns an error when Server components being restarted are not ready yet.
 	// Use this API for checking the health of Docker containers and for probing Kubernetes readiness.
 	Readiness(ctx context.Context, in *ReadinessRequest, opts ...grpc.CallOption) (*ReadinessResponse, error)
 	// LeaderHealthCheck checks if the instance is the leader in a cluster.
 	LeaderHealthCheck(ctx context.Context, in *LeaderHealthCheckRequest, opts ...grpc.CallOption) (*LeaderHealthCheckResponse, error)
-	// CheckUpdates checks for available PGF WatchTower Server updates.
+	// CheckUpdates checks for available Postgres1st WatchTower Server updates.
 	CheckUpdates(ctx context.Context, in *CheckUpdatesRequest, opts ...grpc.CallOption) (*CheckUpdatesResponse, error)
 	// ListChangeLogs delivers the changelog.
 	ListChangeLogs(ctx context.Context, in *ListChangeLogsRequest, opts ...grpc.CallOption) (*ListChangeLogsResponse, error)
-	// GetSettings returns current PGF WatchTower Server settings.
+	// GetSettings returns current Postgres1st WatchTower Server settings.
 	GetSettings(ctx context.Context, in *GetSettingsRequest, opts ...grpc.CallOption) (*GetSettingsResponse, error)
 	// GetReadOnlySettings returns a limited number of PMM settings that is opened to authenticated users of all roles.
 	GetReadOnlySettings(ctx context.Context, in *GetReadOnlySettingsRequest, opts ...grpc.CallOption) (*GetReadOnlySettingsResponse, error)
-	// ChangeSettings changes PGF WatchTower Server settings.
+	// ChangeSettings changes Postgres1st WatchTower Server settings.
 	ChangeSettings(ctx context.Context, in *ChangeSettingsRequest, opts ...grpc.CallOption) (*ChangeSettingsResponse, error)
 }
 
@@ -147,24 +146,24 @@ func (c *serverServiceClient) ChangeSettings(ctx context.Context, in *ChangeSett
 // All implementations must embed UnimplementedServerServiceServer
 // for forward compatibility.
 //
-// Server service provides generic PGF WatchTower Server public APIs.
+// Server service provides generic Postgres1st WatchTower Server public APIs.
 type ServerServiceServer interface {
-	// Version returns PGF WatchTower Server versions.
+	// Version returns Postgres1st WatchTower Server versions.
 	Version(context.Context, *VersionRequest) (*VersionResponse, error)
 	// Readiness returns an error when Server components being restarted are not ready yet.
 	// Use this API for checking the health of Docker containers and for probing Kubernetes readiness.
 	Readiness(context.Context, *ReadinessRequest) (*ReadinessResponse, error)
 	// LeaderHealthCheck checks if the instance is the leader in a cluster.
 	LeaderHealthCheck(context.Context, *LeaderHealthCheckRequest) (*LeaderHealthCheckResponse, error)
-	// CheckUpdates checks for available PGF WatchTower Server updates.
+	// CheckUpdates checks for available Postgres1st WatchTower Server updates.
 	CheckUpdates(context.Context, *CheckUpdatesRequest) (*CheckUpdatesResponse, error)
 	// ListChangeLogs delivers the changelog.
 	ListChangeLogs(context.Context, *ListChangeLogsRequest) (*ListChangeLogsResponse, error)
-	// GetSettings returns current PGF WatchTower Server settings.
+	// GetSettings returns current Postgres1st WatchTower Server settings.
 	GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error)
 	// GetReadOnlySettings returns a limited number of PMM settings that is opened to authenticated users of all roles.
 	GetReadOnlySettings(context.Context, *GetReadOnlySettingsRequest) (*GetReadOnlySettingsResponse, error)
-	// ChangeSettings changes PGF WatchTower Server settings.
+	// ChangeSettings changes Postgres1st WatchTower Server settings.
 	ChangeSettings(context.Context, *ChangeSettingsRequest) (*ChangeSettingsResponse, error)
 	mustEmbedUnimplementedServerServiceServer()
 }
@@ -179,31 +178,24 @@ type UnimplementedServerServiceServer struct{}
 func (UnimplementedServerServiceServer) Version(context.Context, *VersionRequest) (*VersionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Version not implemented")
 }
-
 func (UnimplementedServerServiceServer) Readiness(context.Context, *ReadinessRequest) (*ReadinessResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Readiness not implemented")
 }
-
 func (UnimplementedServerServiceServer) LeaderHealthCheck(context.Context, *LeaderHealthCheckRequest) (*LeaderHealthCheckResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LeaderHealthCheck not implemented")
 }
-
 func (UnimplementedServerServiceServer) CheckUpdates(context.Context, *CheckUpdatesRequest) (*CheckUpdatesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckUpdates not implemented")
 }
-
 func (UnimplementedServerServiceServer) ListChangeLogs(context.Context, *ListChangeLogsRequest) (*ListChangeLogsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListChangeLogs not implemented")
 }
-
 func (UnimplementedServerServiceServer) GetSettings(context.Context, *GetSettingsRequest) (*GetSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSettings not implemented")
 }
-
 func (UnimplementedServerServiceServer) GetReadOnlySettings(context.Context, *GetReadOnlySettingsRequest) (*GetReadOnlySettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetReadOnlySettings not implemented")
 }
-
 func (UnimplementedServerServiceServer) ChangeSettings(context.Context, *ChangeSettingsRequest) (*ChangeSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ChangeSettings not implemented")
 }

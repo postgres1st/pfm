@@ -1,10 +1,10 @@
 # pfw-admin command overview
 
-`pfw-admin` is the command-line tool for managing your PGF WatchTower monitoring setup. Use it to add databases, check connection status, update agent configurations, and troubleshoot issues from your terminal.
+`pfw-admin` is the command-line tool for managing your Postgres1st WatchTower monitoring setup. Use it to add databases, check connection status, update agent configurations, and troubleshoot issues from your terminal.
 
 `pfw-admin` is installed automatically with PMM Client.
 
-To add services through the UI instead, see [Connect databases via the web interface](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
+To add services through the UI instead, see [Connect databases via the web interface](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
 
 Use `pfw-admin` to:
 
@@ -113,5 +113,5 @@ pfw-admin inventory change agent --help
 ## See also
 
 - [PMM Client agent](../pmm-agent.md)
-- [Connect databases to PGF WatchTower](../../../install-pmm/install-pmm-client/connect-database/index.md)
+- [Connect databases to Postgres1st WatchTower](../../../install-pmm/install-pmm-client/connect-database/index.md)
 - [Remove databases from monitoring](../../remove-services.md)

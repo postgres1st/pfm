@@ -1,8 +1,8 @@
 # Download and verify OVA file
 
 
-!!! warning "OVF support ending in PGF WatchTower 3.9.0"
-    OVF/OVA distribution is deprecated starting with PGF WatchTower 3.7.0 and will be removed in PGF WatchTower 3.9.0 (expected July 2026). No new OVA images will be published after that release. Migrate to [Docker](../docker/index.md) or another supported deployment method before PGF WatchTower 3.9.0.
+!!! warning "OVF support ending in Postgres1st WatchTower 3.9.0"
+    OVF/OVA distribution is deprecated starting with Postgres1st WatchTower 3.7.0 and will be removed in Postgres1st WatchTower 3.9.0 (expected July 2026). No new OVA images will be published after that release. Migrate to [Docker](../docker/index.md) or another supported deployment method before Postgres1st WatchTower 3.9.0.
 Download the Virtual Appliance (OVA) file to deploy PMM Server as a virtual machine.
 
 ## Supported platforms
@@ -20,7 +20,7 @@ The PMM Server OVA works with:
     {.power-number}
 
     1. Visit the [Percona Downloads page](https://www.percona.com/downloads) from a web browser.
-    2. Make sure PGF WatchTower 3 is selected, then choose a PGF WatchTower version and select **SERVER - VIRTUAL APPLIANCE OVF**.
+    2. Make sure Postgres1st WatchTower 3 is selected, then choose a Postgres1st WatchTower version and select **SERVER - VIRTUAL APPLIANCE OVF**.
     3. Click the **DOWNLOAD** link for `pmm-server-{{release}}.ova` and note where your browser saves it.
     4. Right-click the link for `pmm-server-{{release}}.sha256sum` and save it in the same place as the `.ova` file.
 

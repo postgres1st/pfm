@@ -2,7 +2,7 @@
 # Used as base - look for .yml files with INHERIT
 # https://www.mkdocs.org/user-guide/configuration/
 
-site_name: PGF WatchTower
+site_name: Postgres1st WatchTower
 site_description: Documentation
 site_author: Postgres1st
 site_url: ""
@@ -138,7 +138,7 @@ nav:
   - Quickstart guide: quickstart/quickstart.md
   - Install:
       - install-pmm/index.md
-      - Plan your PGF WatchTower installation:
+      - Plan your Postgres1st WatchTower installation:
           - install-pmm/plan-pmm-installation/choose-deployment.md
           - install-pmm/plan-pmm-installation/hardware_and_system.md
           - install-pmm/plan-pmm-installation/network_and_firewall.md
@@ -178,7 +178,7 @@ nav:
                         - Initial setup: install-pmm/install-pmm-server/deployment-options/aws/configure_aws.md
                   - VM configuration: 
                         - Configure environment variables: install-pmm/install-pmm-server/deployment-options/virtual/env_var.md
-                        - Access PGF WatchTower UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
+                        - Access Postgres1st WatchTower UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
                         - Remove VM: install-pmm/install-pmm-server/deployment-options/virtual/remove_virtual_machine.md     
                         - SSH key: install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
               - Install on Kubernetes:
@@ -210,25 +210,25 @@ nav:
                   - HAproxy: install-pmm/install-pmm-client/connect-database/haproxy.md
               - External services monitoring:
                   - Connect external instance: install-pmm/install-pmm-client/connect-database/external.md
-      - Install PGF WatchTower in HA mode: 
+      - Install Postgres1st WatchTower in HA mode: 
         - Compare HA options: install-pmm/HA.md
         - Docker HA: install-pmm/HA-docker.md
         - Kubernetes Single-Instance: install-pmm/HA-kubernetes-single-instance.md
         - Kubernetes Cluster: 
-            - Understand PGF WatchTower HA Cluster: install-pmm/HA-clustered.md
-            - Install PGF WatchTower HA Cluster: install-pmm/install-HA-clustered.md
+            - Understand Postgres1st WatchTower HA Cluster: install-pmm/HA-clustered.md
+            - Install Postgres1st WatchTower HA Cluster: install-pmm/install-HA-clustered.md
 
   - Use:
       - use/using-pmm.md
-      - PGF WatchTower user interface:
+      - Postgres1st WatchTower user interface:
           - reference/ui/ui_components.md
           - reference/ui/log_in.md
           - reference/ui/timezone.md
-      - PGF WatchTower Inventory: use/dashboard-inventory.md
+      - Postgres1st WatchTower Inventory: use/dashboard-inventory.md
       - Remove services: use/remove-services.md
       - Metrics monitoring:
           - use/monitor.md
-          - PGF WatchTower metrics:
+          - Postgres1st WatchTower metrics:
               - use/metrics/index.md
               - use/metrics/extend_metrics.md
           - Dashboards:
@@ -306,7 +306,7 @@ nav:
       - configure-pmm/advanced_settings.md
       - install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
 
-      - Security in PGF WatchTower:
+      - Security in Postgres1st WatchTower:
           - admin/security/index.md
           - admin/security/ssl_encryption.md
           - admin/security/grafana_cookies.md
@@ -362,22 +362,22 @@ nav:
       - troubleshoot/data_issues.md
   - Release notes:
       - Release notes index: release-notes/index.md
-      - "PGF WatchTower 3.9.0 beta2": release-notes/pfw-3.9.0-beta2.md
-      - "PGF WatchTower 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
+      - "Postgres1st WatchTower 3.9.0 beta2": release-notes/pfw-3.9.0-beta2.md
+      - "Postgres1st WatchTower 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
   - Reference:
       - Architecture:
           - reference/index.md
-          - Third-party components in PGF WatchTower:
+          - Third-party components in Postgres1st WatchTower:
               - reference/third-party/victoria.md
               - reference/third-party/clickhouse.md
               - reference/third-party/postgresql.md
           - reference/pmm_components_and_versions.md
           - reference/personal_data_handling.md
-          - PGF WatchTower API:
+          - Postgres1st WatchTower API:
               - api/index.md
               - api/authentication.md
-          - PGF WatchTower commands:
-              - About PGF WatchTower commands: use/commands/index.md
+          - Postgres1st WatchTower commands:
+              - About Postgres1st WatchTower commands: use/commands/index.md
               - pmm-admin:
                 - pmm-admin overview: use/commands/pmm-admin/pmm-admin.md
                 - Add database services: use/commands/pmm-admin/add.md
@@ -385,7 +385,7 @@ nav:
                 - Configuration commands: use/commands/pmm-admin/config.md
                 - Status and diagnostics: use/commands/pmm-admin/status.md
               - pmm-agent: use/commands/pmm-agent.md
-      - PGF WatchTower dashboards:
+      - Postgres1st WatchTower dashboards:
           - Insight:
               - reference/dashboards/dashboard-home.md
               - reference/dashboards/dashboard-advanced-data-exploration.md

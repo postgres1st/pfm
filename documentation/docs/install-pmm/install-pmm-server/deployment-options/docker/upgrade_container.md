@@ -19,7 +19,7 @@ Before you start upgrading, check current PMM Server version:
 
 === "Via web UI"
 
-    Use the **PGF WatchTower Upgrade** panel on the **Home Dashboard** to check for available updates.
+    Use the **Postgres1st WatchTower Upgrade** panel on the **Home Dashboard** to check for available updates.
 
 ## Upgrade procedure
 
@@ -64,7 +64,7 @@ To upgrade the container:
     curl -ku admin:admin https://localhost/v1/version
     ```
 
-7. Access the PGF WatchTower web interface and confirm your dashboards and monitoring are working correctly.
+7. Access the Postgres1st WatchTower web interface and confirm your dashboards and monitoring are working correctly.
 
 ## Troubleshooting
 
@@ -87,7 +87,7 @@ If you encounter issues after upgrading:
    ```
 ## Automated upgrades with the Watchtower updater
 
-If you installed [PMM Server with the Watchtower updater](../docker/index.md#install-pmm-server--watchtower-updater), you can [upgrade directly from the PGF WatchTower UI](../../../../pmm-upgrade/ui_upgrade.md). This method handles the entire upgrade process automatically, including pulling the new image and restarting the container.
+If you installed [PMM Server with the Watchtower updater](../docker/index.md#install-pmm-server--watchtower-updater), you can [upgrade directly from the Postgres1st WatchTower UI](../../../../pmm-upgrade/ui_upgrade.md). This method handles the entire upgrade process automatically, including pulling the new image and restarting the container.
 
 ## Related topics
 

@@ -18,9 +18,9 @@ PMM Server offers three ways to access and download logs:
    - Default 50,000 lines: `https://<pmm-server>/v1/server/logs.zip`
    - Custom number of lines: `https://<pmm-server>/v1/server/logs.zip?line-count=10000`
    - Unlimited, full log: `https://<pmm-server>/v1/server/logs.zip?line-count=-1`
-3. Through the UI, by selecting the **Help > PGF WatchTower Logs** option from the main menu.
-  If you need to share logs with Percona Support via an SFTP server, you can also use the **PGF WatchTower Dump** option from the Help menu to generate a compressed tarball file with an export of your PGF WatchTower metrics and QAN data.
-  For more information, see [Export PGF WatchTower data with PGF WatchTower Dump](https://docs.percona.com/percona-monitoring-and-management/3/troubleshoot/pmm_dump.html) topic in the product documentation.
+3. Through the UI, by selecting the **Help > Postgres1st WatchTower Logs** option from the main menu.
+  If you need to share logs with Percona Support via an SFTP server, you can also use the **Postgres1st WatchTower Dump** option from the Help menu to generate a compressed tarball file with an export of your Postgres1st WatchTower metrics and QAN data.
+  For more information, see [Export Postgres1st WatchTower data with Postgres1st WatchTower Dump](https://docs.percona.com/percona-monitoring-and-management/3/troubleshoot/pmm_dump.html) topic in the product documentation.
 
 ## Log structure
 

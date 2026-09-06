@@ -1,31 +1,31 @@
 # Standard role permissions
 
-Roles are the sets of permissions and configurations that determine which metrics a user can access in Postgres1st (PGF WatchTower). Each PGF WatchTower user is associated with a role that includes permissions. PGF WatchTower Users then inherit permissions defined in the role which then determines the privileges that a user has in PGF WatchTower.
+Roles are the sets of permissions and configurations that determine which metrics a user can access in Postgres1st (Postgres1st WatchTower). Each Postgres1st WatchTower user is associated with a role that includes permissions. Postgres1st WatchTower Users then inherit permissions defined in the role which then determines the privileges that a user has in Postgres1st WatchTower.
 
-PGF WatchTower provides two methods of access control: standard roles (Viewer, Editor, Admin) that determine feature-level permissions, and label-based access control that allows administrators to create custom roles to specify which data can be queried based on specific label criteria, for instance, allowing the QA team to view data related only to test environments.
+Postgres1st WatchTower provides two methods of access control: standard roles (Viewer, Editor, Admin) that determine feature-level permissions, and label-based access control that allows administrators to create custom roles to specify which data can be queried based on specific label criteria, for instance, allowing the QA team to view data related only to test environments.
 
 For more granular data access control, see [Labels for access control](../roles/access-control/intro.md) which allows you to restrict which metrics users can query based on labels.
 
-## Role types in PGF WatchTower
+## Role types in Postgres1st WatchTower
 
-PGF WatchTower inherits its basic role structure from [Grafana](https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/) but with customizations specific to database monitoring. PGF WatchTower has three main role types:
+Postgres1st WatchTower inherits its basic role structure from [Grafana](https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/) but with customizations specific to database monitoring. Postgres1st WatchTower has three main role types:
 
-- **Admin**: Has access to all resources and features within a PGF WatchTower instance. This role can manage all aspects of PGF WatchTower including users, teams, data sources, dashboards, and server settings.
+- **Admin**: Has access to all resources and features within a Postgres1st WatchTower instance. This role can manage all aspects of Postgres1st WatchTower including users, teams, data sources, dashboards, and server settings.
 - **Editor**: Can view and edit dashboards, create custom visualizations, work with alerts, and manage specific configurations. Editors cannot modify server-wide settings or manage users.
 - **Viewer**: Has read-only access to monitoring data and dashboards. Viewers can query data but cannot make changes to configurations.
 
 ## Default role assignment
 
-When a user signs in to PGF WatchTower for the first time and has no role assigned, they are automatically assigned the default role. Administrators can configure which role is used as the default through the access control settings.
+When a user signs in to Postgres1st WatchTower for the first time and has no role assigned, they are automatically assigned the default role. Administrators can configure which role is used as the default through the access control settings.
 
-If an Admin has not configured a custom default role, PGF WatchTower assigns:
+If an Admin has not configured a custom default role, Postgres1st WatchTower assigns:
 
 - Grafana role: Viewer
-- PGF WatchTower access control: Full Access to all metrics
+- Postgres1st WatchTower access control: Full Access to all metrics
 
 ## Dashboard permissions
 
-Dashboard creators in PGF WatchTower automatically get Admin permissions for the dashboards they create. Folder permissions cascade to all dashboards within that folder.
+Dashboard creators in Postgres1st WatchTower automatically get Admin permissions for the dashboards they create. Folder permissions cascade to all dashboards within that folder.
 
 ## Permission matrix
 Use the matrix below to check which permissions users have based on their assigned role:

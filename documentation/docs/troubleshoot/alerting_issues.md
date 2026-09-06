@@ -10,9 +10,9 @@ Percona Alerting option isn't active.
 
 ## Custom alert rule templates not migrated to Percona Alerting
 
-After upgrading from the latest PGF WatchTower 2 version to PGF WatchTower 3, you will find all your alert templates under **Alerts > Alert templates**.
+After upgrading from the latest Postgres1st WatchTower 2 version to Postgres1st WatchTower 3, you will find all your alert templates under **Alerts > Alert templates**.
 
-If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as PGF WatchTower 3 will look for custom templates in this location.
+If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as Postgres1st WatchTower 3 will look for custom templates in this location.
 
 ## Unreachable external IP addresses
 

@@ -4,7 +4,7 @@
 #   VMPROXY_TARGET_URL   the VM URL (internal vs external VM)
 # T3b/T7 seeds the internal default so it starts before pmm-managed's render.
 [Unit]
-Description=PGF WatchTower vmproxy (metrics proxy)
+Description=Postgres1st WatchTower vmproxy (metrics proxy)
 After=pfw-init.service pfw-victoriametrics.service
 Requires=pfw-init.service
 PartOf=pfw.target

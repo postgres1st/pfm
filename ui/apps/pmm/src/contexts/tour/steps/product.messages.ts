@@ -41,10 +41,10 @@ export const Messages = {
   configurations: {
     title: 'Configurations',
     settings:
-      "Manage PGF WatchTower's advanced settings to customize metrics collection and control feature availability, including features in Technical Preview.",
+      "Manage Postgres1st WatchTower's advanced settings to customize metrics collection and control feature availability, including features in Technical Preview.",
     access:
       'Control team access and permissions through Users and access, or modify your personal preferences and password in your profile settings.',
-    readMore: "Learn more about PGF WatchTower's configurations",
+    readMore: "Learn more about Postgres1st WatchTower's configurations",
   },
   account: {
     title: 'Account',
@@ -54,8 +54,8 @@ export const Messages = {
   helpCenter: {
     title: 'Help Center',
     resource:
-      "Your one-stop resource for everything PGF WatchTower. Whether you need documentation, community support, troubleshooting tools like datasets and logs, or useful tips to enhance your experience, it's all just a click away.",
+      "Your one-stop resource for everything Postgres1st WatchTower. Whether you need documentation, community support, troubleshooting tools like datasets and logs, or useful tips to enhance your experience, it's all just a click away.",
     revisit:
-      'This PGF WatchTower tour has finished but you can revisit it anytime from the Help Center too!',
+      'This Postgres1st WatchTower tour has finished but you can revisit it anytime from the Help Center too!',
   },
 };

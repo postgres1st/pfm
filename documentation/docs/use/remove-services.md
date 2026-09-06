@@ -7,7 +7,7 @@ pfw-admin remove <service-type> <service-name>
 ```
 ## Command reference
 - `service-type`: The type of service to remove: mysql, mongodb, postgresql, proxysql, haproxy, or external
-- `service-name`: The name of the service as displayed in PGF WatchTower inventory
+- `service-name`: The name of the service as displayed in Postgres1st WatchTower inventory
 
 ## Example
 To remove a MySQL service:

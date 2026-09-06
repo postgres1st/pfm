@@ -1,7 +1,7 @@
 # Configure environment variables for PMM Server (Virtual machines: AMI/OVF)
 
-!!! warning "OVF support ending in PGF WatchTower 3.9.0"
-    OVF virtual appliance deployment is deprecated starting with PGF WatchTower 3.7.0 and will be removed in PGF WatchTower 3.9.0 (expected July 2026). If you currently run PGF WatchTower on a virtual appliance, [migrate to a supported deployment method](index.md).
+!!! warning "OVF support ending in Postgres1st WatchTower 3.9.0"
+    OVF virtual appliance deployment is deprecated starting with Postgres1st WatchTower 3.7.0 and will be removed in Postgres1st WatchTower 3.9.0 (expected July 2026). If you currently run Postgres1st WatchTower on a virtual appliance, [migrate to a supported deployment method](index.md).
 
 Set up environment variables in the `systemd` environment file to customize performance, storage, features, and other settings without modifying the container directly. Use these instructions if you have PMM Server running on:
 
@@ -48,7 +48,7 @@ To set environment variables for PMM Server on virtual machine deployments:
 
 ## Available variables
 
-Unlike Docker deployments that use `-e` flags, virtual machines configure PMM Server using the systemd environment file instructions above. However, PGF WatchTower uses the same [list of environment variables](../docker/env_var.md) across all deployment methods.
+Unlike Docker deployments that use `-e` flags, virtual machines configure PMM Server using the systemd environment file instructions above. However, Postgres1st WatchTower uses the same [list of environment variables](../docker/env_var.md) across all deployment methods.
 
 ### Common examples for virtual machines
 

@@ -7,10 +7,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/percona/pmm/api/user/v1/json/client/user_service"
+	"github.com/percona/pmm/api/realtimeanalytics/v1/json/client/realtime_analytics_service"
 )
 
-// Default p g f watch tower user API HTTP client.
+// Default postgres1st watch tower real time analytics API HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -25,14 +25,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new p g f watch tower user API HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *PGFWatchTowerUserAPI {
+// NewHTTPClient creates a new postgres1st watch tower real time analytics API HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Postgres1stWatchTowerRealTimeAnalyticsAPI {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new p g f watch tower user API HTTP client,
+// NewHTTPClientWithConfig creates a new postgres1st watch tower real time analytics API HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGFWatchTowerUserAPI {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Postgres1stWatchTowerRealTimeAnalyticsAPI {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -43,16 +43,16 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGF
 	return New(transport, formats)
 }
 
-// New creates a new p g f watch tower user API client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *PGFWatchTowerUserAPI {
+// New creates a new postgres1st watch tower real time analytics API client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Postgres1stWatchTowerRealTimeAnalyticsAPI {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(PGFWatchTowerUserAPI)
+	cli := new(Postgres1stWatchTowerRealTimeAnalyticsAPI)
 	cli.Transport = transport
-	cli.UserService = user_service.New(transport, formats)
+	cli.RealtimeAnalyticsService = realtime_analytics_service.New(transport, formats)
 	return cli
 }
 
@@ -95,15 +95,15 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// PGFWatchTowerUserAPI is a client for p g f watch tower user API
-type PGFWatchTowerUserAPI struct {
-	UserService user_service.ClientService
+// Postgres1stWatchTowerRealTimeAnalyticsAPI is a client for postgres1st watch tower real time analytics API
+type Postgres1stWatchTowerRealTimeAnalyticsAPI struct {
+	RealtimeAnalyticsService realtime_analytics_service.ClientService
 
 	Transport runtime.ClientTransport
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *PGFWatchTowerUserAPI) SetTransport(transport runtime.ClientTransport) {
+func (c *Postgres1stWatchTowerRealTimeAnalyticsAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.UserService.SetTransport(transport)
+	c.RealtimeAnalyticsService.SetTransport(transport)
 }

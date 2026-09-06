@@ -1,11 +1,11 @@
 # List of available alert templates
 
-The table below lists all the alert templates available in Postgres1st (PGF WatchTower).
+The table below lists all the alert templates available in Postgres1st (Postgres1st WatchTower).
 
 ## Template catalog
 
 - [Operating System templates](#os_alerts)
-- [PGF WatchTower templates](#pmm_alerts)
+- [Postgres1st WatchTower templates](#pmm_alerts)
 - [MongoDB templates](#mongodb_alerts)
 - [PBM templates](#pbm_alerts)
 - [MySQL templates](#mysql_alerts)
@@ -22,12 +22,12 @@ The table below lists all the alert templates available in Postgres1st (PGF Watc
 | OS | **Node high swap filling up** | Monitors node swap usage and alerts when it exceeds 80% (default threshold). Indicates potential memory pressure and performance degradation, allowing for timely intervention. | MySQL, MongoDB, PostgreSQL |
 
 <a id="pmm_alerts"></a>
-### PGF WatchTower templates
+### Postgres1st WatchTower templates
 
 | Area | Template name | Description | Database technology |
 | :----|:------------- | :---------- | :------------------ |
-| PGF WatchTower | **PMM agent down** | Monitors PMM Agent status and alerts when an agent becomes unreachable, indicating potential host or agent issues. | MySQL, MongoDB, PostgreSQL, ProxySQL |
-| PGF WatchTower | **Backup failed [Technical Preview]** | Monitors backup processes and raises alerts on failures. Provides details about the failed backup artifact and affected service to ensure data safety and recovery readiness. This template is currently in [Technical Preview](../reference/glossary.md) and is intended for testing purposes only, as it is subject to change. | MySQL, MongoDB, PostgreSQL, ProxySQL |
+| Postgres1st WatchTower | **PMM agent down** | Monitors PMM Agent status and alerts when an agent becomes unreachable, indicating potential host or agent issues. | MySQL, MongoDB, PostgreSQL, ProxySQL |
+| Postgres1st WatchTower | **Backup failed [Technical Preview]** | Monitors backup processes and raises alerts on failures. Provides details about the failed backup artifact and affected service to ensure data safety and recovery readiness. This template is currently in [Technical Preview](../reference/glossary.md) and is intended for testing purposes only, as it is subject to change. | MySQL, MongoDB, PostgreSQL, ProxySQL |
 
 <a id="mongodb_alerts"></a>
 ### MongoDB templates

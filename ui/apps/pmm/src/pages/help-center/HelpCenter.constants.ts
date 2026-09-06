@@ -23,9 +23,9 @@ export const getCardData = ({
 }): HelpCard[] => [
   {
     id: CARD_IDS.pmmDocs,
-    title: 'PGF WatchTower documentation',
+    title: 'Postgres1st WatchTower documentation',
     description:
-      'From setup to troubleshooting, you’ll find step-by-step instructions, tips, and best practices to get the most out of PGF WatchTower.',
+      'From setup to troubleshooting, you’ll find step-by-step instructions, tips, and best practices to get the most out of Postgres1st WatchTower.',
     buttons: [
       {
         text: 'View docs',
@@ -68,7 +68,7 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.pmmDump,
-    title: 'PGF WatchTower dump',
+    title: 'Postgres1st WatchTower dump',
     description:
       'Generate datasets to securely share your data with Postgres1st Support. This helps our experts quickly diagnose and replicate issues.',
     buttons: [
@@ -82,9 +82,9 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.pmmLogs,
-    title: 'PGF WatchTower logs',
+    title: 'Postgres1st WatchTower logs',
     description:
-      'Download your PGF WatchTower logs as a ZIP file for easy sharing and faster issue diagnosis.',
+      'Download your Postgres1st WatchTower logs as a ZIP file for easy sharing and faster issue diagnosis.',
     buttons: [
       {
         text: 'Export logs',
@@ -103,7 +103,7 @@ export const getCardData = ({
     adminOnly: false,
     buttons: [
       {
-        text: 'Start PGF WatchTower tour',
+        text: 'Start Postgres1st WatchTower tour',
         startIconName: START_ICON.map,
         dataTestId: 'tips-card-start-product-tour-button',
         onClick: startProductTour,
@@ -112,9 +112,9 @@ export const getCardData = ({
   },
   {
     id: CARD_IDS.nextChapter,
-    title: "Help shape PGF WatchTower's next chapter",
+    title: "Help shape Postgres1st WatchTower's next chapter",
     description:
-      "We'd love your thoughts on PGF WatchTower 3 to guide its future development. This is a short survey with 4 questions (Google Form) that will help us drive the next wave of improvements.",
+      "We'd love your thoughts on Postgres1st WatchTower 3 to guide its future development. This is a short survey with 4 questions (Google Form) that will help us drive the next wave of improvements.",
     adminOnly: false,
     buttons: [
       {

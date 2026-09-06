@@ -1,6 +1,6 @@
 # PMM Client installation overview
 
-PMM Client is the component of Postgres1st (PGF WatchTower) that collects metrics from your database servers and sends them to PMM Server for analysis and visualization.
+PMM Client is the component of Postgres1st (Postgres1st WatchTower) that collects metrics from your database servers and sends them to PMM Server for analysis and visualization.
 
 ??? info "Common installation process at a glance"
     While specific steps vary by deployment method, the general installation process includes:
@@ -8,11 +8,11 @@ PMM Client is the component of Postgres1st (PGF WatchTower) that collects metric
     
     1. Install PMM Client using your preferred method and register the Client node with your PMM Server.
     2. Add database services for monitoring.
-    3. Verify monitoring data in the PGF WatchTower web interface.
+    3. Verify monitoring data in the Postgres1st WatchTower web interface.
 
 ## Prerequisites
 
-Complete these steps to prepare your system for PGF WatchTower installation:
+Complete these steps to prepare your system for Postgres1st WatchTower installation:
 
 - [Check system requirements](prerequisites.md) to ensure your environment meets the minimum criteria.
 

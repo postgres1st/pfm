@@ -164,7 +164,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PGF WatchTower 3.1.0');
+      expect(titleElement).toHaveTextContent('Update to Postgres1st WatchTower 3.1.0');
     });
 
     it('renders snackbar with correct title when snoozeCount > 1', () => {
@@ -172,7 +172,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('update-modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PGF WatchTower 3.1.0');
+      expect(titleElement).toHaveTextContent('Update to Postgres1st WatchTower 3.1.0');
     });
   });
 
@@ -206,7 +206,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PGF WatchTower');
+      expect(titleElement).toHaveTextContent('Update to Postgres1st WatchTower');
     });
 
     it('handles version info with null latest version in snackbar', () => {
@@ -222,7 +222,7 @@ describe('UpdateModal', () => {
 
       const titleElement = screen.getByTestId('update-modal-title');
       expect(titleElement).toBeInTheDocument();
-      expect(titleElement).toHaveTextContent('Update to PGF WatchTower');
+      expect(titleElement).toHaveTextContent('Update to Postgres1st WatchTower');
     });
   });
 

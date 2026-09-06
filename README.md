@@ -1,4 +1,4 @@
-# PGF WatchTower
+# Postgres1st WatchTower
 
 PostgreSQL monitoring and query analytics, delivered as a **signed package repository**
 you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No internet access is
@@ -11,9 +11,9 @@ required on that server, and no container runtime is involved.
 
 ## What this is
 
-PGF WatchTower is a fork of [Percona Monitoring and Management](https://github.com/percona/pmm)
+Postgres1st WatchTower is a fork of [Percona Monitoring and Management](https://github.com/percona/pmm)
 (PMM) that does one thing instead of five. Where PMM monitors MySQL, MongoDB, PostgreSQL,
-Valkey and Redis, PGF WatchTower accepts PostgreSQL and refuses the rest — not by hiding them in the
+Valkey and Redis, Postgres1st WatchTower accepts PostgreSQL and refuses the rest — not by hiding them in the
 interface, but with an allowlist enforced in the API at service and agent registration
 (`managed/models/service_type_allowlist.go`).
 
@@ -29,7 +29,7 @@ Anything else is rejected as unsupported. A service type added upstream stays di
 until it is listed deliberately, so the gate does not quietly widen on a rebase.
 
 The other substantive difference is delivery. PMM ships primarily as a container image;
-PGF WatchTower ships as RPMs in a GPG-signed yum repository, built for air-gapped installation on a
+Postgres1st WatchTower ships as RPMs in a GPG-signed yum repository, built for air-gapped installation on a
 host you control.
 
 ## Installation
@@ -43,7 +43,7 @@ Two guides, one bundle. Both ship inside the release tarball:
 
 In outline: unpack the tarball, import the signing key, point yum at the unpacked
 directory, and `dnf install pfw-server` (or `pfw-agent`). Operating-system dependencies
-come from your own repositories — PGF WatchTower ships only what no EL9 repository provides
+come from your own repositories — Postgres1st WatchTower ships only what no EL9 repository provides
 (PostgreSQL and ClickHouse), and the bundle includes `fetch-os-dependencies.sh` for hosts
 with no repository of their own.
 
@@ -92,7 +92,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests go to
 
 ## Licensing
 
-PGF WatchTower is built on Percona Monitoring and Management and Grafana, and everything Postgres1st
+Postgres1st WatchTower is built on Percona Monitoring and Management and Grafana, and everything Postgres1st
 builds is licensed under the **GNU Affero General Public License, version 3**.
 
 | Component | Licence |
@@ -107,6 +107,6 @@ VictoriaMetrics, the PostgreSQL Licence for PostgreSQL. Each package declares it
 
 ## Upstream
 
-PGF WatchTower is derived from [percona/pmm](https://github.com/percona/pmm) and keeps its version
-number: PGF WatchTower 3.9.0 corresponds to PMM 3.9.0. Copyright in the inherited code remains with
+Postgres1st WatchTower is derived from [percona/pmm](https://github.com/percona/pmm) and keeps its version
+number: Postgres1st WatchTower 3.9.0 corresponds to PMM 3.9.0. Copyright in the inherited code remains with
 Percona LLC and the other original authors, and the AGPL headers are preserved throughout.

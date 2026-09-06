@@ -57,7 +57,7 @@ message PMMAgent {
 
 // VMAgent runs on Generic or Container Node alongside pfw-agent.
 // It scrapes other exporter Agents that are configured with push_metrics_enabled
-// and uses Prometheus remote write protocol to push metrics to PGF WatchTower Server.
+// and uses Prometheus remote write protocol to push metrics to Postgres1st WatchTower Server.
 message VMAgent {
   // Unique randomly generated instance identifier.
   string agent_id = 1;
@@ -376,7 +376,7 @@ message ValkeyExporter {
   google.protobuf.Duration connection_timeout = 25;
 }
 
-// QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
+// QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.
 message QANMySQLPerfSchemaAgent {
   // Unique randomly generated instance identifier.
   string agent_id = 1;
@@ -422,7 +422,7 @@ message QANMySQLPerfSchemaAgent {
   map<string, string> extra_dsn_params = 23;
 }
 
-// QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.
+// QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.
 message QANMySQLSlowlogAgent {
   // Unique randomly generated instance identifier.
   string agent_id = 1;
@@ -470,7 +470,7 @@ message QANMySQLSlowlogAgent {
   map<string, string> extra_dsn_params = 23;
 }
 
-// QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
+// QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.
 message QANMongoDBProfilerAgent {
   reserved 8; // TODO https://jira.percona.com/browse/PMM-4650
   reserved "query_examples_disabled";
@@ -506,7 +506,7 @@ message QANMongoDBProfilerAgent {
   LogLevel log_level = 22;
 }
 
-// QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.
+// QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.
 message QANMongoDBMongologAgent {
   reserved 8; // TODO https://jira.percona.com/browse/PMM-4650
   reserved "query_examples_disabled";
@@ -550,7 +550,7 @@ message RTAOptions {
   }];
 }
 
-// RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.
+// RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.
 message RTAMongoDBAgent {
   // Unique agent identifier.
   string agent_id = 1;
@@ -576,7 +576,7 @@ message RTAMongoDBAgent {
   LogLevel log_level = 11;
 }
 
-// QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
+// QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.
 message QANPostgreSQLPgStatementsAgent {
   // Unique randomly generated instance identifier.
   string agent_id = 1;
@@ -611,7 +611,7 @@ message QANPostgreSQLPgStatementsAgent {
   LogLevel log_level = 22;
 }
 
-// QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.
+// QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.
 message QANPostgreSQLPgStatMonitorAgent {
   // Unique randomly generated instance identifier.
   string agent_id = 1;

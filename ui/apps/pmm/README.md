@@ -1,6 +1,6 @@
-# PGF WatchTower UI
+# Postgres1st WatchTower UI
 
-The main PGF WatchTower web application — a React/TypeScript app served through Grafana,
+The main Postgres1st WatchTower web application — a React/TypeScript app served through Grafana,
 providing the primary user interface for PostgreSQL monitoring and query analytics.
 
 See [`ui/README.md`](../../README.md) for prerequisites and setup, and
@@ -8,7 +8,7 @@ See [`ui/README.md`](../../README.md) for prerequisites and setup, and
 
 # Locally testing @percona/percona-ui
 
-`@percona/percona-ui` is a normal npm dependency (see `package.json`). To iterate on the library and PGF WatchTower together, `yarn link` an in-progress checkout against this app. The recipe depends on whether you're running `make dev` on the host or `make run-ui` inside the PGF WatchTower devcontainer.
+`@percona/percona-ui` is a normal npm dependency (see `package.json`). To iterate on the library and Postgres1st WatchTower together, `yarn link` an in-progress checkout against this app. The recipe depends on whether you're running `make dev` on the host or `make run-ui` inside the Postgres1st WatchTower devcontainer.
 
 In both cases:
 
@@ -28,7 +28,7 @@ In both cases:
 
 - From the lib folder on the host: `pnpm build:watch` and `yarn link`.
 - From `ui/apps/pmm` on the host: `yarn link @percona/percona-ui`.
-- Any change in the lib triggers a rebuild and HMR in PGF WatchTower.
+- Any change in the lib triggers a rebuild and HMR in Postgres1st WatchTower.
 
 ## Devcontainer flow (`make run-ui`)
 

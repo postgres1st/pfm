@@ -36,11 +36,11 @@ Agent ID : {{ .PMMAgentStatus.AgentID }}
 Node ID  : {{ .PMMAgentStatus.NodeID }}
 Node name: {{ .PMMAgentStatus.NodeName }}
 
-PGF WatchTower Server:
+Postgres1st WatchTower Server:
 	URL    : {{ .PMMAgentStatus.ServerURL }}
 	Version: {{ .PMMAgentStatus.ServerVersion }}
 
-PGF WatchTower Agent:
+Postgres1st WatchTower Agent:
 	Connected        : {{ .PMMAgentStatus.Connected }}{{ if .PMMAgentStatus.Connected }}
 	Time drift       : {{ .PMMAgentStatus.ServerClockDrift }}
 	Latency          : {{ .PMMAgentStatus.ServerLatency }}{{ end }}
@@ -72,7 +72,7 @@ func (res *statusResult) String() string {
 }
 
 func newStatusResult(status *agentlocal.Status) *statusResult {
-	// hide username and password from PGF WatchTower Server URL - if we have it at all
+	// hide username and password from Postgres1st WatchTower Server URL - if we have it at all
 	u, err := url.Parse(status.ServerURL)
 	if err == nil {
 		u.User = nil
@@ -104,7 +104,7 @@ func (cmd *StatusCommand) BeforeApply() error {
 // RunCmd runs the StatusCommand.
 func (cmd *StatusCommand) RunCmd() (Result, error) {
 	// Unlike list, this command uses only local pfw-agent status.
-	// It does not use PGF WatchTower Server APIs.
+	// It does not use Postgres1st WatchTower Server APIs.
 	timeoutCtx, cancel := context.WithTimeout(context.Background(), cmd.Timeout)
 	defer cancel()
 
@@ -121,7 +121,7 @@ func (cmd *StatusCommand) RunCmd() (Result, error) {
 		select {
 		case <-timeoutCtx.Done():
 			if errors.Is(err, agentlocal.ErrNotSetUp) {
-				return nil, fmt.Errorf("failed to get PGF WatchTower Agent status from local pfw-agent: %w.\n"+
+				return nil, fmt.Errorf("failed to get Postgres1st WatchTower Agent status from local pfw-agent: %w.\n"+
 					"Please run `pfw-admin config` with --server-url flag", err)
 			}
 
@@ -130,7 +130,7 @@ func (cmd *StatusCommand) RunCmd() (Result, error) {
 				return newStatusResult(status), nil
 			}
 
-			return nil, fmt.Errorf("failed to get PGF WatchTower Agent status from local pfw-agent: %w", err)
+			return nil, fmt.Errorf("failed to get Postgres1st WatchTower Agent status from local pfw-agent: %w", err)
 		default:
 			time.Sleep(1 * time.Second)
 		}

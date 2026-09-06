@@ -48,7 +48,7 @@ Plan your network configuration before deployment:
 Required ports:
 
 - port `22` (SSH): Administrative access to the instance
-- port `443` (HTTPS): Secure PGF WatchTower web interface access
+- port `443` (HTTPS): Secure Postgres1st WatchTower web interface access
 
 ## Estimate costs
 
@@ -58,7 +58,7 @@ Use the [AWS pricing calculator](https://calculator.aws/#/) to estimate monthly 
 
 ## Plan backups
 
-PMM Server uses a simple backup architecture - all monitoring data is stored in the `/home/admin/volume` partition, which means you only need to back up one EBS volume to protect all your PGF WatchTower data. This simplifies your backup strategy and reduces complexity.
+PMM Server uses a simple backup architecture - all monitoring data is stored in the `/home/admin/volume` partition, which means you only need to back up one EBS volume to protect all your Postgres1st WatchTower data. This simplifies your backup strategy and reduces complexity.
 
 When planning your deployment, consider that you'll need to create point-in-time snapshots of the EBS volume containing the `/home/admin/volume` partition. Plan for snapshot storage costs and determine your backup frequency and retention requirements.
 

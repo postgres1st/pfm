@@ -1,6 +1,6 @@
-# PGF WatchTower 3.9.0 beta2 — release notes
+# Postgres1st WatchTower 3.9.0 beta2 — release notes
 
-**PGF WatchTower** — PostgreSQL monitoring and query analytics, delivered as a signed
+**Postgres1st WatchTower** — PostgreSQL monitoring and query analytics, delivered as a signed
 package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No
 internet access is required on that server, and no container runtime is involved.
 
@@ -19,7 +19,7 @@ at the end are stated plainly rather than left to be discovered.
 
 ## What changed since beta1
 
-**The product is PGF WatchTower.** Packages are `pfw-*`, units are `pfw-*.service`, the
+**The product is Postgres1st WatchTower.** Packages are `pfw-*`, units are `pfw-*.service`, the
 service account is `pfw`, and everything installs under `/opt/postgres1st/watchtower`.
 The client agent is `pfw-agent`; its configuration lives at
 `/opt/postgres1st/watchtower/config/pfw-agent.yaml`.

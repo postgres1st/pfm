@@ -49,11 +49,11 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 ### Resolution
 
-- **PGF WatchTower 3.5.0 and later:** The issue is **fixed automatically**. PGF WatchTower detects and completes the interrupted schema migration upon restart.
+- **Postgres1st WatchTower 3.5.0 and later:** The issue is **fixed automatically**. Postgres1st WatchTower detects and completes the interrupted schema migration upon restart.
 - **Earlier versions:** Use the following manual workaround:
     {.power-number}
 
-    1. Access the PGF WatchTower container:
+    1. Access the Postgres1st WatchTower container:
     ```bash
     podman exec -it pmm-server /bin/bash
     ```
@@ -85,7 +85,7 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 If you're running PMM Server with less than 16 GB RAM and seeing "memory limit exceeded" errors in ClickHouse logs, switch to the low-memory configuration.
 
-PGF WatchTower includes two ClickHouse profiles:
+Postgres1st WatchTower includes two ClickHouse profiles:
 
 - **default**: optimized for performance (16 GB+ RAM)
 - **low-memory**: optimized for constrained environments, based on [ClickHouse recommendations](https://clickhouse.com/docs/operations/tips#using-less-than-16gb-of-ram)

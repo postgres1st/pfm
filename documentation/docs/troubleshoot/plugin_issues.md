@@ -1,9 +1,9 @@
 
 # Plugin issues
 
-## PGF WatchTower does not allow to install, upgrade or remove plugins
+## Postgres1st WatchTower does not allow to install, upgrade or remove plugins
 
-Users have encountered issues with installing, updating and removing plugins from PGF WatchTower. The cause of this issue is the incorrect permissions assigned to the `/srv/grafana/plugins` directory. These permissions are preventing the grafana component from writing to the directory.
+Users have encountered issues with installing, updating and removing plugins from Postgres1st WatchTower. The cause of this issue is the incorrect permissions assigned to the `/srv/grafana/plugins` directory. These permissions are preventing the grafana component from writing to the directory.
 
 ## Solution
 

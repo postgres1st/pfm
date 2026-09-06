@@ -5,7 +5,7 @@
 # deliberately NOT wanted here — pmm-managed starts it on demand once the server
 # is ready (mirrors upstream autostart=false).
 [Unit]
-Description=PGF WatchTower monitoring server
+Description=Postgres1st WatchTower monitoring server
 Requires=pfw-init.service
 After=pfw-init.service
 Wants=pfw-postgresql.service pfw-clickhouse.service pfw-nginx.service pfw-grafana.service

@@ -11,7 +11,7 @@
 Name:		pfw-dump
 Version:	0.8.0-ga
 Release:	%{rpm_release}
-Summary:	PGF WatchTower dump tool: exports and imports monitoring metrics and query analytics.
+Summary:	Postgres1st WatchTower dump tool: exports and imports monitoring metrics and query analytics.
 
 License:	AGPLv3
 URL:		https://%{provider}
@@ -38,4 +38,4 @@ install -p -m 0755 pmm-dump %{buildroot}%{_sbindir}/pfw-dump
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 0.8.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

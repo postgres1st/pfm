@@ -1,5 +1,5 @@
 [Unit]
-Description=PGF WatchTower Agent (pfw-agent)
+Description=Postgres1st WatchTower Agent (pfw-agent)
 After=time-sync.target network.target
 
 [Service]

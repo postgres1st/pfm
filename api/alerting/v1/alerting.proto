@@ -54,7 +54,7 @@ message ParamDefinition {
 // TemplateSource defines template source.
 enum TemplateSource {
   TEMPLATE_SOURCE_UNSPECIFIED = 0;
-  // Template that is shipped with PGF WatchTower Server releases.
+  // Template that is shipped with Postgres1st WatchTower Server releases.
   TEMPLATE_SOURCE_BUILT_IN = 1;
   // Template that is downloaded from check.percona.com.
   TEMPLATE_SOURCE_SAAS = 2;

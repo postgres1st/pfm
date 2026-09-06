@@ -6,7 +6,7 @@
 # The PMM_CLICKHOUSE_* vars are read directly by qan-api2 (unchanged from the
 # supervisord environment= block); T3b/T7 seeds defaults for first boot.
 [Unit]
-Description=PGF WatchTower qan-api2 (Query Analytics API)
+Description=Postgres1st WatchTower qan-api2 (Query Analytics API)
 # NOTE: ordering After=pfw-managed does NOT protect the first-boot ClickHouse
 # migration and was tried and removed. pfw-managed is Type=exec, so that ordering
 # is satisfied the moment its process is exec'd -- it renders this unit's

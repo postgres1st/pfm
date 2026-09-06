@@ -5,11 +5,11 @@
 Before starting the upgrade, complete these preparation steps to ensure you can recover your system if needed and confirm compatibility with the new version:
 {.power-number}
 
-1. If you are switching from [UI-based upgrades](ui_upgrade.md), stop and remove the Watchtower updater container before moving to manual Docker upgrades. UI-based upgrades used the Watchtower updater to apply PGF WatchTower images automatically. If the Watchtower updater is still running, it may update PGF WatchTower during your manual upgrade and cause conflicts.
+1. If you are switching from [UI-based upgrades](ui_upgrade.md), stop and remove the Watchtower updater container before moving to manual Docker upgrades. UI-based upgrades used the Watchtower updater to apply Postgres1st WatchTower images automatically. If the Watchtower updater is still running, it may update Postgres1st WatchTower during your manual upgrade and cause conflicts.
 
 2. [Create a backup](../install-pmm/install-pmm-server/deployment-options/docker/backup_container.md) before upgrading, as downgrades are not possible. Therefore, reverting to a previous version requires an backup made prior to the upgrade.
 
-3. Verify your current PGF WatchTower version: Check your current PGF WatchTower version by navigating to **Configuration > Updates** or by running the following command: 
+3. Verify your current Postgres1st WatchTower version: Check your current Postgres1st WatchTower version by navigating to **Configuration > Updates** or by running the following command: 
 
     ```sh
     docker exec -it pmm-server curl -ku admin:admin https://localhost:8443/v1/version

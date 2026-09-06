@@ -8,7 +8,6 @@ package managementv1
 
 import (
 	context "context"
-
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -45,7 +44,7 @@ type ManagementServiceClient interface {
 	AddAnnotation(ctx context.Context, in *AddAnnotationRequest, opts ...grpc.CallOption) (*AddAnnotationResponse, error)
 	// ListAgents returns a list of Agents filtered by service_id or node_id.
 	ListAgents(ctx context.Context, in *ListAgentsRequest, opts ...grpc.CallOption) (*ListAgentsResponse, error)
-	// ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
+	// ListAgentVersions returns a list of Postgres1st WatchTower Agent versions and their update severity.
 	ListAgentVersions(ctx context.Context, in *ListAgentVersionsRequest, opts ...grpc.CallOption) (*ListAgentVersionsResponse, error)
 	// RegisterNode registers a new Node and a pfw-agent.
 	RegisterNode(ctx context.Context, in *RegisterNodeRequest, opts ...grpc.CallOption) (*RegisterNodeResponse, error)
@@ -217,7 +216,7 @@ type ManagementServiceServer interface {
 	AddAnnotation(context.Context, *AddAnnotationRequest) (*AddAnnotationResponse, error)
 	// ListAgents returns a list of Agents filtered by service_id or node_id.
 	ListAgents(context.Context, *ListAgentsRequest) (*ListAgentsResponse, error)
-	// ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
+	// ListAgentVersions returns a list of Postgres1st WatchTower Agent versions and their update severity.
 	ListAgentVersions(context.Context, *ListAgentVersionsRequest) (*ListAgentVersionsResponse, error)
 	// RegisterNode registers a new Node and a pfw-agent.
 	RegisterNode(context.Context, *RegisterNodeRequest) (*RegisterNodeResponse, error)
@@ -252,51 +251,39 @@ type UnimplementedManagementServiceServer struct{}
 func (UnimplementedManagementServiceServer) AddAnnotation(context.Context, *AddAnnotationRequest) (*AddAnnotationResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AddAnnotation not implemented")
 }
-
 func (UnimplementedManagementServiceServer) ListAgents(context.Context, *ListAgentsRequest) (*ListAgentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListAgents not implemented")
 }
-
 func (UnimplementedManagementServiceServer) ListAgentVersions(context.Context, *ListAgentVersionsRequest) (*ListAgentVersionsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListAgentVersions not implemented")
 }
-
 func (UnimplementedManagementServiceServer) RegisterNode(context.Context, *RegisterNodeRequest) (*RegisterNodeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RegisterNode not implemented")
 }
-
 func (UnimplementedManagementServiceServer) UnregisterNode(context.Context, *UnregisterNodeRequest) (*UnregisterNodeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UnregisterNode not implemented")
 }
-
 func (UnimplementedManagementServiceServer) ListNodes(context.Context, *ListNodesRequest) (*ListNodesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListNodes not implemented")
 }
-
 func (UnimplementedManagementServiceServer) GetNode(context.Context, *GetNodeRequest) (*GetNodeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetNode not implemented")
 }
-
 func (UnimplementedManagementServiceServer) AddService(context.Context, *AddServiceRequest) (*AddServiceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AddService not implemented")
 }
-
 func (UnimplementedManagementServiceServer) ListServices(context.Context, *ListServicesRequest) (*ListServicesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListServices not implemented")
 }
-
 func (UnimplementedManagementServiceServer) DiscoverRDS(context.Context, *DiscoverRDSRequest) (*DiscoverRDSResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DiscoverRDS not implemented")
 }
-
 func (UnimplementedManagementServiceServer) DiscoverAzureDatabase(context.Context, *DiscoverAzureDatabaseRequest) (*DiscoverAzureDatabaseResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DiscoverAzureDatabase not implemented")
 }
-
 func (UnimplementedManagementServiceServer) AddAzureDatabase(context.Context, *AddAzureDatabaseRequest) (*AddAzureDatabaseResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AddAzureDatabase not implemented")
 }
-
 func (UnimplementedManagementServiceServer) RemoveService(context.Context, *RemoveServiceRequest) (*RemoveServiceResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RemoveService not implemented")
 }

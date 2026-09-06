@@ -4,7 +4,7 @@
 # boot. Runs as the pfw service account (single-UID model, T1) because initdb
 # and pg_stat_statements setup must NOT run as root.
 [Unit]
-Description=PGF WatchTower first-boot provisioning (idempotent)
+Description=Postgres1st WatchTower first-boot provisioning (idempotent)
 After=network.target
 Before=pfw-postgresql.service pfw-clickhouse.service pfw-nginx.service pfw-grafana.service
 RequiresMountsFor=/srv

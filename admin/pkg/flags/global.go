@@ -26,9 +26,9 @@ var isJSON = false
 
 // GlobalFlags stores flags global to all commands.
 type GlobalFlags struct {
-	ServerURL               *url.URL    `placeholder:"SERVER-URL" help:"PGF WatchTower Server URL in https://username[:password]@server-host/ format"`
-	ServerPasswordStdin     bool        `name:"server-password-stdin" help:"Read the PGF WatchTower Server password from stdin instead of embedding it in --server-url, where it is visible to any local user via /proc/<pid>/cmdline and is recorded in shell history"`
-	SkipTLSCertificateCheck bool        `name:"server-insecure-tls" help:"Skip PGF WatchTower Server TLS certificate validation"`
+	ServerURL               *url.URL    `placeholder:"SERVER-URL" help:"Postgres1st WatchTower Server URL in https://username[:password]@server-host/ format"`
+	ServerPasswordStdin     bool        `name:"server-password-stdin" help:"Read the Postgres1st WatchTower Server password from stdin instead of embedding it in --server-url, where it is visible to any local user via /proc/<pid>/cmdline and is recorded in shell history"`
+	SkipTLSCertificateCheck bool        `name:"server-insecure-tls" help:"Skip Postgres1st WatchTower Server TLS certificate validation"`
 	EnableDebug             bool        `name:"debug" help:"Enable debug logging"`
 	EnableTrace             bool        `name:"trace" help:"Enable trace logging (implies debug)"`
 	PMMAgentListenPort      uint32      `default:"${defaultListenPort}" help:"Set listen port of pfw-agent"`

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pinned inputs for the air-gapped PGF WatchTower server bundle (build-pfw-airgap).
+# Pinned inputs for the air-gapped Postgres1st WatchTower server bundle (build-pfw-airgap).
 #
 # Sourced, not executed. Everything the bundle is built from is pinned to an
 # exact commit here: a build from the same checkout of this file must produce the

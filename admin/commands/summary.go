@@ -354,7 +354,7 @@ func addPprofData(ctx context.Context, zipW *zip.Writer, skipServer bool, global
 // SummaryCommand is used by Kong for CLI flags and commands.
 type SummaryCommand struct {
 	Filename   string `help:"Summary archive filename"`
-	SkipServer bool   `help:"Skip fetching logs.zip from PGF WatchTower Server"`
+	SkipServer bool   `help:"Skip fetching logs.zip from Postgres1st WatchTower Server"`
 	Pprof      bool   `name:"pprof" help:"Include performance profiling data"`
 }
 

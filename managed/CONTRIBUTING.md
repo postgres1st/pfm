@@ -1,6 +1,6 @@
 # Contributing notes
 
-**pmm-managed** is a core component of PGF WatchTower Server. As such, its development and testing are best done inside a PGF WatchTower Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
+**pmm-managed** is a core component of Postgres1st WatchTower Server. As such, its development and testing are best done inside a Postgres1st WatchTower Server container, which we call a "devcontainer." For details, see [PMM's architecture](https://docs.percona.com/percona-monitoring-and-management/3/reference/index.html).
 
 # Devcontainer setup
 
@@ -67,7 +67,7 @@ go test -timeout=30s -p 1 ./...
 
 ## Add instances for monitoring
 
-The `make env-up` command starts PGF WatchTower Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using PGF WatchTower Agent components:
+The `make env-up` command starts Postgres1st WatchTower Server but doesn't configure any database instances for monitoring. To create a complete development environment, you'll need to set up database instances and connect them using Postgres1st WatchTower Agent components:
 
 
 1. Clone the pmm-admin [repo](https://github.com/percona/pmm-admin/) and install it by running `make install`.
@@ -79,7 +79,7 @@ The `make env-up` command starts PGF WatchTower Server but doesn't configure any
 
 ## Working with Advisors
 
-Advisors are automated checks in PGF WatchTower that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the PGF WatchTower Server devcontainer.
+Advisors are automated checks in Postgres1st WatchTower that analyze monitored environments and provide insights or recommendations. As a contributor, you may need to test, extend, or troubleshoot Advisors while developing inside the Postgres1st WatchTower Server devcontainer.
 
 To get started:
 

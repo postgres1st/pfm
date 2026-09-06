@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower Server API",
+    "title": "Postgres1st WatchTower Server API",
     "version": "v1"
   },
   "paths": {
@@ -169,7 +169,7 @@
     },
     "/v1/server/settings": {
       "get": {
-        "description": "Returns current PGF WatchTower Server settings.",
+        "description": "Returns current Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -182,7 +182,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "Settings represents PGF WatchTower Server settings.",
+                  "description": "Settings represents Postgres1st WatchTower Server settings.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -247,7 +247,7 @@
                       "x-order": 8
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 9
                     },
@@ -362,7 +362,7 @@
         }
       },
       "put": {
-        "description": "Changes PGF WatchTower Server settings.",
+        "description": "Changes Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -446,7 +446,7 @@
                   "x-order": 7
                 },
                 "pmm_public_address": {
-                  "description": "PGF WatchTower Server public address.",
+                  "description": "Postgres1st WatchTower Server public address.",
                   "type": "string",
                   "x-nullable": true,
                   "x-order": 8
@@ -508,7 +508,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "Settings represents PGF WatchTower Server settings.",
+                  "description": "Settings represents Postgres1st WatchTower Server settings.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -573,7 +573,7 @@
                       "x-order": 8
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 9
                     },
@@ -690,7 +690,7 @@
     },
     "/v1/server/settings/readonly": {
       "get": {
-        "description": "Returns a stripped version of PGF WatchTower Server settings.",
+        "description": "Returns a stripped version of Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -703,7 +703,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "ReadOnlySettings represents a stripped-down version of PGF WatchTower Server settings that can be accessed by users of all roles.",
+                  "description": "ReadOnlySettings represents a stripped-down version of Postgres1st WatchTower Server settings that can be accessed by users of all roles.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -727,7 +727,7 @@
                       "x-order": 3
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 4
                     },
@@ -798,7 +798,7 @@
     },
     "/v1/server/updates": {
       "get": {
-        "description": "Checks for available PGF WatchTower Server updates.",
+        "description": "Checks for available Postgres1st WatchTower Server updates.",
         "tags": [
           "ServerService"
         ],
@@ -825,7 +825,7 @@
               "type": "object",
               "properties": {
                 "installed": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -880,12 +880,12 @@
                   "x-order": 1
                 },
                 "update_available": {
-                  "description": "True if there is a PGF WatchTower Server update available.",
+                  "description": "True if there is a Postgres1st WatchTower Server update available.",
                   "type": "boolean",
                   "x-order": 2
                 },
                 "latest_news_url": {
-                  "description": "Latest available PGF WatchTower Server release announcement URL.",
+                  "description": "Latest available Postgres1st WatchTower Server release announcement URL.",
                   "type": "string",
                   "x-order": 3
                 },
@@ -1031,7 +1031,7 @@
     },
     "/v1/server/version": {
       "get": {
-        "description": "Returns PGF WatchTower Server versions.",
+        "description": "Returns Postgres1st WatchTower Server versions.",
         "tags": [
           "ServerService"
         ],
@@ -1052,12 +1052,12 @@
               "type": "object",
               "properties": {
                 "version": {
-                  "description": "PGF WatchTower Server version.",
+                  "description": "Postgres1st WatchTower Server version.",
                   "type": "string",
                   "x-order": 0
                 },
                 "server": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -1080,7 +1080,7 @@
                   "x-order": 1
                 },
                 "managed": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -1103,7 +1103,7 @@
                   "x-order": 2
                 },
                 "distribution_method": {
-                  "description": "DistributionMethod defines PGF WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.",
+                  "description": "DistributionMethod defines Postgres1st WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.",
                   "type": "string",
                   "default": "DISTRIBUTION_METHOD_UNSPECIFIED",
                   "enum": [
@@ -1158,7 +1158,7 @@
   },
   "tags": [
     {
-      "description": "Server service provides generic PGF WatchTower Server public APIs.",
+      "description": "Server service provides generic Postgres1st WatchTower Server public APIs.",
       "name": "ServerService"
     }
   ]

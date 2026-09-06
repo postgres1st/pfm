@@ -1,4 +1,4 @@
-# Install PGF WatchTower with Kubernetes HA (Single-Instance)
+# Install Postgres1st WatchTower with Kubernetes HA (Single-Instance)
 
 Kubernetes provides enterprise-grade high availability through automated container orchestration, self-healing capabilities, and intelligent workload distribution. This production-ready option combines simplicity with Kubernetes' built-in resilience for automatic recovery from failures.
 
@@ -7,7 +7,7 @@ Kubernetes provides enterprise-grade high availability through automated contain
 
 ## What is Kubernetes HA Single-Instance?
 
-Kubernetes HA Single-Instance leverages Kubernetes' native pod management and self-healing capabilities to ensure PGF WatchTower stays available even when infrastructure fails. 
+Kubernetes HA Single-Instance leverages Kubernetes' native pod management and self-healing capabilities to ensure Postgres1st WatchTower stays available even when infrastructure fails. 
 
 Combined with persistent volumes and PMM Client caching, this approach prevents data loss and maintains monitoring continuity with minimal operational overhead.
 
@@ -18,20 +18,20 @@ Combined with persistent volumes and PMM Client caching, this approach prevents 
 - **Health monitoring**: Liveness and readiness probes ensure only healthy instances receive traffic
 - **Zero data loss**: PMM Clients cache metrics locally during brief outages
 - **Production-tested**: Stable and battle-tested in production environments for years
-- **Simple operations**: Single PGF WatchTower instance is easier to manage than distributed clusters
+- **Simple operations**: Single Postgres1st WatchTower instance is easier to manage than distributed clusters
 
 ### How it works
 
-Kubernetes watches your PGF WatchTower deployment and fixes problems automatically. 
+Kubernetes watches your Postgres1st WatchTower deployment and fixes problems automatically. 
 
 If a pod crashes or a node fails, Kubernetes restarts it on a healthy node within a few minutes.
 
-Your persistent volume keeps all your data safe and it stays attached when the pod moves. Your PMM Clients cache metrics locally, so nothing gets lost during the restart. Once PGF WatchTower comes back up, everything syncs automatically.
+Your persistent volume keeps all your data safe and it stays attached when the pod moves. Your PMM Clients cache metrics locally, so nothing gets lost during the restart. Once Postgres1st WatchTower comes back up, everything syncs automatically.
 
 ### Limitations
 
 - **Brief monitoring gaps**: 2-5 minutes of downtime during pod rescheduling
-- **Single PGF WatchTower instance**: No load distribution across multiple servers
+- **Single Postgres1st WatchTower instance**: No load distribution across multiple servers
 - **No zero-downtime**: Cannot maintain continuous monitoring during failures
 - **Node-level delays**: Pod rescheduling takes longer than container restarts
 
@@ -95,7 +95,7 @@ Choose the installation method that fits your needs and install PMM Server on Ku
         helm repo update
       ```
 
-    2. Create a namespace for PGF WatchTower:
+    2. Create a namespace for Postgres1st WatchTower:
       ```sh
         kubectl create namespace monitoring
       ```
@@ -166,7 +166,7 @@ Choose the installation method that fits your needs and install PMM Server on Ku
         helm repo update
       ```
 
-    3. Create a namespace for PGF WatchTower:
+    3. Create a namespace for Postgres1st WatchTower:
       ```sh
         kubectl create namespace monitoring
       ```
@@ -222,7 +222,7 @@ pod/pmm-0   1/1   Running   0   2m
 After first login, immediately change the default password:
 {.power-number}
 
-1. Log in to PGF WatchTower UI.
+1. Log in to Postgres1st WatchTower UI.
 2. Go to **Account > Change password**.
 4. Enter current password and new secure password.
 
@@ -279,7 +279,7 @@ Choose the service type that fits your environment and apply the configuration.
 
     **Best for**: Bare-metal, on-premise, or testing environments
 
-    Use NodePort to expose PGF WatchTower on a static port on each cluster node:
+    Use NodePort to expose Postgres1st WatchTower on a static port on each cluster node:
     {.power-number}
 
     1. Create or update your `values.yaml` file:
@@ -303,7 +303,7 @@ Choose the service type that fits your environment and apply the configuration.
 
         Look for the `PORT(S)` column showing the NodePort number.
 
-    4. Access PGF WatchTower using any node IP and the NodePort:
+    4. Access Postgres1st WatchTower using any node IP and the NodePort:
       ```
         https://<any-node-ip>:<nodeport>
       ```
@@ -348,7 +348,7 @@ Choose the service type that fits your environment and apply the configuration.
           --values values.yaml
       ```
 
-    3. Access PGF WatchTower at your configured domain:
+    3. Access Postgres1st WatchTower at your configured domain:
       ```
         https://pmm.example.com
       ```
@@ -382,7 +382,7 @@ persistence:
 
 ### Configure data retention
 
-Set how long PGF WatchTower retains monitoring data:
+Set how long Postgres1st WatchTower retains monitoring data:
 ```yaml
 # values.yaml
 env:
@@ -460,11 +460,11 @@ To monitor your databases, install PMM Client on each database host and connect 
 
 ### Test automatic recovery
 
-Verify Kubernetes automatically recovers PGF WatchTower:
+Verify Kubernetes automatically recovers Postgres1st WatchTower:
 
 **Test 1: Delete pod**
 ```sh
-# Delete the PGF WatchTower pod
+# Delete the Postgres1st WatchTower pod
 kubectl delete pod -n monitoring -l app=pmm
 
 # Watch Kubernetes recreate it
@@ -478,17 +478,17 @@ Recovery should complete in 30-60 seconds on the same node.
 
 **Test 2: Drain node (simulate node failure)**
 ```sh
-# Get node running PGF WatchTower
+# Get node running Postgres1st WatchTower
 export PMM_NODE=$(kubectl get pod -n monitoring -l app=pmm \
   -o jsonpath='{.items[0].spec.nodeName}')
 
 # Drain the node
 kubectl drain $PMM_NODE --ignore-daemonsets --delete-emptydir-data
 
-# Watch PGF WatchTower reschedule to another node
+# Watch Postgres1st WatchTower reschedule to another node
 kubectl get pods -n monitoring -w
 
-# Check PGF WatchTower is running on different node
+# Check Postgres1st WatchTower is running on different node
 kubectl get pod -n monitoring -l app=pmm -o wide
 
 # Uncordon the node when done testing
@@ -497,9 +497,9 @@ kubectl uncordon $PMM_NODE
 
 Recovery should complete in 2-5 minutes with pod rescheduled to a healthy node.
 
-### Monitor PGF WatchTower health
+### Monitor Postgres1st WatchTower health
 
-Check PGF WatchTower status and resource usage:
+Check Postgres1st WatchTower status and resource usage:
 ```sh
 # Check pod status
 kubectl get pods -n monitoring -l app=pmm
@@ -517,9 +517,9 @@ kubectl get pvc -n monitoring
 kubectl describe pod -n monitoring -l app=pmm
 ```
 
-### Access PGF WatchTower pod directly
+### Access Postgres1st WatchTower pod directly
 
-For troubleshooting, access the PGF WatchTower pod:
+For troubleshooting, access the Postgres1st WatchTower pod:
 ```sh
 # Execute commands in pod
 kubectl exec -it -n monitoring -l app=pmm -- bash
@@ -584,7 +584,7 @@ helm upgrade pmm percona/pmm \
   --values values.yaml
 ```
 
-### Upgrade PGF WatchTower
+### Upgrade Postgres1st WatchTower
 
 Perform zero-downtime upgrades:
 ```sh
@@ -629,7 +629,7 @@ helm rollback pmm 2 -n monitoring
 
 ### Pod stuck in Pending state
 
-**Problem**: PGF WatchTower pod remains in `Pending` state
+**Problem**: Postgres1st WatchTower pod remains in `Pending` state
 
 **Solution**: Check for resource or storage issues:
 ```sh
@@ -666,7 +666,7 @@ kubectl logs -n monitoring -l app=pmm --previous
 # - Configuration errors (check env vars)
 ```
 
-### Cannot access PGF WatchTower UI
+### Cannot access Postgres1st WatchTower UI
 
 **Problem**: LoadBalancer external IP pending or connection refused
 
@@ -692,7 +692,7 @@ kubectl run -it --rm debug \
 
 ### High memory usage
 
-**Problem**: PGF WatchTower consuming excessive memory
+**Problem**: Postgres1st WatchTower consuming excessive memory
 
 **Solution**: Optimize configuration:
 ```sh
@@ -761,17 +761,17 @@ kubectl describe pod -n monitoring -l app=pmm
 - **Cloud-native architectures** already using Kubernetes
 - **Environments with maintenance windows** for planned upgrades
 
-### When to consider PGF WatchTower High Availability Cluster
+### When to consider Postgres1st WatchTower High Availability Cluster
 
 !!! warning "HA Clustered is Tech Preview only"
-    PGF WatchTower Kubernetes HA Cluster is currently NOT production-ready. Only consider it for testing and evaluation purposes.
+    Postgres1st WatchTower Kubernetes HA Cluster is currently NOT production-ready. Only consider it for testing and evaluation purposes.
 
 Consider upgrading to [Kubernetes HA Cluster](HA-clustered.md) when you:
 
 - require **zero-downtime monitoring** (< 30 second failover)
 - can tolerate **Tech Preview status** with known issues
 - have **expert Kubernetes skills** to manage complex deployments
-- need **multiple active PGF WatchTower instances** for load distribution
+- need **multiple active Postgres1st WatchTower instances** for load distribution
 - are **testing for future production** HA requirements
 
 ### When to stay with Docker HA
@@ -789,4 +789,4 @@ Consider using [Docker HA](HA-docker.md) instead if:
 - [Contact us](https://www.postgresfirst.com/about/contact) 
 - [Report bugs or technical issues](https://www.postgresfirst.com/about/contact)
 - [Helm chart documentation](https://github.com/percona/percona-helm-charts/tree/main/charts/pmm)
-- [Kubernetes best practices for PGF WatchTower](../install-pmm/install-pmm-server/deployment-options/helm/index.md)
+- [Kubernetes best practices for Postgres1st WatchTower](../install-pmm/install-pmm-server/deployment-options/helm/index.md)

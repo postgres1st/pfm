@@ -1,6 +1,6 @@
-# PGF WatchTower APIs
+# Postgres1st WatchTower APIs
 
-The gRPC and REST API definitions for PGF WatchTower 3.x.
+The gRPC and REST API definitions for Postgres1st WatchTower 3.x.
 
 All generated files (Go code, Swagger spec, documentation) are already stored in this repository.
 

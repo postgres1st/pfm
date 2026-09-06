@@ -2,7 +2,7 @@
 
 Deploy PMM Server as a Docker container for a fast, flexible and isolated setup. 
 
-While PMM Server runs independently, we highly recommend that you streamline [upgrades via the PGF WatchTower user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing the [Watchtower updater](https://containrrr.dev/watchtower/) alongside PMM Server. 
+While PMM Server runs independently, we highly recommend that you streamline [upgrades via the Postgres1st WatchTower user interface](../../../../pmm-upgrade/ui_upgrade.md) by installing the [Watchtower updater](https://containrrr.dev/watchtower/) alongside PMM Server. 
 
 !!! info "The Watchtower updater is a third-party tool"
     Watchtower is an independent open-source container updater
@@ -50,7 +50,7 @@ You can install PMM Server with the Watchtower updater using one of two methods:
 
 === "Easy-install script (Recommended for simplicity)"
 
-    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower updater commands, enabling a one-step installation of PGF WatchTower with the Watchtower updater. Run the following command:
+    The [Easy-install script](../docker/easy-install.md) simplifies setup by including Watchtower updater commands, enabling a one-step installation of Postgres1st WatchTower with the Watchtower updater. Run the following command:
 
       ```sh
       curl -fsSL https://www.percona.com/get/pmm | /bin/bash
@@ -60,7 +60,7 @@ You can install PMM Server with the Watchtower updater using one of two methods:
     For a more customizable setup, follow these steps:
     {.power-number}
     
-    1.  Create a Docker network for PGF WatchTower and the Watchtower updater:
+    1.  Create a Docker network for Postgres1st WatchTower and the Watchtower updater:
          ```sh
          docker network create pmm-network
          ``` 
@@ -128,7 +128,7 @@ You can install PMM Server with the Watchtower updater using one of two methods:
 After installation:
 {.power-number}
 
-1. Access the PGF WatchTower interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
+1. Access the Postgres1st WatchTower interface in your browser: `https://SERVER_IP_ADDRESS` (replace with your server's address)
 
 2. Log in with default credentials: `admin` / `admin`. 
 

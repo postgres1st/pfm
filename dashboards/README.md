@@ -1,6 +1,6 @@
 ## Grafana dashboards for PostgreSQL monitoring
 
-The dashboards PGF WatchTower provisions into Grafana. Sources live under `dashboards/`, grouped by
+The dashboards Postgres1st WatchTower provisions into Grafana. Sources live under `dashboards/`, grouped by
 folder — the folder name is what appears in Grafana's dashboard list:
 
 | Folder | Covers |
@@ -12,7 +12,7 @@ folder — the folder name is what appears in Grafana's dashboard list:
 | `WatchTower Health` | the monitoring stack's own health |
 | `Experimental`, `Kubernetes (experimental)` | not provisioned by default |
 
-The `WatchTower Health` folder was renamed from `PMM Health` as part of the PGF WatchTower
+The `WatchTower Health` folder was renamed from `PMM Health` as part of the Postgres1st WatchTower
 rebrand. Because `foldersFromFilesStructure: true` is set in the Grafana provisioning config,
 the directory name *is* the folder name shown in the UI, and the folder also appears in the
 `includes` paths of `dashboards/pmm-app/src/plugin.json` — rename all three together.

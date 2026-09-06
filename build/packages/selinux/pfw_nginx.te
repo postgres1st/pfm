@@ -1,4 +1,4 @@
-# PGF WatchTower SELinux policy module.
+# Postgres1st WatchTower SELinux policy module.
 #
 # Why this exists: RHEL's targeted policy covers nginx completely -- for nginx
 # deployed the RHEL way. It cannot cover ours. Policy binds permissions to labels,

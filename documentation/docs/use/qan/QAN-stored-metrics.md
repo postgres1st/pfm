@@ -10,7 +10,7 @@ Stored metrics supports PostgreSQL with the following requirements:
     - PostgreSQL 11 or later
     - `pg_stat_monitor` extension (recommended) or `pg_stat_statements` extension
     - Appropriate `shared_preload_libraries` configuration
-    - Superuser privileges for PGF WatchTower monitoring account
+    - Superuser privileges for Postgres1st WatchTower monitoring account
 
 ## Dashboard layout
 
@@ -37,7 +37,7 @@ To enable:
 2. Switch on the **QAN for PMM Server** option.
 3. Open **Query Analytics** and filter by `watchtower-postgresql` to view queries.
 
-When enabled, you'll see queries related to PGF WatchTower's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
+When enabled, you'll see queries related to Postgres1st WatchTower's internal operations—inventory, settings, advisor checks, alerts, backups, and authentication. These are usually lightweight, but unusual spikes may indicate performance issues.
 
 !!! warning
     Do not use PMM Server's PostgreSQL database for application workloads. Use dedicated databases for your applications.

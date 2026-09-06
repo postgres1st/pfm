@@ -9,7 +9,7 @@
 # (pfw-writable) rather than the container's root-owned /opt/postgres1st/watchtower path.
 # PERCONA_TELEMETRY_DISABLE mirrors the image ENV lock.
 [Unit]
-Description=PGF WatchTower self-monitoring agent (pfw-agent)
+Description=Postgres1st WatchTower self-monitoring agent (pfw-agent)
 After=pfw-init.service pfw-managed.service
 Requires=pfw-init.service
 PartOf=pfw.target

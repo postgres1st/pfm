@@ -1,10 +1,10 @@
 # UI components
 
-This section explains how to access the interface, navigate the layout, and use the various controls within PGF WatchTower.
+This section explains how to access the interface, navigate the layout, and use the various controls within Postgres1st WatchTower.
 
 Here's how the UI is laid out, and what the controls do:
 
-![PGF WatchTower Interface with numbered components](../../images/PMM_Home_Dashboard_Numbered.png)
+![Postgres1st WatchTower Interface with numbered components](../../images/PMM_Home_Dashboard_Numbered.png)
 
 1. [Main menu](#1-main-menu) (also called the side menu)
 2. [Top navigation bar](#2-top-navigation-bar)
@@ -27,11 +27,11 @@ You'll find these options in the left-side menu:
 | :material-compass-outline:  | Explore | Investigate metrics without creating dashboards. **PromQL builder** lets you write custom [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) queries. You can also enable **Explore metrics** to visually browse metrics without writing queries. **Explore metrics** requires [enabling the Grafana Metrics Drilldown plugin](#enable-explore-metrics). |
 | :material-bell-outline: |  | Alerts | Create and manage [alerts](../../alert/index.md) that notify you when metrics exceed thresholds. |
 |:material-earth: | Advisors | Run health assessment checks on your databases and view recommendations for improving performance.|
-| :material-flask-outline: | Inventory | View and manage all monitored nodes, services, and agents registered in PGF WatchTower. Check database and agent status, organize services by clusters, and add or remove monitored instances. |
+| :material-flask-outline: | Inventory | View and manage all monitored nodes, services, and agents registered in Postgres1st WatchTower. Check database and agent status, organize services by clusters, and add or remove monitored instances. |
 | :material-cog-outline: | Configuration | Configure PMM-specific settings like metrics resolution, data retention, and advanced options. |
 | :material-shield-lock-outline: | Users and Access | Access Grafana-specific settings for users, permissions, plugins, and system maintenance. |
-| :material-account-circle-outline:| Account | Manage your user profile settings, change your password, set notification preferences, and configure your personal PGF WatchTower experience. |
-| :material-help-circle-outline:| Help | Access PGF WatchTower documentation, community forums, and support resources. Export diagnostic logs for troubleshooting and view version information.|
+| :material-account-circle-outline:| Account | Manage your user profile settings, change your password, set notification preferences, and configure your personal Postgres1st WatchTower experience. |
+| :material-help-circle-outline:| Help | Access Postgres1st WatchTower documentation, community forums, and support resources. Export diagnostic logs for troubleshooting and view version information.|
 
 ## 2. Top navigation bar
 
@@ -47,7 +47,7 @@ The top bar helps you navigate and understand your current location:
 
 - **Star**: Mark the dashboard as a favorite for quick access.
 - **Make editable**:  Unlock the dashboard for editing. Built-in dashboards are read-only by default.
-- **Export**: Download the dashboard as a JSON file for backup or import into another PGF WatchTower instance. 
+- **Export**: Download the dashboard as a JSON file for backup or import into another Postgres1st WatchTower instance. 
 - **Share**: Share dashboards or panels via direct or shortened links, or export panels as rendered PNG images.
 
 ## 4. View controls
@@ -64,7 +64,7 @@ Filter your monitoring data using these contextual options:
 - **Interval**: Control the data granularity (Auto, 1m, 5m, etc.)
 - **Environment**: Focus on specific deployment environments
 - **Node Names**: Filter metrics to specific servers
-- **PGF WatchTower Annotations**: Toggle visibility of important events on your timelines
+- **Postgres1st WatchTower Annotations**: Toggle visibility of important events on your timelines
 
 These selectors change based on the dashboard you're viewing, showing only relevant options.
 

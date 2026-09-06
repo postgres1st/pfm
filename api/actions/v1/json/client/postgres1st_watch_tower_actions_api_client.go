@@ -7,10 +7,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/percona/pmm/api/accesscontrol/v1beta1/json/client/access_control_service"
+	"github.com/percona/pmm/api/actions/v1/json/client/actions_service"
 )
 
-// Default p g f watch tower roles API HTTP client.
+// Default postgres1st watch tower actions API HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -25,14 +25,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new p g f watch tower roles API HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *PGFWatchTowerRolesAPI {
+// NewHTTPClient creates a new postgres1st watch tower actions API HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Postgres1stWatchTowerActionsAPI {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new p g f watch tower roles API HTTP client,
+// NewHTTPClientWithConfig creates a new postgres1st watch tower actions API HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGFWatchTowerRolesAPI {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Postgres1stWatchTowerActionsAPI {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -43,16 +43,16 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGF
 	return New(transport, formats)
 }
 
-// New creates a new p g f watch tower roles API client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *PGFWatchTowerRolesAPI {
+// New creates a new postgres1st watch tower actions API client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Postgres1stWatchTowerActionsAPI {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(PGFWatchTowerRolesAPI)
+	cli := new(Postgres1stWatchTowerActionsAPI)
 	cli.Transport = transport
-	cli.AccessControlService = access_control_service.New(transport, formats)
+	cli.ActionsService = actions_service.New(transport, formats)
 	return cli
 }
 
@@ -95,15 +95,15 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// PGFWatchTowerRolesAPI is a client for p g f watch tower roles API
-type PGFWatchTowerRolesAPI struct {
-	AccessControlService access_control_service.ClientService
+// Postgres1stWatchTowerActionsAPI is a client for postgres1st watch tower actions API
+type Postgres1stWatchTowerActionsAPI struct {
+	ActionsService actions_service.ClientService
 
 	Transport runtime.ClientTransport
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *PGFWatchTowerRolesAPI) SetTransport(transport runtime.ClientTransport) {
+func (c *Postgres1stWatchTowerActionsAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.AccessControlService.SetTransport(transport)
+	c.ActionsService.SetTransport(transport)
 }

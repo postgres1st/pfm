@@ -11,7 +11,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower Real-Time Analytics API",
+    "title": "Postgres1st WatchTower Real-Time Analytics API",
     "version": "v1"
   },
   "paths": {

@@ -50,22 +50,22 @@ var (
 	_ fmt.GoStringer = nginxError("")
 )
 
-// SetupClients configures local and PGF WatchTower Server API clients.
+// SetupClients configures local and Postgres1st WatchTower Server API clients.
 func SetupClients(globalFlags *flags.GlobalFlags) {
 	//nolint:nestif
 	if globalFlags.ServerURL == nil || globalFlags.ServerURL.String() == "" {
 		status, err := agentlocal.GetStatus(agentlocal.DoNotRequestNetworkInfo) //nolint:contextcheck
 		if err != nil {
 			if err == agentlocal.ErrNotSetUp { //nolint:errorlint
-				logrus.Fatalf("Failed to get PGF WatchTower Server parameters from local pfw-agent: %s.\n"+
+				logrus.Fatalf("Failed to get Postgres1st WatchTower Server parameters from local pfw-agent: %s.\n"+
 					"Please run `pfw-admin config` with --server-url flag.", err)
 			}
 
 			if err == agentlocal.ErrNotConnected { //nolint:errorlint
-				logrus.Fatalf("Failed to get PGF WatchTower Server parameters from local pfw-agent: %s.\n", err)
+				logrus.Fatalf("Failed to get Postgres1st WatchTower Server parameters from local pfw-agent: %s.\n", err)
 			}
-			logrus.Fatalf("Failed to get PGF WatchTower Server parameters from local pfw-agent: %s.\n"+
-				"Please use --server-url flag to specify PGF WatchTower Server URL.", err)
+			logrus.Fatalf("Failed to get Postgres1st WatchTower Server parameters from local pfw-agent: %s.\n"+
+				"Please use --server-url flag to specify Postgres1st WatchTower Server URL.", err)
 		}
 		globalFlags.ServerURL, _ = url.Parse(status.ServerURL)
 		globalFlags.SkipTLSCertificateCheck = status.ServerInsecureTLS
@@ -77,10 +77,10 @@ func SetupClients(globalFlags *flags.GlobalFlags) {
 		case "http", "https":
 			// nothing
 		default:
-			logrus.Fatalf("Invalid PGF WatchTower Server URL %q: scheme (https:// or http://) is missing.", globalFlags.ServerURL)
+			logrus.Fatalf("Invalid Postgres1st WatchTower Server URL %q: scheme (https:// or http://) is missing.", globalFlags.ServerURL)
 		}
 		if globalFlags.ServerURL.Host == "" {
-			logrus.Fatalf("Invalid PGF WatchTower Server URL %q: host is missing.", globalFlags.ServerURL)
+			logrus.Fatalf("Invalid Postgres1st WatchTower Server URL %q: host is missing.", globalFlags.ServerURL)
 		}
 	}
 

@@ -1,6 +1,6 @@
-# Contributing to PGF WatchTower dashboards
+# Contributing to Postgres1st WatchTower dashboards
 
-This directory holds the Grafana dashboards PGF WatchTower provisions, and the `pmm-app` Grafana
+This directory holds the Grafana dashboards Postgres1st WatchTower provisions, and the `pmm-app` Grafana
 plugin that bundles them along with the Query Analytics panel.
 
 See the [repository root CONTRIBUTING.md](../CONTRIBUTING.md) for the general contribution

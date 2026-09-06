@@ -118,7 +118,7 @@ func TestConfigCommandArgs(t *testing.T) {
 	})
 }
 
-// The PGF WatchTower admin credential used to be passed to pfw-agent as
+// The Postgres1st WatchTower admin credential used to be passed to pfw-agent as
 // --server-password on its command line, so it was readable by any local user via
 // /proc/<pid>/cmdline (0444) for the lifetime of the setup call. It now travels in
 // the child's environment, which is 0400 owner-only.

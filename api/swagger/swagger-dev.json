@@ -12,7 +12,7 @@
   "swagger": "2.0",
   "info": {
     "description": "This API is for development and testing purposes.",
-    "title": "PGF WatchTower API",
+    "title": "Postgres1st WatchTower API",
     "version": "develop"
   },
   "paths": {
@@ -2397,7 +2397,7 @@
                         "x-order": 7
                       },
                       "source": {
-                        "description": "TemplateSource defines template source.\n\n - TEMPLATE_SOURCE_BUILT_IN: Template that is shipped with PGF WatchTower Server releases.\n - TEMPLATE_SOURCE_SAAS: Template that is downloaded from check.percona.com.\n - TEMPLATE_SOURCE_USER_FILE: Templated loaded from user-suplied file.\n - TEMPLATE_SOURCE_USER_API: Templated created via API.",
+                        "description": "TemplateSource defines template source.\n\n - TEMPLATE_SOURCE_BUILT_IN: Template that is shipped with Postgres1st WatchTower Server releases.\n - TEMPLATE_SOURCE_SAAS: Template that is downloaded from check.percona.com.\n - TEMPLATE_SOURCE_USER_FILE: Templated loaded from user-suplied file.\n - TEMPLATE_SOURCE_USER_API: Templated created via API.",
                         "type": "string",
                         "default": "TEMPLATE_SOURCE_UNSPECIFIED",
                         "enum": [
@@ -5465,7 +5465,7 @@
                 "vm_agent": {
                   "type": "array",
                   "items": {
-                    "description": "VMAgent runs on Generic or Container Node alongside pfw-agent.\nIt scrapes other exporter Agents that are configured with push_metrics_enabled\nand uses Prometheus remote write protocol to push metrics to PGF WatchTower Server.",
+                    "description": "VMAgent runs on Generic or Container Node alongside pfw-agent.\nIt scrapes other exporter Agents that are configured with push_metrics_enabled\nand uses Prometheus remote write protocol to push metrics to Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6271,7 +6271,7 @@
                 "qan_mysql_perfschema_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6399,7 +6399,7 @@
                 "qan_mysql_slowlog_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6533,7 +6533,7 @@
                 "qan_mongodb_profiler_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6628,7 +6628,7 @@
                 "qan_mongodb_mongolog_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6723,7 +6723,7 @@
                 "qan_postgresql_pgstatements_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -6823,7 +6823,7 @@
                 "qan_postgresql_pgstatmonitor_agent": {
                   "type": "array",
                   "items": {
-                    "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                    "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -7461,7 +7461,7 @@
                 "rta_mongodb_agent": {
                   "type": "array",
                   "items": {
-                    "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
+                    "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.",
                     "type": "object",
                     "properties": {
                       "agent_id": {
@@ -10293,7 +10293,7 @@
                   "x-order": 8
                 },
                 "qan_mysql_perfschema_agent": {
-                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -10418,7 +10418,7 @@
                   "x-order": 9
                 },
                 "qan_mysql_slowlog_agent": {
-                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -10549,7 +10549,7 @@
                   "x-order": 10
                 },
                 "qan_mongodb_profiler_agent": {
-                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -10641,7 +10641,7 @@
                   "x-order": 11
                 },
                 "qan_mongodb_mongolog_agent": {
-                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -10733,7 +10733,7 @@
                   "x-order": 12
                 },
                 "qan_postgresql_pgstatements_agent": {
-                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -10830,7 +10830,7 @@
                   "x-order": 13
                 },
                 "qan_postgresql_pgstatmonitor_agent": {
-                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -11054,7 +11054,7 @@
                   "x-order": 15
                 },
                 "rta_mongodb_agent": {
-                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
+                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -11242,7 +11242,7 @@
                   "x-order": 0
                 },
                 "vmagent": {
-                  "description": "VMAgent runs on Generic or Container Node alongside pfw-agent.\nIt scrapes other exporter Agents that are configured with push_metrics_enabled\nand uses Prometheus remote write protocol to push metrics to PGF WatchTower Server.",
+                  "description": "VMAgent runs on Generic or Container Node alongside pfw-agent.\nIt scrapes other exporter Agents that are configured with push_metrics_enabled\nand uses Prometheus remote write protocol to push metrics to Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12030,7 +12030,7 @@
                   "x-order": 6
                 },
                 "qan_mysql_perfschema_agent": {
-                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12155,7 +12155,7 @@
                   "x-order": 7
                 },
                 "qan_mysql_slowlog_agent": {
-                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12286,7 +12286,7 @@
                   "x-order": 8
                 },
                 "qan_mongodb_profiler_agent": {
-                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12378,7 +12378,7 @@
                   "x-order": 9
                 },
                 "qan_mongodb_mongolog_agent": {
-                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12470,7 +12470,7 @@
                   "x-order": 10
                 },
                 "qan_postgresql_pgstatements_agent": {
-                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -12567,7 +12567,7 @@
                   "x-order": 11
                 },
                 "qan_postgresql_pgstatmonitor_agent": {
-                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -13187,7 +13187,7 @@
                   "x-order": 17
                 },
                 "rta_mongodb_agent": {
-                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
+                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -16519,7 +16519,7 @@
                   "x-order": 7
                 },
                 "qan_mysql_perfschema_agent": {
-                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -16644,7 +16644,7 @@
                   "x-order": 8
                 },
                 "qan_mysql_slowlog_agent": {
-                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -16775,7 +16775,7 @@
                   "x-order": 9
                 },
                 "qan_mongodb_profiler_agent": {
-                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -16867,7 +16867,7 @@
                   "x-order": 10
                 },
                 "qan_mongodb_mongolog_agent": {
-                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -16959,7 +16959,7 @@
                   "x-order": 11
                 },
                 "qan_postgresql_pgstatements_agent": {
-                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -17056,7 +17056,7 @@
                   "x-order": 12
                 },
                 "qan_postgresql_pgstatmonitor_agent": {
-                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                  "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -17328,7 +17328,7 @@
                   "x-order": 15
                 },
                 "rta_mongodb_agent": {
-                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
+                  "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "agent_id": {
@@ -17683,7 +17683,7 @@
                         "x-order": 8
                       },
                       "is_pmm_server_node": {
-                        "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                        "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                         "type": "boolean",
                         "x-order": 9
                       }
@@ -17751,7 +17751,7 @@
                         "x-order": 9
                       },
                       "is_pmm_server_node": {
-                        "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                        "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                         "type": "boolean",
                         "x-order": 10
                       }
@@ -18242,7 +18242,7 @@
                       "x-order": 8
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 9
                     }
@@ -18307,7 +18307,7 @@
                       "x-order": 9
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 10
                     }
@@ -18567,7 +18567,7 @@
                       "x-order": 8
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 9
                     }
@@ -18632,7 +18632,7 @@
                       "x-order": 9
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 10
                     }
@@ -22323,7 +22323,7 @@
                         "x-order": 17
                       },
                       "is_pmm_server_node": {
-                        "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                        "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                         "type": "boolean",
                         "x-order": 18
                       }
@@ -22551,7 +22551,7 @@
                       "x-order": 8
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 9
                     }
@@ -22616,7 +22616,7 @@
                       "x-order": 9
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 10
                     }
@@ -22880,7 +22880,7 @@
                       "x-order": 17
                     },
                     "is_pmm_server_node": {
-                      "description": "True if this node is a PGF WatchTower Server node (HA mode).",
+                      "description": "True if this node is a Postgres1st WatchTower Server node (HA mode).",
                       "type": "boolean",
                       "x-order": 18
                     }
@@ -24974,7 +24974,7 @@
                       "x-order": 6
                     },
                     "pmm_agent_id": {
-                      "description": "PGF WatchTower Agent ID.",
+                      "description": "Postgres1st WatchTower Agent ID.",
                       "type": "string",
                       "x-order": 7
                     },
@@ -25624,7 +25624,7 @@
                       "x-order": 1
                     },
                     "qan_mysql_perfschema": {
-                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -25749,7 +25749,7 @@
                       "x-order": 2
                     },
                     "qan_mysql_slowlog": {
-                      "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANMySQLSlowlogAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -26127,7 +26127,7 @@
                       "x-order": 1
                     },
                     "qan_mongodb_profiler": {
-                      "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANMongoDBProfilerAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -26219,7 +26219,7 @@
                       "x-order": 2
                     },
                     "qan_mongodb_mongolog": {
-                      "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANMongoDBMongologAgent runs within pfw-agent and sends MongoDB Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -26311,7 +26311,7 @@
                       "x-order": 3
                     },
                     "rta_mongodb_agent": {
-                      "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the PGF WatchTower Server.",
+                      "description": "RTAMongoDBAgent runs within pfw-agent and sends MongoDB Real-Time Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -26636,7 +26636,7 @@
                       "x-order": 1
                     },
                     "qan_postgresql_pgstatements_agent": {
-                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -26733,7 +26733,7 @@
                       "x-order": 2
                     },
                     "qan_postgresql_pgstatmonitor_agent": {
-                      "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANPostgreSQLPgStatMonitorAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -27817,7 +27817,7 @@
                       "x-order": 3
                     },
                     "qan_mysql_perfschema": {
-                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANMySQLPerfSchemaAgent runs within pfw-agent and sends MySQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -28168,7 +28168,7 @@
                       "x-order": 6
                     },
                     "qan_postgresql_pgstatements": {
-                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the PGF WatchTower Server.",
+                      "description": "QANPostgreSQLPgStatementsAgent runs within pfw-agent and sends PostgreSQL Query Analytics data to the Postgres1st WatchTower Server.",
                       "type": "object",
                       "properties": {
                         "agent_id": {
@@ -32285,7 +32285,7 @@
     },
     "/v1/server/settings": {
       "get": {
-        "description": "Returns current PGF WatchTower Server settings.",
+        "description": "Returns current Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -32298,7 +32298,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "Settings represents PGF WatchTower Server settings.",
+                  "description": "Settings represents Postgres1st WatchTower Server settings.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -32363,7 +32363,7 @@
                       "x-order": 8
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 9
                     },
@@ -32478,7 +32478,7 @@
         }
       },
       "put": {
-        "description": "Changes PGF WatchTower Server settings.",
+        "description": "Changes Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -32562,7 +32562,7 @@
                   "x-order": 7
                 },
                 "pmm_public_address": {
-                  "description": "PGF WatchTower Server public address.",
+                  "description": "Postgres1st WatchTower Server public address.",
                   "type": "string",
                   "x-nullable": true,
                   "x-order": 8
@@ -32624,7 +32624,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "Settings represents PGF WatchTower Server settings.",
+                  "description": "Settings represents Postgres1st WatchTower Server settings.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -32689,7 +32689,7 @@
                       "x-order": 8
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 9
                     },
@@ -32806,7 +32806,7 @@
     },
     "/v1/server/settings/readonly": {
       "get": {
-        "description": "Returns a stripped version of PGF WatchTower Server settings.",
+        "description": "Returns a stripped version of Postgres1st WatchTower Server settings.",
         "tags": [
           "ServerService"
         ],
@@ -32819,7 +32819,7 @@
               "type": "object",
               "properties": {
                 "settings": {
-                  "description": "ReadOnlySettings represents a stripped-down version of PGF WatchTower Server settings that can be accessed by users of all roles.",
+                  "description": "ReadOnlySettings represents a stripped-down version of Postgres1st WatchTower Server settings that can be accessed by users of all roles.",
                   "type": "object",
                   "properties": {
                     "updates_enabled": {
@@ -32843,7 +32843,7 @@
                       "x-order": 3
                     },
                     "pmm_public_address": {
-                      "description": "PGF WatchTower Server public address.",
+                      "description": "Postgres1st WatchTower Server public address.",
                       "type": "string",
                       "x-order": 4
                     },
@@ -32914,7 +32914,7 @@
     },
     "/v1/server/updates": {
       "get": {
-        "description": "Checks for available PGF WatchTower Server updates.",
+        "description": "Checks for available Postgres1st WatchTower Server updates.",
         "tags": [
           "ServerService"
         ],
@@ -32941,7 +32941,7 @@
               "type": "object",
               "properties": {
                 "installed": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -32996,12 +32996,12 @@
                   "x-order": 1
                 },
                 "update_available": {
-                  "description": "True if there is a PGF WatchTower Server update available.",
+                  "description": "True if there is a Postgres1st WatchTower Server update available.",
                   "type": "boolean",
                   "x-order": 2
                 },
                 "latest_news_url": {
-                  "description": "Latest available PGF WatchTower Server release announcement URL.",
+                  "description": "Latest available Postgres1st WatchTower Server release announcement URL.",
                   "type": "string",
                   "x-order": 3
                 },
@@ -33147,7 +33147,7 @@
     },
     "/v1/server/version": {
       "get": {
-        "description": "Returns PGF WatchTower Server versions.",
+        "description": "Returns Postgres1st WatchTower Server versions.",
         "tags": [
           "ServerService"
         ],
@@ -33168,12 +33168,12 @@
               "type": "object",
               "properties": {
                 "version": {
-                  "description": "PGF WatchTower Server version.",
+                  "description": "Postgres1st WatchTower Server version.",
                   "type": "string",
                   "x-order": 0
                 },
                 "server": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -33196,7 +33196,7 @@
                   "x-order": 1
                 },
                 "managed": {
-                  "description": "VersionInfo describes component version, or PGF WatchTower Server as a whole.",
+                  "description": "VersionInfo describes component version, or Postgres1st WatchTower Server as a whole.",
                   "type": "object",
                   "properties": {
                     "version": {
@@ -33219,7 +33219,7 @@
                   "x-order": 2
                 },
                 "distribution_method": {
-                  "description": "DistributionMethod defines PGF WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.",
+                  "description": "DistributionMethod defines Postgres1st WatchTower Server distribution method: Docker image, OVF/OVA, or AMI.",
                   "type": "string",
                   "default": "DISTRIBUTION_METHOD_UNSPECIFIED",
                   "enum": [
@@ -33554,7 +33554,7 @@
   ],
   "tags": [
     {
-      "description": "Server service provides generic PGF WatchTower Server public APIs.",
+      "description": "Server service provides generic Postgres1st WatchTower Server public APIs.",
       "name": "ServerService"
     },
     {

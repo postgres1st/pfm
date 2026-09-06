@@ -1,16 +1,16 @@
 # pfw-admin
 
-The command-line client for PGF WatchTower. It registers nodes and PostgreSQL services with a PGF WatchTower
+The command-line client for Postgres1st WatchTower. It registers nodes and PostgreSQL services with a Postgres1st WatchTower
 server and reports agent status.
 
 # Contributing notes
 
 ## Pre-requirements:
-git, make, curl, go, gcc, a running PGF WatchTower server, pfw-agent
+git, make, curl, go, gcc, a running Postgres1st WatchTower server, pfw-agent
 
 ## Local setup
 ### To run pfw-admin commands
-- Run a PGF WatchTower server, or [pfw-managed](../managed) directly.
+- Run a Postgres1st WatchTower server, or [pfw-managed](../managed) directly.
 - Run pfw-agent: `cd ../agent`.
 - Run pfw-admin commands:
     ```shell script

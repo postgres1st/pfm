@@ -6,7 +6,7 @@
 # match it with retry-until-up (Restart=on-failure). A readiness gate
 # (ExecStartPost=pg_isready) is a later hardening step, not T0.
 [Unit]
-Description=PGF WatchTower PostgreSQL 18 (embedded)
+Description=Postgres1st WatchTower PostgreSQL 18 (embedded)
 After=pfw-init.service
 Requires=pfw-init.service
 PartOf=pfw.target

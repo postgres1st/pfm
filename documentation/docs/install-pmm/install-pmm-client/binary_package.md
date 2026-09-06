@@ -30,7 +30,7 @@ Complete these essential steps before installation:
 
 
 !!! note "Version information"
-    The commands below are for the latest PGF WatchTower release. If you want to install a different release, make sure to update the commands with your required version number.
+    The commands below are for the latest Postgres1st WatchTower release. If you want to install a different release, make sure to update the commands with your required version number.
 
 ## Installation and setup
 Binary installation adapts to your environment's permission model. Complete the installation first, then register your node for monitoring.
@@ -107,7 +107,7 @@ Select the appropriate instructions based on your access level:
         ```sh
         PATH=$PATH:$PMM_DIR/bin
         ```
-    8. Create symbolic links to make PGF WatchTower commands available system-wide:
+    8. Create symbolic links to make Postgres1st WatchTower commands available system-wide:
 
         ```sh
         sudo ln -s /opt/postgres1st/watchtower/bin/pfw-agent /usr/local/bin/pfw-agent
@@ -214,19 +214,19 @@ Select the appropriate instructions based on your access level:
 
 After installing PMM Client, register your node with PMM Server to begin monitoring. This enables PMM Server to collect metrics and provide monitoring dashboards for your database infrastructure.
 
-Registration requires authentication to verify that your PMM Client has permission to connect and send data to the PMM Server. PGF WatchTower supports two authentication methods for registering the node: secure service account tokens and standard username/password credentials.
+Registration requires authentication to verify that your PMM Client has permission to connect and send data to the PMM Server. Postgres1st WatchTower supports two authentication methods for registering the node: secure service account tokens and standard username/password credentials.
 
 === "Using Service accounts (Recommended)"
-    [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to PGF WatchTower.
+    [Service accounts](../../api/authentication.md) provide secure, token-based authentication for registering nodes with PMM Server. Unlike standard user credentials, service account tokens can be easily rotated, revoked, or scoped to specific permissions without affecting user access to Postgres1st WatchTower.
 
     To register with service accounts, create a service account then generate an authentication token that you can use to register the PMM Client:
     {.power-number}
 
-    1. Log into PGF WatchTower web interface.
+    1. Log into Postgres1st WatchTower web interface.
     2. Navigate to **Users and access > Service accounts**.
     3. Click **Add service account**.
-    4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that PGF WatchTower automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
-    5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in PGF WatchTower](../../admin/roles/index.md).
+    4. Enter a descriptive name (e.g.: `pmm-client-prod-db01`). Keep in mind that Postgres1st WatchTower automatically shortens names exceeding 200 characters using a `{prefix}_{hash}` pattern.
+    5. Select the **Admin** role from the drop-down. For detailed information about what each role can do, see [Role types in Postgres1st WatchTower](../../admin/roles/index.md).
     6. Click **Create > Add service account token**.
     7. (Optional) Name your token or leave blank for auto-generated name.
     8. (Optional) Set expiration date for enhanced security. Expired tokens require manual rotation. Permanent tokens remain valid until revoked.
@@ -272,7 +272,7 @@ Registration requires authentication to verify that your PMM Client has permissi
 
        - `YOUR_PMM_SERVER`- Your PMM Server's IP address or hostname
        - `443` - Default HTTPS port
-       - `admin`/`admin` - Default PGF WatchTower username and password (change this immediately after first login)
+       - `admin`/`admin` - Default Postgres1st WatchTower username and password (change this immediately after first login)
 
     ??? example "Registration with node details"
         Register a node with IP address `192.168.33.23`, type `generic`, and name `mynode`:
@@ -292,7 +292,7 @@ Registration requires authentication to verify that your PMM Client has permissi
     5. Consider restricting or disabling direct admin account usage for node registration.
 
     !!! info "HTTPS requirement"
-        PGF WatchTower requires HTTPS connections (port `443` by default). HTTP URLs automatically redirect to HTTPS. For connection errors, verify:
+        Postgres1st WatchTower requires HTTPS connections (port `443` by default). HTTP URLs automatically redirect to HTTPS. For connection errors, verify:
 
         - Port `443` is accessible
         - Firewall rules allow HTTPS traffic

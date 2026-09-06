@@ -12,7 +12,7 @@ import (
 	"github.com/percona/pmm/api/backup/v1/json/client/restore_service"
 )
 
-// Default p g f watch tower backup management API HTTP client.
+// Default postgres1st watch tower backup management API HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -27,14 +27,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new p g f watch tower backup management API HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *PGFWatchTowerBackupManagementAPI {
+// NewHTTPClient creates a new postgres1st watch tower backup management API HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Postgres1stWatchTowerBackupManagementAPI {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new p g f watch tower backup management API HTTP client,
+// NewHTTPClientWithConfig creates a new postgres1st watch tower backup management API HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGFWatchTowerBackupManagementAPI {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Postgres1stWatchTowerBackupManagementAPI {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -45,14 +45,14 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGF
 	return New(transport, formats)
 }
 
-// New creates a new p g f watch tower backup management API client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *PGFWatchTowerBackupManagementAPI {
+// New creates a new postgres1st watch tower backup management API client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Postgres1stWatchTowerBackupManagementAPI {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(PGFWatchTowerBackupManagementAPI)
+	cli := new(Postgres1stWatchTowerBackupManagementAPI)
 	cli.Transport = transport
 	cli.BackupService = backup_service.New(transport, formats)
 	cli.LocationsService = locations_service.New(transport, formats)
@@ -99,8 +99,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// PGFWatchTowerBackupManagementAPI is a client for p g f watch tower backup management API
-type PGFWatchTowerBackupManagementAPI struct {
+// Postgres1stWatchTowerBackupManagementAPI is a client for postgres1st watch tower backup management API
+type Postgres1stWatchTowerBackupManagementAPI struct {
 	BackupService backup_service.ClientService
 
 	LocationsService locations_service.ClientService
@@ -111,7 +111,7 @@ type PGFWatchTowerBackupManagementAPI struct {
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *PGFWatchTowerBackupManagementAPI) SetTransport(transport runtime.ClientTransport) {
+func (c *Postgres1stWatchTowerBackupManagementAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.BackupService.SetTransport(transport)
 	c.LocationsService.SetTransport(transport)

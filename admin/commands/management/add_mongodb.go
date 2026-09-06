@@ -86,7 +86,7 @@ type AddMongoDBCommand struct {
 	EnableDiagnosticDataHistograms bool              `help:"Enable collecting histogram bucket metrics from getDiagnosticData"`
 	DisableCollectors              []string          `help:"Comma-separated list of collector names to exclude from exporter"`
 	StatsCollections               []string          `help:"Collections for collstats & indexstats"`
-	CollectionsLimit               int32             `name:"max-collections-limit" default:"-1" help:"Disable collstats, dbstats, topmetrics and indexstats if there are more than <n> collections. 0: No limit. Default is -1, which lets PGF WatchTower set this value automatically"`
+	CollectionsLimit               int32             `name:"max-collections-limit" default:"-1" help:"Disable collstats, dbstats, topmetrics and indexstats if there are more than <n> collections. 0: No limit. Default is -1, which lets Postgres1st WatchTower set this value automatically"`
 	ExposeExporter                 bool              `name:"expose-exporter" help:"Optionally expose the address of the exporter publicly on 0.0.0.0"`
 	AgentEnvVars                   []string          `name:"agent-env-vars" help:"Comma-separated list of environment variable names to pass to the exporter (values are read from the current environment), e.g. 'VAR1,VAR2'"`
 	ConnectionTimeout              *time.Duration    `placeholder:"DURATION" help:"Connection timeout to use for exporter (e.g. 1s, 1.5s)"`

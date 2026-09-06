@@ -15,7 +15,7 @@
 Name:		pfw-vmproxy
 Version:	%{full_pmm_version}
 Release:	%{rpm_release}
-Summary:	PGF WatchTower VMProxy, a stateless reverse proxy for VictoriaMetrics
+Summary:	Postgres1st WatchTower VMProxy, a stateless reverse proxy for VictoriaMetrics
 
 License:	AGPLv3
 URL:		https://github.com/postgres1st/pfm
@@ -56,4 +56,4 @@ install -p -m 0755 bin/vmproxy %{buildroot}%{_sbindir}/pfw-vmproxy
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

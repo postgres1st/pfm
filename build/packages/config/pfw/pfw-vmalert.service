@@ -8,7 +8,7 @@
 # The datasource URL is essential; T3b/T7 seeds the internal default so vmalert
 # comes up before pmm-managed's first render.
 [Unit]
-Description=PGF WatchTower vmalert (alert rule evaluation)
+Description=Postgres1st WatchTower vmalert (alert rule evaluation)
 After=pfw-init.service pfw-victoriametrics.service
 Requires=pfw-init.service
 PartOf=pfw.target

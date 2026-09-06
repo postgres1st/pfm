@@ -50,7 +50,7 @@ type AddAgentCommand struct {
 	MongodbExporter  AddAgentMongodbExporterCommand  `cmd:"" help:"Add mongodb_exporter to inventory"`
 	MysqldExporter   AddAgentMysqldExporterCommand   `cmd:"" help:"Add mysqld_exporter to inventory"`
 	NodeExporter     AddAgentNodeExporterCommand     `cmd:"" help:"Add Node exporter to inventory"`
-	PMMAgent         AddPMMAgentCommand              `cmd:"" help:"Add PGF WatchTower Agent to inventory"`
+	PMMAgent         AddPMMAgentCommand              `cmd:"" help:"Add Postgres1st WatchTower Agent to inventory"`
 	PostgresExporter AddAgentPostgresExporterCommand `cmd:"" help:"Add postgres_exporter to inventory"`
 	ProxysqlExporter AddAgentProxysqlExporterCommand `cmd:"" help:"Add proxysql_exporter to inventory"`
 	ValkeyExporter   AddAgentValkeyExporterCommand   `cmd:"" help:"Add valkey_exporter to inventory"`

@@ -1,6 +1,6 @@
-# About PGF WatchTower API
+# About Postgres1st WatchTower API
 
-PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate PGF WatchTower operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other PGF WatchTower components. 
+PMM Server provides a comprehensive REST API that enables you to monitor databases, manage resources, collect metrics, and automate Postgres1st WatchTower operations programmatically. The API supports endpoints for managing nodes, services, agents, alerting, backups, and other Postgres1st WatchTower components. 
 
 The [complete API documentation on Readme.io](https://percona-pmm.readme.io/reference/introduction) includes detailed endpoint specifications, authentication methods, example requests, and response schemas.
 
@@ -18,7 +18,7 @@ You can explore and test the API using the built-in [Swagger](https://swagger.io
 
 ## Core API resources
 
-The PGF WatchTower API organizes resources into Nodes, Services and Agents. 
+The Postgres1st WatchTower API organizes resources into Nodes, Services and Agents. 
 
 
 ### Nodes
@@ -52,11 +52,11 @@ Agents are the monitoring components that:
 
 ## Resource types and management
 
-All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within PGF WatchTower.
+All resources (Nodes, Services, and Agents) have specific Types which define their properties and operational logic. These Types determine how each resource behaves and what properties it can have within Postgres1st WatchTower.
 
 The management of these resources follows specific patterns:
 
- - **Nodes and Services**: These are inherently external resources. PGF WatchTower does not manage their actual creation or deletion. Instead, PGF WatchTower maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
+ - **Nodes and Services**: These are inherently external resources. Postgres1st WatchTower does not manage their actual creation or deletion. Instead, Postgres1st WatchTower maintains an inventory of these resources within PMM Server, allowing you to add them to or remove them from the inventory as needed.
 - **Agents**: Most Agents are initiated and halted by pfw-agent. The exception is the External Exporter Type, which is initiated externally. Agents are responsible for collecting and reporting monitoring data about Nodes and Services.
 
 ## Authentication

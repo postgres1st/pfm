@@ -6,7 +6,7 @@
 # referenced below; pfw-tmpfiles.conf seeds it (with the zero-egress phone-home
 # disables) on every boot so it is present before the first render.
 [Unit]
-Description=PGF WatchTower Grafana (dashboards)
+Description=Postgres1st WatchTower Grafana (dashboards)
 After=pfw-init.service pfw-postgresql.service
 Requires=pfw-init.service
 PartOf=pfw.target

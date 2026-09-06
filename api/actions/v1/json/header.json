@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower Actions API",
+    "title": "Postgres1st WatchTower Actions API",
     "version": "v1"
   },
   "schemes": ["https", "http"]

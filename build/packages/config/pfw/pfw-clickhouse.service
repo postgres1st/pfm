@@ -4,7 +4,7 @@
 # to open /dev/stdout as a file it will fail here -- switching its log config
 # to <console>1</console> / journald is a T5 (logging-redirect) item, not T0.
 [Unit]
-Description=PGF WatchTower ClickHouse (QAN storage)
+Description=Postgres1st WatchTower ClickHouse (QAN storage)
 After=pfw-init.service pfw-clickhouse-perms.service
 # Requires, not just After: if the ownership repair fails, starting
 # ClickHouse would only fail more confusingly.

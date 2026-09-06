@@ -1,13 +1,13 @@
 # Release notes
 
-Release notes for PGF WatchTower.
+Release notes for Postgres1st WatchTower.
 
-- [PGF WatchTower 3.9.0 beta2](pfw-3.9.0-beta2.md) — the current release
+- [Postgres1st WatchTower 3.9.0 beta2](pfw-3.9.0-beta2.md) — the current release
 - [PFMM 3.9.0 beta1](pfmm-3.9.0-beta1.md) — 2026-08-07
 
 ## Why the numbering starts at 3.9.0
 
-PGF WatchTower is derived from Percona Monitoring and Management 3.9.0 and keeps that
+Postgres1st WatchTower is derived from Percona Monitoring and Management 3.9.0 and keeps that
 version number. beta1 above was the first release, and shipped under the product's
 earlier name, Postgres1st Monitoring and Management (PFMM); its notes keep that name
 because they describe what was actually installed. There is no upgrade path from it.

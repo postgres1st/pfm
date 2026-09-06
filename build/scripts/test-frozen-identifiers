@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Guards the identifiers the PGF WatchTower rename must NOT touch.
+# Guards the identifiers the Postgres1st WatchTower rename must NOT touch.
 #
 #   build/scripts/test-frozen-identifiers [/path/to/pfw-repo]
 #
@@ -183,7 +183,8 @@ every_spec_account_known
 # "pgf" is always a half-applied sweep. Bug A was exactly this: a systemctl glob
 # 'pgf*.service' that matched none of the 12 shipped units, so the loop body never ran
 # and the health check reported every unit active unconditionally -- a test that
-# passes by doing nothing. Only the display name legitimately contains PGF.
+# passes by doing nothing. (Historic note: the display name used to contain PGF; it is
+# now "Postgres1st WatchTower" and no live string carries PGF at all.)
 # Filenames are a separate surface from file contents: a sweep that rewrites every
 # line inside a script still leaves the script itself called test-pfm-init-secrets.
 # Nothing in the content checks can see that.
@@ -203,8 +204,8 @@ filenames_clean
 
 # Everything went pmm -> pfm -> pgf -> pfw, so a stray "pgf" is normally a
 # half-applied sweep -- this is the assertion that found a dead 'pgf*.service' glob in
-# one grep. The exception is text derived from the DISPLAY name, "PGF WatchTower",
-# which legitimately keeps PGF: the analytics tag pgf-watchtower-support is one such,
+# one grep. The exception is text derived from the DISPLAY name, "Postgres1st WatchTower",
+# which legitimately keeps pgf: the analytics tag pgf-watchtower-support is one such,
 # chosen deliberately. Filtering the sanctioned spelling rather than excluding the
 # whole file keeps any other pgf in it visible.
 no_abandoned_pgf() {
@@ -616,11 +617,11 @@ absent "the docs embed no third-party script or lead-capture form" \
        'data-tf-live|embed\.typeform\.com|widget\.kapa\.ai' -- 'documentation/docs/*.md'
 
 # Worse than a dead link: the rebrand renamed the LABEL and kept the HREF, so our own
-# docs offered Percona's forum, demo site and Trust Center as ours -- "PGF WatchTower
+# docs offered Percona's forum, demo site and Trust Center as ours -- "Postgres1st WatchTower
 # Community Forum" pointing at forums.percona.com. Naming Percona's property is fine when
 # it is ATTRIBUTED to them; claiming it is not.
 absent "no doc presents a Percona property as ours" \
-       'PGF WatchTower Community Forum|\[PGF WatchTower Demo\]|our \[Trust Center' \
+       'Postgres1st WatchTower Community Forum|\[Postgres1st WatchTower Demo\]|our \[Trust Center' \
        -- 'documentation/docs/*.md'
 
 # A release note that ships but is linked from nowhere is invisible: beta2's notes were
@@ -649,7 +650,7 @@ upstream_notes_gone() {
 upstream_notes_gone
 
 # The label/href defect at its most literal: a sweep substituted the product DISPLAY name
-# into a URL path, producing jira.percona.com/projects/PGF WatchTower -- a link with a
+# into a URL path, producing jira.percona.com/projects/Postgres1st WatchTower -- a link with a
 # space in it, which cannot resolve. A URL containing a space is always broken, whatever
 # produced it, so assert the shape rather than the one string.
 absent "no shipped doc contains a URL with a space in it" \

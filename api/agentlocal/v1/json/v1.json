@@ -10,7 +10,7 @@
   ],
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower Agent Local API",
+    "title": "Postgres1st WatchTower Agent Local API",
     "version": "stable"
   },
   "host": "127.0.0.1:7777",
@@ -109,16 +109,16 @@
                   "x-order": 2
                 },
                 "server_info": {
-                  "description": "ServerInfo contains information about the PGF WatchTower Server.",
+                  "description": "ServerInfo contains information about the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "url": {
-                      "description": "PGF WatchTower Server URL in a form https://HOST:PORT/.",
+                      "description": "Postgres1st WatchTower Server URL in a form https://HOST:PORT/.",
                       "type": "string",
                       "x-order": 0
                     },
                     "insecure_tls": {
-                      "description": "PGF WatchTower Server's TLS certificate validation should be skipped if true.",
+                      "description": "Postgres1st WatchTower Server's TLS certificate validation should be skipped if true.",
                       "type": "boolean",
                       "x-order": 1
                     },
@@ -128,7 +128,7 @@
                       "x-order": 2
                     },
                     "version": {
-                      "description": "PGF WatchTower Server version (if agent is connected).",
+                      "description": "Postgres1st WatchTower Server version (if agent is connected).",
                       "type": "string",
                       "x-order": 3
                     },
@@ -138,7 +138,7 @@
                       "x-order": 4
                     },
                     "clock_drift": {
-                      "description": "Clock drift from PGF WatchTower Server (if agent is connected).",
+                      "description": "Clock drift from Postgres1st WatchTower Server (if agent is connected).",
                       "type": "string",
                       "x-order": 5
                     }
@@ -219,7 +219,7 @@
                   "x-order": 5
                 },
                 "agent_version": {
-                  "description": "PGF WatchTower Agent version.",
+                  "description": "Postgres1st WatchTower Agent version.",
                   "type": "string",
                   "x-order": 6
                 },
@@ -308,16 +308,16 @@
                   "x-order": 2
                 },
                 "server_info": {
-                  "description": "ServerInfo contains information about the PGF WatchTower Server.",
+                  "description": "ServerInfo contains information about the Postgres1st WatchTower Server.",
                   "type": "object",
                   "properties": {
                     "url": {
-                      "description": "PGF WatchTower Server URL in a form https://HOST:PORT/.",
+                      "description": "Postgres1st WatchTower Server URL in a form https://HOST:PORT/.",
                       "type": "string",
                       "x-order": 0
                     },
                     "insecure_tls": {
-                      "description": "PGF WatchTower Server's TLS certificate validation should be skipped if true.",
+                      "description": "Postgres1st WatchTower Server's TLS certificate validation should be skipped if true.",
                       "type": "boolean",
                       "x-order": 1
                     },
@@ -327,7 +327,7 @@
                       "x-order": 2
                     },
                     "version": {
-                      "description": "PGF WatchTower Server version (if agent is connected).",
+                      "description": "Postgres1st WatchTower Server version (if agent is connected).",
                       "type": "string",
                       "x-order": 3
                     },
@@ -337,7 +337,7 @@
                       "x-order": 4
                     },
                     "clock_drift": {
-                      "description": "Clock drift from PGF WatchTower Server (if agent is connected).",
+                      "description": "Clock drift from Postgres1st WatchTower Server (if agent is connected).",
                       "type": "string",
                       "x-order": 5
                     }
@@ -418,7 +418,7 @@
                   "x-order": 5
                 },
                 "agent_version": {
-                  "description": "PGF WatchTower Agent version.",
+                  "description": "Postgres1st WatchTower Agent version.",
                   "type": "string",
                   "x-order": 6
                 },

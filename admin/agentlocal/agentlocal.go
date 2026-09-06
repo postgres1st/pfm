@@ -65,7 +65,7 @@ const (
 var ErrNotSetUp = errors.New("pfw-agent is running, but not set up")
 
 // ErrNotConnected is returned by GetStatus when pfw-agent is running and set up, but not connected to PMM Server.
-var ErrNotConnected = errors.New("pfw-agent is not connected to PGF WatchTower Server")
+var ErrNotConnected = errors.New("pfw-agent is not connected to Postgres1st WatchTower Server")
 
 // Status represents pfw-agent status.
 type Status struct {

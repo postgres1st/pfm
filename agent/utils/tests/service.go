@@ -34,7 +34,7 @@ var hostPortRE = regexp.MustCompile(`(\d{1,3}(?:\.\d{1,3}){3}|localhost):(\d{2,5
 
 // SkipIfUnreachable skips the test when nothing is listening on addr.
 //
-// PGF WatchTower monitors PostgreSQL. The MySQL, MongoDB and Valkey suites cover
+// Postgres1st WatchTower monitors PostgreSQL. The MySQL, MongoDB and Valkey suites cover
 // code paths the postgres-only gate refuses to reach in production, and they need
 // service containers that `make -C agent env-up-db` starts. Without those, they
 // failed with a wall of "connection refused" that buried real regressions: 35

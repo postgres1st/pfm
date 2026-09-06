@@ -4,7 +4,7 @@
 Regular backups of your PMM Server are essential for protecting your monitoring configuration and historical data, especially before migrations and upgrades.
     
 ## Back up Grafana plugins 
-Grafana plugins have been moved to the `/srv` directory since PGF WatchTower 2.23.0. So if you are upgrading PGF WatchTower from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
+Grafana plugins have been moved to the `/srv` directory since Postgres1st WatchTower 2.23.0. So if you are upgrading Postgres1st WatchTower from a version before 2.23.0 and have installed additional plugins, you'll need to reinstall them after the upgrade.
     
 To check used Grafana plugins:
 
@@ -20,7 +20,7 @@ To back up your PMM Server container, follow the backup instructions for your de
 Identify your deployment type and storage method since different PMM Server deployments store data differently:
 
 === "Docker with named volumes"
-    Your PGF WatchTower data is stored in a Docker-managed volume (like pmm-data). You'll need to copy this volume's contents to create a backup.
+    Your Postgres1st WatchTower data is stored in a Docker-managed volume (like pmm-data). You'll need to copy this volume's contents to create a backup.
 
     **Command to check mount configuration**
     ```sh
@@ -44,7 +44,7 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Docker with host directories"
-    Your PGF WatchTower data is stored in a directory on your host machine that's mounted into the container. You'll back up this directory using standard file system tools.
+    Your Postgres1st WatchTower data is stored in a directory on your host machine that's mounted into the container. You'll back up this directory using standard file system tools.
 
     **Command to check mount configuration**
     ```sh
@@ -66,9 +66,9 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Podman with SystemD"
-    Your PGF WatchTower runs as a SystemD service using Podman. You'll need to stop the service, back up the volume, and restart the service.
+    Your Postgres1st WatchTower runs as a SystemD service using Podman. You'll need to stop the service, back up the volume, and restart the service.
 
-    **Command to check if PGF WatchTower service is running**
+    **Command to check if Postgres1st WatchTower service is running**
     ```sh
     systemctl --user is-active pmm-server
     ```
@@ -79,9 +79,9 @@ Identify your deployment type and storage method since different PMM Server depl
     ```
 
 === "Kubernetes"
-    Your PGF WatchTower runs in a Kubernetes cluster. You'll use volume snapshots or persistent volume backups.
+    Your Postgres1st WatchTower runs in a Kubernetes cluster. You'll use volume snapshots or persistent volume backups.
 
-    **Command to check if PGF WatchTower pods are running**
+    **Command to check if Postgres1st WatchTower pods are running**
     ```sh
     kubectl get pods -l app.kubernetes.io/name=pmm
     ```

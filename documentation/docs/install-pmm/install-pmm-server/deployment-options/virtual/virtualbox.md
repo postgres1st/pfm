@@ -1,7 +1,7 @@
 # Deploy PMM Server on VirtualBox
 
-!!! warning "OVF support ending in PGF WatchTower 3.9.0"
-    OVF virtual appliance deployment (including VirtualBox) is deprecated starting with PGF WatchTower 3.7.0 and will be removed in PGF WatchTower 3.9.0 (expected July 2026). Migrate to [Docker](../docker/index.md) or another supported deployment method.
+!!! warning "OVF support ending in Postgres1st WatchTower 3.9.0"
+    OVF virtual appliance deployment (including VirtualBox) is deprecated starting with Postgres1st WatchTower 3.7.0 and will be removed in Postgres1st WatchTower 3.9.0 (expected July 2026). Migrate to [Docker](../docker/index.md) or another supported deployment method.
 
 Import the PMM Server OVA file into Oracle VirtualBox to create a virtual machine for your monitoring environment.
 

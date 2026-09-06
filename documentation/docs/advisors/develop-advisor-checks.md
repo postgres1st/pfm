@@ -1,10 +1,10 @@
 # Developing Advisor checks
 
-PGF WatchTower offers sets of checks that can detect common security threats, performance degradation, data loss and data corruption.
+Postgres1st WatchTower offers sets of checks that can detect common security threats, performance degradation, data loss and data corruption.
 
 As a developer, you can create custom checks to cover additional use cases, relevant to your specific database infrastructure.
 
-Starting with PGF WatchTower 3.5.0, all advisor checks are built-in and use the v2 check format. Custom checks must also use the v2 format.
+Starting with Postgres1st WatchTower 3.5.0, all advisor checks are built-in and use the v2 check format. Custom checks must also use the v2 format.
 
 ## Check components
 
@@ -13,7 +13,7 @@ A check is a combination of:
 - A query for extracting data from the database.
 - Python script for converting extracted data into check results. This is actually a [Starlark](https://github.com/google/starlark-go) script, which is a Python dialect that adds more imperative features than Python. The script's execution environment is sandboxed, and no I/O can be done from it.
 
-All checks are self-contained in the first phase, as well as in most of the planned phases. This means that extracted data is processed on the PGF WatchTower side.
+All checks are self-contained in the first phase, as well as in most of the planned phases. This means that extracted data is processed on the Postgres1st WatchTower side.
 
 ## Backend
 
@@ -32,7 +32,7 @@ At the backend, pmm-managed does the following:
 ![!](../images/BackendChecks.png)
 
 ## Frontend
-PGF WatchTower uses Alertmanager API to get information about failed checks and show them on the UI:
+Postgres1st WatchTower uses Alertmanager API to get information about failed checks and show them on the UI:
 
 ![!](../images/FrontEndChecks.png)
 
@@ -48,8 +48,8 @@ Advisor checks use the following format:
         description: Checks something important
         interval: standard
         family: MYSQL
-        category: configuration ## Deprecated since PGF WatchTower 2.36
-        advisor: dev            ## Required since PGF WatchTower 2.36
+        category: configuration ## Deprecated since Postgres1st WatchTower 2.36
+        advisor: dev            ## Required since Postgres1st WatchTower 2.36
         queries:
           - type: MYSQL_SHOW
             query: VARIABLES
@@ -166,7 +166,7 @@ You can label your advisor checks with one of the following available severity l
 - Info
 - Debug
 
-PGF WatchTower groups failed checks by their severity, and displays them under **Advisors Checks > Failed Checks**.
+Postgres1st WatchTower groups failed checks by their severity, and displays them under **Advisors Checks > Failed Checks**.
 
 ## Check fields
 
@@ -188,7 +188,7 @@ Checks can include the following fields:
 
 ## Query types
 
-Expand the table below for the list of checks types that you can use to define your query type and the PGF WatchTower Service type for which the check will run.
+Expand the table below for the list of checks types that you can use to define your query type and the Postgres1st WatchTower Service type for which the check will run.
 
 ??? note alert alert-info "Check types"
 
@@ -205,7 +205,7 @@ Expand the table below for the list of checks types that you can use to define y
     | MONGODB_GETDIAGNOSTICDATA |Executes db.adminCommand( { getDiagnosticData: 1 } ) against MongoDB's "admin" database. For more information, see [MongoDB Performance](https://docs.mongodb.com/manual/administration/analyzing-mongodb-performance/#full-time-diagnostic-data-capture)| No|
     | METRICS_INSTANT |Executes instant [MetricsQL](https://docs.victoriametrics.com/MetricsQL.html) query. Query can use placeholders in query string {% raw %} **{{.NodeName**}} and **{{.ServiceName}}**  {% endraw %}. Both match target service/node names. To read more about instant queries, check out the [Prometheus docs](https://prometheus.io/docs/prometheus/latest/querying/api/#instant-queries).|Yes|
     | METRICS_RANGE |Executes range [MetricsQL](https://docs.victoriametrics.com/MetricsQL.html) query. Query can use placeholders in query string {% raw %} **{{.NodeName**}} and **{{.ServiceName}}**  {% endraw %}. Both match target service/node names. To read more about range queries, check out the [Prometheus docs](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).|Yes|
-    | CLICKHOUSE_SELECT |Executes 'SELECT ...' statements against PGF WatchTower's [Query Analytics](../use/qan/index.md) ClickHouse database. Queries can use the {% raw %} **{{.ServiceName**}} and **{{.ServiceID}}**  {% endraw %} placeholders in query string. They match the target service name and service ID respectively.|Yes|
+    | CLICKHOUSE_SELECT |Executes 'SELECT ...' statements against Postgres1st WatchTower's [Query Analytics](../use/qan/index.md) ClickHouse database. Queries can use the {% raw %} **{{.ServiceName**}} and **{{.ServiceID}}**  {% endraw %} placeholders in query string. They match the target service name and service ID respectively.|Yes|
 
 ## Query parameters
 - `METRICS_INSTANT`
@@ -215,20 +215,20 @@ Expand the table below for the list of checks types that you can use to define y
     - **range** (duration, required): specifies time window of the query. This parameter is equal to [Prometheus API](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).
     - **step** (duration, required): query resolution. This parameter is equal to [Prometheus API](https://prometheus.io/docs/prometheus/latest/querying/api/#range-queries).
 - `POSTGRESQL_SELECT`
-    - **all_dbs** (boolean, optional): execute query on all available databases in PostgreSQL instance. If this parameter is not specified, then query executed on the default database (the one that was specified when service was added to PGF WatchTower).
+    - **all_dbs** (boolean, optional): execute query on all available databases in PostgreSQL instance. If this parameter is not specified, then query executed on the default database (the one that was specified when service was added to Postgres1st WatchTower).
 
 ## Develop checks
 
 !!! note alert alert-primary "Development/debugging only"
-    Note that check development in PGF WatchTower is currently for **debugging only** and **NOT for production use!**  Future releases plan to include the option to run custom local checks in addition to default PGF WatchTower checks.
+    Note that check development in Postgres1st WatchTower is currently for **debugging only** and **NOT for production use!**  Future releases plan to include the option to run custom local checks in addition to default Postgres1st WatchTower checks.
 
-To develop custom checks for PGF WatchTower:
+To develop custom checks for Postgres1st WatchTower:
 {.power-number}
 
 1. Install the latest PMM Server and PMM Client builds following the [installation instructions](../quickstart/quickstart.md).
 2. Run PMM Server with special environment variables:
 
-    - `PMM_DEV_ADVISOR_CHECKS_FILE=/srv/custom-checks.yml` to use checks from the local files instead of default PGF WatchTower ones.
+    - `PMM_DEV_ADVISOR_CHECKS_FILE=/srv/custom-checks.yml` to use checks from the local files instead of default Postgres1st WatchTower ones.
     - `PMM_ADVISORS_CHECKS_DISABLE_START_DELAY=true` to disable the default check execution start delay. This is currently set to one minute, so that checks run upon system start.
 
     ```sh
@@ -259,7 +259,7 @@ To develop custom checks for PGF WatchTower:
 
 ## Troubleshooting and tips
 
-When developing checks for PGF WatchTower, you may encounter various issues. Here are solutions for common problems:
+When developing checks for Postgres1st WatchTower, you may encounter various issues. Here are solutions for common problems:
 
 ### Managing debug output
 Debug mode generates excessive information in log files that can obscure important data. To disable debug logging, use `PMM_DEBUG=0`.

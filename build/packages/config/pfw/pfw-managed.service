@@ -12,7 +12,7 @@
 # it can start cleanly (the init.yml port in pfw-init.sh — follow-on). Until
 # that lands it will fail to connect and retry (StartLimitIntervalSec=0).
 [Unit]
-Description=PGF WatchTower control plane (pfw-managed)
+Description=Postgres1st WatchTower control plane (pfw-managed)
 After=pfw-init.service pfw-postgresql.service pfw-clickhouse.service pfw-victoriametrics.service pfw-nginx.service
 Requires=pfw-init.service pfw-postgresql.service
 PartOf=pfw.target

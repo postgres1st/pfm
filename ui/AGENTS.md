@@ -1,9 +1,9 @@
-# PGF WatchTower UI Development Guidelines
+# Postgres1st WatchTower UI Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [api/AGENTS.md](../api/AGENTS.md) (API definitions consumed by UI) · [managed/AGENTS.md](../managed/AGENTS.md) (server backend)
 
-The `/ui` directory contains the PGF WatchTower web frontend — a React/TypeScript application that provides the primary user interface for PGF WatchTower. It runs inside a Grafana iframe on PGF WatchTower Server and also hosts standalone pages for updates, RTA, and help.
+The `/ui` directory contains the Postgres1st WatchTower web frontend — a React/TypeScript application that provides the primary user interface for Postgres1st WatchTower. It runs inside a Grafana iframe on Postgres1st WatchTower Server and also hosts standalone pages for updates, RTA, and help.
 
 ## Architecture
 
@@ -13,7 +13,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 | Package         | Path                  | Purpose                                                       |
 | --------------- | --------------------- | ------------------------------------------------------------- |
-| **pmm**         | `ui/apps/pmm/`        | Main PGF WatchTower UI application (Vite + React)                       |
+| **pmm**         | `ui/apps/pmm/`        | Main Postgres1st WatchTower UI application (Vite + React)                       |
 | **pmm-compat**  | `ui/apps/pmm-compat/` | Grafana plugin for PMM ↔ Grafana integration (Webpack)        |
 | **@pmm/shared** | `ui/packages/shared/` | Shared code: cross-frame messaging, types, utilities (Rollup) |
 
@@ -35,7 +35,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 ### Communication with Grafana
 
-PGF WatchTower UI runs inside a Grafana iframe. Cross-frame communication uses `CrossFrameMessenger` from `@pmm/shared`:
+Postgres1st WatchTower UI runs inside a Grafana iframe. Cross-frame communication uses `CrossFrameMessenger` from `@pmm/shared`:
 
 - Navigation events
 - Theme synchronization
@@ -48,7 +48,7 @@ Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createB
 | Route              | Page                            |
 | ------------------ | ------------------------------- |
 | `/`                | Redirects to `/graph` (Grafana) |
-| `/updates`         | PGF WatchTower Server updates             |
+| `/updates`         | Postgres1st WatchTower Server updates             |
 | `/updates/clients` | Client updates                  |
 | `/help`            | Help center                     |
 | `/rta`             | Real-Time Analytics tab         |
@@ -79,7 +79,7 @@ Providers are composed in `Providers.tsx`:
 
 - `AuthProvider` — authentication state
 - `UserProvider` — current user info
-- `SettingsProvider` — PGF WatchTower Server settings
+- `SettingsProvider` — Postgres1st WatchTower Server settings
 - `UpdatesProvider` — update availability
 - `GrafanaProvider` — Grafana integration state
 - `NavigationProvider` — sidebar navigation

@@ -1,8 +1,8 @@
 
 # Remove PMM Server Virtual Appliance
 
-!!! warning "OVF support ending in PGF WatchTower 3.9.0"
-    OVF virtual appliance deployment is deprecated starting with PGF WatchTower 3.7.0 and will be removed in PGF WatchTower 3.9.0 (expected July 2026). If you currently run PGF WatchTower on a virtual appliance, [migrate to a supported deployment method](index.md).
+!!! warning "OVF support ending in Postgres1st WatchTower 3.9.0"
+    OVF virtual appliance deployment is deprecated starting with Postgres1st WatchTower 3.7.0 and will be removed in Postgres1st WatchTower 3.9.0 (expected July 2026). If you currently run Postgres1st WatchTower on a virtual appliance, [migrate to a supported deployment method](index.md).
 
 When you no longer need your PMM Server virtual appliance or want to perform a clean reinstallation, follow these steps to completely remove the virtual machine.
 

@@ -1,14 +1,14 @@
-# About PGF WatchTower commands
+# About Postgres1st WatchTower commands
 
-PGF WatchTower provides two command-line tools for managing your monitoring setup from the terminal. 
+Postgres1st WatchTower provides two command-line tools for managing your monitoring setup from the terminal. 
 
 Use these tools to add databases, configure agents, check status, and troubleshoot issues without leaving the command line.
 
-You can also perform most of these tasks through the [PGF WatchTower web interface](../../reference/ui/ui_components.md) or the [PGF WatchTower API](../../api/index.md).
+You can also perform most of these tasks through the [Postgres1st WatchTower web interface](../../reference/ui/ui_components.md) or the [Postgres1st WatchTower API](../../api/index.md).
 
 ## Command-line tools
 
-`pfw-admin`: The primary CLI tool for administering PGF WatchTower. Use it to add and remove database services, check connection status, list monitored services, modify agent configurations, create diagnostic archives, and annotate dashboards. Communicates directly with PMM Server.
+`pfw-admin`: The primary CLI tool for administering Postgres1st WatchTower. Use it to add and remove database services, check connection status, list monitored services, modify agent configurations, create diagnostic archives, and annotate dashboards. Communicates directly with PMM Server.
 
     `pfw-admin` is installed automatically as part of the [PMM Client](../../../install-pmm/install-pmm-client/index.md) package.
 

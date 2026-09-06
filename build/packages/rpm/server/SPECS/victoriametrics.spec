@@ -7,7 +7,7 @@
 Name:           pfw-victoriametrics
 Version:        1.147.0
 Release:        1%{?dist}
-Summary:        PGF WatchTower metrics storage (VictoriaMetrics and vmalert)
+Summary:        Postgres1st WatchTower metrics storage (VictoriaMetrics and vmalert)
 License:        Apache-2.0
 # %{provider} is the upstream source we build FROM; the package is ours.
 URL:            https://github.com/postgres1st/pfm
@@ -45,4 +45,4 @@ install -D -p -m 0755 ./bin/vmalert-pure %{buildroot}%{_sbindir}/pfw-vmalert
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 1.147.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

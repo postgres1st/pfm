@@ -1,12 +1,12 @@
 # pfw-agent
 
-The PGF WatchTower client agent. It runs on each monitored host, supervises the exporters and
-relays their metrics to the PGF WatchTower server.
+The Postgres1st WatchTower client agent. It runs on each monitored host, supervises the exporters and
+relays their metrics to the Postgres1st WatchTower server.
 
 # Contributing notes
 
 ## Pre-requisites:
-git, make, curl, go, gcc, docker, docker-compose, a running PGF WatchTower server
+git, make, curl, go, gcc, docker, docker-compose, a running Postgres1st WatchTower server
 
 ## Local setup
 Install one or more exporters:
@@ -15,13 +15,13 @@ Install one or more exporters:
 * rds_exporter
 * azure_metrics_exporter
 
-These are the exporters PGF WatchTower builds and ships. The MySQL, MongoDB and ProxySQL exporters
+These are the exporters Postgres1st WatchTower builds and ships. The MySQL, MongoDB and ProxySQL exporters
 upstream carries are not built here — the service-type allowlist
 (`managed/models/service_type_allowlist.go`) rejects those services, so nothing would
 drive them.
 
 #### To run pfw-agent
-- Run a PGF WatchTower server, or [pfw-managed](../managed) directly.
+- Run a Postgres1st WatchTower server, or [pfw-managed](../managed) directly.
 - Run `make setup-dev` to configure pfw-agent
 - Run `make run` to run pfw-agent
 

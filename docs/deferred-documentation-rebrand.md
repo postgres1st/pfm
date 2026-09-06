@@ -85,7 +85,7 @@ The clearest example of how this class of defect hides is
 `documentation/api/welcome/monitoring.md:11`:
 
 ```markdown
-- [Install PGF WatchTower](https://per.co.na/pmm/quickstart)
+- [Install Postgres1st WatchTower](https://per.co.na/pmm/quickstart)
 ```
 
 A previous rename pass rewrote the visible label and left the target. The page reads

@@ -16,14 +16,14 @@
 Name:		pfw-managed
 Version:	%{version}
 Release:	%{rpm_release}
-Summary:	PGF WatchTower management daemon
+Summary:	Postgres1st WatchTower management daemon
 
 License:	AGPLv3
 URL:		  https://%{provider}
 Source0:	https://%{provider}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 
 %description
-pfw-managed manages configuration of PGF WatchTower server components (VictoriaMetrics,
+pfw-managed manages configuration of Postgres1st WatchTower server components (VictoriaMetrics,
 Grafana, etc.) and exposes an API for that. Those APIs are used by the pfw-admin tool.
 See https://github.com/postgres1st/pfm for more information.
 
@@ -100,4 +100,4 @@ exit 0
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

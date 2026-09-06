@@ -1,8 +1,8 @@
-# Connect HAProxy databases to PGF WatchTower
-Monitor your HAProxy load balancer performance with Postgres1st (PGF WatchTower). PGF WatchTower collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
+# Connect HAProxy databases to Postgres1st WatchTower
+Monitor your HAProxy load balancer performance with Postgres1st (Postgres1st WatchTower). Postgres1st WatchTower collects metrics from HAProxy's built-in Prometheus endpoint to provide insights into proxy performance, backend health, and traffic patterns.
 
 ## Prerequisites
-Before adding HAProxy to PGF WatchTower, ensure:
+Before adding HAProxy to Postgres1st WatchTower, ensure:
 {.power-number}
 
 1. HAProxy configured with metrics endpoint. 
@@ -54,7 +54,7 @@ pfw-admin add haproxy --listen-port=8404 Production-HAProxy
 - `--skip-connection-check`: Skip connectivity validation
 
 ### Via web UI
-To add HAProxy through the PGF WatchTower web interface:
+To add HAProxy through the Postgres1st WatchTower web interface:
 {.power-number}
 
 1. Go to **Inventory > Add service**.

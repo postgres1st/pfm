@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "PGF WatchTower User API",
+    "title": "Postgres1st WatchTower User API",
     "version": "v1"
   },
   "schemes": [

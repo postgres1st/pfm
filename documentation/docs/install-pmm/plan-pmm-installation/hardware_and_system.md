@@ -1,7 +1,7 @@
 # Hardware and system requirements
-To ensure optimal performance for your monitoring environment, check the appropriate hardware specifications before installing PGF WatchTower.
+To ensure optimal performance for your monitoring environment, check the appropriate hardware specifications before installing Postgres1st WatchTower.
 
-For guidance on selecting the best deployment method based on these requirements, see the [choose your PGF WatchTower deployment strategy](../plan-pmm-installation/choose-deployment.md) topic.
+For guidance on selecting the best deployment method based on these requirements, see the [choose your Postgres1st WatchTower deployment strategy](../plan-pmm-installation/choose-deployment.md) topic.
 
 ## PMM Server resource requirements
 Resource requirements scale with the number of nodes and services monitored. Here are our recommendations for different deployment scales:
@@ -71,7 +71,7 @@ For specific version support details, see [Percona software support life cycle](
 
 - **Docker images**: If using Docker for PMM Client on ARM systems, ensure you're using the ARM64-compatible Docker images.
 - **Performance testing**: Performance may vary across different ARM implementations. Conduct thorough testing to ensure optimal performance in your environment.
-- **Software compatibility**: Ensure you're using ARM-compatible versions of any additional software or databases you're monitoring with PGF WatchTower.
+- **Software compatibility**: Ensure you're using ARM-compatible versions of any additional software or databases you're monitoring with Postgres1st WatchTower.
 - **Resource monitoring**: Monitor resource usage closely on ARM systems, as it may differ from x86_64 systems. Adjust your configuration as needed for optimal performance.
 
 ## Next step

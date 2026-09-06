@@ -15,7 +15,7 @@
 # access to /etc nor CAP_CHOWN. It also cannot live in pfw-init.sh, which runs as
 # the pfw user. Hence a separate, unsandboxed, root oneshot ordered in front.
 [Unit]
-Description=PGF WatchTower ClickHouse ownership repair
+Description=Postgres1st WatchTower ClickHouse ownership repair
 Documentation=https://github.com/postgres1st/pfm
 After=pfw-init.service
 Before=pfw-clickhouse.service

@@ -1,4 +1,4 @@
-# PGF WatchTower 3.9.0 beta2 — release readiness
+# Postgres1st WatchTower 3.9.0 beta2 — release readiness
 
 Written 4 Sep 2026, re-verified at `60378b057`. Records what is verified, what is not, and the
 decisions that will otherwise be re-litigated. Companion to `docs/p0-blockers-handoff.md`

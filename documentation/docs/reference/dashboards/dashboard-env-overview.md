@@ -2,11 +2,11 @@
 
 
 !!! caution alert alert-warning "Disclaimer"
-    This is an Experimental Dashboard that is not part of the official Postgres1st (PGF WatchTower) deployment and might be updated. We ship this Dashboard to obtain feedback from our users
+    This is an Experimental Dashboard that is not part of the official Postgres1st (Postgres1st WatchTower) deployment and might be updated. We ship this Dashboard to obtain feedback from our users
     
 ![Environment Overview Dashboard](../../images/PMM_Environment_Overview_Dashboard.png)
 
-The **Environments Overview** dashboard gives you a high-level view of all environments monitored by PGF WatchTower. Use it to quickly see how your infrastructure is doing and drill into individual environments or services.
+The **Environments Overview** dashboard gives you a high-level view of all environments monitored by Postgres1st WatchTower. Use it to quickly see how your infrastructure is doing and drill into individual environments or services.
 
 ## Before you use this dashboard
 
@@ -25,8 +25,8 @@ The **Environments Overview** dashboard gives you a high-level view of all envir
 A summary panel with key numbers across all monitored environments:
 
 - **Environments**: How many distinct environments are being monitored.
-- **Nodes**: How many nodes are registered with PGF WatchTower. If a node you expect is missing, it may have lost its PMM agent connection.
-- **Services**: How many database services are registered with PGF WatchTower across all environments.
+- **Nodes**: How many nodes are registered with Postgres1st WatchTower. If a node you expect is missing, it may have lost its PMM agent connection.
+- **Services**: How many database services are registered with Postgres1st WatchTower across all environments.
 - **CPU Busy**: Average CPU utilization across all nodes. A high value means load is spread widely, not just on one node.
 - **Mem Available**: Average available memory across all nodes. A low value means multiple nodes are under memory pressure at the same time.
 - **Disk Reads**: Average read throughput across all nodes. Spikes often indicate backups, large index scans, or replication catching up.
@@ -43,9 +43,9 @@ A summary panel with key numbers across all monitored environments:
 
 Shows how many Advisor checks failed in their last run. Use it to quickly spot configuration or security issues across your environments.
 
-## PGF WatchTower Upgrade
+## Postgres1st WatchTower Upgrade
 
-Shows whether a newer version of PGF WatchTower is available and lets you upgrade directly from the dashboard.
+Shows whether a newer version of Postgres1st WatchTower is available and lets you upgrade directly from the dashboard.
 
 ## Percona News
 
@@ -74,8 +74,8 @@ A few things to keep in mind:
 
 A table listing all monitored database services:
 
-- **Status**: Whether PGF WatchTower can reach the service. Red means monitoring has lost contact, so check the agent connection or the database itself.
-- **Service**: The name of the database service as registered in PGF WatchTower.
+- **Status**: Whether Postgres1st WatchTower can reach the service. Red means monitoring has lost contact, so check the agent connection or the database itself.
+- **Service**: The name of the database service as registered in Postgres1st WatchTower.
 - **Environment**: Which environment this service belongs to, based on its `environment` label.
 - **Region**: The `region` label assigned to this service. Useful for grouping services across geographic locations.
 - **DB QPS**: Current query throughput. A sudden drop to zero can mean the database stopped accepting connections; an unexpected spike may indicate runaway queries.

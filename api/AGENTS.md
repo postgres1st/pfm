@@ -1,9 +1,9 @@
-# PGF WatchTower API Development Guidelines
+# Postgres1st WatchTower API Development Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [managed/AGENTS.md](../managed/AGENTS.md) (server-side implementation) · [admin/AGENTS.md](../admin/AGENTS.md) (CLI client) · [api-tests/AGENTS.md](../api-tests/AGENTS.md) (integration tests)
 
-The `/api` directory is the **single source of truth** for all PGF WatchTower APIs. It contains Protocol Buffer (`.proto`) definitions that generate gRPC servers, gRPC-Gateway HTTP/JSON endpoints, validation code, OpenAPI/Swagger specs, and Go client libraries. Every other component in the monorepo consumes the types and clients generated from these definitions.
+The `/api` directory is the **single source of truth** for all Postgres1st WatchTower APIs. It contains Protocol Buffer (`.proto`) definitions that generate gRPC servers, gRPC-Gateway HTTP/JSON endpoints, validation code, OpenAPI/Swagger specs, and Go client libraries. Every other component in the monorepo consumes the types and clients generated from these definitions.
 
 ## Architecture
 
@@ -113,7 +113,7 @@ cd api && make serve
 
 API definitions themselves are not unit-tested. Testing happens at:
 - **Server-side**: `managed/services/*/` — unit tests for gRPC server implementations
-- **Integration**: `/api-tests/` — tests against a live PGF WatchTower Server using generated Go HTTP clients
+- **Integration**: `/api-tests/` — tests against a live Postgres1st WatchTower Server using generated Go HTTP clients
 - **Proto linting**: `go tool buf lint` catches style and compatibility issues
 
 ## Key Files to Reference

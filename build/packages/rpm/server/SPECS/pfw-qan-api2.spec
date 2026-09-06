@@ -20,7 +20,7 @@
 Name:           pfw-qan-api2
 Version:        %{version}
 Release:        %{rpm_release}
-Summary:        Query Analytics API v2 for PGF WatchTower
+Summary:        Query Analytics API v2 for Postgres1st WatchTower
 
 License:        AGPLv3
 # %{provider} stays github.com/percona/pmm: it is the Go import path this
@@ -29,7 +29,7 @@ URL:            https://github.com/postgres1st/pfm
 Source0:        https://%{provider}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
 
 %description
-Query Analytics (QAN) API v2 is part of PGF WatchTower.
+Query Analytics (QAN) API v2 is part of Postgres1st WatchTower.
 See https://github.com/postgres1st/pfm for more information.
 
 
@@ -65,4 +65,4 @@ install -p -m 0755 src/%{provider}/bin/qan-api2 %{buildroot}%{_sbindir}/pfw-qan-
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

@@ -163,7 +163,7 @@ message UniversalNode {
   repeated Service services = 17;
   // Instance ID for cloud providers (e.g. AWS RDS).
   string instance_id = 18;
-  // True if this node is a PGF WatchTower Server node (HA mode).
+  // True if this node is a Postgres1st WatchTower Server node (HA mode).
   bool is_pmm_server_node = 19;
 }
 

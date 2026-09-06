@@ -1,8 +1,8 @@
-# PGF WatchTower HA Health Overview
+# Postgres1st WatchTower HA Health Overview
 
-![PGF WatchTower HA Health Overview Dashboard](../../images/PMM_HA_Health_Overview.png)
+![Postgres1st WatchTower HA Health Overview Dashboard](../../images/PMM_HA_Health_Overview.png)
 
-The PGF WatchTower HA Health Overview dashboard provides at-a-glance monitoring of your PGF WatchTower High Availability Cluster deployment health. 
+The Postgres1st WatchTower HA Health Overview dashboard provides at-a-glance monitoring of your Postgres1st WatchTower High Availability Cluster deployment health. 
 
 Use this dashboard to quickly identify component failures, resource constraints, and stability issues across your high-availability infrastructure.
 
@@ -10,19 +10,19 @@ This dashboard monitors all critical components: PMM server replicas, PostgreSQL
 
 ## Overview
 
-### PGF WatchTower
+### Postgres1st WatchTower
 
 Shows the overall health status of PMM server pods with green **Healthy** when all pods are running normally or red **Not Healthy** when one or more pods are down.
 
 In HA Cluster mode, you have three PMM server replicas providing full redundancy. If one replica fails, the remaining two continue serving requests with no user-visible impact, but you should investigate quickly to restore full redundancy. 
 
-Check the **PGF WatchTower Pods** table in the Pod Status Details section below to see which specific pods are affected.
+Check the **Postgres1st WatchTower Pods** table in the Pod Status Details section below to see which specific pods are affected.
 
 ### PostgreSQL
 
 Shows the overall health status of PostgreSQL database pods. Green **Healthy** indicates the cluster is fully operational with primary and replicas running. Red **Not Healthy** signals the cluster is degraded, putting metadata and configuration storage at risk.
 
-PostgreSQL stores PGF WatchTower's critical data including user accounts, dashboard configurations, alerting rules, and inventory information. 
+PostgreSQL stores Postgres1st WatchTower's critical data including user accounts, dashboard configurations, alerting rules, and inventory information. 
 
 If the primary fails, Patroni automatically promotes a replica within seconds, but you'll temporarily lose write capability during failover (typically under 10 seconds). 
 
@@ -54,13 +54,13 @@ Failures in `vminsert` or `vmstorage` are most critical as they prevent metrics 
 
 ### HAProxy
 
-Shows the overall health status of HAProxy load balancer pods. Green **Healthy** means load balancing is working and traffic is properly distributed across your PGF WatchTower replicas. Red **Not Healthy** means the load balancer has problems and you may not be able to access PGF WatchTower.
+Shows the overall health status of HAProxy load balancer pods. Green **Healthy** means load balancing is working and traffic is properly distributed across your Postgres1st WatchTower replicas. Red **Not Healthy** means the load balancer has problems and you may not be able to access Postgres1st WatchTower.
 
-HAProxy is how you get into your PGF WatchTower cluster. It routes web traffic to healthy PMM server replicas and handles automatic failover when the leader changes.
+HAProxy is how you get into your Postgres1st WatchTower cluster. It routes web traffic to healthy PMM server replicas and handles automatic failover when the leader changes.
 
-If HAProxy pods go down, you can't access the PGF WatchTower web interface, API calls will fail, and automatic failover won't work.
+If HAProxy pods go down, you can't access the Postgres1st WatchTower web interface, API calls will fail, and automatic failover won't work.
 
-HAProxy is essential for accessing PGF WatchTower—if it shows unhealthy, investigate immediately.
+HAProxy is essential for accessing Postgres1st WatchTower—if it shows unhealthy, investigate immediately.
 
 Check the panels under **HAProxy Pod's Status** section below to see which HAProxy pods are down and which backend services are unavailable.
 
@@ -68,7 +68,7 @@ Check the panels under **HAProxy Pod's Status** section below to see which HAPro
 
 ### Overall System Health
 
-Shows the overall health percentage of all your PGF WatchTower HA pods as a gauge from 0 to 100%. This is calculated as `(running pods/total expected pods) × 100`.
+Shows the overall health percentage of all your Postgres1st WatchTower HA pods as a gauge from 0 to 100%. This is calculated as `(running pods/total expected pods) × 100`.
 
 Green (95-100%) means excellent health—all or nearly all your pods are running normally. 
 
@@ -152,7 +152,7 @@ Green (0-70%) means you have plenty of space remaining. Yellow (70-85%) means yo
 
 Red (85-100%) is urgent—your database will stop accepting writes when it's full.
 
-PostgreSQL stores metadata and configuration data. While it doesn't grow as fast as metrics or QAN data, if you run out of space, all PGF WatchTower operations will stop. 
+PostgreSQL stores metadata and configuration data. While it doesn't grow as fast as metrics or QAN data, if you run out of space, all Postgres1st WatchTower operations will stop. 
 
 If you're getting close to the limit, either expand the persistent volume or clean up old data like backup history and audit logs.
 
@@ -176,7 +176,7 @@ Green (0-70%) means you have enough space for metrics retention. Yellow (70-85%)
 
 VictoriaMetrics stores all your time series metrics. How fast it grows depends on how many services and instances you're monitoring, your metrics retention period (default is 30 days), and the cardinality of the metrics you're collecting.
 
-When storage fills up, VictoriaMetrics can't store new metrics, which creates gaps in all your PGF WatchTower dashboards. Keep an eye on growth trends and plan for more capacity before you run out of space.
+When storage fills up, VictoriaMetrics can't store new metrics, which creates gaps in all your Postgres1st WatchTower dashboards. Keep an eye on growth trends and plan for more capacity before you run out of space.
 
 ## Service Availability
 
@@ -190,7 +190,7 @@ Use this timeline to see when problems happened, identify which components have 
 
 You can also get a sense of your overall system reliability over time.
 
-A healthy PGF WatchTower HA deployment should be mostly green with only short gaps during planned maintenance or updates.
+A healthy Postgres1st WatchTower HA deployment should be mostly green with only short gaps during planned maintenance or updates.
 
 ## PostgreSQL Pod's Status
 
@@ -208,17 +208,17 @@ Patroni handles automatic failover for you. When the Primary fails, it automatic
 
 After a failover, verify that the new Primary is handling writes correctly.
 
-## PGF WatchTower Pod's Status
+## Postgres1st WatchTower Pod's Status
 
-### PGF WatchTower Pods
+### Postgres1st WatchTower Pods
 
 Shows each of your PMM server pods with their current status. Green UP means the pod is running normally. Red DOWN means the pod has failed or isn't running.
 
 If one pod shows DOWN, identify which replica is affected and investigate the cause. Two or more DOWN pods means your deployment is at serious risk—investigate immediately. 
 
-If all three show DOWN, your entire PGF WatchTower system is unavailable.
+If all three show DOWN, your entire Postgres1st WatchTower system is unavailable.
 
-Use this table to identify which specific PGF WatchTower server pods need attention when the [**PGF WatchTower**](#pfw) health indicator shows **Not Healthy**.
+Use this table to identify which specific Postgres1st WatchTower server pods need attention when the [**Postgres1st WatchTower**](#pfw) health indicator shows **Not Healthy**.
 
 
 ### ClickHouse Pods
@@ -253,7 +253,7 @@ Shows each HAProxy pod with its current status.
 
 Green UP means the pod is running normally and handling traffic. Red DOWN means the pod has failed.
 
-If one pod shows DOWN, your load balancing is still working but with reduced capacity. Remaining pods handle the full traffic load. If all pods show DOWN, you can't access PGF WatchTower at all.
+If one pod shows DOWN, your load balancing is still working but with reduced capacity. Remaining pods handle the full traffic load. If all pods show DOWN, you can't access Postgres1st WatchTower at all.
 
 Investigate DOWN pods quickly to restore full redundancy and prevent a single point of failure. Check pod logs to identify whether the issue is configuration, resource limits, or connectivity problems.
 
@@ -265,7 +265,7 @@ Shows the health status of each backend service that HAProxy routes traffic to.
 
 Green UP means HAProxy can reach the backend and will route traffic to it. Red DOWN means HAProxy detected the backend is unavailable and won't route traffic there.
 
-The table shows backends for your PMM server replicas, PostgreSQL database cluster, and other PGF WatchTower infrastructure services.
+The table shows backends for your PMM server replicas, PostgreSQL database cluster, and other Postgres1st WatchTower infrastructure services.
 
 HAProxy performs continuous health checks on each backend—when a backend fails its health check, HAProxy automatically stops routing traffic to it and uses the remaining healthy backends.
 
@@ -281,7 +281,7 @@ Check pod status in the tables above to identify why backends remain unavailable
 This dashboard auto-refreshes every 30 seconds to provide near real-time monitoring.
 
 ### Filters
-Use the namespace and Helm release variables at the top to focus on your specific PGF WatchTower HA deployment if you have multiple installations.
+Use the namespace and Helm release variables at the top to focus on your specific Postgres1st WatchTower HA deployment if you have multiple installations.
 
 ### How to find what's wrong
 

@@ -49,7 +49,7 @@
 Name:           pfw-server
 Version:        %{full_pfw_version}
 Release:        %{rpm_release}
-Summary:        Native systemd assembly of the PGF WatchTower monitoring stack
+Summary:        Native systemd assembly of the Postgres1st WatchTower monitoring stack
 
 License:        AGPLv3
 URL:            https://github.com/postgres1st/pfm
@@ -96,7 +96,7 @@ Requires:       openssl
 Requires:       polkit
 
 %description
-pfw-server assembles the PGF WatchTower monitoring stack (PostgreSQL, ClickHouse,
+pfw-server assembles the Postgres1st WatchTower monitoring stack (PostgreSQL, ClickHouse,
 VictoriaMetrics, vmalert, vmproxy, qan-api2, nginx, Grafana, pfw-managed and
 pfw-agent) into a native systemd service set. It provides one unit per service
 plus a pfw.target that starts the whole stack, idempotent first-boot

@@ -1,6 +1,6 @@
-# Connect PostgreSQL databases to PGF WatchTower
+# Connect PostgreSQL databases to Postgres1st WatchTower
 
-Connect your PostgreSQL databases—whether self-hosted or running in the cloud—to Postgres1st (PGF WatchTower) for comprehensive performance monitoring and analysis.
+Connect your PostgreSQL databases—whether self-hosted or running in the cloud—to Postgres1st (Postgres1st WatchTower) for comprehensive performance monitoring and analysis.
 
 PMM Client supports collecting metrics from PostgreSQL-based database systems:
 
@@ -10,14 +10,14 @@ PMM Client supports collecting metrics from PostgreSQL-based database systems:
 For monitoring Amazon RDS PostgreSQL instances, see [Connect Amazon RDS instance](../connect-database/aws.md).
 
 ??? info "Setup process at a glance"
-    These are the high-level steps for configuring PostgreSQL monitoring in PGF WatchTower:
+    These are the high-level steps for configuring PostgreSQL monitoring in Postgres1st WatchTower:
     {.power-number}
 
     1. [Prerequisites](#before-you-start): Ensure PMM Server is running and PMM Client is installed
-    2. [Create PGF WatchTower user](#create-a-database-account-for-pfw): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
+    2. [Create Postgres1st WatchTower user](#create-a-database-account-for-pfw): `CREATE USER pmm WITH SUPERUSER ENCRYPTED PASSWORD 'StrongPassword'`
     3. [Configure extension](#choose-a-monitoring-extension): Set up `pg_stat_statements` or `pg_stat_monitor`
-    4. [Add service](#add-service-to-pfw): Use PGF WatchTower UI or command line to add the PostgreSQL instance
-    5. [Verify connection](#check-the-service): Check PGF WatchTower Inventory and dashboards for data. 
+    4. [Add service](#add-service-to-pfw): Use Postgres1st WatchTower UI or command line to add the PostgreSQL instance
+    5. [Verify connection](#check-the-service): Check Postgres1st WatchTower Inventory and dashboards for data. 
 
 ## Before you start
 
@@ -28,11 +28,11 @@ Check that:
 - You have superuser (root) access on the client host.
 - You have superuser access to any database servers that you want to monitor.
 
-PGF WatchTower follows [PostgreSQL's end-of-life policy][POSTGRESQL_VERSIONING]. For specific details on supported platforms and versions, see [Percona's Software Platform Lifecycle page][PERCONA_LIFECYCLE].
+Postgres1st WatchTower follows [PostgreSQL's end-of-life policy][POSTGRESQL_VERSIONING]. For specific details on supported platforms and versions, see [Percona's Software Platform Lifecycle page][PERCONA_LIFECYCLE].
 
-## Create a database account for PGF WatchTower
+## Create a database account for Postgres1st WatchTower
 
-PGF WatchTower requires a dedicated database account with appropriate permissions to collect metrics effectively. We recommend creating a PGF WatchTower database account that can connect to the postgres database with the SUPERUSER role.
+Postgres1st WatchTower requires a dedicated database account with appropriate permissions to collect metrics effectively. We recommend creating a Postgres1st WatchTower database account that can connect to the postgres database with the SUPERUSER role.
 
 === "Standard PostgreSQL"
 
@@ -87,7 +87,7 @@ After creating the database user, complete the configuration:
     psql -c "select pg_reload_conf()"
     ```
 
-2. Verify the PGF WatchTower user can connect locally:
+2. Verify the Postgres1st WatchTower user can connect locally:
 
     ```sh
     psql postgres pmm -c "\conninfo"
@@ -112,7 +112,7 @@ Choose:
 | **Installation complexity** | ⚠ Low | ⚠ Medium |
 | **Benefits** | • Part of official PostgreSQL<br>• Minimal overhead<br>• Simple to set up and use | • Builds on pg_stat_statements features<br>• Bucket-based time-series analysis<br>• Query examples for troubleshooting<br>• More accurate performance data |
 | **Drawbacks** | • No aggregated statistics or histograms<br>• No Query Examples<br>• Limited metrics collection | • Slightly higher resource overhead<br>• Requires separate installation<br>• More complex configuration |
-| **Known Issues** | None | **⚠️ PGF WatchTower v2.x/v3.x**: Query plan metrics cause incorrect time measurements (off by 1000x+) |
+| **Known Issues** | None | **⚠️ Postgres1st WatchTower v2.x/v3.x**: Query plan metrics cause incorrect time measurements (off by 1000x+) |
 
 For a more detailed comparison of extensions, see the [pg_stat_monitor documentation](https://docs.percona.com/pg-stat-monitor/user_guide.html).
 
@@ -148,7 +148,7 @@ For a more detailed comparison of extensions, see the [pg_stat_monitor documenta
         # Add to shared libraries
         shared_preload_libraries = 'pg_stat_monitor'
         
-        # Required for PGF WatchTower
+        # Required for Postgres1st WatchTower
         pg_stat_monitor.pgsm_query_max_len = 2048
         
         # Recommended settings
@@ -232,7 +232,7 @@ When using `pgstatmonitor`, query examples are collected by default but can be d
 For `pg_stat_statements`, query examples are never collected by design, providing inherent privacy without requiring any configuration. 
 
 === "Via UI"
-    When adding a PostgreSQL service through the PGF WatchTower UI, expand **Advanced Settings** and check **Disable query examples**. This prevents PGF WatchTower from storing actual query values while maintaining all other Query Analytics functionality.
+    When adding a PostgreSQL service through the Postgres1st WatchTower UI, expand **Advanced Settings** and check **Disable query examples**. This prevents Postgres1st WatchTower from storing actual query values while maintaining all other Query Analytics functionality.
 
 === "Via command line"
     Use the `--disable-queryexamples` flag:
@@ -245,9 +245,9 @@ For `pg_stat_statements`, query examples are never collected by design, providin
         PostgreSQL-Private
     ```
 
-## Add service to PGF WatchTower
+## Add service to Postgres1st WatchTower
 
-After configuring your database server with the appropriate extension, you need to add it as a service to PGF WatchTower. You can do this using the command line or the UI.
+After configuring your database server with the appropriate extension, you need to add it as a service to Postgres1st WatchTower. You can do this using the command line or the UI.
 
 The **command line** (`pfw-admin`) deploys an exporter directly on the database host and automatically collects node-level metrics (CPU, memory, disk I/O) alongside PostgreSQL metrics. Use the UI only if you cannot install PMM Client on the database host.
 
@@ -315,7 +315,7 @@ The **command line** (`pfw-admin`) deploys an exporter directly on the database 
         - `HOST`: Instance hostname or IP
         - `PORT`: PostgreSQL service port number
         - `USER`: Database user allowed to connect via TLS (should match the CN in the client certificate)
-        - `SERVICE-NAME`: Name to give to the service within PGF WatchTower
+        - `SERVICE-NAME`: Name to give to the service within Postgres1st WatchTower
 
 === "Via UI"
 
@@ -387,7 +387,7 @@ Auto-discovery dynamically identifies all databases in your PostgreSQL instance.
     
 ## Check the service
 
-After adding a PostgreSQL service, verify that it's properly connected and sending data to PGF WatchTower.
+After adding a PostgreSQL service, verify that it's properly connected and sending data to Postgres1st WatchTower.
 
 === "Via command line"
 
@@ -429,7 +429,7 @@ After adding a PostgreSQL service, verify that it's properly connected and sendi
 
 ### Running custom queries
 
-The PostgreSQL exporter can execute custom queries to collect additional metrics beyond what PGF WatchTower provides by default.
+The PostgreSQL exporter can execute custom queries to collect additional metrics beyond what Postgres1st WatchTower provides by default.
 
 === "Configuration basics"
 
@@ -488,7 +488,7 @@ The PostgreSQL exporter can execute custom queries to collect additional metrics
 
 - [`pfw-admin` man page for `pfw-admin add postgresql`](../../../use/commands/pmm-admin/add.md)
 - [Configuring Percona repositories with percona-release][PERCONA_RELEASE]
-- [Running custom MySQL queries in PGF WatchTower][BLOG_CUSTOM_QUERIES_MYSQL]
+- [Running custom MySQL queries in Postgres1st WatchTower][BLOG_CUSTOM_QUERIES_MYSQL]
 
 [PostgreSQL]: https://www.postgresql.org/
 [Percona Distribution for PostgreSQL]: https://www.percona.com/postgresql/software/

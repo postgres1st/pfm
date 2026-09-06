@@ -30,12 +30,12 @@ const FeatureCheck: FC<Props> = ({ feature, pageTitle }) => {
                     component={RouterLink}
                     to="/settings/advanced-settings"
                   >
-                    PGF WatchTower Settings
+                    Postgres1st WatchTower Settings
                   </Link>
                   .
                 </>
               ) : (
-                'Ask your admin to enable it in PGF WatchTower Settings.'
+                'Ask your admin to enable it in Postgres1st WatchTower Settings.'
               )}
             </Typography>
           </Stack>

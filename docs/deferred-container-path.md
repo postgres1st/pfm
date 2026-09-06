@@ -1,6 +1,6 @@
 # Deferred: the container and deb packaging paths
 
-Issues deliberately **not** fixed during the PGF WatchTower rename, because they live in
+Issues deliberately **not** fixed during the Postgres1st WatchTower rename, because they live in
 delivery paths beta2 does not ship. Not a bug list to triage — a list to work through when
 the Docker builds are picked up, so none of it is rediscovered one failure at a time.
 

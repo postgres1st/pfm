@@ -2,7 +2,7 @@
 
 Use these `pfw-admin` commands from the command line to configure PMM Client, register nodes with PMM Server, remove services from monitoring, and add event annotations.
 
-`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PGF WatchTower Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
+`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **Postgres1st WatchTower Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
 
 ## Commands
 
@@ -12,7 +12,7 @@ Use these commands to set up and maintain your PMM Client connection, control wh
 
 - [`pfw-admin register`](#pfw-admin-register):   Register this node with PMM Server
 
-- [`pfw-admin remove`](#pfw-admin-remove):   Stop monitoring a service and remove it from PGF WatchTower
+- [`pfw-admin remove`](#pfw-admin-remove):   Stop monitoring a service and remove it from Postgres1st WatchTower
 
 - [`pfw-admin annotate`](#pfw-admin-annotate):   Add event markers to dashboards (deployments, maintenance, incidents)
 
@@ -131,7 +131,7 @@ pfw-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ## pfw-admin remove
 
-Stop monitoring a service and remove it from PGF WatchTower. This removes the service and its agents from PMM Server but does not delete any collected data. 
+Stop monitoring a service and remove it from Postgres1st WatchTower. This removes the service and its agents from PMM Server but does not delete any collected data. 
 
 Data remains on PMM Server for the configured [retention period](../../../reference/faq.md#retention).
 
@@ -185,7 +185,7 @@ pfw-admin list
 
 ## pfw-admin annotate
 
-Add event annotations to PGF WatchTower dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
+Add event annotations to Postgres1st WatchTower dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
 
 Annotations appear as vertical lines on Grafana dashboards, helping you correlate performance changes with events. 
 

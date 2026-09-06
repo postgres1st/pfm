@@ -1,4 +1,4 @@
-# Air-gapped PGF WatchTower bundle: build and test
+# Air-gapped Postgres1st WatchTower bundle: build and test
 
 The scripts that produce and validate the offline bundle a customer installs on a
 RHEL/Rocky 9 host with no internet. Everything here is independent of the upstream

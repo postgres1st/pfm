@@ -1,6 +1,6 @@
 {
   "type": "app",
-  "name": "PGF WatchTower",
+  "name": "Postgres1st WatchTower",
   "id": "pmm-app",
   "info": {
     "description": "Postgres1st Monitoring and Management dashboards",

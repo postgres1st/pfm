@@ -1,8 +1,8 @@
 # Monitoring labels
 
-PGF WatchTower uses labels (key/value pairs) to tag the monitoring data it collects. Labels appear in both Prometheus metrics and Query Analytics (QAN), so you can use them to filter, group, and create alert rules across your entire infrastructure.
+Postgres1st WatchTower uses labels (key/value pairs) to tag the monitoring data it collects. Labels appear in both Prometheus metrics and Query Analytics (QAN), so you can use them to filter, group, and create alert rules across your entire infrastructure.
 
-## Where labels appear in PGF WatchTower
+## Where labels appear in Postgres1st WatchTower
 
 Labels are available as filters in dashboards, Query Analytics, and the **Explore** section.
 
@@ -22,12 +22,12 @@ If you prefer to browse metrics without writing queries, you can also enable the
 
 ## Label types
 
-PGF WatchTower supports two types of labels:
+Postgres1st WatchTower supports two types of labels:
 
 === "Standard labels"
-    Standard labels are automatically assigned by PGF WatchTower based on detected characteristics of the monitored object. Required standard labels are created when you add a Node, Service, or Agent. 
+    Standard labels are automatically assigned by Postgres1st WatchTower based on detected characteristics of the monitored object. Required standard labels are created when you add a Node, Service, or Agent. 
     
-    Those records cannot be created without them. Optional standard labels are populated when PGF WatchTower can detect the value. You can set an initial value for a standard label when adding a service, but PGF WatchTower may update it automatically if it detects a change.
+    Those records cannot be created without them. Optional standard labels are populated when Postgres1st WatchTower can detect the value. You can set an initial value for a standard label when adding a service, but Postgres1st WatchTower may update it automatically if it detects a change.
 
     | Label | Applies to | Required | Modifiable |
     |---|---|---|---|
@@ -53,7 +53,7 @@ PGF WatchTower supports two types of labels:
     For labels where Modifiable is No, remove the service and re-add it with the correct values.
 
 === "Custom labels"
-    Custom labels are defined and managed by you. Use them to organize your infrastructure by team, application, owner, or any other attribute that matters to your organization. PGF WatchTower never overwrites custom labels.
+    Custom labels are defined and managed by you. Use them to organize your infrastructure by team, application, owner, or any other attribute that matters to your organization. Postgres1st WatchTower never overwrites custom labels.
 
     Custom labels can hold any value you choose. When naming custom labels:
 
@@ -61,10 +61,10 @@ PGF WatchTower supports two types of labels:
     - A label name can start with a single underscore (`_`).
     - A label name cannot start with double underscores (`__`), which are reserved by Prometheus.
 
-    Custom labels can be updated at any time via the PGF WatchTower UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
+    Custom labels can be updated at any time via the Postgres1st WatchTower UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
 
 !!! note
-    When PGF WatchTower writes metrics, it merges standard and custom labels. If a custom label has the same name as a standard label, the custom label takes precedence.
+    When Postgres1st WatchTower writes metrics, it merges standard and custom labels. If a custom label has the same name as a standard label, the custom label takes precedence.
 
 ## Set labels
 
@@ -78,9 +78,9 @@ pfw-admin add mysql --replication-set=MySet1 --environment=production ...
 pfw-admin add mysql --custom-labels="owner=joe,team=backend" ...
 ```
 
-You can also set labels through the PGF WatchTower UI when adding a service under **Inventory > Add Service**, or via the [PGF WatchTower API](https://percona-pmm.readme.io/reference/changeservice).
+You can also set labels through the Postgres1st WatchTower UI when adding a service under **Inventory > Add Service**, or via the [Postgres1st WatchTower API](https://percona-pmm.readme.io/reference/changeservice).
 
-To view labels on existing services, go to **Inventory > Services** in the PGF WatchTower UI and expand the **Details** section :material-arrow-downward: on the **Options** column.
+To view labels on existing services, go to **Inventory > Services** in the Postgres1st WatchTower UI and expand the **Details** section :material-arrow-downward: on the **Options** column.
 
 ## Modify labels
 
@@ -90,7 +90,7 @@ You can update the following standard labels after a service is created, without
 - `cluster`
 - `replication_set`
 
-For all other standard labels, remove the service and re-add it with the correct values. Custom labels can be updated at any time via the PGF WatchTower UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
+For all other standard labels, remove the service and re-add it with the correct values. Custom labels can be updated at any time via the Postgres1st WatchTower UI or the [API](https://percona-pmm.readme.io/reference/changeservice).
 
 ## Related topics
 

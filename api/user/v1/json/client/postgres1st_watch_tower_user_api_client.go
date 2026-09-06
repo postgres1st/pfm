@@ -7,10 +7,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/percona/pmm/api/alerting/v1/json/client/alerting_service"
+	"github.com/percona/pmm/api/user/v1/json/client/user_service"
 )
 
-// Default p g f watch tower alerting API HTTP client.
+// Default postgres1st watch tower user API HTTP client.
 var Default = NewHTTPClient(nil)
 
 const (
@@ -25,14 +25,14 @@ const (
 // DefaultSchemes are the default schemes found in Meta (info) section of spec file
 var DefaultSchemes = []string{"http", "https"}
 
-// NewHTTPClient creates a new p g f watch tower alerting API HTTP client.
-func NewHTTPClient(formats strfmt.Registry) *PGFWatchTowerAlertingAPI {
+// NewHTTPClient creates a new postgres1st watch tower user API HTTP client.
+func NewHTTPClient(formats strfmt.Registry) *Postgres1stWatchTowerUserAPI {
 	return NewHTTPClientWithConfig(formats, nil)
 }
 
-// NewHTTPClientWithConfig creates a new p g f watch tower alerting API HTTP client,
+// NewHTTPClientWithConfig creates a new postgres1st watch tower user API HTTP client,
 // using a customizable transport config.
-func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGFWatchTowerAlertingAPI {
+func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *Postgres1stWatchTowerUserAPI {
 	// ensure nullable parameters have default
 	if cfg == nil {
 		cfg = DefaultTransportConfig()
@@ -43,16 +43,16 @@ func NewHTTPClientWithConfig(formats strfmt.Registry, cfg *TransportConfig) *PGF
 	return New(transport, formats)
 }
 
-// New creates a new p g f watch tower alerting API client
-func New(transport runtime.ClientTransport, formats strfmt.Registry) *PGFWatchTowerAlertingAPI {
+// New creates a new postgres1st watch tower user API client
+func New(transport runtime.ClientTransport, formats strfmt.Registry) *Postgres1stWatchTowerUserAPI {
 	// ensure nullable parameters have default
 	if formats == nil {
 		formats = strfmt.Default
 	}
 
-	cli := new(PGFWatchTowerAlertingAPI)
+	cli := new(Postgres1stWatchTowerUserAPI)
 	cli.Transport = transport
-	cli.AlertingService = alerting_service.New(transport, formats)
+	cli.UserService = user_service.New(transport, formats)
 	return cli
 }
 
@@ -95,15 +95,15 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 	return cfg
 }
 
-// PGFWatchTowerAlertingAPI is a client for p g f watch tower alerting API
-type PGFWatchTowerAlertingAPI struct {
-	AlertingService alerting_service.ClientService
+// Postgres1stWatchTowerUserAPI is a client for postgres1st watch tower user API
+type Postgres1stWatchTowerUserAPI struct {
+	UserService user_service.ClientService
 
 	Transport runtime.ClientTransport
 }
 
 // SetTransport changes the transport on the client and all its subresources
-func (c *PGFWatchTowerAlertingAPI) SetTransport(transport runtime.ClientTransport) {
+func (c *Postgres1stWatchTowerUserAPI) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.AlertingService.SetTransport(transport)
+	c.UserService.SetTransport(transport)
 }

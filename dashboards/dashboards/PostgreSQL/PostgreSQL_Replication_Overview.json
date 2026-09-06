@@ -27,7 +27,7 @@
                 "enable": false,
                 "hide": false,
                 "iconColor": "orange",
-                "name": "PGF WatchTower Annotations",
+                "name": "Postgres1st WatchTower Annotations",
                 "target": {
                     "limit": 100,
                     "matchAny": true,

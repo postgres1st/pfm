@@ -133,11 +133,11 @@ func checkStatus(configFilepath string, l *logrus.Entry) (string, bool) {
 }
 
 func register(cfg *config.Config, l *logrus.Entry) {
-	fmt.Printf("Registering pfw-agent on PGF WatchTower Server...\n")
+	fmt.Printf("Registering pfw-agent on Postgres1st WatchTower Server...\n")
 
 	u := cfg.Server.URL()
 	if u == nil {
-		fmt.Printf("Can't construct PGF WatchTower Server URL. Please re-run with --server-address flag.\n")
+		fmt.Printf("Can't construct Postgres1st WatchTower Server URL. Please re-run with --server-address flag.\n")
 		os.Exit(1)
 	}
 
@@ -160,7 +160,7 @@ func register(cfg *config.Config, l *logrus.Entry) {
 			msg += ".\nPlease check pmm-managed logs."
 		}
 
-		fmt.Printf("Failed to register pfw-agent on PGF WatchTower Server: %s.\n", msg)
+		fmt.Printf("Failed to register pfw-agent on Postgres1st WatchTower Server: %s.\n", msg)
 		os.Exit(1)
 	}
 	cfg.ID = agentID
@@ -168,7 +168,7 @@ func register(cfg *config.Config, l *logrus.Entry) {
 		cfg.Server.Username = "service_token"
 		cfg.Server.Password = token
 	} else {
-		l.Info("PGF WatchTower Server responded with an empty service token. Consider upgrading PGF WatchTower Server to the latest version.")
+		l.Info("Postgres1st WatchTower Server responded with an empty service token. Consider upgrading Postgres1st WatchTower Server to the latest version.")
 	}
 	fmt.Printf("Registered.\n")
 }

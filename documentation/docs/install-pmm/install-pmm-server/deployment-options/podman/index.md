@@ -8,7 +8,7 @@ Podman is an open-source, daemonless container engine for developing, managing, 
 
 One of Podman's main benefits is that non-privileged users can run containers without elevated permissions. Podman is largely compatible with Docker commands. If needed, you can set an alias (`alias docker=podman`) and use familiar Docker workflows. 
 
-Most Docker-based PGF WatchTower steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
+Most Docker-based Postgres1st WatchTower steps work with Podman, but follow the Podman-specific update and systemd instructions in this topic.
 
 !!! info "The Watchtower updater is a third-party tool"
     Watchtower is an independent open-source container updater
@@ -27,7 +27,7 @@ Choose Podman deployment when:
 
 
 !!! tip "Recommended setup for best performance"
-    Percona recommends running PGF WatchTower with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
+    Percona recommends running Postgres1st WatchTower with Podman as a non-privileged user and as part of the provided systemd service. Systemd helps ensure that the service is actively running and offers logging and management functions, such as start, stop, and restart.
 
 ## Before you start
 
@@ -36,11 +36,11 @@ Before installing PMM Server with Podman, ensure you have:
 
 1. Install [Podman](https://podman.io/getting-started/installation).
 2. Configure [rootless](https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md) Podman.
-3. Create the Podman volume for PGF WatchTower:
+3. Create the Podman volume for Postgres1st WatchTower:
   ```sh
   podman volume create pmm-data
   ```
-4. Create the Podman network for PGF WatchTower:
+4. Create the Podman network for Postgres1st WatchTower:
   ```sh
   podman network create pmm_default
   ```
@@ -93,7 +93,7 @@ Use one of these log drivers instead:
 - `none`: disables logging
 
 === "Installation with UI updates"
-    This method enables updates through the PGF WatchTower web interface using the Watchtower updater and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting the Watchtower updater to pull the new image. 
+    This method enables updates through the Postgres1st WatchTower web interface using the Watchtower updater and systemd services. When you initiate an update in the UI, PMM Server updates its image reference, prompting the Watchtower updater to pull the new image. 
 
     The Watchtower updater then stops the existing container, and systemd automatically restarts it with the updated image.
     {.power-number}
@@ -182,7 +182,7 @@ Use one of these log drivers instead:
         systemctl --user enable --now watchtower
         ```
 
-    7. Go to `https://localhost:443` to access the PGF WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    7. Go to `https://localhost:443` to access the Postgres1st WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 === "Installation with manual updates"
     The installation with manual updates offers a straightforward setup with direct control over updates, without relying on additional services. 
@@ -236,7 +236,7 @@ Use one of these log drivers instead:
         systemctl --user enable --now pmm-server
         ```
 
-    5. Go to `https://localhost:443` to access the PGF WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
+    5. Go to `https://localhost:443` to access the Postgres1st WatchTower user interface in a web browser. If you are accessing the host remotely, replace `localhost` with the IP or server name of the host.
 
 For information on manually upgrading, see [Upgrade PMM Server using Podman](../../../../pmm-upgrade/upgrade_podman.md).
 

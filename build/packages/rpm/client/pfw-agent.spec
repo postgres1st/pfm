@@ -9,7 +9,7 @@
 %define build_timestamp %(date -u +"%y%m%d%H%M")
 
 Name:           pfw-agent
-Summary:        PGF WatchTower Agent (pfw-agent)
+Summary:        Postgres1st WatchTower Agent (pfw-agent)
 Version:        %{version}
 Release:        %{release}.%{build_timestamp}%{?dist}
 Group:          Applications/Databases
@@ -31,9 +31,9 @@ Requires(postun): systemd
 AutoReq:        no
 
 %description
-PGF WatchTower is an open-source platform for managing and monitoring
+Postgres1st WatchTower is an open-source platform for managing and monitoring
 PostgreSQL performance.
-PGF WatchTower is a free and open-source solution that you can run in your own environment for maximum security and
+Postgres1st WatchTower is a free and open-source solution that you can run in your own environment for maximum security and
 reliability. It provides thorough time-based analysis for PostgreSQL servers to ensure that your data works
 as efficiently as possible.
 
@@ -184,4 +184,4 @@ fi
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 3.9.0-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.

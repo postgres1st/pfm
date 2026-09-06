@@ -1,8 +1,8 @@
-# Configure PGF WatchTower
+# Configure Postgres1st WatchTower
 
-This section provides the instructions to configure your PGF WatchTower instance after you have installed PGF WatchTower.
+This section provides the instructions to configure your Postgres1st WatchTower instance after you have installed Postgres1st WatchTower.
 
-**Configuration > Settings** gives you access to PGF WatchTower setup's settings and inventory options:
+**Configuration > Settings** gives you access to Postgres1st WatchTower setup's settings and inventory options:
 
 * [Metrics resolution](metrics_res.md)
 * [Advanced settings](advanced_settings.md)

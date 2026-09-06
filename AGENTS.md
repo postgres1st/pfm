@@ -1,4 +1,4 @@
-# PGF WatchTower Development Guide for AI Agents
+# Postgres1st WatchTower Development Guide for AI Agents
 
 ## Maintaining This Document
 
@@ -18,7 +18,7 @@ Do **not** update this file for routine code changes (bug fixes, minor feature i
 
 ## How This Documentation Is Organized
 
-This file is the **single authoritative entry point** for AI agents working with PGF WatchTower. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
+This file is the **single authoritative entry point** for AI agents working with Postgres1st WatchTower. It provides the product-wide overview, architecture, domain model, conventions, and cross-links to component-specific guides.
 
 ### Component Guides
 
@@ -42,7 +42,7 @@ Each component has a dedicated guide with architecture, directory structure, dom
 
 ## Naming: pmm-* vs pfw-* (read before "fixing" a name)
 
-This fork ships as **PGF WatchTower**, and the rename is **deliberately partial**. The
+This fork ships as **Postgres1st WatchTower**, and the rename is **deliberately partial**. The
 authority for what may and may not be renamed is
 [`docs/pfw-identifier-map.md`](docs/pfw-identifier-map.md) — read its tier table before
 changing any name.
@@ -80,7 +80,7 @@ those service types are wrong regardless of the binary name.
 
 ## Product Overview
 
-PGF WatchTower is an open-source **PostgreSQL** monitoring
+Postgres1st WatchTower is an open-source **PostgreSQL** monitoring
 solution, forked from Percona Monitoring and Management. It uses a **client-server
 architecture** where lightweight agents on monitored hosts collect metrics and query
 analytics data, sending them to a central server for storage, alerting, and visualization.

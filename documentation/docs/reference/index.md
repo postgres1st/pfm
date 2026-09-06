@@ -1,6 +1,6 @@
-# PGF WatchTower Architecture
+# Postgres1st WatchTower Architecture
 
-PGF WatchTower is a client/server application built by Percona comprising its own and third-party components and tools.
+Postgres1st WatchTower is a client/server application built by Percona comprising its own and third-party components and tools.
 
 <!-- The source of this image is maintained at https://miro.com/app/board/uXjVOPgKgrE=/ -->
 
@@ -8,7 +8,7 @@ PGF WatchTower is a client/server application built by Percona comprising its ow
 
 ## PMM Server
 
-PMM Server is the heart of PGF WatchTower. It receives data from clients, collects it, and stores it. Metrics are drawn as tables, charts and graphs within [_dashboards_](../use/dashboards-panels/index.md), each a part of the web-based [user interface](../reference/ui/ui_components.md).
+PMM Server is the heart of Postgres1st WatchTower. It receives data from clients, collects it, and stores it. Metrics are drawn as tables, charts and graphs within [_dashboards_](../use/dashboards-panels/index.md), each a part of the web-based [user interface](../reference/ui/ui_components.md).
 
 ## PMM Client
 
@@ -16,7 +16,7 @@ PMM Client is a collection of agents and exporters that run on the host being mo
 
 PMM Client runs on every database host or node you want to monitor. The client collects server metrics, general system metrics, query analytics and sends it to the server. Except when monitoring AWS RDS instances, a PMM Client must be running on the host to be monitored.
 
-## PGF WatchTower context
+## Postgres1st WatchTower context
 
 The PMM Client package provides:
 
@@ -50,7 +50,7 @@ PMM Server includes the following tools:
   - [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics) is a scalable time-series database. 
   - [ClickHouse](https://clickhouse.com) is a third-party column-oriented database that facilitates the Query Analytics functionality.
   - [Grafana](http://docs.grafana.org) is a third-party dashboard and graph engine for visualizing data aggregated in an intuitive web interface.
-  - [PGF WatchTower Dashboards](https://github.com/percona/pmm/tree/main/dashboards) is a set of monitoring dashboards developed by Percona.
+  - [Postgres1st WatchTower Dashboards](https://github.com/percona/pmm/tree/main/dashboards) is a set of monitoring dashboards developed by Percona.
 
 ### PMM Client
 

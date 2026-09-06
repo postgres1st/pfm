@@ -9,7 +9,7 @@
 # absent (first boot before pmm-managed renders), VM falls back to its built-in
 # defaults — T3b/T7 seeds sane defaults so this window is benign.
 [Unit]
-Description=PGF WatchTower VictoriaMetrics (metrics storage)
+Description=Postgres1st WatchTower VictoriaMetrics (metrics storage)
 After=pfw-init.service pfw-postgresql.service
 Requires=pfw-init.service
 PartOf=pfw.target

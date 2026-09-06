@@ -145,7 +145,7 @@ service ManagementService {
       description: "Lists Agents with filter."
     };
   }
-  // ListAgentVersions returns a list of PGF WatchTower Agent versions and their update severity.
+  // ListAgentVersions returns a list of Postgres1st WatchTower Agent versions and their update severity.
   rpc ListAgentVersions(ListAgentVersionsRequest) returns (ListAgentVersionsResponse) {
     option (google.api.http) = {get: "/v1/management/agents/versions"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

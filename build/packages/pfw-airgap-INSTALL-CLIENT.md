@@ -1,6 +1,6 @@
-# PGF WatchTower client — monitoring a PostgreSQL host (RHEL / Rocky Linux 9, @ARCH@)
+# Postgres1st WatchTower client — monitoring a PostgreSQL host (RHEL / Rocky Linux 9, @ARCH@)
 
-Run this on **each PostgreSQL server you want to monitor** — not on the PGF WatchTower monitoring
+Run this on **each PostgreSQL server you want to monitor** — not on the Postgres1st WatchTower monitoring
 server itself. For installing the monitoring server, see `INSTALL.md`.
 
 No internet access is required on this host.
@@ -10,10 +10,10 @@ No internet access is required on this host.
 | | |
 |---|---|
 | The bundle | `pfw-server-el9-@ARCH@.tar.gz` — the same file used to install the monitoring server. It is named `server` because that is the larger part of it, but it contains the `pfw-agent` agent too. There is no separate client download. |
-| A running PGF WatchTower server | its address and the `admin` password |
+| A running Postgres1st WatchTower server | its address and the `admin` password |
 | Architecture | `@ARCH@` — this bundle will *not* install on another |
 | Privileges | root (or sudo) on this host, and an account on the database that can create a role |
-| Network | this host must reach the PGF WatchTower server on 8443/tcp. Nothing needs to reach *this* host unless you register services with `--metrics-mode=pull` (see step 6) |
+| Network | this host must reach the Postgres1st WatchTower server on 8443/tcp. Nothing needs to reach *this* host unless you register services with `--metrics-mode=pull` (see step 6) |
 
 ---
 
@@ -69,7 +69,7 @@ gpg --show-keys --with-fingerprint pfw-repo/RPM-GPG-KEY-postgres1st
 ```bash
 sudo tee /etc/yum.repos.d/pfw.repo >/dev/null <<'EOF'
 [pfw]
-name=PGF WatchTower
+name=Postgres1st WatchTower
 baseurl=file:///absolute/path/to/pfw-repo
 enabled=1
 gpgcheck=1
@@ -149,7 +149,7 @@ network at large.
 sudo pfw-admin list
 ```
 
-The service should appear, and show in the PGF WatchTower server's UI within a minute or two, once
+The service should appear, and show in the Postgres1st WatchTower server's UI within a minute or two, once
 the first scrape lands.
 
 ---

@@ -1,4 +1,4 @@
-# File contexts for the PGF WatchTower layout.
+# File contexts for the Postgres1st WatchTower layout.
 #
 # restorecon picks the most specific match, not the last line, so the tmp rule below
 # wins over the broader /srv/nginx one regardless of ordering here.

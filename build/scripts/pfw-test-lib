@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared harness for the PGF WatchTower bundle tests (test-pfw-airgap, test-pfw-upgrade).
+# Shared harness for the Postgres1st WatchTower bundle tests (test-pfw-airgap, test-pfw-upgrade).
 #
 # Sourced, not executed. Provides the assertion counters, the throwaway systemd
 # container, and the readyz poll -- the parts both tests need to agree on. The
@@ -18,7 +18,7 @@ inc()  { docker exec "${container}" bash -c "$1"; }
 
 build_systemd_image() {
     docker image inspect "${PFW_SYSTEMD_IMAGE}" >/dev/null 2>&1 && return
-    log "building ${PFW_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd + PGF WatchTower's OS deps)"
+    log "building ${PFW_SYSTEMD_IMAGE} (a stock EL9 host: base OS + systemd + Postgres1st WatchTower's OS deps)"
     # The stock EL9 image ships no systemd and no /sbin/init; a real host always
     # has both, so installing them here makes the test faithful, not permissive.
     #

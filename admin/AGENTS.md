@@ -3,7 +3,7 @@
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 > **Related**: [api/AGENTS.md](../api/AGENTS.md) (API definitions and generated clients) · [managed/AGENTS.md](../managed/AGENTS.md) (server-side API implementation) · [agent/AGENTS.md](../agent/AGENTS.md) (client agent)
 
-**pmm-admin** is the command-line tool for PGF WatchTower. It allows users to add and remove monitored services (MySQL, PostgreSQL, MongoDB, ProxySQL, HAProxy, Valkey, external), manage the inventory of nodes/services/agents, check PMM status, create annotations, and generate diagnostic summaries. It communicates with pmm-managed via the generated Swagger HTTP clients.
+**pmm-admin** is the command-line tool for Postgres1st WatchTower. It allows users to add and remove monitored services (MySQL, PostgreSQL, MongoDB, ProxySQL, HAProxy, Valkey, external), manage the inventory of nodes/services/agents, check PMM status, create annotations, and generate diagnostic summaries. It communicates with pmm-managed via the generated Swagger HTTP clients.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ pmm-admin uses a hierarchical command structure built with the **Kong** CLI fram
 pmm-admin
 ├── config                    # Configure pmm-agent connection
 ├── list                      # List monitored services
-├── status                    # Show PGF WatchTower status
+├── status                    # Show Postgres1st WatchTower status
 ├── version                   # Print version
 ├── summary                   # Generate diagnostic summary
 ├── annotate                  # Add annotation to dashboards
@@ -27,7 +27,7 @@ pmm-admin
 │   └── remove node/service/agent
 └── management
     ├── add mysql/postgresql/mongodb/proxysql/haproxy/valkey/external
-    ├── register                # Register node with PGF WatchTower Server
+    ├── register                # Register node with Postgres1st WatchTower Server
     ├── remove                  # Remove service from monitoring
     └── unregister              # Unregister node
 ```
@@ -95,8 +95,8 @@ pmm-admin supports multiple output formats via `commands.Result` interface:
 
 - Unit tests: `*_test.go` next to implementation
 - Tests focus on flag parsing, request construction, and output formatting
-- Run: `make test` (no live PGF WatchTower Server required for unit tests)
-- Integration testing is covered by `/api-tests/` against a live PGF WatchTower Server
+- Run: `make test` (no live Postgres1st WatchTower Server required for unit tests)
+- Integration testing is covered by `/api-tests/` against a live Postgres1st WatchTower Server
 
 ## Key Files to Reference
 

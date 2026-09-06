@@ -7,9 +7,9 @@ privacy:
   view: public
 ---
 
-Access Control in PGF WatchTower can be used to restrict access to individual metrics.  
+Access Control in Postgres1st WatchTower can be used to restrict access to individual metrics.  
 
-Access Control is currently in Technical Preview. To use this feature, enable it manually in PGF WatchTower's settings.
+Access Control is currently in Technical Preview. To use this feature, enable it manually in Postgres1st WatchTower's settings.
 
 Once enabled, restricting access to metrics can be performed by:
 

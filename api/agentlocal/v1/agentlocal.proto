@@ -7,19 +7,19 @@ import "google/protobuf/duration.proto";
 import "inventory/v1/agent_status.proto";
 import "inventory/v1/agents.proto";
 
-// ServerInfo contains information about the PGF WatchTower Server.
+// ServerInfo contains information about the Postgres1st WatchTower Server.
 message ServerInfo {
-  // PGF WatchTower Server URL in a form https://HOST:PORT/.
+  // Postgres1st WatchTower Server URL in a form https://HOST:PORT/.
   string url = 1;
-  // PGF WatchTower Server's TLS certificate validation should be skipped if true.
+  // Postgres1st WatchTower Server's TLS certificate validation should be skipped if true.
   bool insecure_tls = 2;
   // True if pfw-agent is currently connected to the server.
   bool connected = 3;
-  // PGF WatchTower Server version (if agent is connected).
+  // Postgres1st WatchTower Server version (if agent is connected).
   string version = 4;
   // Ping time from pfw-agent to pmm-managed (if agent is connected).
   google.protobuf.Duration latency = 5;
-  // Clock drift from PGF WatchTower Server (if agent is connected).
+  // Clock drift from Postgres1st WatchTower Server (if agent is connected).
   google.protobuf.Duration clock_drift = 6;
 }
 
@@ -47,7 +47,7 @@ message StatusResponse {
   repeated AgentInfo agents_info = 5;
   // Config file path if pfw-agent was started with one.
   string config_filepath = 6;
-  // PGF WatchTower Agent version.
+  // Postgres1st WatchTower Agent version.
   string agent_version = 7;
   // Shows connection uptime in percentage between agent and server
   float connection_uptime = 8;

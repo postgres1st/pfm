@@ -14,20 +14,20 @@ export const Messages = {
     },
     retentionLabel: 'Data retention',
     retentionTooltip:
-      'How long PGF WatchTower keeps collected data. Older data is automatically deleted.',
+      'How long Postgres1st WatchTower keeps collected data. Older data is automatically deleted.',
     retentionUnits: 'days',
     retentionLink: 'https://docs.postgresfirst.com/data_retention',
     telemetryLabel: 'Telemetry',
     telemetryLink: 'https://docs.postgresfirst.com/telemetry',
     telemetryDialogLink: 'What we collect',
     telemetryTooltip:
-      'Sends anonymous usage statistics to help improve PGF WatchTower. No personal or database content is collected.',
+      'Sends anonymous usage statistics to help improve Postgres1st WatchTower. No personal or database content is collected.',
     telemetrySummaryTitle:
       'We gather and send the following information to Postgres1st:',
     updatesLabel: 'Check for updates',
     updatesLink: 'https://docs.postgresfirst.com/updates',
     updatesTooltip:
-      'Option to check new versions and ability to update PGF WatchTower from UI.',
+      'Option to check new versions and ability to update Postgres1st WatchTower from UI.',
     advisorsLabel: 'Advisors',
     sttRareIntervalLabel: 'Rare',
     sttStandardIntervalLabel: 'Standard',
@@ -47,7 +47,7 @@ export const Messages = {
     accessControlLink: 'https://docs.postgresfirst.com/roles_permissions',
     publicAddressLabel: 'Public address',
     publicAddressTooltip:
-      'The address or hostname PGF WatchTower Server will be accessible at.',
+      'The address or hostname Postgres1st WatchTower Server will be accessible at.',
     publicAddressPlaceholder: 'https://...',
     publicAddressButton: 'Get from browser',
     alertingLabel: 'Postgres1st Alerting',
@@ -57,13 +57,13 @@ export const Messages = {
     backupTooltip:
       'Enable scheduled and on-demand backups for supported databases.',
     backupLink: 'https://docs.postgresfirst.com/backup_management',
-    enableInternalPgQanLabel: 'QAN for PGF WatchTower Server',
+    enableInternalPgQanLabel: 'QAN for Postgres1st WatchTower Server',
     enableInternalPgQanTooltip:
-      "Displays queries from PGF WatchTower Server's internal PostgreSQL database in Query Analytics (QAN). Enable to troubleshoot PGF WatchTower Server's database performance alongside your monitored instances.",
+      "Displays queries from Postgres1st WatchTower Server's internal PostgreSQL database in Query Analytics (QAN). Enable to troubleshoot Postgres1st WatchTower Server's database performance alongside your monitored instances.",
     enableInternalPgQanLink: 'https://docs.postgresfirst.com/qan-pmm-server',
     featureManagementLabel: 'Feature management',
     featureManagementDescription:
-      'Enable or disable core PGF WatchTower capabilities. Turning off unused features can help conserve system resources and simplify your navigation menu.',
+      'Enable or disable core Postgres1st WatchTower capabilities. Turning off unused features can help conserve system resources and simplify your navigation menu.',
     technicalPreviewLegend: 'Technical preview features',
     technicalPreviewDescription: 'These are technical preview features, ',
     technicalPreviewWarning: 'not recommended',
@@ -86,7 +86,7 @@ export const Messages = {
       high: 'High',
     },
     tooltip:
-      'How often PGF WatchTower collects metrics, in seconds. Lower values provide more detail but use more resources.',
+      'How often Postgres1st WatchTower collects metrics, in seconds. Lower values provide more detail but use more resources.',
     validation: {
       required: 'Required',
       minMax: (min: number, max: number) => `Must be between ${min} and ${max}`,
@@ -96,7 +96,7 @@ export const Messages = {
     label: 'SSH key',
     link: 'https://docs.postgresfirst.com/ssh_key',
     tooltip:
-      'Paste your public SSH key (ssh-rsa format) to enable SSH access to PGF WatchTower Server.',
+      'Paste your public SSH key (ssh-rsa format) to enable SSH access to Postgres1st WatchTower Server.',
     placeholder: 'ssh-rsa AAAA...',
     validation: {
       invalidFormat: 'Enter a valid SSH public key (e.g. ssh-rsa, ssh-ed25519)',

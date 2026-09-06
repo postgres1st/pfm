@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# In-place upgrade test for the air-gapped PGF WatchTower bundle.
+# In-place upgrade test for the air-gapped Postgres1st WatchTower bundle.
 #
 #   build/scripts/test-pfw-upgrade [/path/to/pfw-repo]
 #
@@ -258,7 +258,7 @@ install_previous_release() {
     start_container -v "${repo_a}":/pfw-repo-a:ro -v "${repo_b}":/pfw-repo-b:ro
     p_no_internet || die "test host can reach the internet -- an offline upgrade would not be proven"
     ok "no route to the internet"
-    inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file:///pfw-repo-a\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
+    inc "printf '[pfw]\nname=Postgres1st WatchTower\nbaseurl=file:///pfw-repo-a\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
     # pfw-dump explicitly: it ships in the bundle but is NOT a dependency of
     # pfw-server, so installing only the metapackage left it absent and the NEVRA
     # comparison below reported it as skipped when it had never been there.

@@ -10,7 +10,7 @@ limitations at the end are stated plainly rather than left to be discovered.
 
 !!! note "Names on this page are beta1's"
 
-    The product was renamed to **PGF WatchTower** after beta1, and its packages,
+    The product was renamed to **Postgres1st WatchTower** after beta1, and its packages,
     units and service account moved from `pfm-*`/`pfm` to `pfw-*`/`pfw`. This page
     keeps beta1's names on purpose: it describes the release that shipped, and the
     commands below are the ones that work on a beta1 host. There is no upgrade path

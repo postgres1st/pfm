@@ -1,4 +1,4 @@
-# PGF WatchTower identifier map (task 1.2)
+# Postgres1st WatchTower identifier map (task 1.2)
 
 Authority for the mechanical rename in tasks 1.3–1.7. Compiled 29 Aug 2026 against `main`
 at `830777e39`, by inspecting the tree — not by transcribing report §15.
@@ -34,7 +34,7 @@ env files agree on them, and no customer types them.
   a component is unmodified from upstream and the reference is *attributed* to Percona.
   Worth a pass to confirm each one is, but not a defect on its face.
 
-**Naming convention:** `PGF WatchTower` is the *display* name; `pfw-` is the *identifier*
+**Naming convention:** `Postgres1st WatchTower` is the *display* name; `pfw-` is the *identifier*
 prefix for every package, unit and binary — not the report's longer `pfw-watchtower-*`.
 `pfw` expands to **P**ostgres**F**irst **W**atchtower. Note the display name and the
 identifier prefix use different abbreviations of the same product; that was a deliberate
@@ -73,8 +73,8 @@ tier with evidence.
 
 | Current | Target |
 |---|---|
-| PFMM / PFMM Server | **PGF WatchTower Server** |
-| PFMM Client | **PGF WatchTower Agent** |
+| PFMM / PFMM Server | **Postgres1st WatchTower Server** |
+| PFMM Client | **Postgres1st WatchTower Agent** |
 | PFMM Advisors | **PostgreSQL Advisors** |
 | PostgreSQL dashboard section | **PostgreSQL Health** |
 | Query Analytics (QAN) | **unchanged — report §15 rejected** (decision 4) |
@@ -86,12 +86,12 @@ rebrand pass landed:
 
 | Current string | Occurrences | Target |
 |---|---|---|
-| `PFMM Annotations` | 27 | PGF WatchTower Annotations |
+| `PFMM Annotations` | 27 | Postgres1st WatchTower Annotations |
 | `PFMM Health` | 2 | **WatchTower Health** (report §15) |
-| `PFMM Query Analytics` | 2 | PGF WatchTower Query Analytics |
+| `PFMM Query Analytics` | 2 | Postgres1st WatchTower Query Analytics |
 | `PFMM HA Health Overview` | 2 | WatchTower HA Health Overview |
 | `PFMM Upgrade` | 2 | WatchTower Upgrade |
-| `PFMM` | 3 | PGF WatchTower |
+| `PFMM` | 3 | Postgres1st WatchTower |
 | `PMM UI`, `PMM suffix regex` | 1 each | leftovers — sweep |
 
 Folder titles are display strings, but a **dashboard's folder is also how provisioning finds
@@ -108,7 +108,7 @@ pfw-qan-api2.service       Description=pfw qan-api2 (Query Analytics API)
 pfw-agent.service          Description=pfw-agent (Postgres1st monitoring agent)
 ```
 
-Target: `PGF WatchTower control plane`, etc. **Descriptions only — not unit filenames** (Tier B).
+Target: `Postgres1st WatchTower control plane`, etc. **Descriptions only — not unit filenames** (Tier B).
 
 ### A.5 CLI help and messages — **done**
 
@@ -117,9 +117,9 @@ tags were cleared by an earlier CLI pass; what remained, and is now fixed:
 
 | Surface | Was | Now |
 |---|---|---|
-| `pfw-admin status` headings | `PMM Server:` / `PMM Client:` | `PGF WatchTower Server:` / `PGF WatchTower Agent:` |
+| `pfw-admin status` headings | `PMM Server:` / `PMM Client:` | `Postgres1st WatchTower Server:` / `Postgres1st WatchTower Agent:` |
 | `pfw-admin register` output | `pmm-agent registered.` | `pfw-agent registered.` |
-| flag help, fatal messages | "PMM Server", "PMM Agent" | "PGF WatchTower Server/Agent" |
+| flag help, fatal messages | "PMM Server", "PMM Agent" | "Postgres1st WatchTower Server/Agent" |
 | diagnostic archive members | `client/pmm-agent-version.txt`, … | `client/pfw-*` |
 
 The status headings were the most visible old branding left in the product — the first
@@ -142,8 +142,8 @@ HREFs, so the docs offered Percona's property as ours.
 
 Fixed: `get-help.md` was Percona's sales page with a live Typeform lead-capture form;
 the same form was on **107** advisor check pages; the docs site loaded a kapa.ai widget
-branded "Percona AI Assistant" with Percona's website id. A "PGF WatchTower Community
-Forum" pointed at `forums.percona.com`, a "PGF WatchTower Demo" at `pmmdemo.percona.com`,
+branded "Percona AI Assistant" with Percona's website id. A "Postgres1st WatchTower Community
+Forum" pointed at `forums.percona.com`, a "Postgres1st WatchTower Demo" at `pmmdemo.percona.com`,
 and "our Trust Center" at `trust.percona.com` — two of those behind a `per.co.na`
 shortener that a `percona.com` grep does not match.
 
@@ -158,7 +158,7 @@ and `docs.percona.com` is legitimate upstream reference where it is attributed.
 | `pfw-client.spec` | Postgres1st Monitoring and Management Client |
 | `pfw-server.spec` | Native systemd assembly of the pfw (PMM-derived) |
 
-"Postgres1st Monitoring and Management" is the PFMM expansion and must become PGF WatchTower
+"Postgres1st Monitoring and Management" is the PFMM expansion and must become Postgres1st WatchTower
 wording. `pfw-server.spec` also leaks "(PMM-derived)" into customer-visible metadata.
 
 ---
@@ -556,7 +556,9 @@ touched, while `ui/` and `dashboards/` carry nearly all the user-visible strings
    `Provides:` + `Obsoletes:` for its old name.
 2. **systemd units rename now, with `Alias=`** for the old `pfw-*` names.
 3. **Binaries take `pfw-`** — `pfw-admin`, `pfw-agent`, … with `pfw-*` symlinks for one
-   release. `PGF` = PostgreSQL First.
+   release. `PGF` = PostgreSQL First. **Superseded:** the display name is now
+   "Postgres1st WatchTower"; `pfw-` is retained as the identifier prefix and now reads as
+   Postgres1st WatchTower rather than PGF WatchTower.
 4. **"Query Analytics" stays.** Report §15's rename to "Query Intelligence" is **rejected**:
    QAN carries no Percona branding, is well understood by DBAs, and the surfaces that would
    make the rename coherent — `/v1/qan:*`, the `pmm-qan-app-panel` plugin id, and the
@@ -568,7 +570,7 @@ touched, while `ui/` and `dashboards/` carry nearly all the user-visible strings
    `/opt/postgres1st/pfmm` (content). This supersedes the earlier
    "leave it" recommendation. See B.4 for the agent-compat requirement.
 
-The identifier prefix is `pfw-`, **not** the report's `pgf-watchtower-*`. "PGF WatchTower"
+The identifier prefix is `pfw-`, **not** the report's `pgf-watchtower-*`. "Postgres1st WatchTower"
 remains the display name, so the prefix and the display name use different abbreviations of
 the same product — deliberate, not an oversight. The install root takes no prefix at all: it
 is `/opt/postgres1st/watchtower`, a directory rather than a package name, so it reads as a

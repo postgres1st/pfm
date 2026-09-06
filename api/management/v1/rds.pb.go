@@ -7,17 +7,15 @@
 package managementv1
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	_ "github.com/percona/pmm/api/extensions/v1"
+	v1 "github.com/percona/pmm/api/inventory/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
-
-	_ "github.com/percona/pmm/api/extensions/v1"
-	v1 "github.com/percona/pmm/api/inventory/v1"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -300,7 +298,7 @@ type AddRDSServiceParams struct {
 	Port uint32 `protobuf:"varint,6,opt,name=port,proto3" json:"port,omitempty"`
 	// Instance engine.
 	Engine DiscoverRDSEngine `protobuf:"varint,7,opt,name=engine,proto3,enum=management.v1.DiscoverRDSEngine" json:"engine,omitempty"`
-	// PGF WatchTower Agent ID.
+	// Postgres1st WatchTower Agent ID.
 	PmmAgentId string `protobuf:"bytes,34,opt,name=pmm_agent_id,json=pmmAgentId,proto3" json:"pmm_agent_id,omitempty"`
 	// Unique across all Nodes user-defined name. Defaults to AWS instance ID.
 	NodeName string `protobuf:"bytes,8,opt,name=node_name,json=nodeName,proto3" json:"node_name,omitempty"`
@@ -853,29 +851,27 @@ func file_management_v1_rds_proto_rawDescGZIP() []byte {
 	return file_management_v1_rds_proto_rawDescData
 }
 
-var (
-	file_management_v1_rds_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-	file_management_v1_rds_proto_msgTypes  = make([]protoimpl.MessageInfo, 6)
-	file_management_v1_rds_proto_goTypes   = []any{
-		DiscoverRDSEngine(0),                      // 0: management.v1.DiscoverRDSEngine
-		(*DiscoverRDSInstance)(nil),               // 1: management.v1.DiscoverRDSInstance
-		(*DiscoverRDSRequest)(nil),                // 2: management.v1.DiscoverRDSRequest
-		(*DiscoverRDSResponse)(nil),               // 3: management.v1.DiscoverRDSResponse
-		(*AddRDSServiceParams)(nil),               // 4: management.v1.AddRDSServiceParams
-		(*RDSServiceResult)(nil),                  // 5: management.v1.RDSServiceResult
-		nil,                                       // 6: management.v1.AddRDSServiceParams.CustomLabelsEntry
-		MetricsMode(0),                            // 7: management.v1.MetricsMode
-		(*durationpb.Duration)(nil),               // 8: google.protobuf.Duration
-		(*v1.RemoteRDSNode)(nil),                  // 9: inventory.v1.RemoteRDSNode
-		(*v1.RDSExporter)(nil),                    // 10: inventory.v1.RDSExporter
-		(*v1.MySQLService)(nil),                   // 11: inventory.v1.MySQLService
-		(*v1.MySQLdExporter)(nil),                 // 12: inventory.v1.MySQLdExporter
-		(*v1.QANMySQLPerfSchemaAgent)(nil),        // 13: inventory.v1.QANMySQLPerfSchemaAgent
-		(*v1.PostgreSQLService)(nil),              // 14: inventory.v1.PostgreSQLService
-		(*v1.PostgresExporter)(nil),               // 15: inventory.v1.PostgresExporter
-		(*v1.QANPostgreSQLPgStatementsAgent)(nil), // 16: inventory.v1.QANPostgreSQLPgStatementsAgent
-	}
-)
+var file_management_v1_rds_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_management_v1_rds_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_management_v1_rds_proto_goTypes = []any{
+	(DiscoverRDSEngine)(0),                    // 0: management.v1.DiscoverRDSEngine
+	(*DiscoverRDSInstance)(nil),               // 1: management.v1.DiscoverRDSInstance
+	(*DiscoverRDSRequest)(nil),                // 2: management.v1.DiscoverRDSRequest
+	(*DiscoverRDSResponse)(nil),               // 3: management.v1.DiscoverRDSResponse
+	(*AddRDSServiceParams)(nil),               // 4: management.v1.AddRDSServiceParams
+	(*RDSServiceResult)(nil),                  // 5: management.v1.RDSServiceResult
+	nil,                                       // 6: management.v1.AddRDSServiceParams.CustomLabelsEntry
+	(MetricsMode)(0),                          // 7: management.v1.MetricsMode
+	(*durationpb.Duration)(nil),               // 8: google.protobuf.Duration
+	(*v1.RemoteRDSNode)(nil),                  // 9: inventory.v1.RemoteRDSNode
+	(*v1.RDSExporter)(nil),                    // 10: inventory.v1.RDSExporter
+	(*v1.MySQLService)(nil),                   // 11: inventory.v1.MySQLService
+	(*v1.MySQLdExporter)(nil),                 // 12: inventory.v1.MySQLdExporter
+	(*v1.QANMySQLPerfSchemaAgent)(nil),        // 13: inventory.v1.QANMySQLPerfSchemaAgent
+	(*v1.PostgreSQLService)(nil),              // 14: inventory.v1.PostgreSQLService
+	(*v1.PostgresExporter)(nil),               // 15: inventory.v1.PostgresExporter
+	(*v1.QANPostgreSQLPgStatementsAgent)(nil), // 16: inventory.v1.QANPostgreSQLPgStatementsAgent
+}
 var file_management_v1_rds_proto_depIdxs = []int32{
 	0,  // 0: management.v1.DiscoverRDSInstance.engine:type_name -> management.v1.DiscoverRDSEngine
 	1,  // 1: management.v1.DiscoverRDSResponse.rds_instances:type_name -> management.v1.DiscoverRDSInstance

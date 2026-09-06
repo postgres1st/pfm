@@ -8,7 +8,7 @@
                 "hide": true,
                 "iconColor": "#e0752d",
                 "limit": 100,
-                "name": "PGF WatchTower Annotations",
+                "name": "Postgres1st WatchTower Annotations",
                 "showIn": 0,
                 "tags": [
                     "pfw_annotation",
@@ -58,7 +58,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "PGF WatchTower Query Analytics",
+            "title": "Postgres1st WatchTower Query Analytics",
             "transparent": true,
             "type": "pmm-qan-app-panel"
         }
@@ -429,7 +429,7 @@
         ]
     },
     "timezone": "",
-    "title": "PGF WatchTower Query Analytics",
+    "title": "Postgres1st WatchTower Query Analytics",
     "uid": "pmm-qan",
     "version": 2
 }

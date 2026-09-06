@@ -208,7 +208,7 @@ func serverRegister(cfgSetup *config.Setup) (agentID, token string, _ error) { /
 	}
 	// TODO: Investigate what can lead to PMMAgent being nil in the response
 	if res.Payload == nil || res.Payload.PMMAgent == nil {
-		return "", "", errors.New("unexpected empty response from PGF WatchTower Server (missing pmm_agent)")
+		return "", "", errors.New("unexpected empty response from Postgres1st WatchTower Server (missing pmm_agent)")
 	}
 	return res.Payload.PMMAgent.AgentID, res.Payload.Token, nil
 }

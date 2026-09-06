@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Acceptance test for the air-gapped PGF WatchTower bundle produced by build-pfw-airgap.
+# Acceptance test for the air-gapped Postgres1st WatchTower bundle produced by build-pfw-airgap.
 #
 #   build/scripts/test-pfw-airgap [/path/to/pfw-repo]
 #
@@ -45,8 +45,8 @@ p_mongodb_rejected()   { inc "/usr/sbin/pfw-admin ${SRV} add mongodb --host=127.
 # fixed name would make this predicate pass once and fail forever after, and the
 # negative control (which calls every predicate three times) could never restore it.
 p_postgresql_accepted() { inc "/usr/sbin/pfw-admin ${SRV} add postgresql --host=127.0.0.1 --port=5432 --username=postgres --password=\$(cat /srv/.postgres_password) ${1:-gate-pg-\$(date +%s%N)} 2>&1 | grep -q 'Service name:'"; }
-p_grafana_title()      { inc "curl -sk https://127.0.0.1:8443/graph/login | grep -q '<title>PGF WatchTower</title>'"; }
-p_pfmui_title()        { inc "curl -sk https://127.0.0.1:8443/pfw-ui/ | grep -q '<title>PGF WatchTower</title>'"; }
+p_grafana_title()      { inc "curl -sk https://127.0.0.1:8443/graph/login | grep -q '<title>Postgres1st WatchTower</title>'"; }
+p_pfmui_title()        { inc "curl -sk https://127.0.0.1:8443/pfw-ui/ | grep -q '<title>Postgres1st WatchTower</title>'"; }
 p_pg_up()              { inc "curl -s 'http://127.0.0.1:9090/prometheus/api/v1/query?query=pg_up' | grep -q '\"value\"'"; }
 # Expected major is an argument so the negative control can feed it a version the
 # server is NOT running: stopping PostgreSQL only proves the check reads live state,
@@ -147,10 +147,10 @@ run_airgap_suite() {
     # unsigned (PFW_SIGN_KEY empty at build time) fall back, and say so.
     if p_bundle_signed "${bundle}"; then
         inc "rpm --import ${bundle}/RPM-GPG-KEY-postgres1st"
-        inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=1\ngpgkey=file://${bundle}/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
+        inc "printf '[pfw]\nname=Postgres1st WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=1\ngpgkey=file://${bundle}/RPM-GPG-KEY-postgres1st\n' > /etc/yum.repos.d/pfw.repo"
         ok "bundle is signed; installing with gpgcheck=1"
     else
-        inc "printf '[pfw]\nname=PGF WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
+        inc "printf '[pfw]\nname=Postgres1st WatchTower\nbaseurl=file://${bundle}\nenabled=1\ngpgcheck=0\n' > /etc/yum.repos.d/pfw.repo"
         no "bundle is UNSIGNED -- installing with gpgcheck=0"
     fi
     if inc "dnf --disablerepo='*' --enablerepo=pfw -y install pfw-server >/tmp/install.log 2>&1"; then

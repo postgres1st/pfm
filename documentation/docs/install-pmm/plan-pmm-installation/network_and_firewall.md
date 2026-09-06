@@ -1,8 +1,8 @@
 # Network and firewall requirements
 
-Before installing PGF WatchTower, ensure your network configuration allows the necessary connections between PGF WatchTower components. Here are the required ports and connectivity settings.
+Before installing Postgres1st WatchTower, ensure your network configuration allows the necessary connections between Postgres1st WatchTower components. Here are the required ports and connectivity settings.
 
-For guidance on selecting the best deployment method based on these requirements, see the [choosing your PGF WatchTower deployment strategy](../plan-pmm-installation/choose-deployment.md).
+For guidance on selecting the best deployment method based on these requirements, see the [choosing your Postgres1st WatchTower deployment strategy](../plan-pmm-installation/choose-deployment.md).
 
 
 ## System requirements
@@ -15,13 +15,13 @@ Key requirements at a glance:
 - Requires 100 MB storage for installation plus caching space
 - Supports modern 64-bit Linux distributions.
 
-This is a list of ports used by the various components of PGF WatchTower. For PGF WatchTower to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
+This is a list of ports used by the various components of Postgres1st WatchTower. For Postgres1st WatchTower to work correctly, your system's firewall should allow TCP traffic on these ports (UDP is not needed).
 
 ### Essential ports
 
-These are the host ports that must be accessible for basic PGF WatchTower functionality:
+These are the host ports that must be accessible for basic Postgres1st WatchTower functionality:
 
-| PGF WatchTower component | Host port     | Direction     | Description
+| Postgres1st WatchTower component | Host port     | Direction     | Description
 |---------------|---------------|---------------|------------------------------------------------------------------------------------------
 | PMM Server    |  443 or 8443  | in            | HTTPS server for web interface and gRPC communication between PMM Client and PMM Server. Use of SSL certificates is highly encouraged.
 
@@ -29,15 +29,15 @@ These are the host ports that must be accessible for basic PGF WatchTower functi
 
 PMM Server containers listen on port 8443 internally. 
 
-When running PGF WatchTower in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
+When running Postgres1st WatchTower in Docker or Podman, map the container port to a host port using `-p 443:8443`. 
 
 If privileged ports (<1024) are not allowed in your environment, use:`-p 8443:8443` instead.
 
 ### Internal component ports 
 
-These ports are used for communication between PGF WatchTower components:
+These ports are used for communication between Postgres1st WatchTower components:
 
-| PGF WatchTower component | TCP port      | Direction     | Description
+| Postgres1st WatchTower component | TCP port      | Direction     | Description
 |---------------|---------------|---------------|-----------------------------------------------------------------
 | PMM Server    | 7771          | both          | gRPC, used for communication between `pfw-agent` and `pfw-admin`.
 | PMM Server    | 7772          | out           | HTTP1 server, used for older links like `logs.zip`.

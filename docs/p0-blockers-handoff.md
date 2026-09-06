@@ -146,7 +146,7 @@ Remaining work is therefore smaller than the report implies:
 - [x] Confirm `redactWords` covers every new path — satisfied incidentally by P0.4:
       `redactWords` already reads `AgentPassword`, which is now always set.
 - [x] **The larger argv leak, not in the original list.** `pfw-admin config` passed the
-      PGF WatchTower admin credential to `pfw-agent` as `--server-password` on its
+      Postgres1st WatchTower admin credential to `pfw-agent` as `--server-password` on its
       command line, so it sat in a second process's world-readable
       `/proc/<pid>/cmdline` for the duration of setup. It now travels in the child's
       environment (`PMM_AGENT_SERVER_PASSWORD`, which pfw-agent already accepted),

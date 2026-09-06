@@ -1,11 +1,11 @@
-# About PGF WatchTower metrics
+# About Postgres1st WatchTower metrics
 
-Postgres1st (PGF WatchTower) collects a range of metrics across database systems to provide comprehensive monitoring and analysis capabilities. 
+Postgres1st (Postgres1st WatchTower) collects a range of metrics across database systems to provide comprehensive monitoring and analysis capabilities. 
 
-PGF WatchTower supports monitoring for PostgreSQL databases. It gathers metrics related to database performance, resource utilization, health, and other important aspects. 
+Postgres1st WatchTower supports monitoring for PostgreSQL databases. It gathers metrics related to database performance, resource utilization, health, and other important aspects. 
 
-These metrics power the [PGF WatchTower dashboards](../../use/dashboards-panels/index.md) to help you monitor, troubleshoot, and optimize your database environments.
+These metrics power the [Postgres1st WatchTower dashboards](../../use/dashboards-panels/index.md) to help you monitor, troubleshoot, and optimize your database environments.
 
 ## Filtering metrics by label
 
-You can query metrics directly in PGF WatchTower using **Explore > Metrics** in the sidebar. This opens the **Grafana Metrics Explorer** where you can select a metric and filter results using **Label filters**. Labels let you narrow results to a specific service, node, environment, cluster, or any other label attached to your monitored services. For a complete list of available labels, see [Labels reference](../../reference/labels-reference.md).
+You can query metrics directly in Postgres1st WatchTower using **Explore > Metrics** in the sidebar. This opens the **Grafana Metrics Explorer** where you can select a metric and filter results using **Label filters**. Labels let you narrow results to a specific service, node, environment, cluster, or any other label attached to your monitored services. For a complete list of available labels, see [Labels reference](../../reference/labels-reference.md).

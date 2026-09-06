@@ -164,7 +164,7 @@ Choose your deployment approach:
         ```
 
     !!! hint alert-success "Important"
-        You can set the container environment variable `PFW_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PGF WatchTower for monitoring.
+        You can set the container environment variable `PFW_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to Postgres1st WatchTower for monitoring.
 
 
 === "Deploy PMM Client as a Sidecar container"

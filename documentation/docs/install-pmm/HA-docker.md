@@ -1,6 +1,6 @@
-# Install PGF WatchTower with Docker HA (Basic)
+# Install Postgres1st WatchTower with Docker HA (Basic)
 
-Docker's built-in restart capabilities combined with PGF WatchTower's client-side data buffering provide basic availability improvements for single-server deployments. This approach is perfect for development, testing, and environments where brief monitoring interruptions are acceptable.
+Docker's built-in restart capabilities combined with Postgres1st WatchTower's client-side data buffering provide basic availability improvements for single-server deployments. This approach is perfect for development, testing, and environments where brief monitoring interruptions are acceptable.
 
 !!! note "This is not true high availability"
     Docker HA provides automatic restart after container failures, but cannot protect against host-level failures. For true high availability with zero-downtime failover, see [Kubernetes HA Clustered](HA-clustered.md).
@@ -79,7 +79,7 @@ Choose the installation method that fits your needs and launch PMM Server with a
           percona/pmm-server:3
       ```
 
-    2. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    2. Access Postgres1st WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 === "Recommended"
 
@@ -102,11 +102,11 @@ Choose the installation method that fits your needs and launch PMM Server with a
 
         - `--restart=always`: Ensures automatic container restart after failures or reboots
         - `-p 443:8443`: Exposes HTTPS port for secure web access
-        - `-v pmm-data:/srv`: Persists PGF WatchTower data across container restarts
-        - `-e PMM_ENABLE_UPDATES=0`: Disables automatic PGF WatchTower updates (control updates manually)
+        - `-v pmm-data:/srv`: Persists Postgres1st WatchTower data across container restarts
+        - `-e PMM_ENABLE_UPDATES=0`: Disables automatic Postgres1st WatchTower updates (control updates manually)
         - `--ulimit=nofile=1000000:1000000`: Increases file descriptor limit for large deployments
 
-    2. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    2. Access Postgres1st WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 === "Docker Compose"
 
@@ -140,7 +140,7 @@ Choose the installation method that fits your needs and launch PMM Server with a
         docker-compose up -d
     ```
 
-    3. Access PGF WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
+    3. Access Postgres1st WatchTower UI at `https://localhost` and log in with default credentials: `admin`/`admin` (change immediately after first login).
 
 ### Verify installation
 
@@ -171,7 +171,7 @@ Expected output should show:
 After first login, immediately change the default admin password:
 {.power-number}
 
-1. Log in to PGF WatchTower UI at `https://localhost`
+1. Log in to Postgres1st WatchTower UI at `https://localhost`
 2. Go to **Account > Change password**
 3. Click **Change Password**
 4. Enter current password (`admin`) and new secure password

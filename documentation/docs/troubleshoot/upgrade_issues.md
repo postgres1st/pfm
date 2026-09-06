@@ -13,7 +13,7 @@ curl -X POST \
   'http://<pmm-server-address>/v1/server/updates:start' \
   -H 'Content-Type: application/json'
 ```
-3. Wait 2-5 minutes and refresh the PGF WatchTower Home page to verify the update.
+3. Wait 2-5 minutes and refresh the Postgres1st WatchTower Home page to verify the update.
 
 ## Watchtower updater fails with "client version is too old" error
 

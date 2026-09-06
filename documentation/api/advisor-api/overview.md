@@ -10,8 +10,8 @@ position: 0
 This section describes APIs to deal with Percona [Advisors](https://docs.percona.com/percona-monitoring-and-management/3/advisors/advisors.html), and [Advisors checks](https://docs.percona.com/percona-monitoring-and-management/3/advisors/advisor-details.html).
 
 - The [List of Problems Detected by Advisors](getfailedchecks) API endpoint offers detailed insights into potential infrastructure issues identified by Advisors.
-- [List Percona Advisors](ref:listadvisors) lists all Advisors available for your PGF WatchTower instance.
-- [List Advisor Checks](ref:listadvisorchecks) lists all Advisor Checks available in your PGF WatchTower.
+- [List Percona Advisors](ref:listadvisors) lists all Advisors available for your Postgres1st WatchTower instance.
+- [List Advisor Checks](ref:listadvisorchecks) lists all Advisor Checks available in your Postgres1st WatchTower.
 - [Changing Advisor Checks](ref:changeadvisorchecks) will help you automate Advisor Checks, i.e.:
   - Enable/Disable Advisor Checks
   - Change Advisor Check execution interval

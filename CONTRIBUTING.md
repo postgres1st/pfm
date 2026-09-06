@@ -1,6 +1,6 @@
-# Contributing to PGF WatchTower
+# Contributing to Postgres1st WatchTower
 
-PGF WatchTower is a PostgreSQL-only monitoring server
+Postgres1st WatchTower is a PostgreSQL-only monitoring server
 delivered as signed RPMs. See the [README](README.md) for what it is and how it installs.
 
 ## Table of contents

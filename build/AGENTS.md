@@ -1,4 +1,4 @@
-# PGF WatchTower Build and Packaging Guidelines
+# Postgres1st WatchTower Build and Packaging Guidelines
 
 > **Parent guide**: [AGENTS.md](../AGENTS.md) — product overview, architecture, domain model, global conventions
 
@@ -100,7 +100,7 @@ make rpmbuild-el9         # Build RPM build environment image
 - `build/packer/pmm.json` — Machine image definitions
 - `build/scripts/` — Build scripts for all artifact types
 
-## Air-gapped PGF WatchTower bundle
+## Air-gapped Postgres1st WatchTower bundle
 
 The offline bundle a customer installs on a network-isolated RHEL/Rocky 9 host is built
 and tested by a separate pipeline that does NOT go through the Jenkins/`pmm-submodules`
@@ -133,7 +133,7 @@ commits ahead of v1.151.0 and 467 behind. Latest upstream at that date was **v1.
 
 Deliberately left alone for now. Moving to a plain upstream tag would drop that feature,
 so it is a functional decision rather than a version bump — and it needs someone to
-establish whether PGF WatchTower actually depends on reading Prometheus data files.
+establish whether Postgres1st WatchTower actually depends on reading Prometheus data files.
 
 Now that we build this component from source we are no longer bound to Percona's tag,
 which makes the move *possible*; that is what changed, not the risk.
@@ -157,7 +157,7 @@ Why it has to change rather than being re-pinned again:
   current pins to expire too; list `RELEASE/el9/` and re-pin rather than assuming the build
   is broken.
 - **Their RPMs carry Percona's branding**, and our rebranded specs for them are dormant, so
-  the rebrand never reaches the artifact. `pfw-qan-api2` only started reporting "for PGF
+  the rebrand never reaches the artifact. `pfw-qan-api2` only started reporting "for Postgres1st
   WatchTower" once we built it ourselves.
 
 What the work involves. Both have from-source specs in `build/packages/rpm/server/SPECS/`

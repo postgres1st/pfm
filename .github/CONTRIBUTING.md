@@ -1,4 +1,4 @@
-# Contributing to PGF WatchTower
+# Contributing to Postgres1st WatchTower
 
 The contribution guide lives in [`CONTRIBUTING.md`](../CONTRIBUTING.md) at the repository
 root — repository layout, the devcontainer workflow, tests, building the air-gapped

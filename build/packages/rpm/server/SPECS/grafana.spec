@@ -88,4 +88,4 @@ exit 0
 
 %changelog
 * Thu Sep 03 2026 Postgre First <asheshvashi@gmail.com> - 12.4.5-1
-- First PGF WatchTower build of this package, from source.
+- First Postgres1st WatchTower build of this package, from source.
