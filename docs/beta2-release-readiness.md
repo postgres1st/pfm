@@ -80,7 +80,21 @@ built from source and `stage_s3` is gone.
    (`f63f05611`, now reverted) blamed `CapabilityBoundingSet=` and handed the store to
    root. It was proven unnecessary on the host — the original `0700`/`0600 pfw:pfw`
    store, unreadable by root-without-caps, boots fine once the label is right.
-3. **Reboot persistence and scale.** Neither has been exercised.
+   **Verified from the built RPM, not by hand.** A rebuilt, signed bundle was installed
+   on a second pristine host by the documented path with `gpgcheck=1`: `%post` loaded
+   `pfw_nginx`, the packaged `ExecStartPost` labelled the store `pfw_secret_t`, and
+   `readyz` reached 200 in about ten seconds with **no manual intervention at all**.
+   `NRestarts=0` on all three units — they never failed once, against 231 and 266 before.
+   The store kept its original `0700`/`0600 pfw:pfw`, confirming again that the
+   permission change was never what fixed anything.
+3. **Reboot persistence** — done, on that same host. `pfw.target` enabled, cold reboot,
+   `readyz` back to 200 within seconds, every unit active, `NRestarts=0` across the boot.
+   `/srv/.pfw-secrets` kept `pfw_secret_t` and `/run/pfw` was correctly recreated from
+   tmpfs as `var_run_t`. Zero pfw-related SELinux denials in the whole audit log, checked
+   with `dontaudit` disabled as well as enabled — the one denial present is a benign
+   `siginh` on an `init_t`→`initrc_t` transition, unrelated to this stack.
+
+   **Scale** has still not been exercised.
 
 Work deferred past beta2 is tracked in `docs/ga-readiness.md`: the full release process,
 the internal `pmm-managed` database/role rename, negative-controlling `test-pfw-client`,
