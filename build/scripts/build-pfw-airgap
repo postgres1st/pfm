@@ -12,7 +12,25 @@
 #   exporters    node/postgres/rds/azure exporters, vmagent, nomad, toolkit
 #   rpms         build every RPM
 #   closure      resolve the full dependency closure
+#   os-deps      derive os-dependencies.txt and stop (see below; not in the default run)
 #   bundle       createrepo + INSTALL.md + tarball + sha256
+#
+# SPLITTING THE BUILD FROM THE SIGNING
+#
+# The signing key must not live on a disposable build host. To keep it on a trusted
+# machine, run the RPM stages on a host of the target architecture, then assemble and
+# sign on the trusted one:
+#
+#   on the build host (target arch):  build-pfw-airgap grafana-fe grafana-be pmm-bin \
+#                                         exporters rpms closure os-deps
+#   copy back:                        work/seed, work/closure, os-dependencies.txt
+#   on the trusted host:              PFW_ARCH=<target> \
+#                                     PFW_OS_DEPS_FILE=<the copied list> \
+#                                     build-pfw-airgap bundle
+#
+# `bundle` is the only stage that reads the key, and it needs nothing from the build host
+# except those three paths. The os-deps stage exists because that one derivation cannot
+# cross architectures -- see write_os_deps.
 #
 # Output: ${PFW_OUT}/pfw-server-el9-<arch>.tar.gz (+ .sha256)
 #
@@ -612,6 +630,34 @@ stage_closure() {
 # transitive closure, almost all of it perl and nginx.
 write_os_deps() {
     local out=$1
+    # The derivation below runs `dnf repoquery` inside an EL image native to THIS host, so
+    # it resolves against this host's architecture. That is fine for a same-arch build and
+    # impossible for a cross-arch one: assembling an x86_64 bundle on aarch64 asks aarch64
+    # repositories to supply x86_64 sonames like libicuuc.so.67()(64bit), which resolves
+    # nothing and trips the emptiness guard below.
+    #
+    # Cross-assembly is not an edge case -- it is what keeping the signing key off a
+    # disposable build host requires. So accept a list derived on a host of the TARGET
+    # architecture, which `build-pfw-airgap os-deps` produces.
+    #
+    # Deliberately NOT a silent fallback to "derive nothing and carry on". A wrong
+    # os-dependencies.txt sends an operator to install the wrong packages on an air-gapped
+    # server, and an empty one makes the airgap suite's dependency assertions pass
+    # vacuously. Missing input fails the build.
+    if [ "${PFW_ARCH}" != "$(uname -m)" ]; then
+        [ -n "${PFW_OS_DEPS_FILE:-}" ] || fail \
+"cross-assembling for ${PFW_ARCH} on $(uname -m): the OS dependency list cannot be derived
+here, because dnf would resolve against $(uname -m) repositories. Run
+
+    build-pfw-airgap os-deps
+
+on a ${PFW_ARCH} host and pass the resulting os-dependencies.txt as PFW_OS_DEPS_FILE."
+        [ -s "${PFW_OS_DEPS_FILE}" ] || \
+            fail "PFW_OS_DEPS_FILE=${PFW_OS_DEPS_FILE} is missing or empty"
+        cp "${PFW_OS_DEPS_FILE}" "${out}/os-dependencies.txt"
+        log "os dependencies taken from ${PFW_OS_DEPS_FILE} ($(wc -l < "${out}/os-dependencies.txt") entries, cross-assembly for ${PFW_ARCH})"
+        return
+    fi
     docker_run -v "${repo_out}":/repo:ro -v "${out}":/out "${PFW_EL_IMAGE}" sh -c "
         set -e
         dnf -y install dnf-plugins-core >/dev/null 2>&1
@@ -876,9 +922,13 @@ write_install_md() {
     grep -qE '^gpgcheck=0$' "${out}" || fail "unsigned ${name} has no gpgcheck=0 line"
 }
 
-stage_bundle() {
-    build_rpmbuilder_image
-    log "assembling bundle"
+# Fill the repository directory from the resolved closure plus our own packages.
+#
+# Shared by stage_bundle and stage_os_deps rather than duplicated, so the OS-dependency
+# derivation sees EXACTLY the package set the bundle will ship. Deriving it from a
+# different set would be worse than not deriving it at all: the list would look plausible
+# and be wrong, and nothing downstream compares the two.
+populate_repo_out() {
     # Empty the directory rather than replacing it: a running test container
     # bind-mounts this path, and deleting the directory leaves that mount pointing
     # at a dead inode, so dnf inside the container fails with "Couldn't open file
@@ -895,6 +945,28 @@ stage_bundle() {
         cp "${f}" "${repo_out}/"
     done
     for f in "${work}"/seed/*.rpm; do cp "${f}" "${repo_out}/"; done
+}
+
+# Derive os-dependencies.txt and stop. Exists for the split build documented at the top of
+# this script: the host that compiles the RPMs is not the host that signs them, and only
+# the former can resolve dependencies for its own architecture.
+#
+# Refuses to run cross-arch rather than producing a list for the wrong one -- that is the
+# whole failure this stage exists to prevent.
+stage_os_deps() {
+    [ "${PFW_ARCH}" = "$(uname -m)" ] || fail \
+        "os-deps must run on a ${PFW_ARCH} host so dnf resolves against ${PFW_ARCH} repositories; this host is $(uname -m)"
+    log "deriving host OS dependencies for ${PFW_ARCH}"
+    populate_repo_out
+    write_os_deps "${PFW_OUT}"
+    printf '  wrote %s (%s entries)\n' \
+        "${PFW_OUT}/os-dependencies.txt" "$(wc -l < "${PFW_OUT}/os-dependencies.txt")"
+}
+
+stage_bundle() {
+    build_rpmbuilder_image
+    log "assembling bundle"
+    populate_repo_out
 
     # Sign before createrepo so the metadata is generated over the signed packages.
     sign_bundle
@@ -953,6 +1025,10 @@ main() {
             exporters)  stage_exporters ;;
             rpms)       stage_rpms ;;
             closure)    stage_closure ;;
+            # Deliberately absent from the default stage list above: a same-arch build
+            # derives the list inside `bundle`, so running it there too would only
+            # duplicate work. It is named explicitly for the split build.
+            os-deps)    stage_os_deps ;;
             bundle)     stage_bundle ;;
             *) fail "unknown stage: ${s}" ;;
         esac
