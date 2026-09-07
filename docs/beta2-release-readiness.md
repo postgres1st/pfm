@@ -1,42 +1,56 @@
 # Postgres1st WatchTower 3.9.0 beta2 — release readiness
 
-Written 4 Sep 2026, re-verified at `60378b057`, extended 7 Sep 2026 at `3841d8a50`.
-Records what is verified, what is not, and the decisions that will otherwise be
-re-litigated. Companion to `docs/p0-blockers-handoff.md` (security work) and
+Written 4 Sep 2026. **Rewritten 7 Sep 2026 against the tagged build**, `PFW_3.9.0_BETA2`
+= `046dc858a`. Records what is verified, what is not, and the decisions that will
+otherwise be re-litigated. Companion to `docs/p0-blockers-handoff.md` (security work) and
 `docs/pfw-identifier-map.md` (naming).
 
-## Verified — against the aarch64 bundle at `60378b057`, NOT against HEAD
+## Verified — both bundles, built from the tag
 
-> **Read this table with its date attached.** It describes one specific artifact, built
-> before the label rename, the node-identity rename, the SELinux credential-store fix and
-> its revert. That bundle no longer exists on the build machine. The four green suites
-> below therefore attest to an artifact that is not what beta2 will ship, and none of them
-> has been re-run against a bundle carrying the current tree.
->
-> This section is deliberately left pointing at the old bundle rather than updated to a
-> newer throwaway one: the sources are not tagged yet, so every bundle built between then
-> and the tag is disposable. It gets rewritten once, against the tagged build.
+Every claim below refers to **these two artifacts** and nothing else. Earlier revisions of
+this section described a bundle built before the label rename, the node-identity rename
+and the SELinux credential-store fix; that bundle is gone and its results are not carried
+forward. Both were built from an empty tree at the tag, then tested against the artifact
+they produced — not against the source.
 
-Built from an empty tree on aarch64, then tested against the artifact it produced —
-not against the source.
+| | aarch64 | x86_64 |
+|---|---|---|
+| bundle | `pfw-server-el9-aarch64.tar.gz`, 486 MB | `pfw-server-el9-x86_64.tar.gz`, 527 MB |
+| sha256 | `82df1aae9eeeb2b0ee1db5f20b40257a9084ec45ba1be99121f048dce39f6f9e` | `532d94f9b43ee2f046467f18e456879492068d3d51855c60a53973089c9ee11f` |
+| packages | 15, **15/15 signed** | 15, **15/15 signed** |
+| versions | ours all `3.9.0~beta2`, Release carries `046dc85` | identical |
+| built on | this aarch64 dev box | EC2 `m7i.4xlarge`, RHEL 9.8 |
+| **signed on** | the dev box | **the dev box** — see below |
 
-| | |
-|---|---|
-| bundle | `pfw-server-el9-aarch64.tar.gz`, 486 MB, 15 packages |
-| sha256 | `8eed7093090b75e4ef348aaa600b259b5d7e86d91cd11c5c10d287e0eea01239` |
-| signatures | all nine of our RPMs verify `digests signatures OK` |
-| versions | every package `3.9.0~beta2`; `pfw-victoriametrics` `1.147.0` |
+| suite | aarch64 | x86_64 |
+|---|---|---|
+| `test-pfw-airgap` | 46 / 0 | 46 / 0 |
+| `test-pfw-upgrade` | 34 / 0 | 34 / 0 |
+| `test-pfw-qan` | 5 / 0 | 5 / 0 |
+| `test-pfw-negative-control` | 58 / 0 | 58 / 0 |
+| controlled | 56 (47 by breaking real state, 9 by known-bad input), **0 not discriminating** | identical |
 
-| suite | result |
-|---|---|
-| `test-pfw-airgap` | 46 passed, 0 failed |
-| `test-pfw-upgrade` | 34 passed, 0 failed |
-| `test-pfw-negative-control` | 58 passed, 0 failed — 56 controlled, **0 not discriminating** |
-| `test-pfw-qan` | 5 passed, 0 failed, itself negative-controlled |
+The only skips anywhere in the eight runs are the negative-control's 3, each because its
+predicate is already controlled elsewhere. A skip is not a pass, so they are named rather
+than absorbed into the tally.
 
-All four re-run against this bundle after the encryption-key and distribution-sentinel
-renames and the Grafana asset rebrand — the earlier results predated changes to first-boot
-provisioning, which is the worst place to carry a stale pass.
+**The signing key never touched the build host.** The x86_64 RPMs were compiled on EC2 and
+came back **unsigned** — verified, 0 of 23 signed — then signed on the machine that owns
+the key. This needed `046dc858a`, which taught `build-pfw-airgap` to assemble a bundle for
+an architecture it is not running on: `write_os_deps` resolves host dependencies with
+`dnf` in a build-host-native image, so the list is now derived by a new `os-deps` stage on
+the target host and passed in via `PFW_OS_DEPS_FILE`. Both architectures independently
+derived **28** entries.
+
+**Native certification, on RHEL 9.8 x86_64 with SELinux enforcing.** Installed by the
+documented path with `gpgcheck=1` onto a host with an empty `/srv`, no `pfw` account and
+no policy module loaded. `%post` loaded `pfw_nginx`; the packaged `ExecStartPost` labelled
+the store `pfw_secret_t`; `readyz` reached 200 in about ten seconds **with no manual
+intervention**; `NRestarts=0` on every unit. The store kept `0700` / `0600 pfw:pfw` —
+tight original permissions, which is what proves the reverted `f63f05611` fixed nothing.
+Cold reboot: back to 200 within seconds, all units active, `NRestarts=0`, label intact,
+`/run/pfw` correctly recreated from tmpfs as `var_run_t`. **Zero** pfw-related denials in
+the whole audit log, checked with `dontaudit` disabled as well as enabled.
 
 **This is the first aarch64 bundle.** It was impossible before: four components were
 fetched prebuilt from Percona's S3 cache, which publishes x86_64 only. Everything is now
@@ -50,14 +64,16 @@ built from source and `stage_s3` is gone.
 - ~~**A real RHEL host.**~~ **Done (7 Sep), and it found a release blocker.** See item 2
   under "Blocking" for what it found and how it was fixed. `pfw_nginx.pp` now loads on an
   enforcing host and `/srv/nginx` carries `pfw_cert_t`.
-- **The container suites have never run against a bundle carrying the SELinux fix.** The
-  `46/0`, `34/0` and `58/0` figures are from the bundle built *before* `e52e98854`. The
-  rebuilt bundle has had only a native install and a reboot. This matters more than the
-  usual staleness: the fix adds an `ExecStartPost` with **no** `-` prefix, which is a new
-  way for `pfw-init.service` — and therefore `pfw.target` — to fail hard, and nothing has
-  exercised that path in a suite.
+- ~~**The container suites have never run against a bundle carrying the SELinux fix.**~~
+  **Closed.** All four suites now pass on both architectures against the tagged bundles,
+  which carry `e52e98854` and its hard-fail `ExecStartPost`.
 - ~~**Reboot persistence**~~ **done (7 Sep)**; **low-disk, low-memory and interrupted
   transactions** remain unexercised.
+- **aarch64 has never been installed on a native enforcing host.** Only x86_64 has. The
+  SELinux fix is architecture-independent policy, so it *should* carry over — but "should"
+  is the word that produced two wrong diagnoses on 7 Sep before the real cause was found.
+  Either certify it or say so in the release notes; do not let it pass silently on the
+  strength of the x86_64 result.
 - **Scale.** No measured fleet-scale number exists.
 
 ## Blocking, in order
