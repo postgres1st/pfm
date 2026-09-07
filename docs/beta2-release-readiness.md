@@ -1,10 +1,21 @@
 # Postgres1st WatchTower 3.9.0 beta2 — release readiness
 
-Written 4 Sep 2026, re-verified at `60378b057`. Records what is verified, what is not, and the
-decisions that will otherwise be re-litigated. Companion to `docs/p0-blockers-handoff.md`
-(security work) and `docs/pfw-identifier-map.md` (naming).
+Written 4 Sep 2026, re-verified at `60378b057`, extended 7 Sep 2026 at `3841d8a50`.
+Records what is verified, what is not, and the decisions that will otherwise be
+re-litigated. Companion to `docs/p0-blockers-handoff.md` (security work) and
+`docs/pfw-identifier-map.md` (naming).
 
-## Verified
+## Verified — against the aarch64 bundle at `60378b057`, NOT against HEAD
+
+> **Read this table with its date attached.** It describes one specific artifact, built
+> before the label rename, the node-identity rename, the SELinux credential-store fix and
+> its revert. That bundle no longer exists on the build machine. The four green suites
+> below therefore attest to an artifact that is not what beta2 will ship, and none of them
+> has been re-run against a bundle carrying the current tree.
+>
+> This section is deliberately left pointing at the old bundle rather than updated to a
+> newer throwaway one: the sources are not tagged yet, so every bundle built between then
+> and the tag is disposable. It gets rewritten once, against the tagged build.
 
 Built from an empty tree on aarch64, then tested against the artifact it produced —
 not against the source.
@@ -33,12 +44,20 @@ built from source and `stage_s3` is gone.
 
 ## Not verified — do not claim these
 
-- **x86_64.** The pipeline supports it and the pins resolve, but cross-building is not
-  supported, so it needs an x86_64 host. Nothing here has been built or tested there.
-- **A real RHEL host.** SELinux transitions and file capabilities are both inert under
-  `docker run --privileged`, so the container suites cannot substitute. `pfw_nginx.pp`
-  in particular has never been loaded on an enforcing host.
-- **Reboot persistence, low-disk, low-memory, interrupted transactions.**
+- ~~**x86_64.**~~ **Done (7 Sep).** Built on an x86_64 host: 15 signed RPMs, and the four
+  container suites passed there — but see the caveat below, because that was the *pre-fix*
+  bundle.
+- ~~**A real RHEL host.**~~ **Done (7 Sep), and it found a release blocker.** See item 2
+  under "Blocking" for what it found and how it was fixed. `pfw_nginx.pp` now loads on an
+  enforcing host and `/srv/nginx` carries `pfw_cert_t`.
+- **The container suites have never run against a bundle carrying the SELinux fix.** The
+  `46/0`, `34/0` and `58/0` figures are from the bundle built *before* `e52e98854`. The
+  rebuilt bundle has had only a native install and a reboot. This matters more than the
+  usual staleness: the fix adds an `ExecStartPost` with **no** `-` prefix, which is a new
+  way for `pfw-init.service` — and therefore `pfw.target` — to fail hard, and nothing has
+  exercised that path in a suite.
+- ~~**Reboot persistence**~~ **done (7 Sep)**; **low-disk, low-memory and interrupted
+  transactions** remain unexercised.
 - **Scale.** No measured fleet-scale number exists.
 
 ## Blocking, in order
@@ -51,14 +70,15 @@ built from source and `stage_s3` is gone.
    paths. The plugin *directories* (`pmm-check`, `pmm-update`, `pmm-pt-summary-*`) were
    deliberately left alone — dashboards resolve panels by those ids.
 
-**Nothing is blocking on this machine.** What remains needs different hardware:
+**Nothing is blocking on this machine.** All three items below needed different hardware
+and all three are now done — on EC2 x86_64 hosts, 7 Sep. What is left after them is not a
+hardware problem but unfinished testing: the suites re-run against a bundle built from the
+tagged tree, plus scale, low-disk, low-memory and interrupted transactions.
 
-1. **x86_64.** Cross-building is not supported — the Go and webpack builds and `rpmbuild`
-   all emit host-native output — so an x86_64 bundle must be built on an x86_64 host.
-   This is no longer gated on anything else: the Grafana fork is pushed to
-   `postgres1st/grafana` (public) and the build now clones `PFW_GRAFANA_REPO` at the
-   pinned commit when no local clone is supplied, so a fresh host needs no seeding.
-   Point `PFW_GRAFANA_FORK` at an existing clone only to skip the fetch.
+1. ~~**x86_64.**~~ **Done (7 Sep).** Built on a fresh `m7i.4xlarge` RHEL 9.8 host with
+   nothing but `git`, `tmux` and `docker-ce` installed; the build clones
+   `PFW_GRAFANA_REPO` at the pinned commit itself, so no seeding was needed. 15 RPMs,
+   all signed. Confirms cross-building is still not supported and still not required.
 2. ~~**A real enforcing RHEL host.**~~ **Done, and it found a release blocker.** The
    bundle was installed on a pristine RHEL 9.8 x86_64 host with SELinux enforcing, by
    the documented path with `gpgcheck=1`. `pfw_nginx.pp` loads and `/srv/nginx` carries
@@ -153,7 +173,11 @@ file, with nothing checking**: emit vs build loop, closure seed vs `Requires:`, 
 version vs `PFW_VERSION`, nginx glob vs conf.d filenames, control fixtures vs package
 names, `SRV` vs the host being addressed.
 
-`build/scripts/test-frozen-identifiers` now holds 38 assertions, most of them comparing
-two such lists rather than pinning a string, and every one negative-controlled. When
-adding a pair that must agree, add the assertion in the same commit — none of these were
-found by reading.
+`build/scripts/test-frozen-identifiers` now reports **71 passing assertions**, most of them
+comparing two such lists rather than pinning a string, and every one negative-controlled.
+When adding a pair that must agree, add the assertion in the same commit — none of these
+were found by reading.
+
+The SELinux credential-store defect (7 Sep) is the same shape one level down: the policy's
+`.fc` and the paths the units actually read are two lists that must agree, and nothing
+compared them. `secret_store_is_labelled_for_init` now does.
