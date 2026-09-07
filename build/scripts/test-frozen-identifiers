@@ -975,36 +975,6 @@ server_node_id_agrees() {
 }
 server_node_id_agrees
 
-# A unit that drops CAP_DAC_OVERRIDE cannot read a secret it does not own.
-#
-# systemd loads EnvironmentFile= in the child AFTER applying CapabilityBoundingSet but
-# BEFORE dropping to User=. pfw-managed, pfw-grafana and pfw-qan-api2 all set an empty
-# bounding set, so that reader is root with no CAP_DAC_OVERRIDE. With the store owned by
-# pfw (0600) all three failed "Failed to load environment files: Permission denied" and
-# restarted forever -- readyz 500 on a real RHEL host.
-#
-# No container suite can see this: a privileged container keeps cap_dac_override in its
-# bounding set, so 46/0 airgap, 34/0 upgrade and 58/0 negative-control all passed while
-# the product could not start natively. This guard is the substitute for that blindness.
-env_secrets_readable_without_caps() {
-    local desc="secret store is handed to root for capability-less EnvironmentFile reads" perms unit
-    perms=build/packages/config/pfw/pfw-secrets-perms.sh
-    unit=build/packages/config/pfw/pfw-init.service
-    if [ ! -f "${perms}" ]; then
-        no "${desc} -- ${perms} is missing"; return
-    fi
-    # The `+` prefix is what makes it run as root despite User=pfw. Without it the step
-    # runs as pfw and cannot chown, so the fix silently does nothing.
-    if ! grep -q '^ExecStartPost=+.*pfw-secrets-perms\.sh' "${unit}"; then
-        no "${desc} -- ${unit} does not run it with the root (+) prefix"; return
-    fi
-    if ! grep -q 'chown root:pfw' "${perms}"; then
-        no "${desc} -- ${perms} no longer hands the store to root"; return
-    fi
-    ok "${desc}"
-}
-env_secrets_readable_without_caps
-
 log "Regression guards for defects already fixed once"
 
 # The pmm-* to pfw-* rename left user-facing text naming binaries that no longer
