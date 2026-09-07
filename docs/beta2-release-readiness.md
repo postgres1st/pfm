@@ -59,13 +59,33 @@ built from source and `stage_s3` is gone.
    `postgres1st/grafana` (public) and the build now clones `PFW_GRAFANA_REPO` at the
    pinned commit when no local clone is supplied, so a fresh host needs no seeding.
    Point `PFW_GRAFANA_FORK` at an existing clone only to skip the fetch.
-2. **A real enforcing RHEL host.** `pfw_nginx.pp` has never been loaded; container suites
-   cannot prove it, because SELinux transitions are inert in Docker.
+2. ~~**A real enforcing RHEL host.**~~ **Done, and it found a release blocker.** The
+   bundle was installed on a pristine RHEL 9.8 x86_64 host with SELinux enforcing, by
+   the documented path with `gpgcheck=1`. `pfw_nginx.pp` loads and `/srv/nginx` carries
+   `pfw_cert_t`.
+
+   It also did not boot: `pfw-managed`, `pfw-grafana` and `pfw-qan-api2` restarted
+   forever with `Failed to load environment files: Permission denied` and `readyz` stuck
+   at 500. Cause: `/srv/.pfw-secrets` was generic `var_t`, and `EnvironmentFile=` is
+   opened by **PID 1 as `init_t`** — a confined domain — before the unit's `User=` and
+   `CapabilityBoundingSet=` apply to the child. That the three services are themselves
+   unconfined is irrelevant; the reader is systemd. Fixed by giving the store its own
+   `pfw_secret_t` type readable by `init_t` alone, plus a root `ExecStartPost` relabel
+   that fails loudly instead of leaving a silent no-boot.
+
+   Two lessons worth keeping. The container suites passed 46/0, 34/0 and 58/0 against
+   this same bundle, so **a green container run says nothing about an enforcing host** —
+   a static guard in `test-frozen-identifiers` is the standing substitute, and a native
+   install is the only real check. And the first diagnosis was wrong: an earlier fix
+   (`f63f05611`, now reverted) blamed `CapabilityBoundingSet=` and handed the store to
+   root. It was proven unnecessary on the host — the original `0700`/`0600 pfw:pfw`
+   store, unreadable by root-without-caps, boots fine once the label is right.
 3. **Reboot persistence and scale.** Neither has been exercised.
 
 Work deferred past beta2 is tracked in `docs/ga-readiness.md`: the full release process,
 the internal `pmm-managed` database/role rename, negative-controlling `test-pfw-client`,
-and the documentation rewrite.
+moving the credential store out of `/srv` so its SELinux label stops being something the
+product has to maintain, and the documentation rewrite.
 
 Not blockers, and deliberately out of scope: everything in
 `docs/deferred-container-path.md` and `docs/deferred-documentation-rebrand.md` (the

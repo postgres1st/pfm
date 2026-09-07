@@ -38,6 +38,14 @@ ReadWritePaths=/srv /run/postgresql
 # never briefly group-readable in the window before the explicit chmod.
 UMask=0077
 ExecStart=/usr/share/pfw/pfw-init.sh
+# Give the credential store the SELinux type PID 1 is allowed to read, once pfw-init
+# has generated it, and fail here if that did not take.
+#
+# The `+` prefix runs this as root despite User=pfw: relabelling is a root operation,
+# and pfw cannot do it. Not prefixed with `-`, unlike pfw-nginx's restorecon: a wrong
+# label here does not degrade one service, it stops three from starting at all, so the
+# failure belongs on this unit where the cause is legible.
+ExecStartPost=+/usr/share/pfw/pfw-secrets-label.sh
 # /dev/stdout is not openable under a systemd unit; send everything to journald.
 StandardOutput=journal
 StandardError=journal

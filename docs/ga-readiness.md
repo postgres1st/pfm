@@ -59,7 +59,35 @@ first run in a way that looked like product failure. Break each one deliberately
 uninstall the agent, feed a bad password, point it at the wrong host — and require each to
 notice, before relying on it as the evidence that a customer's first contact works.
 
-## 4. Rewrite the documentation site
+## 4. Move the credential store out of `/srv`
+
+beta2 keeps the bootstrap credentials at `/srv/.pfw-secrets` and gives them their own
+SELinux type, `pfw_secret_t`, because PID 1 reads them through `EnvironmentFile=` as
+`init_t` and cannot open generic `var_t`. That works, and it is guarded.
+
+It is still a label the product has to *maintain*. Three things must all hold on every
+host, forever: the policy module loads, the `.fc` rule matches, and the
+`ExecStartPost` relabel runs. `pfw-server.spec` loads the module with `semodule -n -i
+… || :`, so a failed load is silent — the assertion in `pfw-secrets-label.sh` exists
+precisely because that silence once cost a day. An admin running `restorecon -R /srv`
+on a host where the module did not load will relabel the store back to `var_t` and stop
+the server, with the cause three units away from the symptom.
+
+Putting the store under `/etc/pfw/` removes the whole class: `etc_t` comes from default
+labelling, no policy module is involved, and any `restorecon` anywhere produces the
+right answer. It is also where systemd `EnvironmentFile=` material conventionally lives.
+
+Not done for beta2 because it moves a path named in `INSTALL.md` (which documents
+reading the initial admin password from `/srv/.pfw-secrets/grafana.env`), five unit
+files, `pfw-init.sh`, `docs/pfw-identifier-map.md` and the backup guidance — a rename
+sweep, to fix a bug that one `.fc` line already fixes. The right trade at GA, not
+mid-cycle.
+
+Considered and rejected: labelling the store `etc_t` in place. It boots, but `etc_t` is
+readable by a long list of confined domains and these files are generated passwords, so
+a private type read by `init_t` alone is strictly tighter.
+
+## 5. Rewrite the documentation site
 
 Covered in full in `docs/deferred-documentation-rebrand.md`. Its conclusion is the part
 worth repeating here: it is a **rewrite, not a rename**. The install section documents five

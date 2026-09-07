@@ -25,6 +25,8 @@ policy_module(pfw_nginx, 1.0.0)
 
 gen_require(`
     type httpd_t;
+    # PID 1. It, not the service, opens EnvironmentFile= -- see pfw_secret_t below.
+    type init_t;
     # Port types our upstreams already carry; see the connect rules below.
     type unreserved_port_t;
     type ntop_port_t;
@@ -48,6 +50,23 @@ files_type(pfw_cert_t)
 type pfw_nginx_tmp_t;
 files_type(pfw_nginx_tmp_t)
 
+# The bootstrap credential store, /srv/.pfw-secrets: generated database, ClickHouse
+# and Grafana passwords, loaded by pfw-managed, pfw-grafana and pfw-qan-api2 through
+# EnvironmentFile=.
+#
+# It needs its own type because of WHO reads it. EnvironmentFile= is opened by PID 1
+# itself, as init_t, before the unit's User= or CapabilityBoundingSet= apply to the
+# child -- so the reader is a CONFINED domain even though every one of those services
+# is unconfined. Left generic var_t like the rest of /srv, init_t has no rule
+# permitting open, and all three units fail with "Failed to load environment files:
+# Permission denied" and restart forever, with readyz stuck at 500.
+#
+# NOT labelled etc_t, which would also have worked: etc_t is readable by a long list
+# of confined domains, and these files are generated passwords. A private type read by
+# init_t alone is the narrowest thing that boots.
+type pfw_secret_t;
+files_type(pfw_secret_t)
+
 ########################################
 #
 # Rules.
@@ -59,6 +78,14 @@ files_type(pfw_nginx_tmp_t)
 allow httpd_t pfw_cert_t:dir list_dir_perms;
 allow httpd_t pfw_cert_t:file read_file_perms;
 allow httpd_t pfw_cert_t:lnk_file read_lnk_file_perms;
+
+# Let PID 1 read the credential store when it loads EnvironmentFile=.
+#
+# search on the directory, read on the files, and nothing else: init_t never writes
+# here (pfw-init.sh does, running unconfined) and never needs to list the directory,
+# because every unit names its file explicitly.
+allow init_t pfw_secret_t:dir search_dir_perms;
+allow init_t pfw_secret_t:file read_file_perms;
 
 # Manage the buffer directories. Not observed as a denial during bring-up -- nginx
 # only spills to disk once a body exceeds the in-memory buffer -- so this is written

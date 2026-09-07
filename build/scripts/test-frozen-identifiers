@@ -975,6 +975,55 @@ server_node_id_agrees() {
 }
 server_node_id_agrees
 
+# The credential store must carry an SELinux type PID 1 may open, because systemd --
+# not the service -- reads EnvironmentFile=, as init_t, before User= and
+# CapabilityBoundingSet= apply to the child. Left generic var_t like the rest of /srv,
+# pfw-managed, pfw-grafana and pfw-qan-api2 all fail with "Failed to load environment
+# files: Permission denied" and restart forever, with readyz at 500.
+#
+# Every arm below is a way that has ALREADY silently regressed or was wrong once:
+# the .fc rule is the fix itself; the .te grant is what makes the type readable rather
+# than merely distinct; the `+` prefix is what lets the relabel run as root at all
+# (without it the step runs as pfw and cannot relabel, so the fix does nothing); and
+# the enforcing check is what turns a failed policy load -- silent, because the spec
+# loads it with `|| :` -- into a legible error instead of a dead server.
+#
+# NO CONTAINER SUITE CAN COVER THIS. SELinux is inert in Docker, so test-pfw-airgap,
+# test-pfw-upgrade and test-pfw-negative-control all pass against a bundle that cannot
+# boot on an enforcing host. This static guard is the standing substitute; the real
+# check is a native install.
+secret_store_is_labelled_for_init() {
+    local desc="the credential store is labelled for PID 1 to read" fc te unit script
+    fc=build/packages/selinux/pfw_nginx.fc
+    te=build/packages/selinux/pfw_nginx.te
+    unit=build/packages/config/pfw/pfw-init.service
+    script=build/packages/config/pfw/pfw-secrets-label.sh
+
+    if ! grep -qE '^/srv/\\\.pfw-secrets\(/\.\*\)\?[[:space:]]+gen_context\(.*pfw_secret_t' "${fc}"; then
+        no "${desc} -- ${fc} has no pfw_secret_t rule for /srv/.pfw-secrets"; return
+    fi
+    if ! grep -q '^type pfw_secret_t;' "${te}"; then
+        no "${desc} -- ${te} does not declare pfw_secret_t"; return
+    fi
+    if ! grep -q '^allow init_t pfw_secret_t:file read_file_perms;' "${te}"; then
+        no "${desc} -- ${te} declares the type but never lets init_t read it"; return
+    fi
+    if ! grep -q '^allow init_t pfw_secret_t:dir search_dir_perms;' "${te}"; then
+        no "${desc} -- ${te} lets init_t read the files but not traverse the directory"; return
+    fi
+    if [ ! -f "${script}" ]; then
+        no "${desc} -- ${script} is missing"; return
+    fi
+    if ! grep -q '^ExecStartPost=+.*pfw-secrets-label\.sh' "${unit}"; then
+        no "${desc} -- ${unit} does not run the relabel with the root (+) prefix"; return
+    fi
+    if ! grep -q 'Enforcing' "${script}"; then
+        no "${desc} -- ${script} no longer fails the boot when the label is wrong"; return
+    fi
+    ok "${desc}"
+}
+secret_store_is_labelled_for_init
+
 log "Regression guards for defects already fixed once"
 
 # The pmm-* to pfw-* rename left user-facing text naming binaries that no longer
