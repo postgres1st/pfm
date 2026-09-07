@@ -7,9 +7,10 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Postgres1st WatchTower — PostgreSQL monitoring and query analytics, delivered as a signed
-package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No
-internet access is required on that server, and no container runtime is involved.">
+        <meta name="description" content="Postgres1st WatchTower — PostgreSQL monitoring and query analytics, delivered as a
+signed package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9
+server. No internet access is required on that server, and no container runtime is
+involved.">
       
       
         <meta name="author" content="Postgres1st">
@@ -8584,6 +8585,17 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
+  <a href="#postgresql-only-by-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL only — by design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#packages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8595,10 +8607,10 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
+  <a href="#installing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install
+        Installing
       
     </span>
   </a>
@@ -8606,10 +8618,54 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
+  <a href="#verifying-what-you-received" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Limitations
+        Verifying what you received
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licensing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Support
       
     </span>
   </a>
@@ -10888,6 +10944,17 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
+  <a href="#postgresql-only-by-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL only — by design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#packages" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -10899,10 +10966,10 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
-  <a href="#install" class="md-nav__link">
+  <a href="#installing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Install
+        Installing
       
     </span>
   </a>
@@ -10910,10 +10977,54 @@ internet access is required on that server, and no container runtime is involved
 </li>
       
         <li class="md-nav__item">
-  <a href="#limitations" class="md-nav__link">
+  <a href="#verifying-what-you-received" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Limitations
+        Verifying what you received
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upgrading
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#licensing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licensing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Support
       
     </span>
   </a>
@@ -10949,9 +11060,10 @@ internet access is required on that server, and no container runtime is involved
 
 
 <h1 id="postgres1st-watchtower-390-beta2-release-notes">Postgres1st WatchTower 3.9.0 beta2 — release notes<a class="headerlink" href="#postgres1st-watchtower-390-beta2-release-notes" title="Permanent link">&para;</a></h1>
-<p><strong>Postgres1st WatchTower</strong> — PostgreSQL monitoring and query analytics, delivered as a signed
-package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No
-internet access is required on that server, and no container runtime is involved.</p>
+<p><strong>Postgres1st WatchTower</strong> — PostgreSQL monitoring and query analytics, delivered as a
+signed package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9
+server. No internet access is required on that server, and no container runtime is
+involved.</p>
 <p>This is a <strong>beta</strong>. It is complete and tested for the workflow below, and the limitations
 at the end are stated plainly rather than left to be discovered.</p>
 <div class="admonition warning">
@@ -10964,23 +11076,33 @@ beta2 fresh.</strong> From beta2 onward the path is normal: <code>3.9.0~beta2</c
 </div>
 <hr />
 <h2 id="what-changed-since-beta1">What changed since beta1<a class="headerlink" href="#what-changed-since-beta1" title="Permanent link">&para;</a></h2>
-<p><strong>The product is Postgres1st WatchTower.</strong> Packages are <code>pfw-*</code>, units are <code>pfw-*.service</code>, the
-service account is <code>pfw</code>, and everything installs under <code>/opt/postgres1st/watchtower</code>.
-The client agent is <code>pfw-agent</code>; its configuration lives at
-<code>/opt/postgres1st/watchtower/config/pfw-agent.yaml</code>.</p>
+<p><strong>The product is Postgres1st WatchTower.</strong> Packages are <code>pfw-*</code>, units are
+<code>pfw-*.service</code>, the service account is <code>pfw</code>, and everything installs under
+<code>/opt/postgres1st/watchtower</code>. The client agent is <code>pfw-agent</code>; its configuration lives
+at <code>/opt/postgres1st/watchtower/config/pfw-agent.yaml</code>.</p>
 <p><strong>Every server component is now built from source.</strong> beta1 fetched four of them prebuilt
 from Percona&rsquo;s public build cache. Those artifacts carried Percona&rsquo;s branding regardless
 of what our specs said, the cache rotates its keys so the pinned versions expired, and it
 publishes x86_64 only. Building them ourselves fixed all three at once, and is what makes
 an <strong>aarch64 bundle</strong> possible — beta1 could not produce one.</p>
-<p><strong>Security fixes carried forward from the beta1 line</strong>, all present here: bootstrap
-credentials generated per install rather than a shipped constant, the internal PostgreSQL
-password no longer written to a world-readable file, and exporter credentials generated on
-every agent-creation path.</p>
+<p><strong>The server now starts on a host with SELinux enforcing.</strong> beta1 shipped a policy module
+but was never installed on an enforcing host by an automated gate. Doing that for beta2
+found a defect that would have stopped the product dead: the credential store under
+<code>/srv</code> carried the generic <code>var_t</code> type, and systemd reads <code>EnvironmentFile=</code> as PID 1 —
+a <em>confined</em> domain — so three services could not read their configuration and restarted
+forever with <code>Permission denied</code>, with <code>readyz</code> stuck at 500. The store now has its own
+type, readable by PID 1 alone, applied at first boot by a step that verifies its own
+result rather than failing silently. See <em>Known limitations</em> for exactly which
+architecture this was certified on.</p>
 <p><strong>Zero egress by design.</strong> The server makes no outbound requests: Grafana&rsquo;s news feed is
 off, and the upstream blog-feed proxy and its dashboard panel are gone.</p>
+<p><strong>Security fixes carried forward from the beta1 line</strong>, all present here: bootstrap
+credentials generated per install rather than a shipped constant, the internal PostgreSQL
+password no longer written to a world-readable file, per-agent exporter credentials
+generated on every agent-creation path, and exporters binding loopback by default.</p>
 <hr />
 <h2 id="what-you-get">What you get<a class="headerlink" href="#what-you-get" title="Permanent link">&para;</a></h2>
+<p>A monitoring server you install with <code>dnf</code> and start with <code>systemctl</code>, providing:</p>
 <table>
 <thead>
 <tr>
@@ -11011,8 +11133,18 @@ off, and the upstream blog-feed proxy and its dashboard panel are gone.</p>
 </tr>
 </tbody>
 </table>
-<p>The server runs as the unprivileged <code>pfw</code> account under full systemd hardening.</p>
-<hr />
+<p>The server runs as the unprivileged <code>pfw</code> account under full systemd hardening. Only
+port 8443 (HTTPS) needs to be reachable.</p>
+<h2 id="postgresql-only-by-design">PostgreSQL only — by design<a class="headerlink" href="#postgresql-only-by-design" title="Permanent link">&para;</a></h2>
+<p>WatchTower monitors PostgreSQL. Adding a MySQL, MongoDB, ProxySQL or Valkey service is
+refused at registration:</p>
+<div class="highlight"><pre><span></span><code>$ pfw-admin add mysql ...
+Service type &quot;mysql&quot; is not supported by this deployment.
+</code></pre></div>
+<p>This is deliberate, controlled by <code>PFW_DB_TYPES</code>, and it extends to what the interface
+offers. Upstream PMM ships advisor checks for database families this build refuses; those
+can never produce a result, so they are not listed. If you are comparing against PMM and
+expect to see more, that is why — nothing is disabled or broken.</p>
 <h2 id="packages">Packages<a class="headerlink" href="#packages" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -11052,32 +11184,113 @@ off, and the upstream blog-feed proxy and its dashboard panel are gone.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
+<h2 id="installing">Installing<a class="headerlink" href="#installing" title="Permanent link">&para;</a></h2>
+<p>See <code>INSTALL.md</code> inside the bundle. In outline:</p>
 <ol>
-<li>Copy the bundle to the server and unpack it.</li>
-<li><code>sudo ./fetch-os-dependencies.sh</code> on an internet-connected host if the server lacks
-   its distribution&rsquo;s own packages.</li>
+<li>Unpack the tarball and import the signing key</li>
+<li>Point <code>dnf</code> at the bundled repository</li>
 <li><code>sudo dnf --enablerepo=pfw install pfw-server</code></li>
 <li><code>sudo systemctl start pfw.target</code></li>
+<li>Open <code>https://&lt;host&gt;:8443/</code> and sign in as <code>admin</code>. The password is generated during
+   first boot; read it with the command under <em>Bootstrap credentials</em> below.</li>
 </ol>
-<p>Read the generated admin password once, from <code>/srv/.pfw-secrets/grafana.env</code>. <strong>Back up
-<code>/srv/.pfw-secrets</code></strong> — on a fresh install it is the only copy.</p>
-<p>Upgrade a beta2-or-later host with <code>sudo dnf --enablerepo=pfw upgrade 'pfw-*' vmproxy</code>.</p>
+<p>The bundle carries WatchTower, PostgreSQL 18 and ClickHouse: everything an EL9 repository
+does not provide. Your distribution&rsquo;s own packages — <code>nginx</code>, <code>perl</code>, <code>polkit</code>,
+<code>openssl</code> — come from your normal repositories, as they would for anything else you
+install. If the server has no repository of its own, <code>fetch-os-dependencies.sh</code> collects
+them on a connected machine for you to copy across.</p>
+<h2 id="verifying-what-you-received">Verifying what you received<a class="headerlink" href="#verifying-what-you-received" title="Permanent link">&para;</a></h2>
+<p>Every package is signed by Postgres1st, including the third-party ones, so a single
+<code>rpm --import</code> covers the whole set and <code>gpgcheck=1</code> applies throughout. Check the
+tarball&rsquo;s <code>.sha256</code> as well: the checksum proves the download arrived intact, the
+signature proves who built it.</p>
+<h2 id="upgrading">Upgrading<a class="headerlink" href="#upgrading" title="Permanent link">&para;</a></h2>
+<p>Upgrades from beta2 onward are ordinary <code>dnf</code> upgrades against a newer bundle:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>dnf<span class="w"> </span>--enablerepo<span class="o">=</span>pfw<span class="w"> </span>upgrade<span class="w"> </span><span class="s1">&#39;pfw-*&#39;</span><span class="w"> </span>vmproxy
+</code></pre></div>
+<p><code>/srv</code> is left alone, so metrics history, dashboards and the Grafana database survive.
+Dashboards refresh without a restart; other components need one. <code>INSTALL.md</code> has the
+detail. There is no path from beta1 — see the warning at the top.</p>
 <hr />
-<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<h2 id="known-limitations">Known limitations<a class="headerlink" href="#known-limitations" title="Permanent link">&para;</a></h2>
+<p>Please read these before deploying anything you depend on.</p>
+<p><strong>SELinux — certified on x86_64, not on aarch64.</strong> The bundle installs a policy module
+(<code>pfw_nginx</code>) covering nginx&rsquo;s TLS material under <code>/srv/nginx</code> and the credential store
+under <code>/srv/.pfw-secrets</code>, and loads it on install where <code>semodule</code> is available.</p>
+<p>For beta2 the x86_64 bundle was installed on a clean RHEL 9.8 host with SELinux
+<strong>enforcing</strong>, by the documented procedure with <code>gpgcheck=1</code>: the server reached ready in
+about ten seconds with no manual intervention, no service restarted even once, and there
+were no SELinux denials — checked with <code>dontaudit</code> rules disabled as well as enabled,
+since <code>dontaudit</code> suppresses exactly the denials worth seeing. A cold reboot was also
+exercised: the stack came back automatically with its labels intact.</p>
+<p><strong>The aarch64 bundle has not had that test.</strong> The fix is architecture-independent policy,
+so it should behave identically, but &ldquo;should&rdquo; is not &ldquo;was measured&rdquo;, and this note will
+not claim otherwise. If you deploy aarch64 with SELinux enforcing, review denials before
+relying on it. When checking, run <code>setenforce 0</code>, then <code>semodule -DB</code>, then reproduce —
+otherwise <code>dontaudit</code> will hide the denials from you.</p>
+<p>The systemd hardening directives and the polkit rule the server depends on are shipped
+and installed, but no test asserts either. Treat both as configured rather than verified.</p>
+<p><strong>Scale is not characterised.</strong> No fleet-scale figure is published for this release: the
+number of monitored instances a server sustains has not been measured. Size from your own
+trial rather than from a claim here.</p>
+<p><strong>Low-disk, low-memory and interrupted-transaction behaviour are untested.</strong> The server
+has not been exercised against a full filesystem, memory pressure, or an install
+interrupted part-way.</p>
+<p><strong>Container and Helm deployment are not part of this release.</strong> The bundle installs
+natively; the Docker path is not rebranded and is not tested here.</p>
+<p><strong>Architecture.</strong> A bundle installs only on the architecture it was built for. The other
+architecture is a separate download.</p>
+<p><strong>Upgrades across large gaps.</strong> Upgrading has been tested between closely spaced builds.
+A jump across several releases is untested. PostgreSQL major versions do not upgrade in
+place — the data directory carries the major version, and a bundle built against a newer
+major will stop rather than start against an existing cluster.</p>
+<p><strong>Storage sizing.</strong> The guidance of roughly 1 GB per monitored instance per month at
+30-day retention is reasoned from the retention settings, not measured across a fleet.
+Watch <code>/srv</code> on your first instances.</p>
+<p><strong>Monitoring account.</strong> <code>pg_monitor</code> is documented as sufficient, against upstream&rsquo;s
+advice to use a superuser. Not every collector has been exercised with only that role.</p>
+<p><strong>Exporter endpoints.</strong> Exporters bind <code>127.0.0.1</code> by default and carry a per-agent
+credential generated at registration. Two caveats:</p>
 <ul>
-<li><strong>No upgrade from beta1.</strong> See the warning above.</li>
-<li><strong>PostgreSQL only.</strong> MySQL, MongoDB, ProxySQL and Valkey service types are rejected at
-  registration. This is deliberate, and controlled by <code>PFW_DB_TYPES</code>.</li>
-<li><strong>Container and Helm deployment are not part of this release.</strong> The bundle installs
-  natively; the Docker path is not rebranded and is not tested here.</li>
-<li><strong>Scale is not characterised.</strong> No fleet-scale figure is published for this release:
-  the number of monitored instances a server sustains has not been measured, so size
-  from your own trial rather than from a claim here.</li>
-<li><strong>Low-disk, low-memory and interrupted-transaction behaviour are untested.</strong> The
-  server has not been exercised against a full filesystem, memory pressure, or an
-  install interrupted part-way.</li>
+<li>Exposing one deliberately — <code>--expose-exporter</code> per service, or <code>PFW_EXPOSE_EXPORTERS</code>
+  fleet-wide — publishes it on all interfaces, and these endpoints carry <strong>no TLS</strong>, so
+  the credential travels in cleartext. Firewall them to the WatchTower server.</li>
+<li><strong>The RDS and Azure exporters are not covered by either protection.</strong> They bind all
+  interfaces and carry no authentication at all: one process serves many monitored
+  instances, so no single agent&rsquo;s credential or <code>--expose-exporter</code> setting applies.
+  Closing that needs a separate change. Firewall those ports if you use either.</li>
 </ul>
+<p><strong>Bootstrap credentials are generated per install.</strong> The Grafana admin password and the
+internal PostgreSQL role passwords are generated at first boot and stored in
+<code>/srv/.pfw-secrets</code> (directory mode 0700, files 0600). Read the initial admin password
+with:</p>
+<div class="highlight"><pre><span></span><code>sudo sed -n &#39;s/^GF_SECURITY_ADMIN_PASSWORD=//p&#39; /srv/.pfw-secrets/grafana.env
+</code></pre></div>
+<p><strong>Back up <code>/srv/.pfw-secrets</code>.</strong> On a fresh install it is the only copy of passwords the
+PostgreSQL roles already hold. The directory is hidden and mode 0700, so <code>cp -r /srv/*</code>
+and <code>tar</code>/<code>rsync</code> invocations that do not include <code>.[!.]*</code> skip it silently. A marker at
+<code>/srv/pfw-secrets-generated</code> records that the credentials were generated; if that marker
+is present and the secret files are gone, the server refuses to start rather than writing
+a known constant over a generated password. Restore the directory from a backup, or reset
+the roles by hand as the PostgreSQL superuser and write the new values back.</p>
+<p><strong>Signing key.</strong> This beta is signed with a key whose custody is not yet finalised. The
+key used for the general-availability release may differ; its release notes will say so,
+and you would import the new key at that point.</p>
+<hr />
+<h2 id="licensing">Licensing<a class="headerlink" href="#licensing" title="Permanent link">&para;</a></h2>
+<p>WatchTower is built on Percona Monitoring and Management and Grafana, and is distributed
+under the <strong>GNU Affero General Public License, version 3</strong>. Everything Postgres1st builds
+is AGPLv3, as is the Grafana it embeds. The remainder are Apache 2.0 (ClickHouse,
+VictoriaMetrics) and the PostgreSQL License (PostgreSQL). Each package declares its own
+licence — <code>rpm -qi &lt;package&gt;</code> reports it.</p>
+<p>The AGPL entitles you to the corresponding source for the AGPL components. Contact
+Postgres1st to obtain it.</p>
+<h2 id="support">Support<a class="headerlink" href="#support" title="Permanent link">&para;</a></h2>
+<p>Report problems to Postgres1st with the output of:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-sk<span class="w"> </span>-o<span class="w"> </span>/dev/null<span class="w"> </span>-w<span class="w"> </span><span class="s1">&#39;%{http_code}\n&#39;</span><span class="w"> </span>https://127.0.0.1:8443/v1/readyz
+systemctl<span class="w"> </span>--failed
+journalctl<span class="w"> </span>-u<span class="w"> </span>pfw-managed<span class="w"> </span>-n<span class="w"> </span><span class="m">200</span>
+</code></pre></div>
 
 
 
@@ -11100,7 +11313,7 @@ off, and the upstream blog-feed proxy and its dashboard panel are gone.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 7, 2026 07:40:14 UTC">September 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 7, 2026 11:30:17 UTC">September 7, 2026</span>
   </span>
 
     
