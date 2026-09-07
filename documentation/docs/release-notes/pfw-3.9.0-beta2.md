@@ -88,4 +88,9 @@ Upgrade a beta2-or-later host with `sudo dnf --enablerepo=pfw upgrade 'pfw-*' vm
   registration. This is deliberate, and controlled by `PFW_DB_TYPES`.
 - **Container and Helm deployment are not part of this release.** The bundle installs
   natively; the Docker path is not rebranded and is not tested here.
-- **The x86_64 bundle is built from the same tree but is not certified in this release.**
+- **Scale is not characterised.** No fleet-scale figure is published for this release:
+  the number of monitored instances a server sustains has not been measured, so size
+  from your own trial rather than from a claim here.
+- **Low-disk, low-memory and interrupted-transaction behaviour are untested.** The
+  server has not been exercised against a full filesystem, memory pressure, or an
+  install interrupted part-way.

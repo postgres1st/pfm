@@ -87,7 +87,39 @@ Considered and rejected: labelling the store `etc_t` in place. It boots, but `et
 readable by a long list of confined domains and these files are generated passwords, so
 a private type read by `init_t` alone is strictly tighter.
 
-## 5. Rewrite the documentation site
+## 5. Guard every spec's version, not just `pfw-server`'s
+
+`PFW_VERSION` in `build/scripts/pfw-airgap-vars` is the single source of truth, and
+`test-frozen-identifiers` asserts that `pfw-server.spec` agrees with it. Nothing asserts
+it for the other eight specs.
+
+Four of them carry a **placeholder** version in the tree — `pfw-managed.spec` and
+`vmproxy.spec` say `2.0.0`, `grafana.spec` and `pfw-qan-api2.spec` say `3.0.0` — which
+`build-pfw-airgap` rewrites at build time:
+
+```python
+s = re.sub(r'%define full_pmm_version 3\.0\.0',
+           '%define full_pmm_version ' + version, s, count=1)
+```
+
+That regex is pinned to the literal placeholder, uses `count=1`, and **asserts nothing**.
+Change a placeholder, reformat the line, or add a fifth spec with a different literal, and
+the substitution silently does not match: the package ships versioned `2.0.0`, sorts below
+every real release, and `dnf upgrade` skips it forever. The failure is invisible at build
+time and shows up as a customer who cannot upgrade.
+
+This is the same shape as every defect this cycle — two lists that must agree with nothing
+comparing them — and the same shape as the SELinux label defect that stopped the server
+booting. It is not a beta2 blocker because the built artefacts were checked by hand: all
+of ours came out `3.9.0~beta2`, and the third-party packages correctly kept their upstream
+versions. "Checked by hand once" is exactly what a guard replaces.
+
+The guard should compare each spec's **resolved** version against `PFW_VERSION` — resolved,
+because reading the placeholder out of the tree would assert the wrong thing. Deriving the
+spec list from `build/packages/rpm/**` rather than naming them keeps a newly added spec
+from being silently uncovered.
+
+## 6. Rewrite the documentation site
 
 Covered in full in `docs/deferred-documentation-rebrand.md`. Its conclusion is the part
 worth repeating here: it is a **rewrite, not a rename**. The install section documents five

@@ -119,7 +119,8 @@ tagged tree, plus scale, low-disk, low-memory and interrupted transactions.
 Work deferred past beta2 is tracked in `docs/ga-readiness.md`: the full release process,
 the internal `pmm-managed` database/role rename, negative-controlling `test-pfw-client`,
 moving the credential store out of `/srv` so its SELinux label stops being something the
-product has to maintain, and the documentation rewrite.
+product has to maintain, guarding every spec's version against `PFW_VERSION` rather than
+only `pfw-server`'s, and the documentation rewrite.
 
 Not blockers, and deliberately out of scope: everything in
 `docs/deferred-container-path.md` and `docs/deferred-documentation-rebrand.md` (the
