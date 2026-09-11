@@ -74,7 +74,7 @@ require (
 	golang.org/x/sync v0.23.0
 	golang.org/x/sys v0.48.0
 	golang.org/x/text v0.42.0
-	golang.org/x/tools v0.49.0
+	golang.org/x/tools v0.50.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260803160001-6ac0973c030d
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260803160001-6ac0973c030d
 	google.golang.org/grpc v1.83.0
@@ -331,10 +331,10 @@ require (
 	golang.org/x/arch v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20260709172345-9ea1abe57597 // indirect
 	golang.org/x/mod v0.41.0 // indirect
-	golang.org/x/net v0.58.0 // indirect
+	golang.org/x/net v0.59.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/perf v0.0.0-20260409210113-8e83ce0f7b1c // indirect
-	golang.org/x/telemetry v0.0.0-20260811182544-a038080d80e5 // indirect
+	golang.org/x/telemetry v0.0.0-20260908163034-4bcc4b2ee518 // indirect
 	golang.org/x/term v0.46.0 // indirect
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de // indirect
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.0 // indirect
