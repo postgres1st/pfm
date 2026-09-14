@@ -180,6 +180,11 @@
     },
     {
       "type": "dashboard",
+      "name": "PostgreSQL Replication Overview",
+      "path": "dashboards/PostgreSQL/PostgreSQL_Replication_Overview.json"
+    },
+    {
+      "type": "dashboard",
       "name": "HAProxy Instance Summary",
       "path": "dashboards/PostgreSQL/HAProxy_Instance_Summary.json"
     }

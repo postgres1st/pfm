@@ -4,30 +4,22 @@
             {
                 "builtIn": 1,
                 "datasource": {
-                    "type": "grafana",
-                    "uid": "-- Grafana --"
-                },
-                "enable": true,
-                "hide": true,
-                "iconColor": "rgba(0, 211, 255, 1)",
-                "name": "Annotations & Alerts",
-                "target": {
-                    "limit": 100,
-                    "matchAny": false,
-                    "tags": [],
-                    "type": "dashboard"
-                },
-                "type": "dashboard"
-            },
-            {
-                "datasource": {
                     "type": "datasource",
                     "uid": "grafana"
                 },
-                "enable": false,
+                "enable": true,
                 "hide": false,
-                "iconColor": "orange",
+                "iconColor": "#e0752d",
+                "limit": 100,
+                "matchAny": true,
                 "name": "Postgres1st WatchTower Annotations",
+                "showIn": 0,
+                "tags": [
+                    "pfw_annotation",
+                    "pmm_annotation",
+                    "$service_name",
+                    "$node_name"
+                ],
                 "target": {
                     "limit": 100,
                     "matchAny": true,
@@ -38,7 +30,29 @@
                         "$node_name"
                     ],
                     "type": "tags"
-                }
+                },
+                "type": "tags"
+            },
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "datasource",
+                    "uid": "grafana"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "#6ed0e0",
+                "limit": 100,
+                "name": "Annotations & Alerts",
+                "showIn": 0,
+                "tags": [],
+                "target": {
+                    "limit": 100,
+                    "matchAny": false,
+                    "tags": [],
+                    "type": "dashboard"
+                },
+                "type": "dashboard"
             }
         ]
     },
@@ -539,15 +553,30 @@
                     },
                     "custom": {
                         "axisPlacement": "auto",
-                        "fillOpacity": 70,
+                        "drawStyle": "line",
+                        "lineInterpolation": "stepAfter",
+                        "lineWidth": 2,
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "spanNulls": false,
+                        "insertNulls": false,
+                        "showPoints": "never",
+                        "pointSize": 5,
+                        "stacking": {
+                            "mode": "none",
+                            "group": "A"
+                        },
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
                         "hideFrom": {
                             "legend": false,
                             "tooltip": false,
                             "viz": false
                         },
-                        "insertNulls": false,
-                        "lineWidth": 0,
-                        "spanNulls": false
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
                     },
                     "mappings": [
                         {
@@ -585,22 +614,17 @@
             },
             "id": 25,
             "options": {
-                "alignValue": "right",
                 "legend": {
                     "displayMode": "list",
                     "placement": "bottom",
                     "showLegend": true
                 },
-                "mergeValues": true,
-                "rowHeight": 0.9,
-                "showValue": "auto",
                 "tooltip": {
-                    "hideZeros": false,
                     "mode": "single",
-                    "sort": "none"
+                    "sort": "none",
+                    "hideZeros": false
                 }
             },
-            "pluginVersion": "11.6.1",
             "targets": [
                 {
                     "editorMode": "code",
@@ -613,7 +637,8 @@
                 }
             ],
             "title": "Replication Members State",
-            "type": "state-timeline"
+            "type": "timeseries",
+            "pluginVersion": "11.6.1"
         },
         {
             "description": "Displays the replication lag in seconds. ",
