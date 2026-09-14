@@ -18,14 +18,17 @@ export const Messages = {
   deprecation: {
     heading: 'UI upgrades deprecated',
     paragraph1BeforeUpdateNow: ': This ',
-    paragraph1AfterUpdateNow: ' button will be removed in Postgres1st WatchTower 3.9.0.',
-    viaIntro: 'After that, Postgres1st WatchTower upgrades will only be available via\u00a0',
+    paragraph1AfterUpdateNow:
+      ' button will be removed in Postgres1st WatchTower 3.9.0.',
+    viaIntro:
+      'After that, Postgres1st WatchTower upgrades will only be available via\u00a0',
     docker: 'Docker',
     afterDocker: ' (recommended), ',
     podman: 'Podman',
     afterPodman: ', or ',
     helm: 'Helm',
     afterHelm: '.',
-    reminder: 'Switch before then to keep upgrading Postgres1st WatchTower to newer versions.',
+    reminder:
+      'Switch before then to keep upgrading Postgres1st WatchTower to newer versions.',
   },
 };

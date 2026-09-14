@@ -318,7 +318,7 @@ export const AdvancedSettingsForm: FC<AdvancedSettingsFormProps> = ({
           )}
         </Stack>
 
-          {SHOW_TECHNICAL_PREVIEW && (
+        {SHOW_TECHNICAL_PREVIEW && (
           <Stack gap={2}>
             <SettingsFieldLabel
               label={
@@ -353,7 +353,10 @@ export const AdvancedSettingsForm: FC<AdvancedSettingsFormProps> = ({
                 alignItems="center"
                 data-testid="advanced-azure-discover"
               >
-                <SwitchInput name="azureDiscover" label={m.azureDiscoverLabel} />
+                <SwitchInput
+                  name="azureDiscover"
+                  label={m.azureDiscoverLabel}
+                />
                 <Tooltip
                   title={
                     <Box data-testid="info-tooltip">
@@ -410,7 +413,7 @@ export const AdvancedSettingsForm: FC<AdvancedSettingsFormProps> = ({
               </Stack>
             </Stack>
           </Stack>
-          )}
+        )}
 
         <SettingsSubmitButton testId="advanced-button" />
       </Stack>

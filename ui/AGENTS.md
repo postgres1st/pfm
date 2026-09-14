@@ -13,7 +13,7 @@ The UI uses a **Yarn workspaces + Turborepo** monorepo with three packages:
 
 | Package         | Path                  | Purpose                                                       |
 | --------------- | --------------------- | ------------------------------------------------------------- |
-| **pmm**         | `ui/apps/pmm/`        | Main Postgres1st WatchTower UI application (Vite + React)                       |
+| **pmm**         | `ui/apps/pmm/`        | Main Postgres1st WatchTower UI application (Vite + React)     |
 | **pmm-compat**  | `ui/apps/pmm-compat/` | Grafana plugin for PMM ↔ Grafana integration (Webpack)        |
 | **@pmm/shared** | `ui/packages/shared/` | Shared code: cross-frame messaging, types, utilities (Rollup) |
 
@@ -45,18 +45,18 @@ Postgres1st WatchTower UI runs inside a Grafana iframe. Cross-frame communicatio
 
 Routes are defined in `ui/apps/pmm/src/router.tsx` using React Router's `createBrowserRouter` with `basename: '/pfw-ui'`:
 
-| Route              | Page                            |
-| ------------------ | ------------------------------- |
-| `/`                | Redirects to `/graph` (Grafana) |
-| `/updates`         | Postgres1st WatchTower Server updates             |
-| `/updates/clients` | Client updates                  |
-| `/help`            | Help center                     |
-| `/rta`             | Real-Time Analytics tab         |
-| `/rta/selection`   | RTA service selection           |
-| `/rta/sessions`    | RTA sessions list               |
-| `/rta/overview`    | RTA overview                    |
-| `/graph/*`         | Grafana iframe                  |
-| `*`                | 404 fallback                    |
+| Route              | Page                                  |
+| ------------------ | ------------------------------------- |
+| `/`                | Redirects to `/graph` (Grafana)       |
+| `/updates`         | Postgres1st WatchTower Server updates |
+| `/updates/clients` | Client updates                        |
+| `/help`            | Help center                           |
+| `/rta`             | Real-Time Analytics tab               |
+| `/rta/selection`   | RTA service selection                 |
+| `/rta/sessions`    | RTA sessions list                     |
+| `/rta/overview`    | RTA overview                          |
+| `/graph/*`         | Grafana iframe                        |
+| `*`                | 404 fallback                          |
 
 ## State Management
 
