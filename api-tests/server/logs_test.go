@@ -96,7 +96,8 @@ func TestDownloadLogs(t *testing.T) {
 		// unit list in processManagerConfigFiles are both constants -- so the full set is
 		// deterministic, and equality is what catches an entry silently dropping out.
 		expected := append([]string{}, common...)
-		expected = append(expected,
+		expected = append(
+			expected,
 			"pfw-clickhouse.log",
 			"pfw-grafana.log",
 			"pfw-init.log",

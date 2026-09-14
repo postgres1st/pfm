@@ -55,8 +55,8 @@ func TestStatus(t *testing.T) {
 	})
 
 	expected := strings.TrimSpace(`
-Agent ID : pmm-server
-Node ID  : pmm-server
+Agent ID : watchtower-server
+Node ID  : watchtower-server
 Node name: pmm-server-node
 
 Postgres1st WatchTower Server:

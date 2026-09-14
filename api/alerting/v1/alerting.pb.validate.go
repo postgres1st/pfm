@@ -132,7 +132,8 @@ func (e BoolParamDefinitionValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = BoolParamDefinitionValidationError{}
@@ -246,7 +247,8 @@ func (e FloatParamDefinitionValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = FloatParamDefinitionValidationError{}
@@ -352,7 +354,8 @@ func (e StringParamDefinitionValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = StringParamDefinitionValidationError{}
@@ -606,7 +609,8 @@ func (e ParamDefinitionValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = ParamDefinitionValidationError{}
@@ -710,7 +714,8 @@ func (e TemplateQueryValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = TemplateQueryValidationError{}
@@ -818,7 +823,8 @@ func (e TemplateExpressionValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = TemplateExpressionValidationError{}
@@ -1095,7 +1101,8 @@ func (e TemplateValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = TemplateValidationError{}
@@ -1133,7 +1140,6 @@ func (m *ListTemplatesRequest) validate(all bool) error {
 	// no validation rules for Reload
 
 	if m.PageSize != nil {
-
 		if m.GetPageSize() < 1 {
 			err := ListTemplatesRequestValidationError{
 				field:  "PageSize",
@@ -1144,11 +1150,9 @@ func (m *ListTemplatesRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-
 	}
 
 	if m.PageIndex != nil {
-
 		if m.GetPageIndex() < 0 {
 			err := ListTemplatesRequestValidationError{
 				field:  "PageIndex",
@@ -1159,7 +1163,6 @@ func (m *ListTemplatesRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-
 	}
 
 	if len(errors) > 0 {
@@ -1229,7 +1232,8 @@ func (e ListTemplatesRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = ListTemplatesRequestValidationError{}
@@ -1369,7 +1373,8 @@ func (e ListTemplatesResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = ListTemplatesResponseValidationError{}
@@ -1482,7 +1487,8 @@ func (e CreateTemplateRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateTemplateRequestValidationError{}
@@ -1584,7 +1590,8 @@ func (e CreateTemplateResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateTemplateResponseValidationError{}
@@ -1708,7 +1715,8 @@ func (e UpdateTemplateRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UpdateTemplateRequestValidationError{}
@@ -1810,7 +1818,8 @@ func (e UpdateTemplateResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = UpdateTemplateResponseValidationError{}
@@ -1923,7 +1932,8 @@ func (e DeleteTemplateRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = DeleteTemplateRequestValidationError{}
@@ -2025,7 +2035,8 @@ func (e DeleteTemplateResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = DeleteTemplateResponseValidationError{}
@@ -2129,7 +2140,8 @@ func (e FilterValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = FilterValidationError{}
@@ -2282,7 +2294,8 @@ func (e ParamValueValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = ParamValueValidationError{}
@@ -2522,7 +2535,8 @@ func (e CreateRuleRequestValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateRuleRequestValidationError{}
@@ -2624,7 +2638,8 @@ func (e CreateRuleResponseValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = CreateRuleResponseValidationError{}

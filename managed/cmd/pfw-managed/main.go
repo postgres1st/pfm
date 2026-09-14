@@ -815,7 +815,8 @@ func main() { //nolint:gocognit,maintidx,cyclop
 	// does use the constant and ships no store.
 	envPassword, envPasswordSet := os.LookupEnv(dbsecret.Key)
 	*postgresDBPasswordF = resolveManagedDBPassword(
-		*postgresDBPasswordF, envPasswordSet, envPassword, dbsecret.FromStore())
+		*postgresDBPasswordF, envPasswordSet, envPassword, dbsecret.FromStore(),
+	)
 
 	logger.SetupGlobalLogger()
 
