@@ -66,4 +66,3 @@ func SkipIfDSNUnreachable(tb testing.TB, dsn, service string) {
 		SkipIfUnreachable(tb, m, service)
 	}
 }
-

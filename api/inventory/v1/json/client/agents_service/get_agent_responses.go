@@ -102,7 +102,6 @@ func (o *GetAgentOK) GetPayload() *GetAgentOKBody {
 }
 
 func (o *GetAgentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
 	o.Payload = new(GetAgentOKBody)
 
 	// response payload
@@ -176,7 +175,6 @@ func (o *GetAgentDefault) GetPayload() *GetAgentDefaultBody {
 }
 
 func (o *GetAgentDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
 	o.Payload = new(GetAgentDefaultBody)
 
 	// response payload
@@ -192,7 +190,6 @@ GetAgentDefaultBody get agent default body
 swagger:model GetAgentDefaultBody
 */
 type GetAgentDefaultBody struct {
-
 	// code
 	Code int32 `json:"code,omitempty"`
 
@@ -262,9 +259,7 @@ func (o *GetAgentDefaultBody) ContextValidate(ctx context.Context, formats strfm
 }
 
 func (o *GetAgentDefaultBody) contextValidateDetails(ctx context.Context, formats strfmt.Registry) error {
-
 	for i := 0; i < len(o.Details); i++ {
-
 		if o.Details[i] != nil {
 
 			if swag.IsZero(o.Details[i]) { // not required
@@ -284,7 +279,6 @@ func (o *GetAgentDefaultBody) contextValidateDetails(ctx context.Context, format
 				return err
 			}
 		}
-
 	}
 
 	return nil
@@ -313,7 +307,6 @@ GetAgentDefaultBodyDetailsItems0 get agent default body details items0
 swagger:model GetAgentDefaultBodyDetailsItems0
 */
 type GetAgentDefaultBodyDetailsItems0 struct {
-
 	// at type
 	AtType string `json:"@type,omitempty"`
 
@@ -325,7 +318,6 @@ type GetAgentDefaultBodyDetailsItems0 struct {
 func (o *GetAgentDefaultBodyDetailsItems0) UnmarshalJSON(data []byte) error {
 	// stage 1, bind the properties
 	var stage1 struct {
-
 		// at type
 		AtType string `json:"@type,omitempty"`
 	}
@@ -363,7 +355,6 @@ func (o *GetAgentDefaultBodyDetailsItems0) UnmarshalJSON(data []byte) error {
 // MarshalJSON marshals this object with additional properties into a JSON object
 func (o GetAgentDefaultBodyDetailsItems0) MarshalJSON() ([]byte, error) {
 	var stage1 struct {
-
 		// at type
 		AtType string `json:"@type,omitempty"`
 	}
@@ -427,7 +418,6 @@ GetAgentOKBody get agent OK body
 swagger:model GetAgentOKBody
 */
 type GetAgentOKBody struct {
-
 	// azure database exporter
 	AzureDatabaseExporter *GetAgentOKBodyAzureDatabaseExporter `json:"azure_database_exporter,omitempty"`
 
@@ -1096,7 +1086,6 @@ func (o *GetAgentOKBody) ContextValidate(ctx context.Context, formats strfmt.Reg
 }
 
 func (o *GetAgentOKBody) contextValidateAzureDatabaseExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.AzureDatabaseExporter != nil {
 
 		if swag.IsZero(o.AzureDatabaseExporter) { // not required
@@ -1121,7 +1110,6 @@ func (o *GetAgentOKBody) contextValidateAzureDatabaseExporter(ctx context.Contex
 }
 
 func (o *GetAgentOKBody) contextValidateExternalExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.ExternalExporter != nil {
 
 		if swag.IsZero(o.ExternalExporter) { // not required
@@ -1146,7 +1134,6 @@ func (o *GetAgentOKBody) contextValidateExternalExporter(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBody) contextValidateMongodbExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MongodbExporter != nil {
 
 		if swag.IsZero(o.MongodbExporter) { // not required
@@ -1171,7 +1158,6 @@ func (o *GetAgentOKBody) contextValidateMongodbExporter(ctx context.Context, for
 }
 
 func (o *GetAgentOKBody) contextValidateMysqldExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MysqldExporter != nil {
 
 		if swag.IsZero(o.MysqldExporter) { // not required
@@ -1196,7 +1182,6 @@ func (o *GetAgentOKBody) contextValidateMysqldExporter(ctx context.Context, form
 }
 
 func (o *GetAgentOKBody) contextValidateNodeExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.NodeExporter != nil {
 
 		if swag.IsZero(o.NodeExporter) { // not required
@@ -1221,7 +1206,6 @@ func (o *GetAgentOKBody) contextValidateNodeExporter(ctx context.Context, format
 }
 
 func (o *GetAgentOKBody) contextValidateNomadAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.NomadAgent != nil {
 
 		if swag.IsZero(o.NomadAgent) { // not required
@@ -1246,7 +1230,6 @@ func (o *GetAgentOKBody) contextValidateNomadAgent(ctx context.Context, formats 
 }
 
 func (o *GetAgentOKBody) contextValidatePMMAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.PMMAgent != nil {
 
 		if swag.IsZero(o.PMMAgent) { // not required
@@ -1271,7 +1254,6 @@ func (o *GetAgentOKBody) contextValidatePMMAgent(ctx context.Context, formats st
 }
 
 func (o *GetAgentOKBody) contextValidatePostgresExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.PostgresExporter != nil {
 
 		if swag.IsZero(o.PostgresExporter) { // not required
@@ -1296,7 +1278,6 @@ func (o *GetAgentOKBody) contextValidatePostgresExporter(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBody) contextValidateProxysqlExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.ProxysqlExporter != nil {
 
 		if swag.IsZero(o.ProxysqlExporter) { // not required
@@ -1321,7 +1302,6 @@ func (o *GetAgentOKBody) contextValidateProxysqlExporter(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBody) contextValidateQANMongodbMongologAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANMongodbMongologAgent != nil {
 
 		if swag.IsZero(o.QANMongodbMongologAgent) { // not required
@@ -1346,7 +1326,6 @@ func (o *GetAgentOKBody) contextValidateQANMongodbMongologAgent(ctx context.Cont
 }
 
 func (o *GetAgentOKBody) contextValidateQANMongodbProfilerAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANMongodbProfilerAgent != nil {
 
 		if swag.IsZero(o.QANMongodbProfilerAgent) { // not required
@@ -1371,7 +1350,6 @@ func (o *GetAgentOKBody) contextValidateQANMongodbProfilerAgent(ctx context.Cont
 }
 
 func (o *GetAgentOKBody) contextValidateQANMysqlPerfschemaAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANMysqlPerfschemaAgent != nil {
 
 		if swag.IsZero(o.QANMysqlPerfschemaAgent) { // not required
@@ -1396,7 +1374,6 @@ func (o *GetAgentOKBody) contextValidateQANMysqlPerfschemaAgent(ctx context.Cont
 }
 
 func (o *GetAgentOKBody) contextValidateQANMysqlSlowlogAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANMysqlSlowlogAgent != nil {
 
 		if swag.IsZero(o.QANMysqlSlowlogAgent) { // not required
@@ -1421,7 +1398,6 @@ func (o *GetAgentOKBody) contextValidateQANMysqlSlowlogAgent(ctx context.Context
 }
 
 func (o *GetAgentOKBody) contextValidateQANPostgresqlPgstatementsAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANPostgresqlPgstatementsAgent != nil {
 
 		if swag.IsZero(o.QANPostgresqlPgstatementsAgent) { // not required
@@ -1446,7 +1422,6 @@ func (o *GetAgentOKBody) contextValidateQANPostgresqlPgstatementsAgent(ctx conte
 }
 
 func (o *GetAgentOKBody) contextValidateQANPostgresqlPgstatmonitorAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.QANPostgresqlPgstatmonitorAgent != nil {
 
 		if swag.IsZero(o.QANPostgresqlPgstatmonitorAgent) { // not required
@@ -1471,7 +1446,6 @@ func (o *GetAgentOKBody) contextValidateQANPostgresqlPgstatmonitorAgent(ctx cont
 }
 
 func (o *GetAgentOKBody) contextValidateRDSExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.RDSExporter != nil {
 
 		if swag.IsZero(o.RDSExporter) { // not required
@@ -1496,7 +1470,6 @@ func (o *GetAgentOKBody) contextValidateRDSExporter(ctx context.Context, formats
 }
 
 func (o *GetAgentOKBody) contextValidateRtaMongodbAgent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.RtaMongodbAgent != nil {
 
 		if swag.IsZero(o.RtaMongodbAgent) { // not required
@@ -1521,7 +1494,6 @@ func (o *GetAgentOKBody) contextValidateRtaMongodbAgent(ctx context.Context, for
 }
 
 func (o *GetAgentOKBody) contextValidateValkeyExporter(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.ValkeyExporter != nil {
 
 		if swag.IsZero(o.ValkeyExporter) { // not required
@@ -1546,7 +1518,6 @@ func (o *GetAgentOKBody) contextValidateValkeyExporter(ctx context.Context, form
 }
 
 func (o *GetAgentOKBody) contextValidateVmagent(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.Vmagent != nil {
 
 		if swag.IsZero(o.Vmagent) { // not required
@@ -1593,7 +1564,6 @@ GetAgentOKBodyAzureDatabaseExporter AzureDatabaseExporter runs on Generic or Con
 swagger:model GetAgentOKBodyAzureDatabaseExporter
 */
 type GetAgentOKBodyAzureDatabaseExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -1820,7 +1790,6 @@ func (o *GetAgentOKBodyAzureDatabaseExporter) ContextValidate(ctx context.Contex
 }
 
 func (o *GetAgentOKBodyAzureDatabaseExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -1867,7 +1836,6 @@ GetAgentOKBodyAzureDatabaseExporterMetricsResolutions MetricsResolutions represe
 swagger:model GetAgentOKBodyAzureDatabaseExporterMetricsResolutions
 */
 type GetAgentOKBodyAzureDatabaseExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -1911,7 +1879,6 @@ GetAgentOKBodyExternalExporter ExternalExporter runs on any Node type, including
 swagger:model GetAgentOKBodyExternalExporter
 */
 type GetAgentOKBodyExternalExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -2080,7 +2047,6 @@ func (o *GetAgentOKBodyExternalExporter) ContextValidate(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBodyExternalExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -2127,7 +2093,6 @@ GetAgentOKBodyExternalExporterMetricsResolutions MetricsResolutions represents P
 swagger:model GetAgentOKBodyExternalExporterMetricsResolutions
 */
 type GetAgentOKBodyExternalExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -2171,7 +2136,6 @@ GetAgentOKBodyMongodbExporter MongoDBExporter runs on Generic or Container Node 
 swagger:model GetAgentOKBodyMongodbExporter
 */
 type GetAgentOKBodyMongodbExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -2426,7 +2390,6 @@ func (o *GetAgentOKBodyMongodbExporter) ContextValidate(ctx context.Context, for
 }
 
 func (o *GetAgentOKBodyMongodbExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -2473,7 +2436,6 @@ GetAgentOKBodyMongodbExporterMetricsResolutions MetricsResolutions represents Pr
 swagger:model GetAgentOKBodyMongodbExporterMetricsResolutions
 */
 type GetAgentOKBodyMongodbExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -2517,7 +2479,6 @@ GetAgentOKBodyMysqldExporter MySQLdExporter runs on Generic or Container Node an
 swagger:model GetAgentOKBodyMysqldExporter
 */
 type GetAgentOKBodyMysqldExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -2779,7 +2740,6 @@ func (o *GetAgentOKBodyMysqldExporter) ContextValidate(ctx context.Context, form
 }
 
 func (o *GetAgentOKBodyMysqldExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -2826,7 +2786,6 @@ GetAgentOKBodyMysqldExporterMetricsResolutions MetricsResolutions represents Pro
 swagger:model GetAgentOKBodyMysqldExporterMetricsResolutions
 */
 type GetAgentOKBodyMysqldExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -2870,7 +2829,6 @@ GetAgentOKBodyNodeExporter NodeExporter runs on Generic or Container Node and ex
 swagger:model GetAgentOKBodyNodeExporter
 */
 type GetAgentOKBodyNodeExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -3094,7 +3052,6 @@ func (o *GetAgentOKBodyNodeExporter) ContextValidate(ctx context.Context, format
 }
 
 func (o *GetAgentOKBodyNodeExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -3141,7 +3098,6 @@ GetAgentOKBodyNodeExporterMetricsResolutions MetricsResolutions represents Prome
 swagger:model GetAgentOKBodyNodeExporterMetricsResolutions
 */
 type GetAgentOKBodyNodeExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -3185,7 +3141,6 @@ GetAgentOKBodyNomadAgent get agent OK body nomad agent
 swagger:model GetAgentOKBodyNomadAgent
 */
 type GetAgentOKBodyNomadAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -3316,7 +3271,6 @@ GetAgentOKBodyPMMAgent PMMAgent runs on Generic or Container Node.
 swagger:model GetAgentOKBodyPMMAgent
 */
 type GetAgentOKBodyPMMAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -3366,7 +3320,6 @@ GetAgentOKBodyPostgresExporter PostgresExporter runs on Generic or Container Nod
 swagger:model GetAgentOKBodyPostgresExporter
 */
 type GetAgentOKBodyPostgresExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -3611,7 +3564,6 @@ func (o *GetAgentOKBodyPostgresExporter) ContextValidate(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBodyPostgresExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -3658,7 +3610,6 @@ GetAgentOKBodyPostgresExporterMetricsResolutions MetricsResolutions represents P
 swagger:model GetAgentOKBodyPostgresExporterMetricsResolutions
 */
 type GetAgentOKBodyPostgresExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -3702,7 +3653,6 @@ GetAgentOKBodyProxysqlExporter ProxySQLExporter runs on Generic or Container Nod
 swagger:model GetAgentOKBodyProxysqlExporter
 */
 type GetAgentOKBodyProxysqlExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -3941,7 +3891,6 @@ func (o *GetAgentOKBodyProxysqlExporter) ContextValidate(ctx context.Context, fo
 }
 
 func (o *GetAgentOKBodyProxysqlExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -3988,7 +3937,6 @@ GetAgentOKBodyProxysqlExporterMetricsResolutions MetricsResolutions represents P
 swagger:model GetAgentOKBodyProxysqlExporterMetricsResolutions
 */
 type GetAgentOKBodyProxysqlExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -4032,7 +3980,6 @@ GetAgentOKBodyQANMongodbMongologAgent QANMongoDBMongologAgent runs within pfw-ag
 swagger:model GetAgentOKBodyQANMongodbMongologAgent
 */
 type GetAgentOKBodyQANMongodbMongologAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -4242,7 +4189,6 @@ GetAgentOKBodyQANMongodbProfilerAgent QANMongoDBProfilerAgent runs within pfw-ag
 swagger:model GetAgentOKBodyQANMongodbProfilerAgent
 */
 type GetAgentOKBodyQANMongodbProfilerAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -4452,7 +4398,6 @@ GetAgentOKBodyQANMysqlPerfschemaAgent QANMySQLPerfSchemaAgent runs within pfw-ag
 swagger:model GetAgentOKBodyQANMysqlPerfschemaAgent
 */
 type GetAgentOKBodyQANMysqlPerfschemaAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -4680,7 +4625,6 @@ GetAgentOKBodyQANMysqlSlowlogAgent QANMySQLSlowlogAgent runs within pfw-agent an
 swagger:model GetAgentOKBodyQANMysqlSlowlogAgent
 */
 type GetAgentOKBodyQANMysqlSlowlogAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -4911,7 +4855,6 @@ GetAgentOKBodyQANPostgresqlPgstatementsAgent QANPostgreSQLPgStatementsAgent runs
 swagger:model GetAgentOKBodyQANPostgresqlPgstatementsAgent
 */
 type GetAgentOKBodyQANPostgresqlPgstatementsAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -5124,7 +5067,6 @@ GetAgentOKBodyQANPostgresqlPgstatmonitorAgent QANPostgreSQLPgStatMonitorAgent ru
 swagger:model GetAgentOKBodyQANPostgresqlPgstatmonitorAgent
 */
 type GetAgentOKBodyQANPostgresqlPgstatmonitorAgent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -5340,7 +5282,6 @@ GetAgentOKBodyRDSExporter RDSExporter runs on Generic or Container Node and expo
 swagger:model GetAgentOKBodyRDSExporter
 */
 type GetAgentOKBodyRDSExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -5573,7 +5514,6 @@ func (o *GetAgentOKBodyRDSExporter) ContextValidate(ctx context.Context, formats
 }
 
 func (o *GetAgentOKBodyRDSExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -5620,7 +5560,6 @@ GetAgentOKBodyRDSExporterMetricsResolutions MetricsResolutions represents Promet
 swagger:model GetAgentOKBodyRDSExporterMetricsResolutions
 */
 type GetAgentOKBodyRDSExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -5664,7 +5603,6 @@ GetAgentOKBodyRtaMongodbAgent RTAMongoDBAgent runs within pfw-agent and sends Mo
 swagger:model GetAgentOKBodyRtaMongodbAgent
 */
 type GetAgentOKBodyRtaMongodbAgent struct {
-
 	// Unique agent identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -5885,7 +5823,6 @@ func (o *GetAgentOKBodyRtaMongodbAgent) ContextValidate(ctx context.Context, for
 }
 
 func (o *GetAgentOKBodyRtaMongodbAgent) contextValidateRtaOptions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.RtaOptions != nil {
 
 		if swag.IsZero(o.RtaOptions) { // not required
@@ -5932,7 +5869,6 @@ GetAgentOKBodyRtaMongodbAgentRtaOptions RTAOptions holds Real-Time Query Analyti
 swagger:model GetAgentOKBodyRtaMongodbAgentRtaOptions
 */
 type GetAgentOKBodyRtaMongodbAgentRtaOptions struct {
-
 	// Query collect interval (default 2s is set by server).
 	CollectInterval string `json:"collect_interval,omitempty"`
 }
@@ -5970,7 +5906,6 @@ GetAgentOKBodyValkeyExporter ValkeyExporter runs on Generic or Container Node an
 swagger:model GetAgentOKBodyValkeyExporter
 */
 type GetAgentOKBodyValkeyExporter struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 
@@ -6145,7 +6080,6 @@ func (o *GetAgentOKBodyValkeyExporter) ContextValidate(ctx context.Context, form
 }
 
 func (o *GetAgentOKBodyValkeyExporter) contextValidateMetricsResolutions(ctx context.Context, formats strfmt.Registry) error {
-
 	if o.MetricsResolutions != nil {
 
 		if swag.IsZero(o.MetricsResolutions) { // not required
@@ -6192,7 +6126,6 @@ GetAgentOKBodyValkeyExporterMetricsResolutions MetricsResolutions represents Pro
 swagger:model GetAgentOKBodyValkeyExporterMetricsResolutions
 */
 type GetAgentOKBodyValkeyExporterMetricsResolutions struct {
-
 	// High resolution. In JSON should be represented as a string with number of seconds with `s` suffix.
 	Hr string `json:"hr,omitempty"`
 
@@ -6238,7 +6171,6 @@ GetAgentOKBodyVmagent VMAgent runs on Generic or Container Node alongside pfw-ag
 swagger:model GetAgentOKBodyVmagent
 */
 type GetAgentOKBodyVmagent struct {
-
 	// Unique randomly generated instance identifier.
 	AgentID string `json:"agent_id,omitempty"`
 

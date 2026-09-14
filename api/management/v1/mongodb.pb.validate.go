@@ -269,7 +269,8 @@ func (e AddMongoDBServiceParamsValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = AddMongoDBServiceParamsValidationError{}
@@ -516,7 +517,8 @@ func (e MongoDBServiceResultValidationError) Error() string {
 		key,
 		e.field,
 		e.reason,
-		cause)
+		cause,
+	)
 }
 
 var _ error = MongoDBServiceResultValidationError{}
