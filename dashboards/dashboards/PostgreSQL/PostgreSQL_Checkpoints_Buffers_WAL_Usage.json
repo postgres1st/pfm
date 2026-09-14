@@ -3394,6 +3394,152 @@
             ],
             "title": "Background Writer Stops due to LRU max Reached",
             "type": "timeseries"
+        },
+        {
+            "datasource": "Metrics",
+            "description": "Rate of WAL segments successfully archived versus failed archive attempts, from pg_stat_archiver. A non-zero failure rate or a stalled archived-count means WAL is piling up on disk.",
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 20,
+                        "gradientMode": "none",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 2,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "never",
+                        "spanNulls": true,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "decimals": 2,
+                    "links": [],
+                    "mappings": [],
+                    "min": 0,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green"
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "short"
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Failed"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#F2495C",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "Archived"
+                        },
+                        "properties": [
+                            {
+                                "id": "color",
+                                "value": {
+                                    "fixedColor": "#73BF69",
+                                    "mode": "fixed"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 24,
+                "x": 0,
+                "y": 51
+            },
+            "id": 9101,
+            "options": {
+                "legend": {
+                    "calcs": [
+                        "mean",
+                        "max",
+                        "min"
+                    ],
+                    "displayMode": "table",
+                    "placement": "bottom",
+                    "showLegend": true,
+                    "sortBy": "Mean",
+                    "sortDesc": true
+                },
+                "tooltip": {
+                    "hideZeros": false,
+                    "mode": "multi",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.6.1",
+            "targets": [
+                {
+                    "datasource": "Metrics",
+                    "editorMode": "code",
+                    "exemplar": true,
+                    "expr": "sum by (service_name) (\n  rate(pg_stat_archiver_archived_count{service_name=~\"$service_name\"}[$interval])\n  or\n  irate(pg_stat_archiver_archived_count{service_name=~\"$service_name\"}[5m])\n)",
+                    "hide": false,
+                    "interval": "$interval",
+                    "legendFormat": "Archived",
+                    "range": true,
+                    "refId": "A"
+                },
+                {
+                    "datasource": "Metrics",
+                    "editorMode": "code",
+                    "exemplar": true,
+                    "expr": "sum by (service_name) (\n  rate(pg_stat_archiver_failed_count{service_name=~\"$service_name\"}[$interval])\n  or\n  irate(pg_stat_archiver_failed_count{service_name=~\"$service_name\"}[5m])\n)",
+                    "hide": false,
+                    "interval": "$interval",
+                    "legendFormat": "Failed",
+                    "range": true,
+                    "refId": "B"
+                }
+            ],
+            "title": "WAL Archiving",
+            "type": "timeseries"
         }
     ],
     "preload": false,
