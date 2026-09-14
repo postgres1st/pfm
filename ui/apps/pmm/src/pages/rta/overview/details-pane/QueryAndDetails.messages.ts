@@ -26,7 +26,8 @@ export const Messages = {
     username: 'The database user who started this operation.',
     clientAddress:
       'The IP address and port of the application sending this query.',
-    service: 'The Postgres1st WatchTower service name for this database instance.',
+    service:
+      'The Postgres1st WatchTower service name for this database instance.',
     clientAppName:
       'The name of the application or driver that started this operation.',
     operationStartTime:
