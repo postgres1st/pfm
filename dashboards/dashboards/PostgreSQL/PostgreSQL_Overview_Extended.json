@@ -862,6 +862,141 @@
                     "type": "grafana-polystat-panel"
                 },
                 {
+                    "datasource": "Metrics",
+                    "description": "Sessions holding an open transaction while idle. Unlike plain idle connections, these hold locks and block autovacuum from reclaiming dead tuples \u2014 a sustained non-zero value is an application bug, not normal load.",
+                    "fieldConfig": {
+                        "defaults": {
+                            "color": {
+                                "mode": "palette-classic"
+                            },
+                            "custom": {
+                                "axisBorderShow": false,
+                                "axisCenteredZero": false,
+                                "axisColorMode": "text",
+                                "axisLabel": "",
+                                "axisPlacement": "auto",
+                                "barAlignment": 0,
+                                "barWidthFactor": 0.6,
+                                "drawStyle": "line",
+                                "fillOpacity": 20,
+                                "gradientMode": "none",
+                                "hideFrom": {
+                                    "legend": false,
+                                    "tooltip": false,
+                                    "viz": false
+                                },
+                                "insertNulls": false,
+                                "lineInterpolation": "linear",
+                                "lineWidth": 2,
+                                "pointSize": 5,
+                                "scaleDistribution": {
+                                    "type": "linear"
+                                },
+                                "showPoints": "never",
+                                "spanNulls": true,
+                                "stacking": {
+                                    "group": "A",
+                                    "mode": "none"
+                                },
+                                "thresholdsStyle": {
+                                    "mode": "off"
+                                }
+                            },
+                            "decimals": 0,
+                            "links": [],
+                            "mappings": [],
+                            "min": 0,
+                            "thresholds": {
+                                "mode": "absolute",
+                                "steps": [
+                                    {
+                                        "color": "green"
+                                    },
+                                    {
+                                        "color": "red",
+                                        "value": 80
+                                    }
+                                ]
+                            },
+                            "unit": "short"
+                        },
+                        "overrides": [
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "idle in transaction (aborted)"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "color",
+                                        "value": {
+                                            "fixedColor": "#F2495C",
+                                            "mode": "fixed"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "matcher": {
+                                    "id": "byName",
+                                    "options": "idle in transaction"
+                                },
+                                "properties": [
+                                    {
+                                        "id": "color",
+                                        "value": {
+                                            "fixedColor": "#FF9830",
+                                            "mode": "fixed"
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "gridPos": {
+                        "h": 8,
+                        "w": 24,
+                        "x": 0,
+                        "y": 13
+                    },
+                    "id": 9001,
+                    "options": {
+                        "legend": {
+                            "calcs": [
+                                "mean",
+                                "max",
+                                "min"
+                            ],
+                            "displayMode": "table",
+                            "placement": "bottom",
+                            "showLegend": true,
+                            "sortBy": "Mean",
+                            "sortDesc": true
+                        },
+                        "tooltip": {
+                            "hideZeros": false,
+                            "mode": "multi",
+                            "sort": "none"
+                        }
+                    },
+                    "pluginVersion": "11.6.1",
+                    "targets": [
+                        {
+                            "datasource": "Metrics",
+                            "editorMode": "code",
+                            "exemplar": true,
+                            "expr": "sum by (service_name, state) (\n  max_over_time(pg_stat_activity_count{service_name=~\"$service_name\",state=~\"idle in transaction.*\"}[$interval])\n  or\n  max_over_time(pg_stat_activity_count{service_name=~\"$service_name\",state=~\"idle in transaction.*\"}[5m])\n)",
+                            "hide": false,
+                            "interval": "$interval",
+                            "legendFormat": "{{state}}",
+                            "range": true,
+                            "refId": "A"
+                        }
+                    ],
+                    "title": "Idle in Transaction",
+                    "type": "timeseries"
+                },
+                {
                     "fieldConfig": {
                         "defaults": {
                             "color": {
