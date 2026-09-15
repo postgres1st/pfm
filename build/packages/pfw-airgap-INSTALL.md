@@ -194,13 +194,7 @@ Service type "mysql" is not supported by this deployment.
 ```
 
 The same restriction applies to **Advisors**: the list shows only the PostgreSQL
-checks. Upstream ships checks for MySQL and MongoDB too, but since services of those
-types cannot be registered here, those checks could never produce a result -- listing
-them would advertise coverage this build does not have.
-
-If you are comparing against upstream PMM and expect to see more advisor checks, that
-is why. Nothing is disabled or broken; the checks that cannot apply are simply not
-offered.
+checks.
 
 ## Configure for production
 
@@ -259,6 +253,49 @@ sudo restorecon -R /srv/nginx
 ```
 
 `pfw-nginx` also runs this itself before every start, so a restart repairs it either way.
+
+### Certificate expiry monitoring
+
+`pfw-cert-expiry-check.timer` runs hourly and publishes the certificate's expiry as a
+metric (`pfw_nginx_cert_expiry_seconds`), so it shows up like any other node metric —
+no extra setup. Attach an alert to it (**Alerts → Alert templates** → *Server TLS
+certificate about to expire*, default threshold 14 days) to get notified before it
+lapses instead of after.
+
+### Recover from an invalid or expired certificate
+
+An **expired** cert does not stop nginx — the TLS handshake still completes, browsers
+just reject it afterward. That is exactly what the expiry check above is for: catching
+it before a customer does.
+
+An **invalid** cert (malformed PEM, mismatched key, wrong chain) is different: nginx
+refuses to start. Systemd retries it (10 times over 60 seconds) before giving up, so
+during that window the server is unreachable on 8443.
+
+```bash
+sudo journalctl -u pfw-nginx -n 50 --no-pager   # nginx logs the specific reason
+sudo openssl x509 -noout -in /srv/nginx/certificate.crt      # sanity-check the cert
+sudo openssl rsa   -noout -in /srv/nginx/certificate.key     # and the key
+```
+
+`pfw-init` only ever *generates* a self-signed certificate when the files are absent —
+it never overwrites a broken one, so the fix is the same "Replace the self-signed
+certificate" procedure above: install a known-good file with `install` (for the
+correct SELinux label), then
+
+```bash
+sudo systemctl restart pfw-nginx
+```
+
+To fall back to a fresh self-signed certificate instead, delete the broken
+`certificate.crt`/`certificate.key` pair and re-run `pfw-init` explicitly — it is
+idempotent and safe to re-run, but ordering alone does not trigger it, so restarting
+`pfw-nginx` on its own will not regenerate anything:
+
+```bash
+sudo rm -f /srv/nginx/certificate.crt /srv/nginx/certificate.key
+sudo systemctl restart pfw-init pfw-nginx
+```
 
 ### Restrict what is reachable
 
