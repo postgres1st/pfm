@@ -127,15 +127,18 @@ cd build/packages/config/pfw
 install -p -m 0644 pfw.target %{buildroot}%{_unitdir}/pfw.target
 for u in pfw-init pfw-postgresql pfw-clickhouse pfw-nginx pfw-grafana \
          pfw-victoriametrics pfw-vmalert pfw-vmproxy pfw-qan-api2 \
-         pfw-managed pfw-server-agent pfw-clickhouse-perms; do
+         pfw-managed pfw-server-agent pfw-clickhouse-perms \
+         pfw-cert-expiry-check; do
     install -p -m 0644 ${u}.service %{buildroot}%{_unitdir}/${u}.service
 done
+install -p -m 0644 pfw-cert-expiry-check.timer %{buildroot}%{_unitdir}/pfw-cert-expiry-check.timer
 
 
 install -p -m 0644 pfw-tmpfiles.conf  %{buildroot}%{_tmpfilesdir}/pfw.conf
 install -p -m 0644 pfw-sysusers.conf  %{buildroot}%{_sysusersdir}/pfw.conf
 install -p -m 0755 pfw-init.sh        %{buildroot}%{_datadir}/pfw/pfw-init.sh
 install -p -m 0755 pfw-secrets-label.sh %{buildroot}%{_datadir}/pfw/pfw-secrets-label.sh
+install -p -m 0755 pfw-cert-expiry-check.sh %{buildroot}%{_datadir}/pfw/pfw-cert-expiry-check.sh
 
 # ClickHouse custom config (data under /srv/clickhouse to match pfw-clickhouse's
 # ReadWritePaths). Staged here; %post deploys it to /etc/clickhouse-server and
@@ -358,6 +361,11 @@ if [ $1 -eq 1 ]; then
     install -d -m 0770 -o pfw -g pfw /srv || :
     systemd-tmpfiles --create %{_tmpfilesdir}/pfw.conf >/dev/null 2>&1 || :
     systemctl enable pfw.target >/dev/null 2>&1 || :
+    # The expiry check guards on /srv/nginx/certificate.crt existing, so it is
+    # safe to enable and start immediately -- it is a no-op timer fire until
+    # pfw-init has run, unlike pfw.target itself which the operator starts by
+    # hand.
+    systemctl enable --now pfw-cert-expiry-check.timer >/dev/null 2>&1 || :
     # pfw-client's %post starts its own pfw-agent.service (different unit + user);
     # the server uses pfw-server-agent.service, driven by pfw-managed. Stop and mask
     # unit so the two agents don't compete.
@@ -487,9 +495,11 @@ fi
 
 %preun
 %systemd_preun pfw.target
+%systemd_preun pfw-cert-expiry-check.timer
 
 %postun
 %systemd_postun pfw.target
+%systemd_postun pfw-cert-expiry-check.timer
 if [ $1 -eq 0 ]; then
     # Full removal (not upgrade, where $1 >= 1): undo the mask %post applied to
     # pfw-client's pfw-agent.service, otherwise it stays masked forever and
@@ -517,6 +527,8 @@ fi
 %{_unitdir}/pfw-qan-api2.service
 %{_unitdir}/pfw-managed.service
 %{_unitdir}/pfw-server-agent.service
+%{_unitdir}/pfw-cert-expiry-check.service
+%{_unitdir}/pfw-cert-expiry-check.timer
 %{_tmpfilesdir}/pfw.conf
 %{_sysusersdir}/pfw.conf
 %dir %{_datadir}/pfw
@@ -526,6 +538,7 @@ fi
 %{_datadir}/selinux/packages/pfw_nginx.pp
 %attr(0755, root, root) %{_datadir}/pfw/pfw-init.sh
 %attr(0755, root, root) %{_datadir}/pfw/pfw-secrets-label.sh
+%attr(0755, root, root) %{_datadir}/pfw/pfw-cert-expiry-check.sh
 %{_datadir}/pfw/clickhouse
 %{_datadir}/pfw/grafana
 %dir %{_prefix}/lib/pfw
