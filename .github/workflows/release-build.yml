@@ -1,0 +1,71 @@
+---
+# Builds the air-gapped bundle's components, RPMs, and dependency closure — every
+# build-pfw-airgap stage EXCEPT `bundle`, which is the only stage that touches the
+# GPG signing key. That key must never reach a CI runner (see build-pfw-airgap's
+# own header comment, "SPLITTING THE BUILD FROM THE SIGNING"), so this workflow
+# stops short of producing a signed, installable artifact on purpose.
+#
+# Output: the three paths the trusted signing host needs (work/seed, work/closure,
+# os-dependencies.txt), uploaded as a workflow artifact. A human downloads them and
+# runs `build-pfw-airgap bundle` on the machine that holds the key.
+#
+# NOT WIRED TO RELEASE TAGS YET. build-pfw-airgap needs >=16GB RAM / >=30GB disk
+# (mainly the Grafana webpack build) — default GitHub-hosted runners don't meet
+# that, and larger runners bill per-minute. Picking a runner (bigger hosted vs.
+# self-hosted) is a cost/infra decision for whoever owns that budget, not something
+# decided in this file. Until that's made, this only runs on workflow_dispatch —
+# it costs nothing and changes nothing until someone deliberately triggers it.
+#
+# Once that decision is made: uncomment the `push: tags:` trigger below, matching
+# the release tag convention (pfw-v<version>, e.g. pfw-v3.9.0-beta2), and adjust
+# `runs-on` per matrix arch accordingly.
+name: Release build (unsigned)
+
+on:
+  # push:
+  #   tags:
+  #     - 'pfw-v[0-9]+.[0-9]+.[0-9]+*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Commit or tag to build'
+        required: true
+        default: 'main'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+    # TODO(stakeholder): runner sizing not yet decided — see the workflow's own
+    # header comment. ubuntu-latest is almost certainly insufficient; this will
+    # fail (most likely an OOM in the Grafana webpack stage) until it's addressed.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Build components, RPMs, and resolve dependency closure
+        env:
+          PFW_ARCH: ${{ matrix.arch }}
+        run: |
+          build/scripts/build-pfw-airgap grafana-fe grafana-be pmm-bin \
+            exporters rpms closure os-deps
+
+      # Exactly the three paths build-pfw-airgap's header says the trusted signing
+      # host needs — nothing else leaves this runner.
+      - name: Upload pre-bundle artifacts for offline signing
+        uses: actions/upload-artifact@v4
+        with:
+          name: pfw-prebundle-${{ matrix.arch }}
+          path: |
+            work/seed
+            work/closure
+            os-dependencies.txt
+          retention-days: 14
+          if-no-files-found: error

@@ -1,0 +1,65 @@
+---
+# Runs the four install/upgrade/QAN/negative-control suites against an already-
+# signed release bundle, and attaches the raw output as a release asset — so
+# "installation-test evidence" is something a customer or auditor can open and
+# read, not just a pass-count asserted in prose in the release notes.
+#
+# This job never touches the signing key (it only consumes an already-signed
+# tarball someone uploaded to the release) and only installs pre-built RPMs
+# rather than compiling anything from source, so it doesn't carry release-build.yml's
+# runner-sizing question — default GitHub-hosted runners should be adequate here.
+#
+# What this CANNOT prove, structurally: native SELinux-enforcing behavior and file
+# capabilities are both inert under Docker (the same limitation already documented
+# for P0.5/P17 in docs/p0-blockers-handoff.md) — that native-host validation stays
+# a manual step regardless of how complete this workflow is.
+name: Release install-test evidence
+
+on:
+  release:
+    types: [released, prereleased]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to test (must already have signed assets uploaded)'
+        required: true
+
+permissions:
+  contents: write   # gh release upload
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the signed bundle from this release
+        run: |
+          gh release download "${TAG}" --repo "${{ github.repository }}" \
+            -p "pfw-server-el9-${{ matrix.arch }}.tar.gz*"
+
+      - name: Verify the checksum before testing anything built from it
+        run: sha256sum -c "pfw-server-el9-${{ matrix.arch }}.tar.gz.sha256"
+
+      - name: Run install / negative-control / upgrade / QAN suites
+        run: |
+          set -o pipefail
+          {
+            build/scripts/test-pfw-airgap
+            build/scripts/test-pfw-negative-control
+            build/scripts/test-pfw-upgrade
+            build/scripts/test-pfw-qan
+          } 2>&1 | tee "test-results-${{ matrix.arch }}.log"
+
+      - name: Attach results as release evidence
+        if: always()   # a red run is evidence too — attach it rather than hide it
+        run: |
+          gh release upload "${TAG}" "test-results-${{ matrix.arch }}.log" \
+            --repo "${{ github.repository }}" --clobber
