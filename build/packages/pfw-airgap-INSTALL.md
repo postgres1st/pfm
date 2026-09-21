@@ -144,8 +144,13 @@ systemctl list-units 'pfw*' --all
 ```
 
 Then open **`https://<host>:8443/`** and sign in as `admin`. The password is
-generated during first boot; read it with (
-change them on first login).
+generated during first boot; read it with:
+
+```bash
+sudo sed -n 's/^GF_SECURITY_ADMIN_PASSWORD=//p' /srv/.pfw-secrets/grafana.env
+```
+
+See "Change the admin password" below to change it on first login.
 
 ---
 
