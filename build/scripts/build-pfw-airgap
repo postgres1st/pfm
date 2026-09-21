@@ -482,7 +482,13 @@ def dashboards(s):
 def grafana(s):
     s = re.sub(r'%global commit\s+\S+', '%global commit          ' + gcommit, s, count=1)
     # %prep shells out to `sudo npm install -g grunt-cli`; nothing is compiled here.
-    return re.sub(r'%prep\n.*?(?=%build)', '%prep\n%setup -q -n grafana-%{commit}\n\n', s, count=1, flags=re.S)
+    s = re.sub(r'%prep\n.*?(?=%build)', '%prep\n%setup -q -n grafana-%{commit}\n\n', s, count=1, flags=re.S)
+    # Unlike monorepo()/qan_api2(), this placeholder was never substituted here -- the
+    # spec's own Version: is %{grafana_version} (upstream Grafana's version, correctly
+    # unaffected), but full_pmm_version still feeds PMM_RELEASE_VERSION-equivalent build
+    # provenance and was shipping the literal "3.0.0" regardless of PFW_VERSION.
+    return re.sub(r'%define full_pmm_version 3\.0\.0',
+                  '%define full_pmm_version ' + version, s, count=1)
 
 def server(s):
     s = re.sub(r'%global commit      0+', '%global commit      ' + commit, s, count=1)

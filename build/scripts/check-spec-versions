@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# Fail when any spec's full_pmm_version placeholder does not resolve to the real
+# release version once build-pfw-airgap's own spec-rewrite logic runs.
+#
+#   build/scripts/check-spec-versions
+#
+# docs/ga-readiness.md item 5: four specs carry a placeholder version
+# (pfw-managed.spec and vmproxy.spec say 2.0.0, grafana.spec and pfw-qan-api2.spec
+# say 3.0.0) that build-pfw-airgap's embedded Python block is supposed to rewrite to
+# PFW_VERSION. It is not obvious from reading a spec file alone whether that
+# actually happens -- grafana.spec's placeholder shipped unresolved for a real
+# release because its transform function never touched full_pmm_version at all
+# (fixed alongside this check, not by it).
+#
+# Rather than re-implementing (and risking drifting from) that rewrite logic, this
+# EXTRACTS build-pfw-airgap's own Python heredoc and runs it standalone against the
+# real spec sources, then inspects what actually comes out -- the same rule
+# check-release-claims follows: resolve paths, do not spell them. A spec added
+# later with the same placeholder pattern is covered automatically; nothing here
+# names the four specs by hand.
+#
+# Needs python3 only -- no container, no root, no rpmbuild, no network.
+set -o errexit
+set -o nounset
+set -o pipefail
+
+cd "$(dirname "$0")/../.."
+
+BUILD_SCRIPT=build/scripts/build-pfw-airgap
+SPECS_IN="$(pwd)/build/packages/rpm"
+
+[ -f "${BUILD_SCRIPT}" ] || { printf 'missing %s -- update this check when files move\n' "${BUILD_SCRIPT}" >&2; exit 1; }
+[ -d "${SPECS_IN}" ] || { printf 'missing %s -- update this check when files move\n' "${SPECS_IN}" >&2; exit 1; }
+
+. build/scripts/pfw-airgap-vars >/dev/null 2>&1 || true
+[ -n "${PFW_VERSION:-}" ] || { printf 'PFW_VERSION is not set -- check pfw-airgap-vars\n' >&2; exit 1; }
+
+pass=0; fail=0
+ok() { printf '  PASS  %s\n' "$*"; pass=$((pass + 1)); }
+no() { printf '  FAIL  %s\n' "$*"; fail=$((fail + 1)); }
+
+# Extract the exact block between `python3 - <<'PY'` and the closing `PY` line. A
+# rewrite of build-pfw-airgap that removes or renames this heredoc must fail loudly,
+# not silently check nothing.
+PY_SCRIPT=$(mktemp)
+trap 'rm -rf "${PY_SCRIPT}" "${SPECS_OUT:-}"' EXIT
+awk "/<<'PY'/{flag=1; next} /^PY\$/{flag=0} flag" "${BUILD_SCRIPT}" > "${PY_SCRIPT}"
+[ -s "${PY_SCRIPT}" ] || {
+    printf 'no python3 -<<'"'"'PY'"'"' ... PY heredoc found in %s -- this check would pass vacuously\n' "${BUILD_SCRIPT}" >&2
+    exit 1
+}
+
+SPECS_OUT=$(mktemp -d)
+PFW_COMMIT=check-spec-versions PFW_GRAFANA_COMMIT=check-spec-versions \
+PFW_PMM_DUMP_COMMIT=check-spec-versions PFW_VERSION="${PFW_VERSION}" \
+PFW_SPECS_IN="${SPECS_IN}" PFW_SPECS_OUT="${SPECS_OUT}" \
+python3 "${PY_SCRIPT}"
+
+# Every spec that DEFINES the placeholder, derived from the resolved output rather
+# than named here. Real RPM version syntax has no tilde, but the resolved value is
+# compared byte-for-byte against PFW_VERSION regardless -- these specs embed it as a
+# literal %define, not as the package Version:, so it carries no RPM-syntax
+# constraint of its own.
+found_any=no
+for spec in "${SPECS_OUT}"/*.spec; do
+    [ -f "${spec}" ] || continue
+    value=$(sed -n 's/^%define full_pmm_version \([^[:space:]]*\)$/\1/p' "${spec}" | head -1)
+    [ -n "${value}" ] || continue
+    found_any=yes
+    name=$(basename "${spec}")
+    if [ "${value}" = "${PFW_VERSION}" ]; then
+        ok "${name}: full_pmm_version resolves to ${PFW_VERSION}"
+    else
+        no "${name}: full_pmm_version resolved to '${value}', expected '${PFW_VERSION}' -- its placeholder is not being substituted"
+    fi
+done
+
+[ "${found_any}" = yes ] || {
+    printf 'no resolved spec defines full_pmm_version -- this check would pass vacuously\n' >&2
+    exit 1
+}
+
+printf '\n%s passed, %s failed\n' "${pass}" "${fail}"
+[ "${fail}" -eq 0 ]

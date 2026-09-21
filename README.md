@@ -4,9 +4,9 @@ PostgreSQL monitoring and query analytics, delivered as a **signed package repos
 you install on your own RHEL, Rocky Linux or AlmaLinux 9 server. No internet access is
 required on that server, and no container runtime is involved.
 
-> **Status: beta.** The current release is `3.9.0~beta1`. It is complete and tested for
+> **Status: beta.** The current release is `3.9.0~beta2`. It is complete and tested for
 > the workflow described in the installation guides; the known limitations are stated
-> plainly in the [release notes](documentation/docs/release-notes/pfmm-3.9.0-beta1.md)
+> plainly in the [release notes](documentation/docs/release-notes/pfw-3.9.0-beta2.md)
 > rather than left to be discovered.
 
 ## What this is

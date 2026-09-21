@@ -39,6 +39,7 @@ INSTALL_CLIENT=build/packages/pfw-airgap-INSTALL-CLIENT.md
 SPEC=build/packages/rpm/server/SPECS/pfw-server.spec
 INIT=build/packages/config/pfw/pfw-init.sh
 DEFAULTS=build/packages/config/pfw/defaults
+README=README.md
 
 pass=0; fail=0
 ok() { printf '  PASS  %s\n' "$*"; pass=$((pass + 1)); }
@@ -52,7 +53,7 @@ while IFS= read -r f; do NOTES+=("${f}"); done < <(
     find "${NOTES_DIR}" -maxdepth 1 -type f -name '*.md' ! -name 'index.md' | sort)
 [ ${#NOTES[@]} -gt 0 ] || { printf 'no release notes under %s -- this check would pass vacuously\n' "${NOTES_DIR}" >&2; exit 1; }
 
-for f in "${NOTES[@]}" "${INSTALL}" "${INSTALL_CLIENT}" "${SPEC}" "${INIT}"; do
+for f in "${NOTES[@]}" "${INSTALL}" "${INSTALL_CLIENT}" "${SPEC}" "${INIT}" "${README}"; do
     [ -f "${f}" ] || { printf 'missing %s -- update this check when files move\n' "${f}" >&2; exit 1; }
 done
 [ -d "${DEFAULTS}" ] || { printf 'missing %s -- update this check when files move\n' "${DEFAULTS}" >&2; exit 1; }
@@ -248,6 +249,28 @@ if [ -z "${funnel}" ]; then
     ok "no bundled customer document links to a Percona or PMM URL"
 else
     no "bundled customer documents link to Percona/PMM URLs:"$'\n'"${funnel}"
+fi
+
+printf '\n>>> README version banner\n'
+
+# The banner has drifted before: it kept naming beta1 after beta2 shipped, and its
+# release-notes link kept pointing at beta1's notes. Neither compiles, so nothing
+# else notices. Resolve both claims against PFW_VERSION and CURRENT_NOTES rather
+# than requiring particular wording -- the banner's prose is free to change as long
+# as the version and the link it names are the current ones.
+readme_version=$(sed -n 's/.*The current release is `\([^`]*\)`.*/\1/p' "${README}" | head -1)
+readme_notes_link=$(sed -n 's/.*\[release notes\](\([^)]*\)).*/\1/p' "${README}" | head -1)
+
+if [ -z "${readme_version}" ]; then
+    no "${README} has no \"The current release is \`...\`\" banner to check -- update this check if the wording changed"
+elif [ "${readme_version}" != "${PFW_VERSION}" ]; then
+    no "${README} names the current release as '${readme_version}', but PFW_VERSION is '${PFW_VERSION}'"
+elif [ -z "${readme_notes_link}" ]; then
+    no "${README} has a version banner but no [release notes](...) link to check"
+elif [ "$(basename "${readme_notes_link}")" != "$(basename "${CURRENT_NOTES}")" ]; then
+    no "${README}'s release-notes link points at '${readme_notes_link}', not the current release's notes (${CURRENT_NOTES})"
+else
+    ok "${README}'s version banner and release-notes link match the current release (${PFW_VERSION})"
 fi
 
 printf '\n%s passed, %s failed\n' "${pass}" "${fail}"

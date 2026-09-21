@@ -13,17 +13,25 @@ name: Release claims
 on:
   pull_request:
     paths:
+      - "README.md"
       - "documentation/docs/release-notes/**"
       - "build/packages/**"
       - "build/scripts/check-release-claims"
+      - "build/scripts/check-spec-versions"
+      - "build/scripts/build-pfw-airgap"
+      - "build/scripts/pfw-airgap-vars"
       - ".github/workflows/release-claims.yml"
   push:
     branches:
       - main
     paths:
+      - "README.md"
       - "documentation/docs/release-notes/**"
       - "build/packages/**"
       - "build/scripts/check-release-claims"
+      - "build/scripts/check-spec-versions"
+      - "build/scripts/build-pfw-airgap"
+      - "build/scripts/pfw-airgap-vars"
       - ".github/workflows/release-claims.yml"
 
 permissions:
@@ -41,3 +49,9 @@ jobs:
       # repository, so nothing needs installing and nothing can gate it.
       - name: Check release notes and install guides against shipped artifacts
         run: build/scripts/check-release-claims
+
+      # python3 only (already on ubuntu-latest) -- runs build-pfw-airgap's own spec-
+      # rewrite logic standalone against the real specs, so this can never drift from
+      # what a real build actually does.
+      - name: Check every spec's version placeholder resolves correctly
+        run: build/scripts/check-spec-versions
