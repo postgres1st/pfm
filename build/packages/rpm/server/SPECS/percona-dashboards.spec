@@ -58,6 +58,15 @@ unzip -q %{SOURCE1} -d %{buildroot}/opt/postgres1st/watchtower/dashboards/panels
 unzip -q %{SOURCE2} -d %{buildroot}/opt/postgres1st/watchtower/dashboards/panels
 echo %{version} > %{buildroot}/opt/postgres1st/watchtower/dashboards/VERSION
 
+%pre
+# Create the pfw system account before files are laid down so the %attr
+# ownership below resolves at unpack. pfw-dashboards is a dependency of
+# pfw-server, so it is unpacked BEFORE pfw-server's own %pre runs; without
+# this the pfw-owned paths would silently fall back to root.
+getent group pfw >/dev/null || groupadd -r pfw
+getent passwd pfw >/dev/null || \
+    useradd -r -g pfw -d /srv -s /usr/sbin/nologin -c "pfw monitoring service" pfw
+exit 0
 
 %files
 %license ./dashboards/LICENSE

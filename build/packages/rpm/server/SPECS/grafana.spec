@@ -82,8 +82,13 @@ install -d -p %{buildroot}%{_sharedstatedir}/grafana
 %dir %{_sharedstatedir}/grafana
 
 %pre
-getent group pfw >/dev/null || echo "Group pfw does not exist. Please create it manually."
-getent passwd pfw >/dev/null || echo "User pfw does not exist. Please create it manually."
+# Create the pfw system account before files are laid down so the %attr
+# ownership above resolves at unpack. pfw-grafana is a dependency of
+# pfw-server, so it is unpacked BEFORE pfw-server's own %pre runs; without
+# this the pfw-owned paths would silently fall back to root.
+getent group pfw >/dev/null || groupadd -r pfw
+getent passwd pfw >/dev/null || \
+    useradd -r -g pfw -d /srv -s /usr/sbin/nologin -c "pfw monitoring service" pfw
 exit 0
 
 %changelog
