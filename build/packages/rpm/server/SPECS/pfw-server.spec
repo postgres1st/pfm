@@ -66,7 +66,11 @@ BuildRequires:  systemd-rpm-macros
 # installs cleanly and runs unconfined, rather than failing the transaction on a
 # machine that never needed the policy.
 
+%if 0%{?suse_version}
+Requires(pre):    shadow
+%else
 Requires(pre):    shadow-utils
+%endif
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
