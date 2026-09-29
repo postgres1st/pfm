@@ -66,11 +66,12 @@ BuildRequires:  systemd-rpm-macros
 # installs cleanly and runs unconfined, rather than failing the transaction on a
 # machine that never needed the policy.
 
-%if 0%{?suse_version}
-Requires(pre):    shadow
-%else
-Requires(pre):    shadow-utils
-%endif
+# Boolean dependency, resolved by the installing package manager at install
+# time -- NOT a %if/%suse_version macro. This RPM is built once, as noarch,
+# on the EL9 builder pinned in pfw-airgap-vars (PFW_EL_IMAGE), so a %if here
+# would bake in whichever branch that builder's macros satisfy and ship the
+# same fixed requirement everywhere, regardless of the install target.
+Requires(pre):    (shadow-utils or shadow)
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
