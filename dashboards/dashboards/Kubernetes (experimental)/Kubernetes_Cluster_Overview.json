@@ -1269,7 +1269,7 @@
                                 "value": [
                                     {
                                         "title": "",
-                                        "url": "/d/k8s-db-summary/percona-db-cluster?var-namespace=${__data.fields[namespace]}&${k8s_cluster:queryparam}&var-k8s_db_type=${__data.fields[operator]}&var-k8s_db_cr=${__data.fields[name]}\n"
+                                        "url": "/d/k8s-db-summary/databases-on-kubernetes-summary?var-namespace=${__data.fields[namespace]}&${k8s_cluster:queryparam}&var-k8s_db_type=${__data.fields[operator]}&var-k8s_db_cr=${__data.fields[name]}\n"
                                     }
                                 ]
                             }
