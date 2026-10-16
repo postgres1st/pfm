@@ -21,7 +21,7 @@
             }
         ]
     },
-    "description": "Kubernetes Cluster Overview - provides insignts into k8s health and its objects, including Percona Custom Resources",
+    "description": "Kubernetes Cluster Overview - provides insignts into k8s health and its objects, including Custom Resources",
     "editable": false,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 1,
@@ -492,7 +492,7 @@
             "type": "stat"
         },
         {
-            "description": "The number of Percona Clusters (Custom Resources) deployed in the cluster",
+            "description": "The number of Database Clusters (Custom Resources) deployed in the cluster",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -551,11 +551,11 @@
                     "refId": "A"
                 }
             ],
-            "title": "Percona Clusters",
+            "title": "Database Clusters",
             "type": "stat"
         },
         {
-            "description": "The number of Percona Clusters (Custom Resources) deployed in the cluster that are not in Ready state",
+            "description": "The number of Database Clusters (Custom Resources) deployed in the cluster that are not in Ready state",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -610,7 +610,7 @@
                     "refId": "A"
                 }
             ],
-            "title": "Percona Clusters not Ready",
+            "title": "Database Clusters not Ready",
             "type": "stat"
         },
         {
@@ -1109,7 +1109,7 @@
             "type": "timeseries"
         },
         {
-            "description": "The health of Percona Custom Resources (CRs) for Clusters - PXC, Percona Server for MongoDB, Percona Distribution for PostgreSQL",
+            "description": "The health of Custom Resources (CRs) for Clusters - PXC, Percona Server for MongoDB, Percona Distribution for PostgreSQL",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1230,11 +1230,11 @@
                     "refId": "PVC Bound"
                 }
             ],
-            "title": "Percona Custom Resources - Clusters",
+            "title": "Custom Resources - Clusters",
             "type": "timeseries"
         },
         {
-            "description": "The table that lists Percona Custom Resources - Clusters",
+            "description": "The table that lists Custom Resources - Clusters",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1372,7 +1372,7 @@
                     "refId": "C"
                 }
             ],
-            "title": "Percona Custom Resources - Clusters",
+            "title": "Custom Resources - Clusters",
             "transformations": [
                 {
                     "id": "labelsToFields",
@@ -1481,7 +1481,7 @@
             "type": "table"
         },
         {
-            "description": "The health of Percona Custom Resources (CRs) for Backups - pxc-backup, psmdb-backup, pg-backup",
+            "description": "The health of Custom Resources (CRs) for Backups - pxc-backup, psmdb-backup, pg-backup",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1573,11 +1573,11 @@
                     "refId": "PVC Bound"
                 }
             ],
-            "title": "Percona Custom Resources - Backups",
+            "title": "Custom Resources - Backups",
             "type": "timeseries"
         },
         {
-            "description": "The table that lists Percona Custom Resources - Backups",
+            "description": "The table that lists Custom Resources - Backups",
             "fieldConfig": {
                 "defaults": {
                     "color": {
@@ -1649,7 +1649,7 @@
                     "refId": "C"
                 }
             ],
-            "title": "Percona Custom Resources - Backups",
+            "title": "Custom Resources - Backups",
             "transformations": [
                 {
                     "id": "labelsToFields",
