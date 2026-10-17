@@ -223,10 +223,8 @@ ensure_secrets() {
     ensure_clickhouse_secret
 
     # PMM_POSTGRES_ADDR/GF_DATABASE_HOST are written on every run, unlike the
-    # passwords alongside them: they must track the CURRENT POSTGRES_PORT, not
-    # whatever port was chosen the first time this file was created. /srv (and
-    # these files in it) survives a `dnf remove`, so a stale address here would
-    # otherwise silently outlive a later reinstall that picked a different port.
+    # passwords: they must track the current POSTGRES_PORT, not whatever port
+    # was chosen when the file was first created (/srv survives `dnf remove`).
     if [ -f "${MANAGED_DB_SECRET}" ]; then
         local pw; pw=$(read_secret "${MANAGED_DB_SECRET}" PMM_POSTGRES_DBPASSWORD)
     elif srv_provisioned; then

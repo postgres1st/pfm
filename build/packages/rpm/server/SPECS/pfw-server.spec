@@ -337,13 +337,10 @@ if [ $1 -ge 2 ] && { [ -f /srv/pfw-distribution ] || [ -f /srv/pmm-distribution 
     fi
 fi
 
-# Backfill the postgres port file on every transaction (not just $1 -ge 2
-# above), not just a fresh install: pfw-postgresql.service and
-# pfw-init.service both read it as a non-optional EnvironmentFile, and an
-# upgrade from a host that was packaged but never started (so /srv was never
-# provisioned, and the $1 -eq 1 block below never ran either) would otherwise
-# leave both units unable to start at all. Not a secret, so no store-integrity
-# gating needed -- just ensure a value exists.
+# Backfill the postgres port file on every transaction: pfw-postgresql.service
+# and pfw-init.service both read it as a non-optional EnvironmentFile, and an
+# upgrade from a host that was packaged but never started would otherwise
+# leave both units unable to start.
 install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
 if [ ! -f /srv/.pfw-secrets/postgres-port.env ]; then
     ( umask 077; echo 'PFW_POSTGRES_PORT=5432' > /srv/.pfw-secrets/postgres-port.env.tmp )
@@ -372,12 +369,10 @@ fi
 
 if [ $1 -eq 1 ]; then
     # Ask which port the embedded PostgreSQL should listen on (postgres1st/pfm#77).
-    # Only prompts with a real controlling terminal; PFW_POSTGRES_PORT in the
-    # installer's own environment skips the prompt for scripted installs.
-    # NOT gated on `[ -t 0 ]`: rpm/dnf detach a scriptlet's own stdin from the
-    # terminal even during a normal interactive install, so that check is always
-    # false here regardless of whether a real controlling terminal exists --
-    # /dev/tty, read directly below, is the only reliable test.
+    # PFW_POSTGRES_PORT in the installer's own environment skips the prompt for
+    # scripted installs. Not gated on `[ -t 0 ]`: rpm/dnf detach a scriptlet's
+    # stdin from the terminal even on a normal interactive install, so that
+    # check is always false here -- /dev/tty is the only reliable test.
     pfw_pg_port="${PFW_POSTGRES_PORT:-}"
     if [ -z "${pfw_pg_port}" ] && [ -e /dev/tty ]; then
         printf 'Postgres1st WatchTower: PostgreSQL port for the embedded database [5432]: ' > /dev/tty 2>/dev/null
@@ -398,11 +393,8 @@ if [ $1 -eq 1 ]; then
         fi
     fi
     pfw_pg_port="${pfw_pg_port:-5432}"
-    # Always write, unlike the credential files below: this is a choice made
-    # fresh on THIS run (prompted or defaulted), not a secret to preserve
-    # across a remove/reinstall cycle. /srv survives `dnf remove`, so a stale
-    # file from an earlier install attempt must not silently outrank what the
-    # operator was just asked and told they'd get.
+    # Always write (unlike the credential files below): a stale file from an
+    # earlier install must not outrank what the operator was just asked.
     install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
     ( umask 077; printf 'PFW_POSTGRES_PORT=%s\n' "${pfw_pg_port}" \
         > /srv/.pfw-secrets/postgres-port.env.tmp )
