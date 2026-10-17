@@ -23,16 +23,10 @@ readonly LEGACY_DIST_FILE="${SRV}/pmm-distribution"
 readonly POSTGRES_DATA_DIR="${SRV}/postgres18"
 readonly POSTGRES_PASSWORD_FILE="${SRV}/.postgres_password"
 readonly PG_BIN=/usr/pgsql-18/bin
-# Loopback only: pfw-postgresql.service already restricts the embedded
-# instance to localhost (IPAddressAllow=localhost), so this is never a
-# reachable network address, just the standard way to name "this host" when
-# composing a host:port connection string below.
+# pfw-postgresql.service binds the embedded instance to loopback only.
 readonly POSTGRES_HOST=127.0.0.1
-# Chosen at install time (pfw-server.spec %post, interactively or defaulted)
-# and delivered via EnvironmentFile=/srv/.pfw-secrets/postgres-port.env on
-# pfw-init.service. Defaults to the PostgreSQL standard port for any host
-# that predates this variable (upgrade from an older pfw-server, or the env
-# file missing for any other reason).
+# Chosen at install time (pfw-server.spec %post); delivered via
+# EnvironmentFile=/srv/.pfw-secrets/postgres-port.env on pfw-init.service.
 readonly POSTGRES_PORT="${PFW_POSTGRES_PORT:-5432}"
 
 log() { echo "pfw-init: $*"; }

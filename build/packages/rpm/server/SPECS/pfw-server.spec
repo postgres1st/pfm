@@ -356,17 +356,9 @@ fi
 %systemd_post pfw.target
 
 if [ $1 -eq 1 ]; then
-    # Ask which port the embedded PostgreSQL should listen on
-    # (postgres1st/pfm#77: a host that already runs a PostgreSQL on 5432 had
-    # no way to avoid the conflict). Only prompts on a genuinely interactive
-    # install with a real controlling terminal, so scripted/automated/
-    # air-gapped installs are never blocked waiting on stdin.
-    # PFW_POSTGRES_PORT in the installer's own environment (e.g.
-    # `PFW_POSTGRES_PORT=5433 dnf install -y pfw-server`) skips the prompt and
-    # is used directly -- the non-interactive path for that same automation.
-    # Every unit that touches PostgreSQL also defaults to 5432 on its own if
-    # this file is ever missing (pfw-postgresql.service, pfw-init.service), so
-    # a value here is a convenience, never a hard requirement for either path.
+    # Ask which port the embedded PostgreSQL should listen on (postgres1st/pfm#77).
+    # Only prompts with a real controlling terminal; PFW_POSTGRES_PORT in the
+    # installer's own environment skips the prompt for scripted installs.
     pfw_pg_port="${PFW_POSTGRES_PORT:-}"
     if [ -z "${pfw_pg_port}" ] && [ -t 0 ] && [ -e /dev/tty ]; then
         printf 'Postgres1st WatchTower: PostgreSQL port for the embedded database [5432]: ' > /dev/tty 2>/dev/null

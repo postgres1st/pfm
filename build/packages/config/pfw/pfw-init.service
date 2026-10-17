@@ -37,11 +37,7 @@ ReadWritePaths=/srv /run/postgresql
 # secrets written then chmod'd (the PG superuser password, the nginx TLS key) are
 # never briefly group-readable in the window before the explicit chmod.
 UMask=0077
-# Chosen at install time (pfw-server.spec %post, interactively or defaulted);
-# must match pfw-postgresql.service's own PFW_POSTGRES_PORT. The Environment=
-# default covers any host that predates this file (upgrade from an older
-# pfw-server); EnvironmentFile=, declared after, overrides it when present.
-# See postgres1st/pfm#77.
+# Chosen at install time (pfw-server.spec %post); must match pfw-postgresql.service.
 Environment=PFW_POSTGRES_PORT=5432
 EnvironmentFile=-/srv/.pfw-secrets/postgres-port.env
 ExecStart=/usr/share/pfw/pfw-init.sh
