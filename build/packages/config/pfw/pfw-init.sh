@@ -222,41 +222,57 @@ ensure_secrets() {
     assert_secret_store_intact
     ensure_clickhouse_secret
 
-    if [ ! -f "${MANAGED_DB_SECRET}" ]; then
-        local pw
-        if srv_provisioned; then
-            pw=${LEGACY_MANAGED_DB_PASSWORD}
-            log "relocating the existing pfw-managed DB credential into ${MANAGED_DB_SECRET}"
-        else
-            pw=$(gen_password)
-            log "generating the pfw-managed DB credential"
-        fi
-        write_secret "${MANAGED_DB_SECRET}" \
-            "PMM_POSTGRES_DBPASSWORD=${pw}" \
-            "PMM_POSTGRES_ADDR=${POSTGRES_HOST}:${POSTGRES_PORT}"
+    # PMM_POSTGRES_ADDR/GF_DATABASE_HOST are written on every run, unlike the
+    # passwords alongside them: they must track the CURRENT POSTGRES_PORT, not
+    # whatever port was chosen the first time this file was created. /srv (and
+    # these files in it) survives a `dnf remove`, so a stale address here would
+    # otherwise silently outlive a later reinstall that picked a different port.
+    if [ -f "${MANAGED_DB_SECRET}" ]; then
+        local pw; pw=$(read_secret "${MANAGED_DB_SECRET}" PMM_POSTGRES_DBPASSWORD)
+    elif srv_provisioned; then
+        local pw=${LEGACY_MANAGED_DB_PASSWORD}
+        log "relocating the existing pfw-managed DB credential into ${MANAGED_DB_SECRET}"
+    else
+        local pw; pw=$(gen_password)
+        log "generating the pfw-managed DB credential"
     fi
+    write_secret "${MANAGED_DB_SECRET}" \
+        "PMM_POSTGRES_DBPASSWORD=${pw}" \
+        "PMM_POSTGRES_ADDR=${POSTGRES_HOST}:${POSTGRES_PORT}"
 
-    if [ ! -f "${GRAFANA_SECRET}" ]; then
-        if srv_provisioned; then
-            # Relocation only. The admin user already exists on this host, and
-            # Grafana applies admin_password solely when creating it, so writing
-            # GF_SECURITY_ADMIN_PASSWORD here would be inert and misleading.
-            log "relocating the existing grafana DB credential into ${GRAFANA_SECRET}"
+    if [ -f "${GRAFANA_SECRET}" ]; then
+        local db_pw admin_pw
+        db_pw=$(read_secret "${GRAFANA_SECRET}" GF_DATABASE_PASSWORD)
+        admin_pw=$(read_secret "${GRAFANA_SECRET}" GF_SECURITY_ADMIN_PASSWORD)
+        if [ -n "${admin_pw}" ]; then
             write_secret "${GRAFANA_SECRET}" \
-                "GF_DATABASE_PASSWORD=${LEGACY_GRAFANA_DB_PASSWORD}" \
+                "GF_DATABASE_PASSWORD=${db_pw}" \
+                "GF_SECURITY_ADMIN_PASSWORD=${admin_pw}" \
                 "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
         else
-            log "generating the grafana DB and admin credentials"
             write_secret "${GRAFANA_SECRET}" \
-                "GF_DATABASE_PASSWORD=$(gen_password)" \
-                "GF_SECURITY_ADMIN_PASSWORD=$(gen_password)" \
+                "GF_DATABASE_PASSWORD=${db_pw}" \
                 "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
-            # The path, never the value. journald persists to /var/log/journal,
-            # where anything in adm or systemd-journal could read it -- a weaker
-            # form of the disclosure this change exists to close.
-            log "initial admin password written to ${GRAFANA_SECRET}; read it with:"
-            log "  sudo sed -n 's/^GF_SECURITY_ADMIN_PASSWORD=//p' ${GRAFANA_SECRET}"
         fi
+    elif srv_provisioned; then
+        # Relocation only. The admin user already exists on this host, and
+        # Grafana applies admin_password solely when creating it, so writing
+        # GF_SECURITY_ADMIN_PASSWORD here would be inert and misleading.
+        log "relocating the existing grafana DB credential into ${GRAFANA_SECRET}"
+        write_secret "${GRAFANA_SECRET}" \
+            "GF_DATABASE_PASSWORD=${LEGACY_GRAFANA_DB_PASSWORD}" \
+            "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
+    else
+        log "generating the grafana DB and admin credentials"
+        write_secret "${GRAFANA_SECRET}" \
+            "GF_DATABASE_PASSWORD=$(gen_password)" \
+            "GF_SECURITY_ADMIN_PASSWORD=$(gen_password)" \
+            "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
+        # The path, never the value. journald persists to /var/log/journal,
+        # where anything in adm or systemd-journal could read it -- a weaker
+        # form of the disclosure this change exists to close.
+        log "initial admin password written to ${GRAFANA_SECRET}; read it with:"
+        log "  sudo sed -n 's/^GF_SECURITY_ADMIN_PASSWORD=//p' ${GRAFANA_SECRET}"
     fi
 
     sync_generated_marker
