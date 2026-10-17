@@ -359,8 +359,12 @@ if [ $1 -eq 1 ]; then
     # Ask which port the embedded PostgreSQL should listen on (postgres1st/pfm#77).
     # Only prompts with a real controlling terminal; PFW_POSTGRES_PORT in the
     # installer's own environment skips the prompt for scripted installs.
+    # NOT gated on `[ -t 0 ]`: rpm/dnf detach a scriptlet's own stdin from the
+    # terminal even during a normal interactive install, so that check is always
+    # false here regardless of whether a real controlling terminal exists --
+    # /dev/tty, read directly below, is the only reliable test.
     pfw_pg_port="${PFW_POSTGRES_PORT:-}"
-    if [ -z "${pfw_pg_port}" ] && [ -t 0 ] && [ -e /dev/tty ]; then
+    if [ -z "${pfw_pg_port}" ] && [ -e /dev/tty ]; then
         printf 'Postgres1st WatchTower: PostgreSQL port for the embedded database [5432]: ' > /dev/tty 2>/dev/null
         if read -r pfw_pg_port_input < /dev/tty 2>/dev/null; then
             case "${pfw_pg_port_input}" in
