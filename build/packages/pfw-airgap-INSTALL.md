@@ -123,6 +123,18 @@ adds repositories disabled by default. Your own repositories stay enabled, which
 `nginx`, `perl` and the other operating-system packages get resolved, exactly as they
 would for anything else you install on this host.
 
+If this host already runs a PostgreSQL on port 5432, the install prompts (on a real
+terminal) for a different port for the **embedded** PostgreSQL this bundle brings —
+press Enter to keep 5432. For a scripted/unattended install, set it without a prompt:
+
+```bash
+sudo PFW_POSTGRES_PORT=5433 dnf --enablerepo=pfw install -y pfw-server
+```
+
+This only changes the port the embedded PostgreSQL listens on internally; it is never
+exposed off the host either way (see *Ports* below), so there is no reason to change it
+unless something else on this host already holds 5432.
+
 ## 6. Start
 
 ```bash
@@ -369,8 +381,9 @@ It uses the same tarball you unpacked here; there is no separate client download
 | 8080 | loopback | HTTP, redirects to HTTPS |
 | 42000-42010 | loopback by default; all interfaces only with `--expose-exporter` | exporters, authenticated with a per-agent credential |
 
-Everything else — PostgreSQL 5432, ClickHouse 9000/8123, VictoriaMetrics 9090,
-Grafana 3000, qan-api2 9911/9922 — binds to **loopback only**.
+Everything else — PostgreSQL 5432 by default (see *Install*, step 5, to change it),
+ClickHouse 9000/8123, VictoriaMetrics 9090, Grafana 3000, qan-api2 9911/9922 — binds to
+**loopback only**.
 
 > The exporter ports carry database and OS statistics. They require HTTP basic auth
 > with a credential generated per agent at registration, and bind **loopback by

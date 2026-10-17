@@ -356,6 +356,42 @@ fi
 %systemd_post pfw.target
 
 if [ $1 -eq 1 ]; then
+    # Ask which port the embedded PostgreSQL should listen on (postgres1st/pfm#77).
+    # Only prompts with a real controlling terminal; PFW_POSTGRES_PORT in the
+    # installer's own environment skips the prompt for scripted installs.
+    pfw_pg_port="${PFW_POSTGRES_PORT:-}"
+    if [ -z "${pfw_pg_port}" ] && [ -t 0 ] && [ -e /dev/tty ]; then
+        printf 'Postgres1st WatchTower: PostgreSQL port for the embedded database [5432]: ' > /dev/tty 2>/dev/null
+        if read -r pfw_pg_port_input < /dev/tty 2>/dev/null; then
+            case "${pfw_pg_port_input}" in
+                '') ;;
+                *[!0-9]*)
+                    echo "pfw-server: '${pfw_pg_port_input}' is not a number, using 5432." >&2
+                    ;;
+                *)
+                    if [ "${pfw_pg_port_input}" -ge 1 ] && [ "${pfw_pg_port_input}" -le 65535 ]; then
+                        pfw_pg_port="${pfw_pg_port_input}"
+                    else
+                        echo "pfw-server: '${pfw_pg_port_input}' is out of range (1-65535), using 5432." >&2
+                    fi
+                    ;;
+            esac
+        fi
+    fi
+    pfw_pg_port="${pfw_pg_port:-5432}"
+    install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
+    if [ ! -f /srv/.pfw-secrets/postgres-port.env ]; then
+        ( umask 077; printf 'PFW_POSTGRES_PORT=%s\n' "${pfw_pg_port}" \
+            > /srv/.pfw-secrets/postgres-port.env.tmp )
+        chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
+        chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
+        mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
+    fi
+    if [ "${pfw_pg_port}" != "5432" ]; then
+        echo "pfw-server: embedded PostgreSQL will listen on port ${pfw_pg_port}." >&2
+    fi
+    unset pfw_pg_port pfw_pg_port_input
+
     # First install: materialize the account/runtime dirs and enable the target.
     # Not auto-started — the operator runs `systemctl start pfw.target` (or
     # reboots) so a long first-boot provision doesn't block the transaction.
