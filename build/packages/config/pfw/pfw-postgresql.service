@@ -45,7 +45,7 @@ ExecStart=/usr/pgsql-18/bin/postgres \
     -c pg_stat_statements.save=off \
     -c logging_collector=off \
     -c max_connections=2000 \
-    -c port=$PFW_POSTGRES_PORT
+    -p $PFW_POSTGRES_PORT
 KillSignal=SIGINT
 TimeoutStopSec=300
 Restart=on-failure
