@@ -23,6 +23,17 @@ readonly LEGACY_DIST_FILE="${SRV}/pmm-distribution"
 readonly POSTGRES_DATA_DIR="${SRV}/postgres18"
 readonly POSTGRES_PASSWORD_FILE="${SRV}/.postgres_password"
 readonly PG_BIN=/usr/pgsql-18/bin
+# Loopback only: pfw-postgresql.service already restricts the embedded
+# instance to localhost (IPAddressAllow=localhost), so this is never a
+# reachable network address, just the standard way to name "this host" when
+# composing a host:port connection string below.
+readonly POSTGRES_HOST=127.0.0.1
+# Chosen at install time (pfw-server.spec %post, interactively or defaulted)
+# and delivered via EnvironmentFile=/srv/.pfw-secrets/postgres-port.env on
+# pfw-init.service. Defaults to the PostgreSQL standard port for any host
+# that predates this variable (upgrade from an older pfw-server, or the env
+# file missing for any other reason).
+readonly POSTGRES_PORT="${PFW_POSTGRES_PORT:-5432}"
 
 log() { echo "pfw-init: $*"; }
 
@@ -226,7 +237,9 @@ ensure_secrets() {
             pw=$(gen_password)
             log "generating the pfw-managed DB credential"
         fi
-        write_secret "${MANAGED_DB_SECRET}" "PMM_POSTGRES_DBPASSWORD=${pw}"
+        write_secret "${MANAGED_DB_SECRET}" \
+            "PMM_POSTGRES_DBPASSWORD=${pw}" \
+            "PMM_POSTGRES_ADDR=${POSTGRES_HOST}:${POSTGRES_PORT}"
     fi
 
     if [ ! -f "${GRAFANA_SECRET}" ]; then
@@ -236,12 +249,14 @@ ensure_secrets() {
             # GF_SECURITY_ADMIN_PASSWORD here would be inert and misleading.
             log "relocating the existing grafana DB credential into ${GRAFANA_SECRET}"
             write_secret "${GRAFANA_SECRET}" \
-                "GF_DATABASE_PASSWORD=${LEGACY_GRAFANA_DB_PASSWORD}"
+                "GF_DATABASE_PASSWORD=${LEGACY_GRAFANA_DB_PASSWORD}" \
+                "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
         else
             log "generating the grafana DB and admin credentials"
             write_secret "${GRAFANA_SECRET}" \
                 "GF_DATABASE_PASSWORD=$(gen_password)" \
-                "GF_SECURITY_ADMIN_PASSWORD=$(gen_password)"
+                "GF_SECURITY_ADMIN_PASSWORD=$(gen_password)" \
+                "GF_DATABASE_HOST=${POSTGRES_HOST}:${POSTGRES_PORT}"
             # The path, never the value. journald persists to /var/log/journal,
             # where anything in adm or systemd-journal could read it -- a weaker
             # form of the disclosure this change exists to close.
@@ -309,7 +324,7 @@ provision_app_db() {
         log "FATAL: refusing password with SQL-significant characters" >&2; exit 1; }
     # ON_ERROR_STOP because the CREATE USER below is fed on stdin: psql exits 0 on a
     # failed statement from a script, so without it errexit would never see the error.
-    local pg=(/usr/bin/psql -v ON_ERROR_STOP=1 -U postgres -h /run/postgresql -d postgres)
+    local pg=(/usr/bin/psql -v ON_ERROR_STOP=1 -U postgres -h /run/postgresql -p "${POSTGRES_PORT}" -d postgres)
     if [ "$("${pg[@]}" -tAc "SELECT 1 FROM pg_database WHERE datname='${db}'")" != "1" ]; then
         "${pg[@]}" -c "CREATE DATABASE \"${db}\""
     fi
@@ -334,12 +349,13 @@ EOSQL
 provision_databases() {
     local pgpw
     pgpw=$(cat "${POSTGRES_PASSWORD_FILE}")
-    log "starting PostgreSQL for first-boot provisioning ..."
-    "${PG_BIN}/pg_ctl" start -D "${POSTGRES_DATA_DIR}" -o "-c logging_collector=off"
+    log "starting PostgreSQL for first-boot provisioning (port ${POSTGRES_PORT}) ..."
+    "${PG_BIN}/pg_ctl" start -D "${POSTGRES_DATA_DIR}" \
+        -o "-c logging_collector=off -c port=${POSTGRES_PORT}"
     trap 'unset PGPASSWORD; "${PG_BIN}/pg_ctl" stop -D "${POSTGRES_DATA_DIR}" -m fast >/dev/null 2>&1 || true' RETURN
 
     export PGPASSWORD="${pgpw}"
-    local psql=(/usr/bin/psql -U postgres -h /run/postgresql -d postgres)
+    local psql=(/usr/bin/psql -U postgres -h /run/postgresql -p "${POSTGRES_PORT}" -d postgres)
 
     log "enabling pg_stat_statements ..."
     "${psql[@]}" -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA public'

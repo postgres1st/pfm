@@ -34,6 +34,12 @@ RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 ReadWritePaths=/srv/postgres18 /run/postgresql
 IPAddressDeny=any
 IPAddressAllow=localhost
+# Chosen at install time (pfw-server.spec %post, interactively or defaulted).
+# The Environment= default covers any host that predates this file (upgrade
+# from an older pfw-server); EnvironmentFile=, declared after, overrides it
+# when present. See postgres1st/pfm#77.
+Environment=PFW_POSTGRES_PORT=5432
+EnvironmentFile=-/srv/.pfw-secrets/postgres-port.env
 ExecStart=/usr/pgsql-18/bin/postgres \
     -D /srv/postgres18 \
     -c shared_preload_libraries=pg_stat_statements \
@@ -41,7 +47,8 @@ ExecStart=/usr/pgsql-18/bin/postgres \
     -c pg_stat_statements.track=all \
     -c pg_stat_statements.save=off \
     -c logging_collector=off \
-    -c max_connections=2000
+    -c max_connections=2000 \
+    -c port=$PFW_POSTGRES_PORT
 KillSignal=SIGINT
 TimeoutStopSec=300
 Restart=on-failure
