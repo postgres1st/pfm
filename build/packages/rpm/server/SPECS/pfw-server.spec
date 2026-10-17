@@ -337,6 +337,21 @@ if [ $1 -ge 2 ] && { [ -f /srv/pfw-distribution ] || [ -f /srv/pmm-distribution 
     fi
 fi
 
+# Backfill the postgres port file on every transaction (not just $1 -ge 2
+# above), not just a fresh install: pfw-postgresql.service and
+# pfw-init.service both read it as a non-optional EnvironmentFile, and an
+# upgrade from a host that was packaged but never started (so /srv was never
+# provisioned, and the $1 -eq 1 block below never ran either) would otherwise
+# leave both units unable to start at all. Not a secret, so no store-integrity
+# gating needed -- just ensure a value exists.
+install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
+if [ ! -f /srv/.pfw-secrets/postgres-port.env ]; then
+    ( umask 077; echo 'PFW_POSTGRES_PORT=5432' > /srv/.pfw-secrets/postgres-port.env.tmp )
+    chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
+    chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
+    mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
+fi
+
 # SELinux policy for our /srv layout, installed on every transaction so an upgraded
 # module actually takes effect. Guarded and never fatal: a host with no SELinux
 # tooling (our Rocky 9 test containers have neither semodule nor a policy store)

@@ -34,9 +34,13 @@ RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 ReadWritePaths=/srv/postgres18 /run/postgresql
 IPAddressDeny=any
 IPAddressAllow=localhost
-# Chosen at install time (pfw-server.spec %post); must match pfw-init.service.
-Environment=PFW_POSTGRES_PORT=5432
-EnvironmentFile=-/srv/.pfw-secrets/postgres-port.env
+# Chosen at install time (pfw-server.spec %post), which guarantees this file
+# exists on every install (including upgrade from a pre-this-feature host) --
+# NOT paired with a same-key Environment= "default" line: EnvironmentFile=
+# does not override a literal Environment= for the same key, no matter which
+# is declared first or last, so that pattern silently ignores the file
+# entirely. Must match pfw-init.service.
+EnvironmentFile=/srv/.pfw-secrets/postgres-port.env
 ExecStart=/usr/pgsql-18/bin/postgres \
     -D /srv/postgres18 \
     -c shared_preload_libraries=pg_stat_statements \
