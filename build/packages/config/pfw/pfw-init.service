@@ -37,6 +37,11 @@ ReadWritePaths=/srv /run/postgresql
 # secrets written then chmod'd (the PG superuser password, the nginx TLS key) are
 # never briefly group-readable in the window before the explicit chmod.
 UMask=0077
+# Chosen at install time (pfw-server.spec %post), which guarantees this file
+# always exists. No same-key Environment= "default" line: EnvironmentFile=
+# does not override a literal Environment= for the same key. Must match
+# pfw-postgresql.service.
+EnvironmentFile=/srv/.pfw-secrets/postgres-port.env
 ExecStart=/usr/share/pfw/pfw-init.sh
 # Give the credential store the SELinux type PID 1 is allowed to read, once pfw-init
 # has generated it, and fail here if that did not take.

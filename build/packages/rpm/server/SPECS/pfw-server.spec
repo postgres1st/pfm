@@ -337,6 +337,18 @@ if [ $1 -ge 2 ] && { [ -f /srv/pfw-distribution ] || [ -f /srv/pmm-distribution 
     fi
 fi
 
+# Backfill the postgres port file on every transaction: pfw-postgresql.service
+# and pfw-init.service both read it as a non-optional EnvironmentFile, and an
+# upgrade from a host that was packaged but never started would otherwise
+# leave both units unable to start.
+install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
+if [ ! -f /srv/.pfw-secrets/postgres-port.env ]; then
+    ( umask 077; echo 'PFW_POSTGRES_PORT=5432' > /srv/.pfw-secrets/postgres-port.env.tmp )
+    chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
+    chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
+    mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
+fi
+
 # SELinux policy for our /srv layout, installed on every transaction so an upgraded
 # module actually takes effect. Guarded and never fatal: a host with no SELinux
 # tooling (our Rocky 9 test containers have neither semodule nor a policy store)
@@ -356,6 +368,44 @@ fi
 %systemd_post pfw.target
 
 if [ $1 -eq 1 ]; then
+    # Ask which port the embedded PostgreSQL should listen on (postgres1st/pfm#77).
+    # PFW_POSTGRES_PORT in the installer's own environment skips the prompt for
+    # scripted installs. Not gated on `[ -t 0 ]`: rpm/dnf detach a scriptlet's
+    # stdin from the terminal even on a normal interactive install, so that
+    # check is always false here -- /dev/tty is the only reliable test.
+    pfw_pg_port="${PFW_POSTGRES_PORT:-}"
+    if [ -z "${pfw_pg_port}" ] && [ -e /dev/tty ]; then
+        printf 'Postgres1st WatchTower: PostgreSQL port for the embedded database [5432]: ' > /dev/tty 2>/dev/null
+        if read -r pfw_pg_port_input < /dev/tty 2>/dev/null; then
+            case "${pfw_pg_port_input}" in
+                '') ;;
+                *[!0-9]*)
+                    echo "pfw-server: '${pfw_pg_port_input}' is not a number, using 5432." >&2
+                    ;;
+                *)
+                    if [ "${pfw_pg_port_input}" -ge 1 ] && [ "${pfw_pg_port_input}" -le 65535 ]; then
+                        pfw_pg_port="${pfw_pg_port_input}"
+                    else
+                        echo "pfw-server: '${pfw_pg_port_input}' is out of range (1-65535), using 5432." >&2
+                    fi
+                    ;;
+            esac
+        fi
+    fi
+    pfw_pg_port="${pfw_pg_port:-5432}"
+    # Always write (unlike the credential files below): a stale file from an
+    # earlier install must not outrank what the operator was just asked.
+    install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
+    ( umask 077; printf 'PFW_POSTGRES_PORT=%s\n' "${pfw_pg_port}" \
+        > /srv/.pfw-secrets/postgres-port.env.tmp )
+    chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
+    chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
+    mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
+    if [ "${pfw_pg_port}" != "5432" ]; then
+        echo "pfw-server: embedded PostgreSQL will listen on port ${pfw_pg_port}." >&2
+    fi
+    unset pfw_pg_port pfw_pg_port_input
+
     # First install: materialize the account/runtime dirs and enable the target.
     # Not auto-started — the operator runs `systemctl start pfw.target` (or
     # reboots) so a long first-boot provision doesn't block the transaction.
