@@ -383,14 +383,17 @@ if [ $1 -eq 1 ]; then
         fi
     fi
     pfw_pg_port="${pfw_pg_port:-5432}"
+    # Always write, unlike the credential files below: this is a choice made
+    # fresh on THIS run (prompted or defaulted), not a secret to preserve
+    # across a remove/reinstall cycle. /srv survives `dnf remove`, so a stale
+    # file from an earlier install attempt must not silently outrank what the
+    # operator was just asked and told they'd get.
     install -d -m 0700 -o pfw -g pfw /srv/.pfw-secrets || :
-    if [ ! -f /srv/.pfw-secrets/postgres-port.env ]; then
-        ( umask 077; printf 'PFW_POSTGRES_PORT=%s\n' "${pfw_pg_port}" \
-            > /srv/.pfw-secrets/postgres-port.env.tmp )
-        chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
-        chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
-        mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
-    fi
+    ( umask 077; printf 'PFW_POSTGRES_PORT=%s\n' "${pfw_pg_port}" \
+        > /srv/.pfw-secrets/postgres-port.env.tmp )
+    chown pfw:pfw /srv/.pfw-secrets/postgres-port.env.tmp
+    chmod 0600 /srv/.pfw-secrets/postgres-port.env.tmp
+    mv -f /srv/.pfw-secrets/postgres-port.env.tmp /srv/.pfw-secrets/postgres-port.env
     if [ "${pfw_pg_port}" != "5432" ]; then
         echo "pfw-server: embedded PostgreSQL will listen on port ${pfw_pg_port}." >&2
     fi
