@@ -86,9 +86,9 @@ func TestCollect(t *testing.T) {
 		templates := svc.GetTemplates()
 		require.NotEmpty(t, templates)
 		assert.Contains(t, templates, "test_template")
-		assert.Contains(t, templates, "pmm_mysql_down")
-		assert.Contains(t, templates, "pmm_mysql_restarted")
-		assert.Contains(t, templates, "pmm_mysql_too_many_connections")
+		assert.Contains(t, templates, "pmm_postgresql_down")
+		assert.Contains(t, templates, "pmm_postgresql_restarted")
+		assert.Contains(t, templates, "pmm_postgresql_too_many_connections")
 
 		// check whether map was cleared and updated on a subsequent call
 		svc.userTemplatesPath = testTemplates
