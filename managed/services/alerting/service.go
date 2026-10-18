@@ -409,24 +409,28 @@ func (s *Service) ListTemplates(ctx context.Context, req *alerting.ListTemplates
 	}
 
 	templates := s.convertedSnapshot()
+
+	names := make([]string, 0, len(templates))
+	for name := range templates {
+		if !isTemplateFamilySupported(name) {
+			continue
+		}
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
 	res := &alerting.ListTemplatesResponse{
-		Templates:  make([]*alerting.Template, 0, len(templates)),
-		TotalItems: int32(len(templates)),
+		Templates:  make([]*alerting.Template, 0, len(names)),
+		TotalItems: int32(len(names)),
 		TotalPages: 1,
 	}
 
 	if pageSize > 0 {
-		res.TotalPages = int32(len(templates) / pageSize)
-		if len(templates)%pageSize > 0 {
+		res.TotalPages = int32(len(names) / pageSize)
+		if len(names)%pageSize > 0 {
 			res.TotalPages++
 		}
 	}
-
-	names := make([]string, 0, len(templates))
-	for name := range templates {
-		names = append(names, name)
-	}
-	sort.Strings(names)
 
 	from, to := pageIndex*pageSize, (pageIndex+1)*pageSize
 	if to > len(names) || to == 0 {
@@ -442,6 +446,39 @@ func (s *Service) ListTemplates(ctx context.Context, req *alerting.ListTemplates
 	}
 
 	return res, nil
+}
+
+// templateFamilyServiceType maps a built-in template's name prefix (the part of
+// `pmm_<family>_...` between the required "pmm_" prefix and the rest) to the Service
+// type it targets. A family absent here (agent_down, backup_error, node_*, ...) is not
+// bound to a specific Service type and is always shown.
+var templateFamilyServiceType = map[string]models.ServiceType{
+	"mongodb":    models.MongoDBServiceType,
+	"mysql":      models.MySQLServiceType,
+	"postgresql": models.PostgreSQLServiceType,
+	"proxysql":   models.ProxySQLServiceType,
+	"redis":      models.ValkeyServiceType,
+	"valkey":     models.ValkeyServiceType,
+}
+
+// isTemplateFamilySupported reports whether a template is worth showing, mirroring
+// isCheckFamilySupported in services/management/checks.go: a template whose family maps
+// to a Service type this build refuses (see models.IsServiceTypeSupported) can never
+// have a matching Service to alert on -- e.g. the mongodb_pbm_* templates, which can
+// only ever fire against a MongoDB service this build rejects at registration. Listing
+// them anyway just advertises coverage and third-party tooling (PBM) the product
+// doesn't have. A template name without a recognized family prefix is always shown.
+func isTemplateFamilySupported(name string) bool {
+	rest, ok := strings.CutPrefix(name, "pmm_")
+	if !ok {
+		return true
+	}
+	family, _, _ := strings.Cut(rest, "_")
+	serviceType, ok := templateFamilyServiceType[family]
+	if !ok {
+		return true
+	}
+	return models.IsServiceTypeSupported(serviceType)
 }
 
 // CreateTemplate creates a new template.
