@@ -1,0 +1,15 @@
+# pfw-cert-expiry-check — writes the nginx TLS certificate's expiry as a
+# node_exporter textfile metric. Triggered by pfw-cert-expiry-check.timer;
+# never started directly by pfw.target (WantedBy lives on the timer).
+[Unit]
+Description=Postgres1st WatchTower nginx certificate expiry check
+After=pfw-init.service
+ConditionPathExists=/srv/nginx/certificate.crt
+
+[Service]
+Type=oneshot
+User=pfw
+Group=pfw
+ExecStart=/usr/share/pfw/pfw-cert-expiry-check.sh
+StandardOutput=journal
+StandardError=journal

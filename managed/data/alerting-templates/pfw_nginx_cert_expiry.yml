@@ -1,0 +1,22 @@
+---
+templates:
+  - name: pmm_pfw_nginx_cert_expiry
+    version: 1
+    summary: Server TLS certificate about to expire
+    expr: |-
+      (pfw_nginx_cert_expiry_seconds - time()) / 86400
+      < bool [[ .threshold ]]
+    params:
+      - name: threshold
+        summary: Number of days before expiration
+        type: float
+        range: [0, 100]
+        value: 14
+    for: 5m
+    severity: warning
+    annotations:
+      summary: Server TLS certificate on ({{ $labels.node_name }}) is about to expire
+      description: |-
+        {{ $labels.node_name }}'s nginx TLS certificate expires in less than
+        [[ .threshold ]] days. Replace it before it lapses -- see "Replace the
+        self-signed certificate" in the server installation guide.

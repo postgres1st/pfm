@@ -1,0 +1,14 @@
+# Runs pfw-cert-expiry-check.service hourly. Hourly, not daily: the metric feeds
+# a "days until expiry" alert, and an hourly cadence keeps that alert's staleness
+# bounded to well under a day even if a run is missed.
+[Unit]
+Description=Hourly nginx certificate expiry check
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+AccuracySec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
