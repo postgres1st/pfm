@@ -289,7 +289,6 @@ nav:
                       - advisors/checks/postgresql-expiring-passwd.md
               - Query advisors:
                   - Index query checks:
-                      - advisors/checks/tables-found-without-primary-keys.md
                       - advisors/checks/postgresql-high-number-of-indexes-check.md
                       - advisors/checks/postgresql-sequential-scan-check.md
                       - advisors/checks/postgresql-unused-index-check.md
@@ -425,5 +424,4 @@ nav:
       - reference/nomad.md
       - reference/glossary.md
       - reference/faq.md
-      - reference/trademark-policy.md
       - reference/copyright.md

@@ -12,11 +12,11 @@ PMM versions starting from v2.0.0 are currently being supported.
 
 ## Reporting a Vulnerability
 
-Please report any vulnerabilities to our project in [Jira](https://jira.percona.com/projects/PMM/issues).
+Please report any vulnerabilities to our project in [security page](https://www.postgresfirst.com/security).
 
 If the vulnerability is accepted and confirmed by our experts, you should normally expect us to deliver a version with a fix according to the timelines provided below:
 
-For software developed by Percona:
+For software developed by Postgres1st:
 
 - Low/Medium: 120 days
 - High: 90 days

@@ -23,5 +23,5 @@ pfw-admin list
 ```
 
 ## Related topics
-- [Percona release](https://www.percona.com/doc/percona-repo-config/percona-release.html)
+- [Percona release](https://docs.percona.com/percona-software-repositories/percona-release.html)
 - [PMM Client architecture](../reference/index.md#pmm-client)

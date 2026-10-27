@@ -65,7 +65,7 @@ Adjust storage calculations based on your data retention period and the number o
 - **Architecture support**: Compatible with both x86_64 and ARM64 architectures
 - **Operating systems**: Compatible with modern 64-bit Linux distributions including Debian, Ubuntu, Oracle Linux, and "Red Hat" derivatives
 
-For specific version support details, see [Percona software support life cycle](https://www.percona.com/services/policies/percona-services-lifecycle-policy/).
+For specific version support details, see [support lifecycle information](https://www.postgresfirst.com/support).
 
 ### ARM-specific considerations
 

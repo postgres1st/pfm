@@ -57,16 +57,16 @@ openssl enc -d -aes-256-ctr -pbkdf2 -in dump.tar.gz.enc -out dump.tar.gz
 When importing a non-encrypted dump, pass the `--no-encryption` flag to the pmm-dump CLI tool to skip the password prompt.
 
 
-## Send a data dump to Percona Support
+## Send a data dump to Support
 
-If you are a Percona Customer, you can securely share Postgres1st WatchTower data dumps with Percona Support via SFTP.
+If you have a support agreement, you can securely share Postgres1st WatchTower data dumps with Support via SFTP.
 {.power-number}
 
 1. From the main menu, go to <i class="uil uil-question-circle"></i>  **Help > Postgres1st WatchTower Dump > Manage datasets**.
 2. Select the Postgres1st WatchTower dump entry which you want to send to Support.
 3. In the **Options** column, expand the table row to check the Postgres1st WatchTower Service associated with the dataset, then click the ellipsis (three vertical dots) and select **Send to Support**.
-4. Fill in the [details of the SFTP server](https://percona.service-now.com/percona?id=kb_article_view&sysparm_article=KB0010247&sys_kb_id=bebd04da87e329504035b8c9cebb35a7&spa=1), then click **Send**.
-5. Update your Support ticket to let Percona know that you've uploaded the dataset on the SFTP server.
+4. Fill in the details of the SFTP server that Support gave you (see [Get help](../get-help.md)), then click **Send**.
+5. Update your Support ticket to let Support know that you've uploaded the dataset on the SFTP server.
 
 ## Troubleshoot access issues
 

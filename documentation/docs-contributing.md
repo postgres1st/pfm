@@ -1,8 +1,8 @@
-# Contributing to PMM documentation
+# Contributing to the PGF WatchTower documentation
 
 We're glad you're here! Whether you're fixing a typo or adding new content, your contributions make our documentation better for everyone.
 
-By contributing, you agree to the [Percona Community code of conduct](https://percona.community/contribute/coc/).
+By contributing, you agree to the [code of conduct](https://github.com/postgres1st/pfm/blob/main/CODE_OF_CONDUCT.md).
 
 ## Quick feedback
 
@@ -10,17 +10,17 @@ By contributing, you agree to the [Percona Community code of conduct](https://pe
 
 Each page has a **Rate this page** feature at the bottom. Rate (1-5 stars) and add specific comments about what needs improvement.
 
-### Join the forum
+### Ask for help
 
-Discuss documentation on the [Percona Community Forum](https://forums.percona.com/c/percona-product-documentation/71). Ask questions, share feedback, or suggest improvements.
+Discuss documentation through [support](https://www.postgresfirst.com/support). Ask questions, share feedback, or suggest improvements.
 
 ### Report an issue
 
-Create a Jira ticket for formal tracking: [Create PMM documentation issue](https://perconadev.atlassian.net/secure/CreateIssueDetails!init.jspa?pid=11600&issuetype=1)
+Open a GitHub issue for formal tracking: [Create a documentation issue](https://github.com/postgres1st/pfm/issues/new?labels=documentation)
 
 ## Edit the documentation
 
-Ready to make changes? The docs are written in [Markdown](https://www.markdownguide.org/) and live on [Github](https://github.com/percona/pmm/tree/main/documentation/docs).
+Ready to make changes? The docs are written in [Markdown](https://www.markdownguide.org/) and live on [GitHub](https://github.com/postgres1st/pfm/tree/main/documentation/docs).
 
 ### Quick edits online
 
@@ -36,14 +36,14 @@ Want more details? Check out [GitHub's guide to editing files](https://docs.gith
 1. Clone the repository:
 
     ```shell
-    git clone https://github.com/<your_github_name>/pmm.git
-    cd pmm
+    git clone https://github.com/<your_github_name>/pfm.git
+    cd pfm
     ```
 
 2. Add upstream and sync:
 
     ```shell
-    git remote add upstream https://github.com/percona/pmm.git
+    git remote add upstream https://github.com/postgres1st/pfm.git
     git checkout main
     git pull upstream main
     ```

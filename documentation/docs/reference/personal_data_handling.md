@@ -21,7 +21,7 @@ The following questions are being answered related to personal and confidential 
 
 3. What is the purpose and nature of data processing?
 
-    As described in our [Privacy Policy](https://www.percona.com/privacy-policy), data is collected to provide Percona services and improve our products.
+    As described in our [Privacy Policy](https://www.postgresfirst.com/privacy-policy), data is collected to provide our services and improve our products.
 
     Postgres1st WatchTower does not explicitly collect or transfer personal data. However, if Query Analytics (QAN) is enabled and query example collection is not disabled, SQL query examples with actual data values may be gathered. This means personal data could appear in query text if it exists within your database.
 
@@ -39,7 +39,7 @@ The following questions are being answered related to personal and confidential 
     
     So it is processed as usual, which is to store inside the PMM Server and present on the Postgres1st WatchTower UI by request.
 
-    Other than email addresses for Grafana users, Postgres1st WatchTower does not directly ask or collect any other personal data. For more information about the telemetry data that is collected, please refer to the [Percona Privacy Policy](http://www.percona.com/privacy-policy/). 
+    Other than email addresses for Grafana users, Postgres1st WatchTower does not directly ask or collect any other personal data. For more information about the telemetry data that is collected, please refer to the [Privacy Policy](https://www.postgresfirst.com/privacy-policy). 
 
 5. What applications or third parties can access the data created and processed by the cloud service?
 

@@ -43,7 +43,7 @@ Are you ready to begin configuring Postgres1st WatchTower  but need help figurin
 
 Looking for reliable and easy-to-use resources to tackle your daily challenges with database monitoring and management?
 
-[Additional resources :material-arrow-right:](https://www.percona.com/resources){ .md-button .md-button--primary }
+[Additional resources :material-arrow-right:](https://www.postgresfirst.com/resources){ .md-button .md-button--primary }
 
 </div>
 </div>
