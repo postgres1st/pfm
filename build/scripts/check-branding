@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+"""Scan for legacy product names that must not reach customers (GA Priorities 1 and 2).
+
+    build/scripts/check-branding              report counts, exit 0 (report-only)
+    build/scripts/check-branding --list       also print every unapproved hit
+    build/scripts/check-branding --strict     exit 1 if any unapproved hit remains
+    build/scripts/check-branding --root DIR   scan a directory tree instead of `git ls-files`
+    build/scripts/check-branding --self-test  negative-control the scanner itself
+
+A line is a hit when it matches a LEGACY pattern after every exception that applies to its
+file has been cut out of it. Exceptions live in build/branding/exceptions.tsv, the only
+place a legacy name can be allowed; each row needs an owner and a reason, and the scanner
+refuses to run if one is missing. That keeps the allowlist from rotting into a blanket pass.
+
+Report-only until the last rebrand task (#114) switches CI to --strict.
+"""
+import argparse
+import collections
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+EXCEPTIONS = os.path.join(REPO, "build", "branding", "exceptions.tsv")
+
+# name -> regex. Add a pattern here when a new legacy name needs to be kept out.
+LEGACY = {
+    "PMM": re.compile(r"\bPMM\b"),
+    "Percona": re.compile(r"percona", re.I),
+    "pmm-<name>": re.compile(r"\bpmm-[a-z]"),
+    "Postgres1st WatchTower": re.compile(r"Postgres1st WatchTower"),
+    "PFMM": re.compile(r"\bPFMM\b"),
+    "per.co.na": re.compile(r"per\.co\.na"),
+}
+
+MAX_BYTES = 2_000_000
+
+
+def load_exceptions(path):
+    rows = []
+    with open(path, encoding="utf-8") as f:
+        for n, line in enumerate(f, 1):
+            line = line.rstrip("\n")
+            if not line.strip() or line.startswith("#"):
+                continue
+            cols = line.split("\t")
+            if len(cols) != 6 or not all(c.strip() for c in cols):
+                sys.exit(f"{path}:{n}: needs 6 non-empty columns (id, pattern, paths, owner, visible, reason)")
+            try:
+                rows.append((cols[0], re.compile(cols[1]), re.compile(cols[2])))
+            except re.error as e:
+                sys.exit(f"{path}:{n}: bad regex: {e}")
+    if not rows:
+        sys.exit(f"{path}: no exceptions loaded; refusing to run on an empty allowlist")
+    return rows
+
+
+def list_files(root):
+    if os.path.isdir(os.path.join(root, ".git")):
+        out = subprocess.check_output(["git", "-C", root, "ls-files", "-z"])
+        return [p for p in out.decode("utf-8", "replace").split("\0") if p]
+    found = []
+    for d, _, names in os.walk(root):
+        for name in names:
+            found.append(os.path.relpath(os.path.join(d, name), root))
+    return found
+
+
+def scan(root, exceptions):
+    hits = []
+    scanned = 0
+    for rel in list_files(root):
+        full = os.path.join(root, rel)
+        try:
+            if not os.path.isfile(full) or os.path.getsize(full) > MAX_BYTES:
+                continue
+            with open(full, "rb") as f:
+                data = f.read()
+        except OSError:
+            continue
+        if b"\0" in data:
+            continue
+        scanned += 1
+        applicable = [rx for _, rx, paths in exceptions if paths.search(rel)]
+        for n, line in enumerate(data.decode("utf-8", "replace").splitlines(), 1):
+            if not any(rx.search(line) for rx in LEGACY.values()):
+                continue
+            rest = line
+            for rx in applicable:
+                rest = rx.sub("", rest)
+            for name, rx in LEGACY.items():
+                if rx.search(rest):
+                    hits.append((rel, n, name, line.strip()))
+    return scanned, hits
+
+
+def area(rel):
+    return rel.split("/", 1)[0] if "/" in rel else "(repo root)"
+
+
+def report(scanned, hits, listing):
+    print(f"scanned {scanned} files; {len(hits)} unapproved hits\n")
+    by_area = collections.Counter(area(h[0]) for h in hits)
+    files_by_area = collections.defaultdict(set)
+    for h in hits:
+        files_by_area[area(h[0])].add(h[0])
+    print(f"{'area':<22}{'files':>7}{'hits':>8}")
+    for a, c in by_area.most_common():
+        print(f"{a:<22}{len(files_by_area[a]):>7}{c:>8}")
+    print(f"\n{'legacy name':<26}{'hits':>8}")
+    for name, c in collections.Counter(h[2] for h in hits).most_common():
+        print(f"{name:<26}{c:>8}")
+    if listing:
+        print()
+        for rel, n, name, line in sorted(hits):
+            print(f"{rel}:{n}: [{name}] {line[:140]}")
+
+
+def self_test(exceptions):
+    cases = {
+        "ui/planted.tsx": ("const t = 'Welcome to Percona Monitoring'\n", True),
+        "documentation/planted2.md": ("Run pmm-admin status\n", True),
+        "documentation/planted3.md": ("Use the Postgres1st WatchTower server\n", True),
+        "README.md": ("Derived from Percona Monitoring and Management (PMM).\n", False),
+        "managed/ok.go": ("os.Getenv(\"PMM_SERVER_URL\")\n", False),
+        "documentation/clean.md": ("PGF WatchTower monitors PostgreSQL.\n", False),
+    }
+    with tempfile.TemporaryDirectory() as tmp:
+        for rel, (text, _) in cases.items():
+            os.makedirs(os.path.dirname(os.path.join(tmp, rel)), exist_ok=True)
+            with open(os.path.join(tmp, rel), "w") as f:
+                f.write(text)
+        _, hits = scan(tmp, exceptions)
+    flagged = {h[0] for h in hits}
+    bad = [rel for rel, (_, want) in cases.items() if (rel in flagged) != want]
+    for rel, (_, want) in cases.items():
+        print(f"  {'PASS' if rel not in bad else 'FAIL'}  {rel}: {'flagged' if want else 'allowed'} as expected" if rel not in bad
+              else f"  FAIL  {rel}: expected {'a hit' if want else 'no hit'}")
+    return not bad
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--root", default=REPO)
+    ap.add_argument("--list", action="store_true")
+    ap.add_argument("--strict", action="store_true")
+    ap.add_argument("--self-test", action="store_true")
+    args = ap.parse_args()
+
+    exceptions = load_exceptions(EXCEPTIONS)
+    if args.self_test:
+        sys.exit(0 if self_test(exceptions) else 1)
+    scanned, hits = scan(args.root, exceptions)
+    if scanned == 0:
+        sys.exit("scanned no files; a pass here would be vacuous")
+    report(scanned, hits, args.list)
+    if args.strict and hits:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

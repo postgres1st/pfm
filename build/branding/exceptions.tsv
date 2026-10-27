@@ -21,4 +21,8 @@ E10	(percona|Percona)	^(go\.(mod|sum)|.*\.(pb|pb\.gw|pb\.validate)\.go|.*_reform
 E11	(Percona|PMM)	^(documentation/docs/release-notes/pfw-3\.9\.0-beta2\.md)$	ngadakh	yes	Release notes for the current build state the fork basis (PMM 3.9.0). Review again when the GA notes are written.
 E12	check\.percona\.com	^(managed|documentation)/.*	ngadakh	yes	PENDING: Advisors check-definition service endpoint. Functional dependency, customer-visible in settings. Needs a replacement or removal decision before GA.
 E13	repo\.percona\.com	^(build|managed)/.*	ngadakh	no	PENDING: functional upstream repo endpoint referenced by tooling. Remove with the install rewrite (#110) or justify.
-E14	Postgres1st	^(build/packages/(rpm|deb)/.*|build/scripts/.*|build/packages/pfw-airgap-INSTALL.*)$	ngadakh	yes	The ORGANISATION, not the product: package signer, RPM Vendor, Maintainer, and /opt/postgres1st. Not 'Postgres1st WatchTower'.
+E14	Postgres1st(?! WatchTower)	^(build/packages/(rpm|deb)/.*|build/scripts/.*|build/packages/pfw-airgap-INSTALL.*)$	ngadakh	yes	The ORGANISATION, not the product: package signer, RPM Vendor, Maintainer, and /opt/postgres1st. Not 'Postgres1st WatchTower'.
+E15	Copyright.*Percona( LLC)?	.*	ngadakh	no	Copyright headers in inherited source files. AGPL requires keeping them; they are comments, never printed.
+E16	.*	(_test\.go|\.(test|spec)\.tsx?|/testdata/|/__mocks__/)	ngadakh	no	Unit-test sources are not shipped. Tests that pin product text are updated with the code they test (#111).
+E17	.*	^docs/.*	ngadakh	no	Internal engineering records (identifier map, readiness notes) that name legacy strings in order to describe them. Not shipped in the bundle.
+E18	.*	^(build/branding/.*|build/scripts/(check-branding|test-frozen-identifiers|check-release-claims))$	ngadakh	no	The guards themselves must spell the legacy names they search for.

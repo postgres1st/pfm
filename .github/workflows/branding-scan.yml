@@ -1,0 +1,30 @@
+---
+# Report legacy product names (PMM, Percona, Postgres1st WatchTower, ...) that must not reach
+# customers. REPORT-ONLY for now: the job prints counts per area and never fails. The last
+# rebrand task (#114) adds --strict, which makes an unapproved hit block the release.
+#
+# Exceptions live in build/branding/exceptions.tsv; each needs an owner and a reason.
+name: Branding scan
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan for legacy names
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Negative-control the scanner
+        run: python3 -I build/scripts/check-branding --self-test
+
+      - name: Report unapproved legacy names
+        run: python3 -I build/scripts/check-branding
