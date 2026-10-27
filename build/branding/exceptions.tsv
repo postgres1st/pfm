@@ -26,3 +26,8 @@ E15	Copyright.*Percona( LLC)?	.*	ngadakh	no	Copyright headers in inherited sourc
 E16	.*	(_test\.go|\.(test|spec)\.tsx?|/testdata/|/__mocks__/)	ngadakh	no	Unit-test sources are not shipped. Tests that pin product text are updated with the code they test (#111).
 E17	.*	^docs/.*	ngadakh	no	Internal engineering records (identifier map, readiness notes) that name legacy strings in order to describe them. Not shipped in the bundle.
 E18	.*	^(build/branding/.*|build/scripts/(check-branding|test-frozen-identifiers|check-release-claims))$	ngadakh	no	The guards themselves must spell the legacy names they search for.
+E19	(Percona|perconalab|pmm-doc-md)	^documentation/Makefile$	ngadakh	no	Docs build tooling pulls the perconalab/pmm-doc-md image. Developer-only, never shipped; replace with a locally built image when the docs toolchain is revisited.
+E20	(Percona|PMM)	^documentation/docs/reference/copyright\.md$	ngadakh	yes	Copyright and licence notice for documentation inherited from Percona (Creative Commons). Legally required.
+E21	(Percona|PMM)	^documentation/docs/get-help\.md$	ngadakh	yes	States that Percona is NOT our support channel and points to upstream docs. Attributed on purpose.
+E22	#.*	^documentation/mkdocs[a-z-]*\.yml$	ngadakh	no	YAML comments in the docs site config that explain which upstream branding was removed. Not rendered. Nav titles and paths are NOT exempt.
+E23	.*	^documentation/overrides/.*\.html$	ngadakh	no	Jinja {# #} comments in theme overrides that record what upstream branding was removed. Not rendered. Re-check if a rendered string is added here.

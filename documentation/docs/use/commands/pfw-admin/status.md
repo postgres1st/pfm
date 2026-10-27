@@ -1,21 +1,21 @@
 # Check connection status with pfw-admin
 
 
-Check PMM Client connection status, list monitored services, and create diagnostic archives from the command line using these `pfw-admin` commands.
+Check PGF WatchTower Agent connection status, list monitored services, and create diagnostic archives from the command line using these `pfw-admin` commands.
 
-To view status in the UI, see [Postgres1st WatchTower Inventory](../pmm-admin/inventory.md). For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
+To view status in the UI, see [PGF WatchTower Inventory](../pfw-admin/inventory.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
 | Command | Use it to |
 |---------|-----------|
-| [`pfw-admin status`](#pfw-admin-status) | Check if PMM Client can connect to PMM Server |
+| [`pfw-admin status`](#pfw-admin-status) | Check if PGF WatchTower Agent can connect to PGF WatchTower Server |
 | [`pfw-admin list`](#pfw-admin-list) | Show all monitored services and their agents |
 | [`pfw-admin summary`](#pfw-admin-summary) | Create a diagnostic archive for troubleshooting or support requests |
 
 ## pfw-admin status
 
-Check the connection between PMM Client and PMM Server. Use this to verify PMM Client is properly configured and can communicate with the server.
+Check the connection between PGF WatchTower Agent and PGF WatchTower Server. Use this to verify PGF WatchTower Agent is properly configured and can communicate with the server.
 
 ### Syntax
 
@@ -37,11 +37,11 @@ Agent ID : abcd1234-5678-90ef-ghij-klmnopqrstuv
 Node ID  : abcd1234-5678-90ef-ghij-klmnopqrstuv
 Node name: db-server-01
 
-PMM Server:
+PGF WatchTower Server:
     URL    : https://192.168.1.100:443/
     Version: 3.0.0
 
-PMM Client:
+PGF WatchTower Agent:
     Connected        : true
     Time drift       : -1.234ms
     Latency          : 5.678ms
@@ -53,7 +53,7 @@ PMM Client:
 
 | Field | What it means |
 |-------|---------------|
-| `Connected: true` | PMM Client is communicating with PMM Server |
+| `Connected: true` | PGF WatchTower Agent is communicating with PGF WatchTower Server |
 | `Connected: false` | Connection failed — check server URL and network |
 | `Time drift` | Clock difference between client and server (keep under 1 second) |
 | `Latency` | Network round-trip time to server |
@@ -75,7 +75,7 @@ pfw-admin status
 # Error: ...connection refused
 ```
 
-Check that PMM Server is running and the URL is correct:
+Check that PGF WatchTower Server is running and the URL is correct:
 
 ```bash
 pfw-admin config --server-url=https://username:password@192.168.1.100:443
@@ -168,7 +168,7 @@ The default archive filename is `summary_<hostname>_<year>_<month>_<date>_<hour>
 
 The archive includes:
 
-- PMM Client logs
+- PGF WatchTower Agent logs
 - Agent configuration files
 - Service status and inventory
 - System information (OS, hardware)
@@ -185,7 +185,7 @@ pfw-admin summary [FLAGS]
 | Flag | Description |
 |------|-------------|
 | `--filename=PATH` | Output file path (default: auto-generated in current directory) |
-| `--skip-server` | Skip collecting PMM Server logs (`logs.zip`) |
+| `--skip-server` | Skip collecting PGF WatchTower Server logs (`logs.zip`) |
 | `--pprof` | Include Go performance profiling data (for advanced debugging) |
 | `--json` | Output summary metadata in JSON format |
 
@@ -209,7 +209,7 @@ Save to a specific location:
 pfw-admin summary --filename=/tmp/pmm-diagnostic.zip
 ```
 
-Create archive without contacting PMM Server:
+Create archive without contacting PGF WatchTower Server:
 
 ```bash
 pfw-admin summary --skip-server
@@ -238,7 +238,7 @@ summary_db-server-01_2024-01-15T10-30-00/
     └── logs.zip (if --skip-server not used)
 ```
 
-### Submit to Percona Support
+### Submit to Support
 
 When opening a support ticket:
 {.power-number}
@@ -255,7 +255,7 @@ When opening a support ticket:
 
 ## See also
 
-- [pfw-admin overview](../pmm-admin/pmm-admin.md)
-- [Add database services to monitoring](../pmm-admin/add.md)
-- [Manage inventory](../pmm-admin/inventory.md)
-- [Configuration commands](../pmm-admin/config.md)
+- [pfw-admin overview](../pfw-admin/pfw-admin.md)
+- [Add database services to monitoring](../pfw-admin/add.md)
+- [Manage inventory](../pfw-admin/inventory.md)
+- [Configuration commands](../pfw-admin/config.md)

@@ -6,7 +6,7 @@
 There might be multiple places where the problem might come from:
 
 - Connection problem between `pfw-agent` and `pmm-managed`
-- PMM-agent cannot connect to the database.
+- pfw-agent cannot connect to the database.
 - Data source is not properly configured.
 
 **Why don't I see the whole query?**

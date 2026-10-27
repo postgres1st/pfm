@@ -17,7 +17,7 @@ Query Analytics captures completed queries so you can analyze them to identify p
 
     - MongoDB configured to log slow operations to a file
     - MongoDB server has write permissions to the log directory and file
-    - PMM agent has read permissions to the MongoDB log file
+    - PGF WatchTower agent has read permissions to the MongoDB log file
     - Appropriate user roles: `clusterMonitor`, or custom monitoring roles (`getCmdLineOpts` privilege on `{ cluster: true }`)
 
 ## Dashboard components
@@ -36,7 +36,7 @@ Query Analytics data retrieval is not instantaneous because metrics are collecte
 
 ## Label-based access control
 
-Query Analytics integrates with Postgres1st WatchTower's [label-based access control (LBAC)](../../admin/roles/access-control/intro.md) to enforce data security and user permissions.
+Query Analytics integrates with PGF WatchTower's [label-based access control (LBAC)](../../admin/roles/access-control/intro.md) to enforce data security and user permissions.
 
 When LBAC is enabled:
 

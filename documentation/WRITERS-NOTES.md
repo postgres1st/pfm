@@ -117,7 +117,7 @@ An exception would be when there is an equivalent or closely related section els
 
 ## Variables
 
-We use the `mkdocs-macros` plugin for variable expansion. For example, the variable `release` in `variables.yml` is used in the code so that the current PMM release number is always up-to-date. (Search the markdown files for `{{release}}`.)
+We use the `mkdocs-macros` plugin for variable expansion. For example, the variable `release` in `variables.yml` is used in the code so that the current PGF WatchTower release number is always up-to-date. (Search the markdown files for `{{release}}`.)
 
 This plugin can have problems when Jinja-like constructs are used in code. This happens when referring to Docker variables. Workarounds are explained here: https://github.com/fralau/mkdocs_macros_plugin/blob/master/webdoc/docs/advanced.md#solutions
 
@@ -138,57 +138,57 @@ Ideally, we should migrate to using just the first set, which offers 10,000+ ico
 Use HTML for icons:
 
 - For Material Theme Icons (`:` prefix and suffix), go to <https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/>, find an icon, select it and copy the code here.
-- For PMM UI (Grafana) icons (`uil-` prefix), go to <https://iconscout.com/unicons/explore/line>, find an icon, select 'Font' and copy the code here.
+- For PGF WatchTower UI (Grafana) icons (`uil-` prefix), go to <https://iconscout.com/unicons/explore/line>, find an icon, select 'Font' and copy the code here.
 - For Font Awesome (`fa-` prefix), go to <https://fontawesome.com/icons>, find an icon, copy the code.
 
 Note: the following list is WIP and will be updated as we go along.
 
 | Unicons icon code                            | Description                        | Used where                           |
 | -------------------------------------------- | ---------------------------------- | ------------------------------------ |
-| <i class="uil uil-angle-down"></i>           | Down chevron                       | PMM UI                               |
-| <i class="uil uil-apps"></i>                 | Four boxes in square               | PMM UI - QAN                         |
-| <i class="uil uil-arrow-left"></i>           | Left arrow                         | PMM UI                               |
-| <i class="uil uil-bars"></i>                 | 3 horizontal lines                 | PMM UI - HA dashboards               |
-| <i class="uil uil-bell"></i>                 | Bell                               | PMM UI - Alerting                    |
-| <i class="uil uil-bolt"></i>                 | Lightening flash/bolt              | PMM UI - Nodes compare               |
+| <i class="uil uil-angle-down"></i>           | Down chevron                       | PGF WatchTower UI                               |
+| <i class="uil uil-apps"></i>                 | Four boxes in square               | PGF WatchTower UI - QAN                         |
+| <i class="uil uil-arrow-left"></i>           | Left arrow                         | PGF WatchTower UI                               |
+| <i class="uil uil-bars"></i>                 | 3 horizontal lines                 | PGF WatchTower UI - HA dashboards               |
+| <i class="uil uil-bell"></i>                 | Bell                               | PGF WatchTower UI - Alerting                    |
+| <i class="uil uil-bolt"></i>                 | Lightening flash/bolt              | PGF WatchTower UI - Nodes compare               |
 | <i class="uil uil-caret-right"></i>          | Right caret                        | General                              |
-| <i class="uil uil-clock-nine"></i>           | Clock (at nine)                    | PMM UI - Time range selector         |
-| :material-cog:                               | Cog wheel                          | PMM UI Configuration                 |
-| :material-cog-outline:                       | Cog wheel                          | PMM UI Configuration->Settings       |
-| :material-clipboard-list-outline:            | Clipboard list                     | PMM UI - Inventory                   |
-| :material-dots-horizontal:                   | Triple dots, aligned horizontally  | PMM UI - Backup in progress          |
-| :material-magnify-expand:                    | Advisors                           | PMM UI - Advisors                    |
-| :material-view-dashboard:                    | Abstract blocks assembly           | PMM UI - Dashboards                  |
-| :material-dots-circle:                       | A circle surrounded by smaller ones| PMM UI - Node dashboards             |
-| <i class="uil uil-comment-alt-share"></i>    | Share comment symbol               | PMM UI - Share dashboard image       |
-| <i class="uil uil-compass"></i>              | Compass                            | PMM UI - Explore                     |
-| <i class="uil uil-copy"></i>                 | Copy                               | PMM UI - Copy (e.g. backup schedule) |
-| <i class="uil uil-cube"></i>                 | Cube                               | PMM UI                               |
-| <i class="uil uil-ellipsis-v"></i>           | Vertical ellipsis                  | PMM UI column menus                  |
-| <i class="uil uil-exclamation-triangle"></i> | Exclamation mark in triangle       | PMM UI - Warnings                    |
-| <i class="uil uil-eye-slash"></i>            | Eye with slash                     | PMM UI Password hide                 |
-| <i class="uil uil-eye"></i>                  | Eye                                | PMM UI Password reveal               |
-| <i class="uil uil-file-alt"></i>             | File symbol                        | PMM UI - Home dashboard              |
-| <i class="uil uil-graph-bar"></i>            | 3-bar chart                        | PMM UI link to dashboard             |
-| <i class="uil uil-history"></i>              | Backward arrow circle around clock | PMM UI - Backups and checks          |
-| <i class="uil uil-list-ul"></i>              | List                               | PMM UI - Alert rules                 |
-| <i class="uil uil-monitor"></i>              | Computer monitor                   | PMM UI - Cycle view mode             |
-| <i class="uil uil-pen"></i>                  | Pen                                | PMM UI - Edit                        |
-| <i class="uil uil-plus-circle"></i>          | Plus within circle                 | PMM UI Inventory->Add Instance       |
-| <i class="uil uil-plus-square"></i>          | Plus within square                 | PMM UI - Add                         |
-| <i class="uil uil-question-circle"></i>      | Question mark in circle            | PMM UI - Help                        |
-| <i class="uil uil-search-minus"></i>         | Minus in magnifying glass          | PMM UI - Time range zoom out         |
-| <i class="uil uil-search"></i>               | Magnifying glass                   | PMM UI - Search                      |
-| <i class="uil uil-share-alt"></i>            | Share symbol                       | PMM UI - Share dashboard             |
-| <i class="uil uil-shield"></i>               | Shield                             | PMM UI - Server admin                |
-| <i class="uil uil-star"></i>                 | Star                               | PMM UI - Dashboard favourites        |
-| <i class="uil uil-sync"></i>                 | Twin backward arrows               | PMM UI - Refresh dashboard           |
+| <i class="uil uil-clock-nine"></i>           | Clock (at nine)                    | PGF WatchTower UI - Time range selector         |
+| :material-cog:                               | Cog wheel                          | PGF WatchTower UI Configuration                 |
+| :material-cog-outline:                       | Cog wheel                          | PGF WatchTower UI Configuration->Settings       |
+| :material-clipboard-list-outline:            | Clipboard list                     | PGF WatchTower UI - Inventory                   |
+| :material-dots-horizontal:                   | Triple dots, aligned horizontally  | PGF WatchTower UI - Backup in progress          |
+| :material-magnify-expand:                    | Advisors                           | PGF WatchTower UI - Advisors                    |
+| :material-view-dashboard:                    | Abstract blocks assembly           | PGF WatchTower UI - Dashboards                  |
+| :material-dots-circle:                       | A circle surrounded by smaller ones| PGF WatchTower UI - Node dashboards             |
+| <i class="uil uil-comment-alt-share"></i>    | Share comment symbol               | PGF WatchTower UI - Share dashboard image       |
+| <i class="uil uil-compass"></i>              | Compass                            | PGF WatchTower UI - Explore                     |
+| <i class="uil uil-copy"></i>                 | Copy                               | PGF WatchTower UI - Copy (e.g. backup schedule) |
+| <i class="uil uil-cube"></i>                 | Cube                               | PGF WatchTower UI                               |
+| <i class="uil uil-ellipsis-v"></i>           | Vertical ellipsis                  | PGF WatchTower UI column menus                  |
+| <i class="uil uil-exclamation-triangle"></i> | Exclamation mark in triangle       | PGF WatchTower UI - Warnings                    |
+| <i class="uil uil-eye-slash"></i>            | Eye with slash                     | PGF WatchTower UI Password hide                 |
+| <i class="uil uil-eye"></i>                  | Eye                                | PGF WatchTower UI Password reveal               |
+| <i class="uil uil-file-alt"></i>             | File symbol                        | PGF WatchTower UI - Home dashboard              |
+| <i class="uil uil-graph-bar"></i>            | 3-bar chart                        | PGF WatchTower UI link to dashboard             |
+| <i class="uil uil-history"></i>              | Backward arrow circle around clock | PGF WatchTower UI - Backups and checks          |
+| <i class="uil uil-list-ul"></i>              | List                               | PGF WatchTower UI - Alert rules                 |
+| <i class="uil uil-monitor"></i>              | Computer monitor                   | PGF WatchTower UI - Cycle view mode             |
+| <i class="uil uil-pen"></i>                  | Pen                                | PGF WatchTower UI - Edit                        |
+| <i class="uil uil-plus-circle"></i>          | Plus within circle                 | PGF WatchTower UI Inventory->Add Instance       |
+| <i class="uil uil-plus-square"></i>          | Plus within square                 | PGF WatchTower UI - Add                         |
+| <i class="uil uil-question-circle"></i>      | Question mark in circle            | PGF WatchTower UI - Help                        |
+| <i class="uil uil-search-minus"></i>         | Minus in magnifying glass          | PGF WatchTower UI - Time range zoom out         |
+| <i class="uil uil-search"></i>               | Magnifying glass                   | PGF WatchTower UI - Search                      |
+| <i class="uil uil-share-alt"></i>            | Share symbol                       | PGF WatchTower UI - Share dashboard             |
+| <i class="uil uil-shield"></i>               | Shield                             | PGF WatchTower UI - Server admin                |
+| <i class="uil uil-star"></i>                 | Star                               | PGF WatchTower UI - Dashboard favourites        |
+| <i class="uil uil-sync"></i>                 | Twin backward arrows               | PGF WatchTower UI - Refresh dashboard           |
 | <i class="uil uil-thumbs-down"></i>          | Hand, thumbs down                  | For Benefits/Drawbacks tables        |
 | <i class="uil uil-thumbs-up"></i>            | Hand, thumbs up                    | For Benefits/Drawbacks tables        |
-| <i class="uil uil-times"></i>                | Large 'X'                          | PMM UI                               |
-| <i class="uil uil-toggle-off"></i>           | Toggle (off)                       | PMM UI - Toggle switch               |
-| <i class="uil uil-toggle-on"></i>            | Toggle (on)                        | PMM UI - Toggle switch               |
-| <i class="uil uil-trash-alt"></i>            | Trash can                          | PMM UI - Various 'Delete' operation  |
+| <i class="uil uil-times"></i>                | Large 'X'                          | PGF WatchTower UI                               |
+| <i class="uil uil-toggle-off"></i>           | Toggle (off)                       | PGF WatchTower UI - Toggle switch               |
+| <i class="uil uil-toggle-on"></i>            | Toggle (on)                        | PGF WatchTower UI - Toggle switch               |
+| <i class="uil uil-trash-alt"></i>            | Trash can                          | PGF WatchTower UI - Various 'Delete' operation  |
 
 ## Symbols
 
@@ -207,7 +207,7 @@ We have attempted to eschew traditional terminology used in software manuals. So
 
 There are no "introduction" or "overview" sections. These texts are just there under the title.
 
-Section titles are deliberately short. For example, in Setting up/Server/Docker, the 'Run' section shows how to run the docker image for PMM Server. The docs are for 'PMM', the section is 'Server' and subsection 'Docker'. That's what we're running.
+Section titles are deliberately short. For example, in Setting up/Server/Docker, the 'Run' section shows how to run the docker image for PGF WatchTower Server. The docs are for 'PGF WatchTower', the section is 'Server' and subsection 'Docker'. That's what we're running.
 
 ## Numbered lists
 

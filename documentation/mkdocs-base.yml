@@ -2,7 +2,7 @@
 # Used as base - look for .yml files with INHERIT
 # https://www.mkdocs.org/user-guide/configuration/
 
-site_name: Postgres1st WatchTower
+site_name: PGF WatchTower
 site_description: Documentation
 site_author: Postgres1st
 site_url: ""
@@ -26,14 +26,14 @@ theme:
         icon: material/brightness-auto
         name: Color theme set to Automatic. Click to change
     - media: "(prefers-color-scheme: light)"
-      scheme: percona-light
+      scheme: pfw-light
       primary: custom
       accent: custom
       toggle:
         icon: material/brightness-7
         name: Color theme set to Light Mode. Click to change
     - media: "(prefers-color-scheme: dark)"
-      scheme: percona-dark
+      scheme: pfw-dark
       primary: custom
       accent: custom
       toggle:
@@ -59,7 +59,7 @@ extra_css:
   # was removed from overrides/main.html. (css/kapa.css was never in this list, though the
   # widget it styled -- js/kapa.js, an "ask-percona-ai" button -- has also been removed.)
   # Both files are left in the tree pending a decision on removing them.
-  - css/pmm.css
+  - css/pfw.css
   - css/extra.css
 
 extra_javascript:
@@ -133,16 +133,16 @@ nav:
   - Home: index.md
   - Get help: get-help.md
   - Discover:
-      - discover-pmm/why-pmm.md
-      - discover-pmm/features.md
+      - discover-pfw/why-pfw.md
+      - discover-pfw/features.md
   - Quickstart guide: quickstart/quickstart.md
   - Install:
       - install-pmm/index.md
-      - Plan your Postgres1st WatchTower installation:
+      - Plan your PGF WatchTower installation:
           - install-pmm/plan-pmm-installation/choose-deployment.md
           - install-pmm/plan-pmm-installation/hardware_and_system.md
           - install-pmm/plan-pmm-installation/network_and_firewall.md
-      - Install PMM Server:
+      - Install PGF WatchTower Server:
           - Server installation overview: install-pmm/install-pmm-server/index.md
           - Prerequisites: install-pmm/install-pmm-server/prerequisites.md
           - Deployment options:
@@ -178,7 +178,7 @@ nav:
                         - Initial setup: install-pmm/install-pmm-server/deployment-options/aws/configure_aws.md
                   - VM configuration: 
                         - Configure environment variables: install-pmm/install-pmm-server/deployment-options/virtual/env_var.md
-                        - Access Postgres1st WatchTower UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
+                        - Access PGF WatchTower UI: install-pmm/install-pmm-server/deployment-options/virtual/login_UI.md
                         - Remove VM: install-pmm/install-pmm-server/deployment-options/virtual/remove_virtual_machine.md     
                         - SSH key: install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
               - Install on Kubernetes:
@@ -187,7 +187,7 @@ nav:
                       - install-pmm/install-pmm-server/deployment-options/helm/backup_container_helm.md
                       - install-pmm/install-pmm-server/deployment-options/helm/restore_container_helm.md
 
-      - Install PMM Client:
+      - Install PGF WatchTower Agent:
           - Client installation overview: install-pmm/install-pmm-client/index.md
           - install-pmm/install-pmm-client/prerequisites.md
           - Deployment options:
@@ -210,25 +210,25 @@ nav:
                   - HAproxy: install-pmm/install-pmm-client/connect-database/haproxy.md
               - External services monitoring:
                   - Connect external instance: install-pmm/install-pmm-client/connect-database/external.md
-      - Install Postgres1st WatchTower in HA mode: 
+      - Install PGF WatchTower in HA mode: 
         - Compare HA options: install-pmm/HA.md
         - Docker HA: install-pmm/HA-docker.md
         - Kubernetes Single-Instance: install-pmm/HA-kubernetes-single-instance.md
         - Kubernetes Cluster: 
-            - Understand Postgres1st WatchTower HA Cluster: install-pmm/HA-clustered.md
-            - Install Postgres1st WatchTower HA Cluster: install-pmm/install-HA-clustered.md
+            - Understand PGF WatchTower HA Cluster: install-pmm/HA-clustered.md
+            - Install PGF WatchTower HA Cluster: install-pmm/install-HA-clustered.md
 
   - Use:
-      - use/using-pmm.md
-      - Postgres1st WatchTower user interface:
+      - use/using-pfw.md
+      - PGF WatchTower user interface:
           - reference/ui/ui_components.md
           - reference/ui/log_in.md
           - reference/ui/timezone.md
-      - Postgres1st WatchTower Inventory: use/dashboard-inventory.md
+      - PGF WatchTower Inventory: use/dashboard-inventory.md
       - Remove services: use/remove-services.md
       - Metrics monitoring:
           - use/monitor.md
-          - Postgres1st WatchTower metrics:
+          - PGF WatchTower metrics:
               - use/metrics/index.md
               - use/metrics/extend_metrics.md
           - Dashboards:
@@ -248,7 +248,7 @@ nav:
                 - Filters panel: use/qan/panels/filters.md
                 - Details panel: use/qan/panels/details.md
 
-      - Percona Advisors:
+      - Advisors:
           - Advisor details: advisors/advisors.md
           - Develop custom advisors: advisors/develop-advisor-checks.md
           - List of advisors and checks:
@@ -292,7 +292,7 @@ nav:
                       - advisors/checks/postgresql-high-number-of-indexes-check.md
                       - advisors/checks/postgresql-sequential-scan-check.md
                       - advisors/checks/postgresql-unused-index-check.md
-      - Percona Alerting:
+      - Alerting:
           - alert/index.md
           - alert/alert_rules.md
           - alert/contact_points.md
@@ -300,12 +300,12 @@ nav:
           - alert/silence_alerts.md
           - alert/disable_alerts.md
   - Configure:
-      - configure-pmm/configure.md
-      - configure-pmm/metrics_res.md
-      - configure-pmm/advanced_settings.md
+      - configure-pfw/configure.md
+      - configure-pfw/metrics_res.md
+      - configure-pfw/advanced_settings.md
       - install-pmm/install-pmm-server/deployment-options/virtual/ssh.md
 
-      - Security in Postgres1st WatchTower:
+      - Security in PGF WatchTower:
           - admin/security/index.md
           - admin/security/ssl_encryption.md
           - admin/security/grafana_cookies.md
@@ -329,22 +329,22 @@ nav:
               - admin/roles/access-control/assign_roles.md
               - admin/roles/access-control/use_cases.md
   - Upgrade:
-      - Upgrade PMM Server:
+      - Upgrade PGF WatchTower Server:
           - pmm-upgrade/index.md
           - pmm-upgrade/ui_upgrade.md
           - pmm-upgrade/external_postgres_pmm_upgrade.md
           - Manual upgrade:
               - pmm-upgrade/upgrade_docker.md
               - pmm-upgrade/upgrade_podman.md
-          - Upgrade PMM Server in K8s:
+          - Upgrade PGF WatchTower Server in K8s:
               - pmm-upgrade/upgrade_helm.md
           - pmm-upgrade/migrating_from_pmm_2.md
           - pmm-upgrade/upgrade_aws.md
-      - Upgrade PMM Client: pmm-upgrade/upgrade_client.md
+      - Upgrade PGF WatchTower Agent: pmm-upgrade/upgrade_client.md
   - Uninstall:
       - uninstall-pmm/index.md
       - uninstall-pmm/unregister_client.md
-      - Uninstall PMM Client:
+      - Uninstall PGF WatchTower Agent:
           - Docker: uninstall-pmm/uninstall_docker.md
           - Helm: uninstall-pmm/uninstall_helm.md
           - Package manager: uninstall-pmm/uninstall_package_manager.md
@@ -357,34 +357,34 @@ nav:
       - troubleshoot/alerting_issues.md
       - troubleshoot/qan_issues.md
       - troubleshoot/plugin_issues.md
-      - troubleshoot/pmm_dump.md
+      - troubleshoot/pfw_dump.md
       - troubleshoot/data_issues.md
   - Release notes:
       - Release notes index: release-notes/index.md
-      - "Postgres1st WatchTower 3.9.0 beta2": release-notes/pfw-3.9.0-beta2.md
-      - "Postgres1st WatchTower 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
+      - "PGF WatchTower 3.9.0 beta2": release-notes/pfw-3.9.0-beta2.md
+      - "PGF WatchTower 3.9.0 beta1 (2026-08-07)": release-notes/pfmm-3.9.0-beta1.md
   - Reference:
       - Architecture:
           - reference/index.md
-          - Third-party components in Postgres1st WatchTower:
+          - Third-party components in PGF WatchTower:
               - reference/third-party/victoria.md
               - reference/third-party/clickhouse.md
               - reference/third-party/postgresql.md
-          - reference/pmm_components_and_versions.md
+          - reference/pfw_components_and_versions.md
           - reference/personal_data_handling.md
-          - Postgres1st WatchTower API:
+          - PGF WatchTower API:
               - api/index.md
               - api/authentication.md
-          - Postgres1st WatchTower commands:
-              - About Postgres1st WatchTower commands: use/commands/index.md
-              - pmm-admin:
-                - pmm-admin overview: use/commands/pmm-admin/pmm-admin.md
-                - Add database services: use/commands/pmm-admin/add.md
-                - Manage inventory: use/commands/pmm-admin/inventory.md
-                - Configuration commands: use/commands/pmm-admin/config.md
-                - Status and diagnostics: use/commands/pmm-admin/status.md
-              - pmm-agent: use/commands/pmm-agent.md
-      - Postgres1st WatchTower dashboards:
+          - PGF WatchTower commands:
+              - About PGF WatchTower commands: use/commands/index.md
+              - pfw-admin:
+                - pfw-admin overview: use/commands/pfw-admin/pfw-admin.md
+                - Add database services: use/commands/pfw-admin/add.md
+                - Manage inventory: use/commands/pfw-admin/inventory.md
+                - Configuration commands: use/commands/pfw-admin/config.md
+                - Status and diagnostics: use/commands/pfw-admin/status.md
+              - pfw-agent: use/commands/pfw-agent.md
+      - PGF WatchTower dashboards:
           - Insight:
               - reference/dashboards/dashboard-home.md
               - reference/dashboards/dashboard-advanced-data-exploration.md

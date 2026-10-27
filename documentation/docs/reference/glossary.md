@@ -39,7 +39,7 @@ Queries Per Second. A measure of the rate of queries being monitored.
 
 ## Query Analytics
 
-Component of PMM Server that enables you to analyze MySQL query performance over periods of time.
+Component of PGF WatchTower Server that enables you to analyze MySQL query performance over periods of time.
 
 ## Advisors
 

@@ -1,12 +1,12 @@
 # Configure the pfw-agent daemon
 
-`pfw-agent` is the daemon process that runs on each monitored host. It manages exporters, collects metrics, and handles communication between your databases and PMM Server. 
+`pfw-agent` is the daemon process that runs on each monitored host. It manages exporters, collects metrics, and handles communication between your databases and PGF WatchTower Server. 
 
-You typically don't interact with pfw-agent directly, `pfw-admin` communicates with PMM Server, which then sends commands to `pfw-agent`. 
+You typically don't interact with pfw-agent directly, `pfw-admin` communicates with PGF WatchTower Server, which then sends commands to `pfw-agent`. 
 
 ## NAME
 
-`pfw-agent`: The PMM Client daemon program.
+`pfw-agent`: The PGF WatchTower Agent daemon program.
 
 ## Syntax
 
@@ -14,7 +14,7 @@ You typically don't interact with pfw-agent directly, `pfw-admin` communicates w
 
 ## Description
 
-`pfw-agent`, part of the PMM Client package, runs as a daemon process on all monitored hosts.
+`pfw-agent`, part of the PGF WatchTower Agent package, runs as a daemon process on all monitored hosts.
 
 ## Commands
 
@@ -33,13 +33,13 @@ Most options can be set via environment variables (shown in parentheses).
 
 | Option                                 | Environment variable                | Description
 | -------------------------------------- | ----------------------------------- | -----------------------------
-| `--server-password=SERVER-PASSWORD`    | `PFW_AGENT_SERVER_PASSWORD`         | Password to connect to PMM Server.
-| `--server-username=SERVER-USERNAME`    | `PFW_AGENT_SERVER_USERNAME`         | Username to connect to PMM Server.
-| `--server-address=host:port`           | `PFW_AGENT_SERVER_ADDRESS`          | PMM Server address and port number.
-| `--server-insecure-tls`                | `PFW_AGENT_SERVER_INSECURE_TLS`     | Skip PMM Server TLS certificate validation.
+| `--server-password=SERVER-PASSWORD`    | `PFW_AGENT_SERVER_PASSWORD`         | Password to connect to PGF WatchTower Server.
+| `--server-username=SERVER-USERNAME`    | `PFW_AGENT_SERVER_USERNAME`         | Username to connect to PGF WatchTower Server.
+| `--server-address=host:port`           | `PFW_AGENT_SERVER_ADDRESS`          | PGF WatchTower Server address and port number.
+| `--server-insecure-tls`                | `PFW_AGENT_SERVER_INSECURE_TLS`     | Skip PGF WatchTower Server TLS certificate validation.
 | `--az=AZ`                              | `PFW_AGENT_SETUP_AZ`                | Node availability zone.
 | `--config-file=path_to/pfw-agent.yaml` | `PFW_AGENT_CONFIG_FILE`             | Configuration file path and name.
-| `--config-file-key-file`               | `PFW_AGENT_CONFIG_FILE_KEY_FILE`    | Path to RSA private key for config file encryption. See [Encrypt the PMM Client configuration file](../../admin/security/client_config_encryption.md).
+| `--config-file-key-file`               | `PFW_AGENT_CONFIG_FILE_KEY_FILE`    | Path to RSA private key for config file encryption. See [Encrypt the PGF WatchTower Agent configuration file](../../admin/security/client_config_encryption.md).
 | `--config-file-key-password`           | `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD`| Password for the RSA private key (if password-protected).
 | `--container-id=CONTAINER-ID`          | `PFW_AGENT_SETUP_CONTAINER_ID`      | Container ID.
 | `--container-name=CONTAINER-NAME`      | `PFW_AGENT_SETUP_CONTAINER_NAME`    | Container name.
@@ -54,7 +54,7 @@ Most options can be set via environment variables (shown in parentheses).
 | `--node-model=NODE-MODEL`              | `PFW_AGENT_SETUP_NODE_MODEL`        | Node model.
 | `--proc-mounts-path=PATH`              | `PFW_AGENT_SETUP_PROC_MOUNTS_PATH`  | Path to the `proc/mounts` file used by the `node_exporter`.
 | `--expose-exporter` | | If you enable this flag, any IP address on the local network and anywhere on the internet can access node exporter endpoints. If the flag is disabled, node exporter endpoints can be accessed only locally.|
-| `--paths-base=PATH`                    | `PFW_AGENT_PATHS_BASE`              | Base path for PMM client, where all binaries, tools and collectors are located. If not set, default is `/opt/postgres1st/watchtower`.
+| `--paths-base=PATH`                    | `PFW_AGENT_PATHS_BASE`              | Base path for PGF WatchTower client, where all binaries, tools and collectors are located. If not set, default is `/opt/postgres1st/watchtower`.
 | `--paths-exporters_base=PATH`          | `PFW_AGENT_PATHS_EXPORTERS_BASE`    | Base path for exporters to use. If not set, or set to a relative path, uses value of `--paths-base` prepended to it.
 | `--paths-mongodb_exporter=PATH`        | `PFW_AGENT_PATHS_MONGODB_EXPORTER`  | Path to `mongodb_exporter`.
 | `--paths-mysqld_exporter=PATH`         | `PFW_AGENT_PATHS_MYSQLD_EXPORTER`   | Path to `mysqld_exporter`.
@@ -68,26 +68,26 @@ Most options can be set via environment variables (shown in parentheses).
 | `--ports-max=PORTS-MAX`                | `PFW_AGENT_PORTS_MAX`               | Highest allowed port number for listening sockets.
 | `--ports-min=PORTS-MIN`                | `PFW_AGENT_PORTS_MIN`               | Lowest allowed port number for listening sockets.
 | `--region=REGION`                      | `PFW_AGENT_SETUP_REGION`            | Node region.
-| `--skip-registration`                  | `PFW_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PMM Server.
+| `--skip-registration`                  | `PFW_AGENT_SETUP_SKIP_REGISTRATION` | Skip registration on PGF WatchTower Server.
 | `--trace`                              | `PFW_AGENT_TRACE`                   | Enable trace output (implies `--debug`).
-| `--version`                            |                                     | Show application version, Postgres1st WatchTower version, time-stamp, git commit hash and branch.
+| `--version`                            |                                     | Show application version, PGF WatchTower version, time-stamp, git commit hash and branch.
 | `-h`, `--help`                         |                                     | Show help (synonym for `pfw-agent help`).
 
 ## Config file
 
-Postgres1st WatchTower manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
+PGF WatchTower manages the configuration file, and it's not recommended to modify it manually. However, if necessary, you can make adjustments to specific properties in the config file, such as the username or password used for authorization through service accounts.
 
 To do this, set the username to `service_token` and add your service token as the password. For more information about service account authorization, see [Service accounts authentication](../../api/authentication.md).
 
-To protect the credentials stored in this file, you can optionally encrypt the PMM Client configuration file. See [Encrypt the PMM Client configuration file](../../admin/security/client_config_encryption.md).
+To protect the credentials stored in this file, you can optionally encrypt the PGF WatchTower Agent configuration file. See [Encrypt the PGF WatchTower Agent configuration file](../../admin/security/client_config_encryption.md).
 
 ## Usage and examples of `paths-base` flag
 
-Since 2.23.0 this flag could be used for easier setup of PMM agent. With this flag the root permissions for PMM client aren't needed anymore and it will be fully working.
+Since 2.23.0 this flag could be used for easier setup of PGF WatchTower agent. With this flag the root permissions for PGF WatchTower client aren't needed anymore and it will be fully working.
 
 **Examples:**
 
-- **Case 1:** There are no root permissions for `/opt/postgres1st/watchtower` folder or there is a need to change default folder for Postgres1st WatchTower files.
+- **Case 1:** There are no root permissions for `/opt/postgres1st/watchtower` folder or there is a need to change default folder for PGF WatchTower files.
 Command:
 ````
 pfw-agent setup --paths-base=/home/user/custom/pmm --config-file=pfw-agent.yaml --server-insecure-tls --server-address=127.0.0.1:443 --server-username=admin --server-password=admin
@@ -127,7 +127,7 @@ debug: false
 trace: false
 
 ````
-As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for Postgres1st WatchTower that doesn't require root access could be specified.
+As could be seen above, base for all exporters and tools was changed only by setting `--paths-base`. With this tag the folder for PGF WatchTower that doesn't require root access could be specified.
 
 - **Case 2:** The older `--paths-exporters_base` flag could be passed along with the `--paths-base`
 Command:

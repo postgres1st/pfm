@@ -1,12 +1,12 @@
 ---
-title: Upgrade your PMM Server
-slug: pmm-server-upgrade
+title: Upgrade your PGF WatchTower Server
+slug: pfw-server-upgrade
 category:
   uri: pmm-server-maintenance
 position: 3
 ---
 
-To get the most of Postgres1st WatchTower, you need to keep your PMM Server up-to-date.
+To get the most of PGF WatchTower, you need to keep your PGF WatchTower Server up-to-date.
 
 Here are the main methods to achieve it:
 

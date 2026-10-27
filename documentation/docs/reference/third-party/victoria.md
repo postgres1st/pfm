@@ -12,9 +12,9 @@ If you need to change the metrics mode for an existing Service, you must remove 
 
 ## Remapped targets for direct Prometheus paths
 
-Direct Prometheus paths return structured information directly from Prometheus, bypassing the Postgres1st WatchTower application.
+Direct Prometheus paths return structured information directly from Prometheus, bypassing the PGF WatchTower application.
 
-They are accessed by requesting a URL of the form `<PMM SERVER URL>/prometheus/<PATH>`.
+They are accessed by requesting a URL of the form `<PGF WatchTower Server URL>/prometheus/<PATH>`.
 
 As a result of the move to VictoriaMetrics some direct Prometheus paths are no longer available.
 
@@ -23,7 +23,7 @@ As a result of the move to VictoriaMetrics some direct Prometheus paths are no l
 | `/prometheus/alerts`            | No change.
 | `/prometheus/config`            | No equivalent, but there is some information at `/prometheus/targets`.
 | `/prometheus/flags`             | The `flag` metrics at `/prometheus/metrics`.
-| `/prometheus/graph`             | `/graph/explore` (Grafana) or `graph/d/prometheus-advanced/advanced-data-exploration` (Postgres1st WatchTower dashboard).
+| `/prometheus/graph`             | `/graph/explore` (Grafana) or `graph/d/prometheus-advanced/advanced-data-exploration` (PGF WatchTower dashboard).
 | `/prometheus/rules`             | No change.
 | `/prometheus/service-discovery` | No equivalent.
 | `/prometheus/status`            | Some information at `/prometheus/metrics`. High cardinality metrics information at `/prometheus/api/v1/status/tsdb`.
@@ -31,7 +31,7 @@ As a result of the move to VictoriaMetrics some direct Prometheus paths are no l
 
 ## Environment variables
 
-Postgres1st WatchTower predefines certain flags that allow users to set all other [VictoriaMetrics parameters](https://docs.victoriametrics.com/#list-of-command-line-flags) as environment variables:
+PGF WatchTower predefines certain flags that allow users to set all other [VictoriaMetrics parameters](https://docs.victoriametrics.com/#list-of-command-line-flags) as environment variables:
 
 The environment variable must be prepended with `VM_`.
 
@@ -50,7 +50,7 @@ This instructs VictoriaMetrics to [deduplicate](https://docs.victoriametrics.com
 !!! caution alert alert-warning "Important/Caution"
     This feature is still in [Technical Preview](../../reference/glossary.md#technical-preview) and is subject to change. We recommend that early adopters use this feature for evaluation purposes only.
 
-You can use an external VictoriaMetrics database for monitoring in Postgres1st WatchTower.
+You can use an external VictoriaMetrics database for monitoring in PGF WatchTower.
 
 The environment variable `PMM_VM_URL` has been added, which should point to the external VictoriaMetrics database and should have the following format:
 
@@ -65,14 +65,14 @@ VMAGENT_remoteWrite_basicAuth_username={username}
 VMAGENT_remoteWrite_basicAuth_password={password}
 ```
 
-These credentials can be [set on PMM Server](../../install-pmm/install-pmm-server/deployment-options/docker/env_var.md#configure-vmagent-variables) and will automatically apply to all connected PMM Clients.
+These credentials can be [set on PGF WatchTower Server](../../install-pmm/install-pmm-server/deployment-options/docker/env_var.md#configure-vmagent-variables) and will automatically apply to all connected PGF WatchTower Agents.
 
 If other authentication methods are used on the VictoriaMetrics side, use any of the `vmagent` environment variables by prepending `VMAGENT_ prefix`.
 
-When external VictoriaMetrics is configured, internal VictoriaMetrics stops. In this case, VM Agent on PMM Server pulls metrics from agents configured in the `pull metrics mode` and from remote nodes. Data is then pushed to external VictoriaMetrics.
+When external VictoriaMetrics is configured, internal VictoriaMetrics stops. In this case, VM Agent on PGF WatchTower Server pulls metrics from agents configured in the `pull metrics mode` and from remote nodes. Data is then pushed to external VictoriaMetrics.
 
 !!! note alert alert-primary "Note"
-    VM Agents run by PMM Clients push data directly to external VictoriaMetrics. 
+    VM Agents run by PGF WatchTower Agents push data directly to external VictoriaMetrics. 
     
     Ensure that they can connect to external VictoriaMetrics.
 

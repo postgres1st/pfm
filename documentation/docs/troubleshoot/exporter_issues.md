@@ -2,9 +2,9 @@
 
 ## Exporter consuming excessive CPU or memory
 
-If a Postgres1st WatchTower exporter (such as `mysqld_exporter`, `postgres_exporter`, or `mongodb_exporter`) is using excessive CPU or memory, you can collect profiling data to diagnose the issue.
+If a PGF WatchTower exporter (such as `mysqld_exporter`, `postgres_exporter`, or `mongodb_exporter`) is using excessive CPU or memory, you can collect profiling data to diagnose the issue.
 
-Postgres1st WatchTower exporters expose `/debug/pprof/` endpoints for performance profiling. Use these to generate diagnostic data for analysis or to share with Percona Support.
+PGF WatchTower exporters expose `/debug/pprof/` endpoints for performance profiling. Use these to generate diagnostic data for analysis or to share with Support.
 
 ### Collect profiling data
 
@@ -21,7 +21,7 @@ To collect a profile, you need the exporter's password and listening port:
     pfw-admin list
 ```
 
-2. From the PMM Client host, collect the profile:
+2. From the PGF WatchTower Agent host, collect the profile:
 ```bash
     # Heap (memory) profile
     curl -su pmm:<password> http://127.0.0.1:<port>/debug/pprof/heap > heap.pprof

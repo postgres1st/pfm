@@ -1,26 +1,26 @@
-# Configure PMM Client with pfw-admin
+# Configure PGF WatchTower Agent with pfw-admin
 
-Use these `pfw-admin` commands from the command line to configure PMM Client, register nodes with PMM Server, remove services from monitoring, and add event annotations.
+Use these `pfw-admin` commands from the command line to configure PGF WatchTower Agent, register nodes with PGF WatchTower Server, remove services from monitoring, and add event annotations.
 
-`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **Postgres1st WatchTower Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
+`config` and `register` are CLI-only operations. To perform some of these tasks from the UI, go to **PGF WatchTower Inventory** to add or remove services, or see [Annotate dashboards](../../../use/dashboards-panels/annotate/annotate.md) to add event markers. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
-Use these commands to set up and maintain your PMM Client connection, control which services are monitored, and mark events on your dashboards:
+Use these commands to set up and maintain your PGF WatchTower Agent connection, control which services are monitored, and mark events on your dashboards:
 
-- [`pfw-admin config`](#pfw-admin-config):   Set PMM Server connection details for the local pfw-agent
+- [`pfw-admin config`](#pfw-admin-config):   Set PGF WatchTower Server connection details for the local pfw-agent
 
-- [`pfw-admin register`](#pfw-admin-register):   Register this node with PMM Server
+- [`pfw-admin register`](#pfw-admin-register):   Register this node with PGF WatchTower Server
 
-- [`pfw-admin remove`](#pfw-admin-remove):   Stop monitoring a service and remove it from Postgres1st WatchTower
+- [`pfw-admin remove`](#pfw-admin-remove):   Stop monitoring a service and remove it from PGF WatchTower
 
 - [`pfw-admin annotate`](#pfw-admin-annotate):   Add event markers to dashboards (deployments, maintenance, incidents)
 
 ## pfw-admin config
 
-Set the PMM Server URL and credentials that pfw-agent uses to communicate with the server.
+Set the PGF WatchTower Server URL and credentials that pfw-agent uses to communicate with the server.
 
-Run this after installing PMM Client or when changing server connection details.
+Run this after installing PGF WatchTower Agent or when changing server connection details.
 
 ### Syntax
 
@@ -30,9 +30,9 @@ pfw-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ### Flags
 
-- `--server-url=URL`:   PMM Server URL in `https://username:password@pmm-server-host/` format
+- `--server-url=URL`:   PGF WatchTower Server URL in `https://username:password@pmm-server-host/` format
 
-- `--server-insecure-tls`:   Skip PMM Server TLS certificate validation
+- `--server-insecure-tls`:   Skip PGF WatchTower Server TLS certificate validation
 
 - `--node-id=node-id`:   Node ID (default is auto-detected)
 
@@ -44,13 +44,13 @@ pfw-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 - `--metrics-mode=mode`:   Metrics flow mode for node-exporter: `auto` (default), `push`, `pull`
 
-- `--paths-base=dir`:   Base path for PMM client binaries, tools, and collectors
+- `--paths-base=dir`:   Base path for PGF WatchTower client binaries, tools, and collectors
 
 - `--agent-password=password`:   Custom agent password
 
 ### Examples
 
-- Configure PMM Client to connect to PMM Server:
+- Configure PGF WatchTower Agent to connect to PGF WatchTower Server:
 
     ```bash
     pfw-admin config --server-url=https://admin:admin@192.168.1.100:443
@@ -66,7 +66,7 @@ pfw-admin config [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ## pfw-admin register
 
-Register this node with PMM Server. Use this when setting up PMM Client for the first time or re-registering after server changes.
+Register this node with PGF WatchTower Server. Use this when setting up PGF WatchTower Agent for the first time or re-registering after server changes.
 
 ### Syntax
 
@@ -76,7 +76,7 @@ pfw-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ### Flags
 
-- `--server-url=URL`:   PMM Server URL in `https://username:password@pmm-server-host/` format
+- `--server-url=URL`:   PGF WatchTower Server URL in `https://username:password@pmm-server-host/` format
 
 - `--machine-id=ID`:   Node machine-id (default is auto-detected)
 
@@ -98,7 +98,7 @@ pfw-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ### Examples
 
-- Register node with PMM Server:
+- Register node with PGF WatchTower Server:
 
     ```bash
     pfw-admin register \
@@ -131,9 +131,9 @@ pfw-admin register [<node-address> [<node-type> [<node-name>]]] [FLAGS]
 
 ## pfw-admin remove
 
-Stop monitoring a service and remove it from Postgres1st WatchTower. This removes the service and its agents from PMM Server but does not delete any collected data. 
+Stop monitoring a service and remove it from PGF WatchTower. This removes the service and its agents from PGF WatchTower Server but does not delete any collected data. 
 
-Data remains on PMM Server for the configured [retention period](../../../reference/faq.md#retention).
+Data remains on PGF WatchTower Server for the configured [retention period](../../../reference/faq.md#retention).
 
 ### Syntax
 
@@ -185,7 +185,7 @@ pfw-admin list
 
 ## pfw-admin annotate
 
-Add event annotations to Postgres1st WatchTower dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
+Add event annotations to PGF WatchTower dashboards. Use annotations to mark deployments, maintenance windows, incidents, or other events that might affect database performance.
 
 Annotations appear as vertical lines on Grafana dashboards, helping you correlate performance changes with events. 
 
@@ -269,7 +269,7 @@ If a node or service name is specified, it takes precedence over the auto-detect
 
 ## See also
 
-- [`pfw-admin` command overview](../pmm-admin/pmm-admin.md)
-- [Add database services to monitoring](../pmm-admin/add.md)
-- [Modify agent configurations to manage inventory](../pmm-admin/inventory.md)
-- [Check connection status and troubleshoot](../pmm-admin/status.md)
+- [`pfw-admin` command overview](../pfw-admin/pfw-admin.md)
+- [Add database services to monitoring](../pfw-admin/add.md)
+- [Modify agent configurations to manage inventory](../pfw-admin/inventory.md)
+- [Check connection status and troubleshoot](../pfw-admin/status.md)

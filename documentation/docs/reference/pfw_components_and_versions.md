@@ -1,13 +1,13 @@
-# Postgres1st WatchTower components and versions
+# PGF WatchTower components and versions
 
-The following table lists all the PMM client/server components and their versions:
+The following table lists all the PGF WatchTower client/server components and their versions:
 
-| PMM client/server component | Version  | Documentation |Location on GitHub|
+| PGF WatchTower client/server component | Version  | Documentation |Location on GitHub|
 |-----------------------------|----------|---------------|------------------|
 | Grafana  | 11.6.13*  | [Grafana documentation](https://grafana.com/docs/grafana/latest/)|[Github Grafana](https://github.com/percona-platform/grafana)|
 | VictoriaMetrics| v1.140.0 | [VictoriaMetrics documentation](https://docs.victoriametrics.com/)|[Github VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)    |
 | Nginx    | 1.26.3  | [Nginx documentation](http://nginx.org/en/docs/)|[Github Nginx](https://github.com/nginx/nginx)                                                    |
-| Percona Distribution for PostgreSQL  | 14.5     | [Percona Distribution for PostgreSQL 14 documentation](https://docs.percona.com/postgresql/)|              |
+| PostgreSQL  | 14.5     | [PostgreSQL 14 documentation](https://docs.percona.com/postgresql/)|              |
 | ClickHouse| 25.3.6.56 |[ClickHouse documentation](https://clickhouse.com/docs/en/)|[Github ClickHouse](https://github.com/ClickHouse/ClickHouse)|
 | PerconaToolkit  | 3.5.2    | [Percona Toolkit documentation](https://docs.percona.com/percona-toolkit/)|[Github Percona Toolkit](https://github.com/percona/percona-toolkit)|
 | Nomad | v2.0.0 | [Nomad documentation](https://developer.hashicorp.com/nomad/docs) | [GitHub](https://github.com/hashicorp/nomad) |

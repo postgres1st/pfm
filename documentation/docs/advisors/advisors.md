@@ -1,20 +1,20 @@
 # Advisor details
 
-Percona advisors provide automated insights and recommendations within Postgres1st (Postgres1st WatchTower). These proactive insights help you uncover problems before they become larger issues: security risks, misconfigurations, poor performance, etc.
+Advisors provide automated insights and recommendations within Postgres1st (PGF WatchTower). These proactive insights help you uncover problems before they become larger issues: security risks, misconfigurations, poor performance, etc.
 
 Advisors are grouped by category: Security, Configuration, Performance and Query. Each advisor category offers a set of automated checks, which investigate a specific range of possible issues. 
 
 ## Enable/Disable
-Advisors are bundled with every Postgres1st WatchTower installation and automatically loaded by PMM Server when starting up. Postgres1st WatchTower runs automatic advisor checks in the background when the **Advisors** option is enabled under **Configuration > Settings > Advanced Settings**. This option is enabled by default, but you can disable it at any time if you do not need to check the health and performance of your connected databases.
+Advisors are bundled with every PGF WatchTower installation and automatically loaded by PGF WatchTower Server when starting up. PGF WatchTower runs automatic advisor checks in the background when the **Advisors** option is enabled under **Configuration > Settings > Advanced Settings**. This option is enabled by default, but you can disable it at any time if you do not need to check the health and performance of your connected databases.
 
 ## Automatic checks
 Advisor checks can be executed manually or automatically.
 
-By default, Postgres1st WatchTower runs checks every 24 hours, only for database types present in your inventory. This keeps your results focused and avoids unnecessary checks.
+By default, PGF WatchTower runs checks every 24 hours, only for database types present in your inventory. This keeps your results focused and avoids unnecessary checks.
 
-For example, if you only monitor PostgreSQL services, Postgres1st WatchTower skips MySQL and MongoDB checks. The **Advisors** page still lists all available checks, but only PostgreSQL checks are executed and can show as Failed.
+For example, if you only monitor PostgreSQL services, PGF WatchTower skips MySQL and MongoDB checks. The **Advisors** page still lists all available checks, but only PostgreSQL checks are executed and can show as Failed.
 
-Check results *always* remain on the PMM Server. They are never sent as part of Telemetry.
+Check results *always* remain on the PGF WatchTower Server. They are never sent as part of Telemetry.
 
 ## Configure execution intervals
 To control when and how often advisor checks run:
@@ -37,7 +37,7 @@ To change the frequency of an automatic check:
 3. Expand the relevant advisor and scroll through the list to find your check. Alternatively, use the **Filter** section at the top of the table to search checks by Name, Description, Status, or Interval.
 
     !!! hint alert alert-success "Tip"
-        If you need to share filtered advisor results with your team members, send them the Postgres1st WatchTower URL. This saves your search criteria and results.
+        If you need to share filtered advisor results with your team members, send them the PGF WatchTower URL. This saves your search criteria and results.
 4. Click the :material-pencil-box-outline: **Interval** icon in the **Actions** column, next to the check you want to update.
 5. Chose an interval and click **Save**.
 
@@ -54,7 +54,7 @@ To run checks manually:
     ![!Actions options](../images/PMM_Checks_Actions.png)
 
 ## Advisor results
-The results are sent to PMM Server where you can review any failed checks on the Home dashboard. The summary count of failed checks is classified as:
+The results are sent to PGF WatchTower Server where you can review any failed checks on the Home dashboard. The summary count of failed checks is classified as:
 
 - <b style="color:#e02f44;">Critical</b>, which also includes checks tagged as **Alert** and **Emergency**
 - <b style="color:#e36526;">Error</b>

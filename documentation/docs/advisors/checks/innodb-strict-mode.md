@@ -11,7 +11,7 @@ In addition, enabling Strict mode checks row size when creating or altering a ta
 
 ## Resolution
 
-The **innodb_strict_mode** setting is enabled by default. Percona strongly recommends leaving this setting enabled.  
+The **innodb_strict_mode** setting is enabled by default. We strongly recommend leaving this setting enabled.  
 This is an online change that you can apply with:
 
 `SET GLOBAL innodb_strict_mode=ON;`

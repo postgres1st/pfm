@@ -3,13 +3,13 @@
 !!! caution alert alert-warning "Important"
     This feature is still in [Technical Preview](../../reference/glossary.md#technical-preview) and is subject to change. We recommend that early adopters use this feature for testing purposes only.
 
-Monitoring the state of the database is crucial to timely identify and react to performance issues. Postgres1st (Postgres1st WatchTower) solution enables you to do just that.
+Monitoring the state of the database is crucial to timely identify and react to performance issues. Postgres1st (PGF WatchTower) solution enables you to do just that.
 
 However, the database state also depends on the state of the Kubernetes cluster itself. Hence it’s important to have metrics that can depict the state of the Kubernetes cluster.
 
 For information on setting up monitoring for the Kubernetes cluster health, see [documentation](https://docs.percona.com/percona-operator-for-mysql/pxc/monitor-kubernetes.html). 
 
-This setup has been tested with the PMM Server as the centralized data storage and the Victoria Metrics Kubernetes monitoring stack as the metrics collector. These steps may also apply if you use another Prometheus-compatible storage.
+This setup has been tested with the PGF WatchTower Server as the centralized data storage and the Victoria Metrics Kubernetes monitoring stack as the metrics collector. These steps may also apply if you use another Prometheus-compatible storage.
 
 
 ## Kubernetes overview

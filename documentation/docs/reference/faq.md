@@ -8,9 +8,9 @@
 
 See our detailed guides:
 
-- [Postgres1st WatchTower hardware and system requirements](../install-pmm/plan-pmm-installation/hardware_and_system.md) for complete specifications
-- [Setting up PMM Server](../install-pmm/install-pmm-server/index.md) for server installation  
-- [Setting up PMM Client](../install-pmm/install-pmm-client/index.md) for client setup
+- [PGF WatchTower hardware and system requirements](../install-pmm/plan-pmm-installation/hardware_and_system.md) for complete specifications
+- [Setting up PGF WatchTower Server](../install-pmm/install-pmm-server/index.md) for server installation  
+- [Setting up PGF WatchTower Agent](../install-pmm/install-pmm-client/index.md) for client setup
 
 Quick reference for typical deployment (up to 30 nodes):
 
@@ -29,26 +29,26 @@ Quick reference for typical deployment (up to 30 nodes):
 
 ## How can I upgrade from version 2?
 
-Postgres1st WatchTower 3 introduces significant architectural changes that require gradual transition from Postgres1st WatchTower 2. For detailed instructions, see [Upgrade from PMM2](../pmm-upgrade/migrating_from_pmm_2.md).
+PGF WatchTower 3 introduces significant architectural changes that require gradual transition from PGF WatchTower 2. For detailed instructions, see [Upgrade from PMM2](../pmm-upgrade/migrating_from_pmm_2.md).
 
 
-## Why does the Postgres1st WatchTower installation script fail during Docker installation?
+## Why does the PGF WatchTower installation script fail during Docker installation?
 If you encounter errors such as `ERROR: Unsupported distribution` when running the, follow these steps:
 {.power-number}
 
 1. [Install Docker manually](https://docs.docker.com/engine/install/).
-2. Run the [Postgres1st WatchTower Easy-install script](../install-pmm/install-pmm-server/deployment-options/docker/easy-install.md) again.
+2. Run the [PGF WatchTower Easy-install script](../install-pmm/install-pmm-server/deployment-options/docker/easy-install.md) again.
 
 ## Retention
 
 To control data retention, go to **Configuration > Settings > Advanced settings > Data retention** to adjust the value in days.
 
 !!! seealso alert alert-info "See also"
-    [Configure data retention](../configure-pmm/advanced_settings.md#data-retention)
+    [Configure data retention](../configure-pfw/advanced_settings.md#data-retention)
 
-## How are PMM Server logs rotated?
+## How are PGF WatchTower Server logs rotated?
 
-PMM Server embeds multiple components, like Victoria Metrics, Query Analytics, Grafana, `managed`, PostgreSQL, ClickHouse, etc. (components). All PMM Server component logs are rotated by `supervisord`. The components' log rotation settings are stored in `*.ini` files within the `/etc/supervisord.d` directory. Those settings define both the maximum size of a log file and the number of log files to keep. The log rotation takes place once the log file reaches its maximum size.
+PGF WatchTower Server embeds multiple components, like Victoria Metrics, Query Analytics, Grafana, `managed`, PostgreSQL, ClickHouse, etc. (components). All PGF WatchTower Server component logs are rotated by `supervisord`. The components' log rotation settings are stored in `*.ini` files within the `/etc/supervisord.d` directory. Those settings define both the maximum size of a log file and the number of log files to keep. The log rotation takes place once the log file reaches its maximum size.
 
 ## What privileges are required to monitor a MySQL instance?
 
@@ -63,9 +63,9 @@ SELECT, PROCESS, SUPER, REPLICATION CLIENT, RELOAD
 
 Yes.
 
-You can add multiple instances of MySQL or any other service to be monitored from the same PMM Client.
+You can add multiple instances of MySQL or any other service to be monitored from the same PGF WatchTower Agent.
 
-To do this, you provide a unique port and IP address, or a socket for each instance, and specify a unique name for each. (If a name is not provided, Postgres1st WatchTower uses the name of the PMM Client host.)
+To do this, you provide a unique port and IP address, or a socket for each instance, and specify a unique name for each. (If a name is not provided, PGF WatchTower uses the name of the PGF WatchTower Agent host.)
 
 For example, to add MySQL monitoring for two local MySQL servers:
 
@@ -75,7 +75,7 @@ pfw-admin add mysql --username root --password root instance-02 127.0.0.1:3002
 ```
 
 !!! seealso alert alert-info "See also"
-    [`pfw-admin add mysql`](../use/commands/pmm-admin/add.md)
+    [`pfw-admin add mysql`](../use/commands/pfw-admin/add.md)
 
 ## Can I rename instances?
 
@@ -85,7 +85,7 @@ When you remove a monitoring service, previously collected data remains availabl
 
 ## Can I add an AWS RDS MySQL or Aurora MySQL instance from a non-default AWS partition?
 
-By default, the RDS discovery works with the default `aws` partition. But you can switch to special regions, like the [GovCloud](https://aws.amazon.com/govcloud-us/) one, with the alternative [AWS partitions](https://docs.aws.amazon.com/sdk-for-go/api/aws/endpoints/#pkg-constants) (e.g. `aws-us-gov`) adding them to the *Settings* via the PMM Server [API](../api/index.md).
+By default, the RDS discovery works with the default `aws` partition. But you can switch to special regions, like the [GovCloud](https://aws.amazon.com/govcloud-us/) one, with the alternative [AWS partitions](https://docs.aws.amazon.com/sdk-for-go/api/aws/endpoints/#pkg-constants) (e.g. `aws-us-gov`) adding them to the *Settings* via the PGF WatchTower Server [API](../api/index.md).
 
 ![!image](../images/aws-partitions-in-api.png)
 
@@ -103,28 +103,28 @@ The default values (in seconds):
 | Custom (defaults) | 60   | 10     | 5    |
 
 !!! seealso alert alert-info "See also"
-    [Metrics resolution](../configure-pmm/metrics_res.md)
+    [Metrics resolution](../configure-pfw/metrics_res.md)
 
 ## How do I set up Alerting?
 
-When a monitored service metric reaches a defined threshold, PMM Server can trigger alerts for it using embedded Grafana Alerting functionality.
+When a monitored service metric reaches a defined threshold, PGF WatchTower Server can trigger alerts for it using embedded Grafana Alerting functionality.
 
 For this, you must configure alerting rules that define conditions under which an alert should be triggered, and the contact points used to send the alert (e.g. email).
 
-Percona templated alerts enable you to create alerts based on built-in or custom templates to simplify the alert setup process. Grafana managed alerts allows attaching rules to your dashboard panel and enables you to create more sophisticated alerting rules. In addition, it can be easier to manage installations with a large number of hosts. This additional flexibility comes at the expense of simplicity.
+templated alerts enable you to create alerts based on built-in or custom templates to simplify the alert setup process. Grafana managed alerts allows attaching rules to your dashboard panel and enables you to create more sophisticated alerting rules. In addition, it can be easier to manage installations with a large number of hosts. This additional flexibility comes at the expense of simplicity.
 
 !!! seealso alert alert-info "See also"
     [Grafana Alerting](https://grafana.com/docs/grafana/latest/alerting/)
 
 ## How do I use a custom Prometheus configuration file?
 
-Normally, PMM Server fully manages the [Prometheus configuration file](https://prometheus.io/docs/prometheus/latest/configuration/configuration/).
+Normally, PGF WatchTower Server fully manages the [Prometheus configuration file](https://prometheus.io/docs/prometheus/latest/configuration/configuration/).
 
 However, some users may want to change the generated configuration to add additional scrape jobs, configure remote storage, etc.
 
 From version 2.4.0, when `pmm-managed` starts the Prometheus file generation process, it tries to load the `/srv/prometheus/prometheus.base.yml` file first, to use it as a base for the `prometheus.yml` file.
 
-The `prometheus.yml` file can be regenerated by restarting the PMM Server container, or by using the `SetSettings` API call with an empty body.
+The `prometheus.yml` file can be regenerated by restarting the PGF WatchTower Server container, or by using the `SetSettings` API call with an empty body.
 
 !!! seealso alert alert-info "See also"
     - [API](../api/index.md)
@@ -138,16 +138,16 @@ See [Troubleshoot update](../troubleshoot/upgrade_issues.md).
 - User name: `pmm`
 - Password: Agent ID
 
-Postgres1st WatchTower protects an exporter's output from unauthorized access by adding an authorization layer. To access an exporter, you can use `pmm` as a user name and the Agent ID as a password. You can find the Agent ID corresponding to a given exporter by running `pfw-admin list`.
+PGF WatchTower protects an exporter's output from unauthorized access by adding an authorization layer. To access an exporter, you can use `pmm` as a user name and the Agent ID as a password. You can find the Agent ID corresponding to a given exporter by running `pfw-admin list`.
 
 !!! seealso alert alert-info "See also"
-    [`pfw-admin list`](../use/commands/pmm-admin/status.md#pfw-admin-list)
+    [`pfw-admin list`](../use/commands/pfw-admin/status.md#pfw-admin-list)
 
-## How to provision PMM Server with non-default admin password?
+## How to provision PGF WatchTower Server with non-default admin password?
 
 You can set the password for the default `admin` user on first startup with the `GF_SECURITY_ADMIN_PASSWORD` environment variable, and optionally set a custom admin username with `GF_SECURITY_ADMIN_USER`.
 
-These variables are applied only during initial Postgres1st WatchTower data initialization. They are ignored on subsequent starts and container restarts.
+These variables are applied only during initial PGF WatchTower data initialization. They are ignored on subsequent starts and container restarts.
 
 ```sh
 docker run -d --name pmm-server \
@@ -158,9 +158,9 @@ docker run -d --name pmm-server \
   percona/pmm-server:latest
 ```
 
-## How to change the Postgres1st WatchTower password for the default admin user?
+## How to change the PGF WatchTower password for the default admin user?
 
-Once Postgres1st WatchTower has started, you can use either of the following to change the password  (assuming your container is named `pmm-server`):
+Once PGF WatchTower has started, you can use either of the following to change the password  (assuming your container is named `pmm-server`):
 
 - a helper script `change-admin-password`:
 
@@ -172,14 +172,14 @@ docker exec -t pmm-server change-admin-password your_secure_password
 
 ```sh
 PMM_PASSWORD="mypassword"
-echo "Waiting for Postgres1st WatchTower to initialize to set password..."
+echo "Waiting for PGF WatchTower to initialize to set password..."
 until [ $(docker inspect -f {% raw %}'{{.State.Health.Status}}'{% endraw %} pmm-server) = "healthy" ]; do sleep 1; done
 docker exec -t pmm-server bash -c  "grafana cli --homepath /usr/share/grafana --config=/etc/grafana/grafana.ini admin reset-admin-password $PMM_PASSWORD"
 ```
 
 ## How to use a non-default listen-port for pfw-admin?
 
-If you configure the PMM agent to use a non-default listen-port, for pfw-admin to communicate with the agent, use the global flag `--pfw-agent-listen-port=LISTEN_PORT`.
+If you configure the PGF WatchTower agent to use a non-default listen-port, for pfw-admin to communicate with the agent, use the global flag `--pfw-agent-listen-port=LISTEN_PORT`.
 
 ```sh
 --pfw-agent-listen-port=LISTEN_PORT
@@ -197,21 +197,21 @@ If you are using OVF/AMI, you can change the default password through SSH by usi
 change-admin-password <new_password>
 ```
 
-## How does Postgres1st WatchTower handle personal and confidential data?
+## How does PGF WatchTower handle personal and confidential data?
 
-Read our [Privacy Policy](https://www.postgresfirst.com/privacy-policy) to learn how Postgres1st WatchTower manages personal and confidential data. More technical details can be found in [Data handling in Postgres1st WatchTower](personal_data_handling.md).
+Read our [Privacy Policy](https://www.postgresfirst.com/privacy-policy) to learn how PGF WatchTower manages personal and confidential data. More technical details can be found in [Data handling in PGF WatchTower](personal_data_handling.md).
 
-## Why am I getting a "User already exists" error when logging back into Postgres1st WatchTower?
+## Why am I getting a "User already exists" error when logging back into PGF WatchTower?
 
-Following [CVE fix 2023-3128](https://grafana.com/blog/2023/06/22/grafana-security-release-for-cve-2023-3128/) in the 2.38 release, Postgres1st WatchTower increases security by only allowing authentications based on the unique user ID provided by the identity provider.
+Following [CVE fix 2023-3128](https://grafana.com/blog/2023/06/22/grafana-security-release-for-cve-2023-3128/) in the 2.38 release, PGF WatchTower increases security by only allowing authentications based on the unique user ID provided by the identity provider.
 
-If you are trying to log into Postgres1st WatchTower via a third-party authentication provider which doesn't support a unique ID field, Postgres1st WatchTower will show this error on second and subsequent authentications.
+If you are trying to log into PGF WatchTower via a third-party authentication provider which doesn't support a unique ID field, PGF WatchTower will show this error on second and subsequent authentications.
 
-**Solution**: we recommend logging into Postgres1st WatchTower using a Percona Account, as this is a highly secure authentication method.
-**Workaround**: if you need to log into Postgres1st WatchTower via a third-party authentication provider which doesn’t support a unique ID field, you can use the following workaround to log into Postgres1st WatchTower:
+**Solution**: we recommend logging into PGF WatchTower using a Percona Account, as this is a highly secure authentication method.
+**Workaround**: if you need to log into PGF WatchTower via a third-party authentication provider which doesn’t support a unique ID field, you can use the following workaround to log into PGF WatchTower:
 
-  - pass the `GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=1` environment variable to the Postgres1st WatchTower container **OR**
-  - set the `oauth_allow_insecure_email_lookup` config key in the auth section of the `grafana.ini` file. Keep in mind that any changes you make to this file are lost when upgrading Postgres1st WatchTower, so make sure to manually update this file after each upgrade.
+  - pass the `GF_AUTH_OAUTH_ALLOW_INSECURE_EMAIL_LOOKUP=1` environment variable to the PGF WatchTower container **OR**
+  - set the `oauth_allow_insecure_email_lookup` config key in the auth section of the `grafana.ini` file. Keep in mind that any changes you make to this file are lost when upgrading PGF WatchTower, so make sure to manually update this file after each upgrade.
 
 !!! caution alert alert-warning "Important"
     We do not recommend using the above workaround for an extended period. Instead, ensure user uniqueness across multiple identity providers, while also encouraging your identity provider to support a unique ID field, or choose a provider who does.

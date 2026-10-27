@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-slug: pmm-server-troubleshooting
+slug: pfw-server-troubleshooting
 category:
   uri: pmm-server-maintenance
 position: 4

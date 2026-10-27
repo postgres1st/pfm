@@ -2,7 +2,7 @@
 
 Use `pfw-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
 
-To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md).
+To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
 
 ## Commands
 
@@ -14,7 +14,7 @@ To manage inventory in the UI, go to **Configuration > Inventory**. For programm
 
 ## pfw-admin inventory list
 
-View agents, nodes, or services registered with PMM Server. You must specify which type to list:
+View agents, nodes, or services registered with PGF WatchTower Server. You must specify which type to list:
 
 ```bash
 pfw-admin inventory list agents
@@ -46,8 +46,8 @@ pfw-admin inventory list services
 
 Modify agent configuration without removing and re-adding the service. Use this to update collector settings, enable or disable features, or change connection parameters.
 
-!!! note "Postgres1st WatchTower 3.7.0+"
-    This command is available starting with Postgres1st WatchTower 3.7.0.
+!!! note "PGF WatchTower 3.7.0+"
+    This command is available starting with PGF WatchTower 3.7.0.
 
 ### Syntax
 
@@ -119,15 +119,15 @@ You can also use `pfw-admin list` to see agents alongside their services.
 :   Save the new settings without verifying the database connection first
 
 !!! note "When to use `--skip-connection-check`"
-    By default, PMM verifies connection-affecting changes against the database before saving them.
+    By default, PGF WatchTower verifies connection-affecting changes against the database before saving them.
     Skip this check when the agent cannot reach the database at the moment you make the change, for example:
 
     - The database is temporarily **down or in a maintenance window**.
-    - You are rotating a **password that PMM does not yet have** (the current stored credentials
+    - You are rotating a **password that PGF WatchTower does not yet have** (the current stored credentials
       are already invalid, so the check would fail).
     - The target instance is otherwise **temporarily unreachable**.
 
-    PMM saves the new settings as-is. If the values are wrong,
+    PGF WatchTower saves the new settings as-is. If the values are wrong,
     metric collection stays broken until you correct them.
 
 #### Collectors
@@ -139,7 +139,7 @@ You can also use `pfw-admin list` to see agents alongside their services.
 :   Comma-separated list of collectors to disable
 
 - `--max-collections-limit`
-:   Max collections to monitor (-1=Postgres1st WatchTower decides, 0=unlimited)
+:   Max collections to monitor (-1=PGF WatchTower decides, 0=unlimited)
 
 - `--stats-collections`
 :   Limit stats to specific databases/collections
@@ -236,13 +236,13 @@ You can also use `pfw-admin list` to see agents alongside their services.
 
 The command returns a clear error message in these cases:
 
-- **Non-existent agent ID**: The specified agent ID does not exist in Postgres1st WatchTower inventory.
+- **Non-existent agent ID**: The specified agent ID does not exist in PGF WatchTower inventory.
 - **Mismatched agent type**: The agent ID exists but belongs to a different agent type (e.g., using a `mysqld-exporter` ID with the `mongodb-exporter` subcommand).
 - **Invalid flag value**: A flag receives a value outside its allowed range (e.g., an invalid log level).
-- **Connection check failure**: PMM could not validate the new connection-affecting settings (credentials, TLS) against the database. No changes are saved. If the database is intentionally unreachable (down, in maintenance, or you are setting a password PMM does not yet have), re-run the command with `--skip-connection-check`.
+- **Connection check failure**: PGF WatchTower could not validate the new connection-affecting settings (credentials, TLS) against the database. No changes are saved. If the database is intentionally unreachable (down, in maintenance, or you are setting a password PGF WatchTower does not yet have), re-run the command with `--skip-connection-check`.
 
 ## See also
 
-- [pfw-admin add](../pmm-admin/add.md)
-- [Configuration commands](../pmm-admin/config.md)
-- [Status and diagnostics](../pmm-admin/status.md)
+- [pfw-admin add](../pfw-admin/add.md)
+- [Configuration commands](../pfw-admin/config.md)
+- [Status and diagnostics](../pfw-admin/status.md)

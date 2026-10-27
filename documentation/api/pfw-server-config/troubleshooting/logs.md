@@ -4,13 +4,13 @@ slug: pmm-server-logs
 category:
   uri: pmm-server-maintenance
 parent:
-  uri: pmm-server-troubleshooting
+  uri: pfw-server-troubleshooting
 ---
-Download the logs and components configuration to troubleshoot any issues with the PMM Server.
+Download the logs and components configuration to troubleshoot any issues with the PGF WatchTower Server.
 
 ## Accessing logs
 
-PMM Server offers three ways to access and download logs:
+PGF WatchTower Server offers three ways to access and download logs:
 
 1. Through direct URL, by visiting `https://<address-of-your-pmm-server>/v1/server/logs.zip`.
 2. By calling the Logs endpoint. This method enables you to customize the log content using the `line-count` parameter: For example:
@@ -18,9 +18,9 @@ PMM Server offers three ways to access and download logs:
    - Default 50,000 lines: `https://<pmm-server>/v1/server/logs.zip`
    - Custom number of lines: `https://<pmm-server>/v1/server/logs.zip?line-count=10000`
    - Unlimited, full log: `https://<pmm-server>/v1/server/logs.zip?line-count=-1`
-3. Through the UI, by selecting the **Help > Postgres1st WatchTower Logs** option from the main menu.
-  If you need to share logs with Percona Support via an SFTP server, you can also use the **Postgres1st WatchTower Dump** option from the Help menu to generate a compressed tarball file with an export of your Postgres1st WatchTower metrics and QAN data.
-  For more information, see [Export Postgres1st WatchTower data with Postgres1st WatchTower Dump](https://docs.percona.com/percona-monitoring-and-management/3/troubleshoot/pmm_dump.html) topic in the product documentation.
+3. Through the UI, by selecting the **Help > PGF WatchTower Logs** option from the main menu.
+  If you need to share logs with Support via an SFTP server, you can also use the **PGF WatchTower Dump** option from the Help menu to generate a compressed tarball file with an export of your PGF WatchTower metrics and QAN data.
+  For more information, see [Export PGF WatchTower data with PGF WatchTower Dump](https://docs.percona.com/percona-monitoring-and-management/3/troubleshoot/pfw_dump.html) topic in the product documentation.
 
 ## Log structure
 
@@ -72,9 +72,9 @@ The downloaded logs package contains the following structure:
 ```
 
 
-> 📘 PMM Server Version
+> 📘 PGF WatchTower Server Version
 >
-> PMM Server also dumps its version info to a special file `installed.json`.
+> PGF WatchTower Server also dumps its version info to a special file `installed.json`.
 ```shell
 % cat installed.json | jq
 {

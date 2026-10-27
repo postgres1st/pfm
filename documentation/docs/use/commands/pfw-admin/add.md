@@ -1,8 +1,8 @@
 # Add databases with pfw-admin
 
-Use `pfw-admin add` to add database services to Postgres1st WatchTower monitoring from the command line. This command supports PostgreSQL. Other database types are refused: this is a PostgreSQL-only product and the server rejects them at registration.
+Use `pfw-admin add` to add database services to PGF WatchTower monitoring from the command line. This command supports PostgreSQL. Other database types are refused: this is a PostgreSQL-only product and the server rejects them at registration.
 
-To add services through the web interface instead, see [Connect databases in the Postgres1st WatchTower UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [Postgres1st WatchTower API](../../../api/index.md)
+To add services through the web interface instead, see [Connect databases in the PGF WatchTower UI](../../../install-pmm/install-pmm-client/connect-database/index.md). For programmatic access, see the [PGF WatchTower API](../../../api/index.md)
 
 ## Syntax
 
@@ -85,7 +85,7 @@ For a complete list of standard and custom labels, see [Labels reference](../../
 | `--agent-env-vars`<br>Environment variables for exporter | | | ✓ | | | |
 | `--metrics-mode`<br>Metrics flow mode (auto/push/pull) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `--node-id`<br>Node ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
-| `--pfw-agent-id`<br>PMM Agent ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
+| `--pfw-agent-id`<br>PGF WatchTower Agent ID | ✓ | ✓ | ✓ | ✓ | ✓ | |
 | `--service-node-id`<br>Service node ID | | | | | | ✓ |
 | `--skip-connection-check`<br>Skip connection check | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 
@@ -109,7 +109,7 @@ Connect to MySQL using TCP or socket:
 | `--username` | MySQL username | |
 | `--password` | MySQL password | |
 | `--extra-dsn` | Additional DSN parameters | |
-| `--connection-timeout` | How long Postgres1st WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
+| `--connection-timeout` | How long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). Useful for remote or high-latency databases. | `2s` |
 
 Find the socket path:
 
@@ -142,13 +142,13 @@ Secure the connection with TLS:
 
 ### Query Analytics options
 
-Control how Postgres1st WatchTower collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
-- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, Postgres1st WatchTower needs permissions to read the slow query log file.
+- `--query-source`: Source for collecting queries: `slowlog` (default), `perfschema`, or `none`. For `slowlog`, PGF WatchTower needs permissions to read the slow query log file.
 
-- `--disable-queryexamples`: Disable collection of query examples. Prevents Postgres1st WatchTower from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
+- `--disable-queryexamples`: Disable collection of query examples. Prevents PGF WatchTower from storing actual query values in Query Analytics while maintaining all performance metrics. Recommended for databases handling sensitive data.
 
-- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PMM agent to terminate.
+- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PGF WatchTower agent to terminate.
 
 - `--size-slow-logs`: Rotate slow log file at this size. Use a unit suffix: `KiB`, `MiB`, `GiB`, or `TiB`. If `0`, uses server-defined default. Negative values disable log rotation.
 
@@ -244,11 +244,11 @@ pfw-admin add postgresql [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`. The `--database` flag specifies which database to connect to (defaults to `postgres`).
 
-Use `--connection-timeout` to set how long Postgres1st WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between Postgres1st WatchTower and your PostgreSQL instance with TLS:
+Secure the connection between PGF WatchTower and your PostgreSQL instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -262,13 +262,13 @@ Secure the connection between Postgres1st WatchTower and your PostgreSQL instanc
 
 ### Query Analytics options
 
-Control how Postgres1st WatchTower collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `pgstatements` (default), `pgstatmonitor`, or `none`.
 
 - `--disable-queryexamples`: Disable collection of query examples. Only applies when `--query-source` is set to `pgstatmonitor`. With `pgstatements`, query examples are never collected.
 
-- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PMM agent to terminate.
+- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (2048 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PGF WatchTower agent to terminate.
 
 - `--comments-parsing`: Enable or disable parsing comments from queries into QAN filter groups: `on` or `off` (default).
 
@@ -328,11 +328,11 @@ pfw-admin add mongodb [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`.
 
-Use `--connection-timeout` to set how long Postgres1st WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency databases.
 
 ### TLS options
 
-Secure the connection between Postgres1st WatchTower and your MongoDB instance with TLS:
+Secure the connection between PGF WatchTower and your MongoDB instance with TLS:
 
 - `--tls`: Use TLS to connect.
 
@@ -346,27 +346,27 @@ Secure the connection between Postgres1st WatchTower and your MongoDB instance w
 
 ### Query Analytics options
 
-Control how Postgres1st WatchTower collects query data for Query Analytics (QAN):
+Control how PGF WatchTower collects query data for Query Analytics (QAN):
 
 - `--query-source`: Source for collecting queries: `profiler` (default), `mongolog`, or `none`.
 
-- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (4096 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PMM agent to terminate.
+- `--max-query-length`: Maximum query length in QAN. Set to `-1` for unlimited, `0` for the default (4096 characters), or a specific number to truncate after that many characters. Do not set to 1, 2, or 3 as these values will cause the PGF WatchTower agent to terminate.
 
 ### Collector options
 
-Control which metrics Postgres1st WatchTower collects:
+Control which metrics PGF WatchTower collects:
 
-- `--enable-all-collectors`: Enable all collectors. By default, Postgres1st WatchTower enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
+- `--enable-all-collectors`: Enable all collectors. By default, PGF WatchTower enables only `diagnosticdata` and `replicasetstatus`. This flag also enables `collstats`, `dbstats`, `indexstats`, and `topmetrics`.
 
 - `--disable-collectors`: Comma-separated list of collectors to exclude.
 
-- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let Postgres1st WatchTower decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
+- `--max-collections-limit`: Maximum number of collections to monitor. Set to `-1` to let PGF WatchTower decide (default), or `0` for unlimited. A very high value can impact CPU and memory usage.
 
 - `--stats-collections`: Limit stats collection to specific databases or collections, in the format `db1,db2.collection1`. Use this to reduce the scope of monitored collections.
 
 ### Collector resolution
 
-Postgres1st WatchTower collects metrics at different intervals based on collector performance:
+PGF WatchTower collects metrics at different intervals based on collector performance:
 
 **High resolution** (fast collectors):
 
@@ -481,7 +481,7 @@ pfw-admin add valkey [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password`. Use `--tls` and `--tls-skip-verify` to secure the connection with TLS.
 
-Use `--connection-timeout` to set how long Postgres1st WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `3s`. Increase this for remote or high-latency instances.
 
 ### Examples
 
@@ -528,7 +528,7 @@ pfw-admin add proxysql [NAME] [ADDRESS] [FLAGS]
 
 Connect using `--host`, `--port`, `--username`, and `--password` for the ProxySQL admin interface. Use `--tls` and `--tls-skip-verify` to secure the connection.
 
-Use `--connection-timeout` to set how long Postgres1st WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
+Use `--connection-timeout` to set how long PGF WatchTower waits before giving up on a connection attempt (e.g. `2s`, `5s`). The default is `2s`. Increase this for remote or high-latency instances.
 
 Use `--disable-collectors` with a comma-separated list to exclude specific collectors from monitoring.
 
@@ -603,7 +603,7 @@ Optionally use `--username` and `--password` if your HAProxy metrics endpoint re
 
 ## Add external services
 
-Add custom Prometheus exporters to Postgres1st WatchTower.
+Add custom Prometheus exporters to PGF WatchTower.
 
 ### External service
 
@@ -694,6 +694,6 @@ pfw-admin add mysql \
 
 ## See also
 
-- [Manage inventory to modify agent configurations](../pmm-admin/inventory.md)
+- [Manage inventory to modify agent configurations](../pfw-admin/inventory.md)
 - [Remove services from monitoring](../../remove-services.md)
-- [Connect databases to Postgres1st WatchTower](../../../install-pmm/install-pmm-client/connect-database/index.md)
+- [Connect databases to PGF WatchTower](../../../install-pmm/install-pmm-client/connect-database/index.md)

@@ -10,9 +10,9 @@ position: 0
 
 ## Changing the admin password
 
-Your new PMM Server will start up with a default set of credentials for the administrator account. When you first login via the UI, you will be prompted to change this to a new password in order to secure the account.
+Your new PGF WatchTower Server will start up with a default set of credentials for the administrator account. When you first login via the UI, you will be prompted to change this to a new password in order to secure the account.
 
-When automating the deployment and/or management of your PMM Server, it is preferable to use the available APIs instead of relying upon human interaction.
+When automating the deployment and/or management of your PGF WatchTower Server, it is preferable to use the available APIs instead of relying upon human interaction.
 
 The [authentication](authentication) overview explains the different ways that you can programmatically access the API, using either [basic](authentication#basic-http-authentication), or [token-based](authentication#bearer-authentication) authentication. **Note:** for basic authentication, you can use the same approach for standard credentials if you haven't yet created a token.
 
@@ -37,15 +37,15 @@ $ curl --silent https://127.0.0.1/v1/readyz
 If the server is not yet ready then you will see a response such as:
 ```json
 {
-  "error": "PMM Server is not ready yet.",
+  "error": "PGF WatchTower Server is not ready yet.",
   "code": 13,
-  "message": "PMM Server is not ready yet."
+  "message": "PGF WatchTower Server is not ready yet."
 }
 ```
 
 You can check this using Ansible with a task such as:
 ```yaml
-- name: Wait for PMM Server to be ready
+- name: Wait for PGF WatchTower Server to be ready
   uri:
     url: https://127.0.0.1/v1/readyz
     method: GET

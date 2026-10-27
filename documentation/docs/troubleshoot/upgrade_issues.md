@@ -1,23 +1,23 @@
 # Troubleshoot upgrade issues
 
-## PMM Server not updating correctly
+## PGF WatchTower Server not updating correctly
 
 If the automatic update process isn't working, you can force an update using the API:
 {.power-number}
 
 1. Open your terminal.
-2. Run the update command, replacing <username>:<password> with your credentials and <pmm-server-address> with your PMM server address:
+2. Run the update command, replacing <username>:<password> with your credentials and <pmm-server-address> with your PGF WatchTower server address:
 ```sh
 curl -X POST \
   --user <username>:<password> \
   'http://<pmm-server-address>/v1/server/updates:start' \
   -H 'Content-Type: application/json'
 ```
-3. Wait 2-5 minutes and refresh the Postgres1st WatchTower Home page to verify the update.
+3. Wait 2-5 minutes and refresh the PGF WatchTower Home page to verify the update.
 
 ## Watchtower updater fails with "client version is too old" error
 
-When upgrading PMM Server via the UI, the Watchtower updater may fail with the following error:
+When upgrading PGF WatchTower Server via the UI, the Watchtower updater may fail with the following error:
 
 ```
 client version X.XX is too old. Minimum supported API version is X.XX, please upgrade your client to a newer version

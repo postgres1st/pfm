@@ -10,7 +10,7 @@ position: 1
 
 ### Create multiple user accounts
 
-PMM Server will start up with a single user account, the administrator account.
+PGF WatchTower Server will start up with a single user account, the administrator account.
 This account should not be for general use, because it allows complete control of
 the server and access to all the data, including sensitive.
 

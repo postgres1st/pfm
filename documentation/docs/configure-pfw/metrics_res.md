@@ -26,4 +26,4 @@ The default values (in seconds) for the fixed presets and their resolution names
 Values for the **Custom** preset can be entered as values, or changed with the arrows.
 
 !!! note alert alert-primary "Note"
-    If there is poor network connectivity between PMM Server and PMM Client, or between PMM Client and the database server being monitored, scraping every second may not be possible when the network latency is greater than 1 second.
+    If there is poor network connectivity between PGF WatchTower Server and PGF WatchTower Agent, or between PGF WatchTower Agent and the database server being monitored, scraping every second may not be possible when the network latency is greater than 1 second.

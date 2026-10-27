@@ -1,26 +1,26 @@
 # Configuration issues
 
-This section focuses on configuration issues, such as PMM-agent connection, adding and removing services for monitoring, and so on.
+This section focuses on configuration issues, such as pfw-agent connection, adding and removing services for monitoring, and so on.
 
 ## Client-Server connections
 
 There are many causes of broken network connectivity.
 
-The container is constrained by the host-level routing and firewall rules when using [using Docker](../install-pmm/install-pmm-server/index.md). For example, your hosting provider might have default `iptables` rules on their hosts that block communication between PMM Server and PMM Client, resulting in *DOWN* targets in VictoriaMetrics. If this happens, check the firewall and routing settings on the Docker host.
+The container is constrained by the host-level routing and firewall rules when using [using Docker](../install-pmm/install-pmm-server/index.md). For example, your hosting provider might have default `iptables` rules on their hosts that block communication between PGF WatchTower Server and PGF WatchTower Agent, resulting in *DOWN* targets in VictoriaMetrics. If this happens, check the firewall and routing settings on the Docker host.
 
-Postgres1st WatchTower can also generate diagnostics data that can be examined and/or shared with our support team to help solve an issue. You can get collected logs from PMM Client using the pfw-admin summary command.
+PGF WatchTower can also generate diagnostics data that can be examined and/or shared with our support team to help solve an issue. You can get collected logs from PGF WatchTower Agent using the pfw-admin summary command.
 
-Logs obtained in this way include PMM Client logs and logs received from the PMM Server, and stored separately in the `client` and `server` folders. The `server` folder also contains its `client` subfolder with the self-monitoring client information collected on the PMM Server.
+Logs obtained in this way include PGF WatchTower Agent logs and logs received from the PGF WatchTower Server, and stored separately in the `client` and `server` folders. The `server` folder also contains its `client` subfolder with the self-monitoring client information collected on the PGF WatchTower Server.
 
 For additional debugging information, use the `--pprof` flag to include [pprof](https://github.com/google/pprof) debug profiles: `pfw-admin summary --pprof`.
 
-You can get PMM Server logs with either of these methods:
+You can get PGF WatchTower Server logs with either of these methods:
 
 **Direct download**
 
 In a browser, visit `https://<address-of-your-pmm-server>/logs.zip`.
 
-This downloads a bundle containing PMM Server and PMM Client log files from `/srv/logs/` inside the container. 
+This downloads a bundle containing PGF WatchTower Server and PGF WatchTower Agent log files from `/srv/logs/` inside the container. 
 
 To control how many lines are included, add the `line-count` parameter to the URL:
 
@@ -32,7 +32,7 @@ To control how many lines are included, add the `line-count` parameter to the UR
 To obtain the logs:
 {.power-number}
 
-1. From the main menu, choose **Help > Postgres1st WatchTower Logs > Export logs**.
+1. From the main menu, choose **Help > PGF WatchTower Logs > Export logs**.
 
 2. Save the downloaded file to share with our support team if needed.
 
@@ -58,15 +58,15 @@ will give:
 
 ### Password change
 
-When adding clients to the PMM Server, you use the `admin` user. However, if you change the password for the admin user from the Postgres1st WatchTower UI, then the clients will not be able to access Postgres1st WatchTower due to authentication issues. Also, Grafana will lock out the admin user due to multiple unsuccessful login attempts.
+When adding clients to the PGF WatchTower Server, you use the `admin` user. However, if you change the password for the admin user from the PGF WatchTower UI, then the clients will not be able to access PGF WatchTower due to authentication issues. Also, Grafana will lock out the admin user due to multiple unsuccessful login attempts.
 
 In such a scenario, use [Service Accounts](../api/authentication.md#service-accounts-authentication) for authentication. You can use Service Accounts as a replacement for basic authentication and API keys.
 
 ### Server startup issues
 
-#### PMM Server inaccessible after Docker restart on macOS Sequoia
+#### PGF WatchTower Server inaccessible after Docker restart on macOS Sequoia
 
-After restarting Docker, Postgres1st WatchTower dashboard returns *500 Internal Server Error*.
+After restarting Docker, PGF WatchTower dashboard returns *500 Internal Server Error*.
 
 ##### Root cause
 
@@ -81,11 +81,11 @@ docker exec pmm-server supervisorctl status
 ##### Solution
 
 - upgrade Docker Desktop to a newer version or downgrade it to v4.48.0 (test with your specific setup)
-- consider using PMM Server on Linux or cloud environments for production
+- consider using PGF WatchTower Server on Linux or cloud environments for production
 
 ## Log file locations
 
-PMM Server stores all component logs in the `/srv/logs/` directory inside the container.
+PGF WatchTower Server stores all component logs in the `/srv/logs/` directory inside the container.
 
 To see which log files are available, run:
 

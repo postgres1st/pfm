@@ -16,7 +16,7 @@ Monitored Hosts
 :   Shows the number of monitored hosts that are running Exporters.
 
 Exporters Running
-:  Shows the total number of Exporters running with this PMM Server instance.
+:  Shows the total number of Exporters running with this PGF WatchTower Server instance.
 
 !!! note alert alert-primary "Note"
     The CPU usage and memory usage do not include the additional CPU and memory usage required to produce metrics by the application or operating system.
