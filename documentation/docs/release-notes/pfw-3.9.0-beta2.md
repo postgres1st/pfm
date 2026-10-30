@@ -1,6 +1,6 @@
-# Postgres1st WatchTower 3.9.0 beta2 — release notes
+# PGF WatchTower 3.9.0 beta2 — release notes
 
-**Postgres1st WatchTower** — PostgreSQL monitoring and query analytics, delivered as a
+**PGF WatchTower** — PostgreSQL monitoring and query analytics, delivered as a
 signed package repository you install on your own RHEL, Rocky Linux or AlmaLinux 9
 server. No internet access is required on that server, and no container runtime is
 involved.
@@ -20,7 +20,7 @@ at the end are stated plainly rather than left to be discovered.
 
 ## What changed since beta1
 
-**The product is Postgres1st WatchTower.** Packages are `pfw-*`, units are
+**The product is PGF WatchTower.** Packages are `pfw-*`, units are
 `pfw-*.service`, the service account is `pfw`, and everything installs under
 `/opt/postgres1st/watchtower`. The client agent is `pfw-agent`; its configuration lives
 at `/opt/postgres1st/watchtower/config/pfw-agent.yaml`.
@@ -77,8 +77,8 @@ Service type "mysql" is not supported by this deployment.
 ```
 
 This is deliberate, controlled by `PFW_DB_TYPES`, and it extends to what the interface
-offers. Upstream PMM ships advisor checks for database families this build refuses; those
-can never produce a result, so they are not listed. If you are comparing against PMM and
+offers. Upstream PGF WatchTower ships advisor checks for database families this build refuses; those
+can never produce a result, so they are not listed. If you are comparing against PGF WatchTower and
 expect to see more, that is why — nothing is disabled or broken.
 
 ## Packages
@@ -215,7 +215,7 @@ and you would import the new key at that point.
 
 ## Licensing
 
-WatchTower is built on Percona Monitoring and Management and Grafana, and is distributed
+WatchTower is built on PGF WatchTower and Grafana, and is distributed
 under the **GNU Affero General Public License, version 3**. Everything Postgres1st builds
 is AGPLv3, as is the Grafana it embeds. The remainder are Apache 2.0 (ClickHouse,
 VictoriaMetrics) and the PostgreSQL License (PostgreSQL). Each package declares its own

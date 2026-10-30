@@ -39,7 +39,7 @@ Queries Per Second. A measure of the rate of queries being monitored.
 
 ## Query Analytics
 
-Component of PMM Server that enables you to analyze MySQL query performance over periods of time.
+Component of PGF WatchTower Server that enables you to analyze MySQL query performance over periods of time.
 
 ## Advisors
 
@@ -47,7 +47,7 @@ Automated checks that you can run against connected databases to identify any po
 
 ## Technical Preview
 
-Releases intended for public preview and feedback, but with no support or service level agreement (SLA). Should not be used on production or business-critical systems. May contain breaking changes to UI, API, CLI. ([Read more](https://www.percona.com/services/policies/percona-services-lifecycle-policy/).)
+Releases intended for public preview and feedback, but with no support or service level agreement (SLA). Should not be used on production or business-critical systems. May contain breaking changes to UI, API, CLI. ([Read more](https://www.postgresfirst.com/support).)
 
 ## VG
 

@@ -1,32 +1,32 @@
 # Configure Nomad
 
-Postgres1st (Postgres1st WatchTower) includes HashiCorp Nomad to enable future extensibility and enhanced service capabilities.
+Postgres1st (PGF WatchTower) includes HashiCorp Nomad to enable future extensibility and enhanced service capabilities.
 
-[Nomad](https://www.nomadproject.io/) is a workload orchestrator designed to deploy and manage containers and non-containerized applications. In Postgres1st WatchTower, Nomad provides the underlying infrastructure to:
+[Nomad](https://www.nomadproject.io/) is a workload orchestrator designed to deploy and manage containers and non-containerized applications. In PGF WatchTower, Nomad provides the underlying infrastructure to:
 
 - improve resource allocation across monitoring components
-- enable future Postgres1st WatchTower extensibility 
+- enable future PGF WatchTower extensibility 
 - manage distributed monitoring agents more efficiently
 
-Nomad is **disabled by default** in Postgres1st WatchTower and has no impact on system performance when not enabled. 
+Nomad is **disabled by default** in PGF WatchTower and has no impact on system performance when not enabled. 
 
 ## Prerequisites
 
 Nomad requires **both** of the following to start:
 
 - `PMM_ENABLE_NOMAD=1` — enables the Nomad feature flag
-- `PMM_PUBLIC_ADDRESS=<your-pmm-server-address>` — the publicly reachable address of your PMM Server
+- `PMM_PUBLIC_ADDRESS=<your-pmm-server-address>` — the publicly reachable address of your PGF WatchTower Server
 
-Setting `PMM_ENABLE_NOMAD=1` alone is not sufficient. If `PMM_PUBLIC_ADDRESS` is not set, PMM silently skips starting the Nomad server process with no error or warning.
+Setting `PMM_ENABLE_NOMAD=1` alone is not sufficient. If `PMM_PUBLIC_ADDRESS` is not set, PGF WatchTower silently skips starting the Nomad server process with no error or warning.
 
-You can set the public address either as an environment variable at container start, or later via **Configuration > Settings > Advanced settings** in the PMM UI (though setting it via the UI requires restarting the container for Nomad to pick it up).
+You can set the public address either as an environment variable at container start, or later via **Configuration > Settings > Advanced settings** in the PGF WatchTower UI (though setting it via the UI requires restarting the container for Nomad to pick it up).
 
 ### Enable Nomad
 
-If you're an advanced user who needs Nomad for specific use cases, follow these steps to enable Nomad in Postgres1st WatchTower:
+If you're an advanced user who needs Nomad for specific use cases, follow these steps to enable Nomad in PGF WatchTower:
 { .power-number }
 
-1. Start PMM Server with the `PMM_ENABLE_NOMAD` and `PMM_PUBLIC_ADDRESS` environment variables:
+1. Start PGF WatchTower Server with the `PMM_ENABLE_NOMAD` and `PMM_PUBLIC_ADDRESS` environment variables:
    ```
    -e PMM_ENABLE_NOMAD=1 \
    -e PMM_PUBLIC_ADDRESS=<your-pmm-server-address>
@@ -57,11 +57,11 @@ To disable Nomad:
 -e PMM_ENABLE_NOMAD=0
 ```
 
-When Nomad is disabled on the PMM Server, the Nomad agent on PMM Clients will automatically stop.
+When Nomad is disabled on the PGF WatchTower Server, the Nomad agent on PGF WatchTower Agents will automatically stop.
 
 ## System requirements
 
-When Nomad is enabled, PMM Client nodes have the following additional requirements:
+When Nomad is enabled, PGF WatchTower Agent nodes have the following additional requirements:
 
 -  `iproute` package must be installed
 -  access to cgroup must be available
@@ -80,16 +80,16 @@ To verify that Nomad is running correctly:
 
 ## Internal architecture
 
-When enabled, Postgres1st WatchTower runs the following Nomad components:
+When enabled, PGF WatchTower runs the following Nomad components:
 
-- **Nomad server** on PMM Server - manages the cluster and schedules workloads
-- **Nomad client** on PMM Server - executes jobs (workloads) on remote instances
-- **Nomad client** on PMM Clients - executes distributed workloads
+- **Nomad server** on PGF WatchTower Server - manages the cluster and schedules workloads
+- **Nomad client** on PGF WatchTower Server - executes jobs (workloads) on remote instances
+- **Nomad client** on PGF WatchTower Agents - executes distributed workloads
 
 Communication between these components is secured and managed automatically when configured with the proper public address.
 
 ## API access
-The Nomad API is available through the PMM Server's HTTPS port via the `/nomad` prefix. This allows you to access Nomad endpoints without requiring a separate port for the Nomad API.
+The Nomad API is available through the PGF WatchTower Server's HTTPS port via the `/nomad` prefix. This allows you to access Nomad endpoints without requiring a separate port for the Nomad API.
 
 - Nomad endpoints are only available to users with admin privileges
 - All Nomad API endpoints are accessible under the `/nomad` path
@@ -101,7 +101,7 @@ The Nomad API is available through the PMM Server's HTTPS port via the `/nomad` 
 
 ## Future compatibility
 
-Nomad is included in Postgres1st WatchTower to support future extensibility features. Nomad will remain within Postgres1st WatchTower to provide infrastructure for upcoming enhancements and to deliver improved services for existing Percona customers.
+Nomad is included in PGF WatchTower to support future extensibility features. Nomad will remain within PGF WatchTower to provide infrastructure for upcoming enhancements and to deliver improved services for existing Percona customers.
 
 ## Related links
 

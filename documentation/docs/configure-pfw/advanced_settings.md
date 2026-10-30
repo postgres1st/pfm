@@ -1,0 +1,80 @@
+# Advanced PGF WatchTower settings
+
+![!](../images/PMM_Settings_Advanced_Settings.jpg)
+
+## Data retention
+
+**Data retention** specifies how long data is stored by PGF WatchTower Server. By default, time-series data is stored for 30 days. You can adjust the data retention time to balance your system's available disk space with your metrics history requirements.
+
+## Telemetry
+
+The **Telemetry** switch enables gathering and sending basic **anonymous** data to Percona, which helps us to determine where to focus the development and what is the uptake for each release of PGF WatchTower. 
+Specifically, gathering this information helps determine if we need to release patches to legacy versions beyond support, determine when supporting a particular version is no longer necessary, and understand the best frequency of releases.
+
+PGF WatchTower Telemetry is based on data collected by various PGF WatchTower components and stored inside PGF WatchTower Server 
+
+!!! note alert alert-primary ""
+    When PGF WatchTower is installed, telemetry is not sent immediately. Before the first telemetry report is generated, PGF WatchTower provides users with a 24-hour grace period to disable telemetry.
+
+To see the metrics being collected by telemetry, from the [main menu](../reference/ui/ui_components.md#1-main-menu) navigate to **Configuration > Settings > Advanced settings > Telemetry** and hover over the exclamation mark.
+
+![!image](../images/PMM_Settings_Advanced_Settings_Telemetry.png)
+
+We do not gather anything that can identify your system, but consider the following:
+{.power-number}
+
+1. The Country Code is evaluated from the submitting IP address before being discarded.
+
+2. We do create an "instance ID" - a random string generated using UUID v4.  This instance ID is generated to distinguish new instances from existing ones, for figuring out instance upgrades.
+
+The first telemetry reporting of a new PGF WatchTower Server instance is delayed by 24 hours to allow enough time to disable the service for those that do not wish to share any information.
+
+The landing page for this service, [check.percona.com](https://check.percona.com), explains what this service is.
+
+Grafana’s [anonymous usage statistics](https://grafana.com/docs/grafana/latest/administration/configuration/#reporting-enabled) is not managed by PGF WatchTower. To activate it, you must change the PGF WatchTower Server container configuration after each update.
+
+You can also disable telemetry with the `-e DISABLE_TELEMETRY=1` option in your docker run statement for the PGF WatchTower Server.
+
+For information on the various config parameters for telemetry, see the [config file](https://github.com/percona/pmm/blob/main/managed/services/telemetry/config.default.yml).
+
+## Check for updates
+
+When active, PGF WatchTower will automatically check for updates and put a notification in the home page **Updates** dashboard if any are available.
+
+## Advisors
+
+Advisors are sets of checks grouped by functionality that run a range of database health checks on a registered PGF WatchTower instance.
+
+The findings are reported on the **Advisors > Advisor Insights** page, and an overview is displayed on the Home dashboard.
+
+The Advisors toggle is enabled by default. When enabled, you can configure how often checks run using the **Rare**, **Standard**, and **Frequent** interval fields in the same section.
+
+See [Working with Advisor checks](../advisors/advisors.md).
+
+## Alerting
+
+Enables [Alerting](../alert/index.md) and reveals the **templated alerts** option on the **Alerting** page.
+
+## QAN for PGF WatchTower Server
+
+By default, Query Analytics (QAN) does not display queries from PGF WatchTower Server's internal PostgreSQL database, keeping your dashboards focused on monitored databases rather than PGF WatchTower's operational activity.
+
+Enable this setting to troubleshoot PGF WatchTower Server performance issues, monitor resource usage in [High Availability (HA) deployments](../install-pmm/HA.md), or verify that applications aren't misusing the default `postgres` database.
+
+When enabled, open **Query Analytics (QAN)** from the main menu, then filter by the `watchtower-postgresql` service to view PGF WatchTower Server queries. 
+
+You'll see queries related to PGF WatchTower's inventory, settings, advisor checks, alerts, backups, and authentication. These queries are typically lightweight so any spikes in volume, latency, or unexpected entries may indicate performance issues or database misuse.
+
+!!! warning
+    The default `postgres` database should only be used by PGF WatchTower's internal operations. Applications should always use dedicated databases.
+
+## Public Address
+
+The address or hostname PGF WatchTower Server will be accessible at. Click **Get from browser** to have your browser detect and populate this field automatically.
+
+## Microsoft Azure monitoring
+
+!!! caution alert alert-warning "Caution"
+    This is a technical preview feature.
+
+Activates Microsoft Azure monitoring.

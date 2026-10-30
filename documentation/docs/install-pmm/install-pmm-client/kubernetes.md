@@ -157,14 +157,14 @@ Choose your deployment approach:
               value: /path/to/proc/mounts
             ```
 
-    6. Deploy PMM Client pod and configure the [pfw-agent](../../use/commands/pmm-agent.md) in Setup mode to connect to PMM Server:
+    6. Deploy PMM Client pod and configure the [pfw-agent](../../use/commands/pfw-agent.md) in Setup mode to connect to PMM Server:
 
         ```sh
         kubectl apply -f pmm-client-pod.yaml
         ```
 
     !!! hint alert-success "Important"
-        You can set the container environment variable `PFW_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to Postgres1st WatchTower for monitoring.
+        You can set the container environment variable `PFW_AGENT_PRERUN_SCRIPT` to a shell script to automatically add services to PGF WatchTower for monitoring.
 
 
 === "Deploy PMM Client as a Sidecar container"

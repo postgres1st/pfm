@@ -1,12 +1,12 @@
-# Troubleshoot Postgres1st WatchTower
+# Troubleshoot PGF WatchTower
 
-This section provides comprehensive solutions to common issues and scenarios that may arise while using Postgres1st WatchTower, including a [checklist](checklist.md).
+This section provides comprehensive solutions to common issues and scenarios that may arise while using PGF WatchTower, including a [checklist](checklist.md).
 
 To quickly identify the issues and find the appropriate solution, the issues are categorized into distinct groups as follows:
 
 - [Upgrade issues](upgrade_issues.md)
 - [Configuration issues](config_issues.md)
-- [Percona Alerting issues](alerting_issues.md)
+- [Alerting issues](alerting_issues.md)
 - [QAN issues](qan_issues.md)
 - [Plugins issues](plugin_issues.md)
 

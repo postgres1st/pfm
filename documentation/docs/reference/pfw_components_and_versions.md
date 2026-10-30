@@ -1,0 +1,22 @@
+# PGF WatchTower components and versions
+
+The following table lists all the PGF WatchTower client/server components and their versions:
+
+| PGF WatchTower client/server component | Version  | Documentation |Location on GitHub|
+|-----------------------------|----------|---------------|------------------|
+| Grafana  | 11.6.13*  | [Grafana documentation](https://grafana.com/docs/grafana/latest/)|[Github Grafana](https://github.com/percona-platform/grafana)|
+| VictoriaMetrics| v1.140.0 | [VictoriaMetrics documentation](https://docs.victoriametrics.com/)|[Github VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)    |
+| Nginx    | 1.26.3  | [Nginx documentation](http://nginx.org/en/docs/)|[Github Nginx](https://github.com/nginx/nginx)                                                    |
+| PostgreSQL  | 14.5     | [PostgreSQL 14 documentation](https://docs.percona.com/postgresql/)|              |
+| ClickHouse| 25.3.6.56 |[ClickHouse documentation](https://clickhouse.com/docs/en/)|[Github ClickHouse](https://github.com/ClickHouse/ClickHouse)|
+| PerconaToolkit  | 3.5.2    | [Percona Toolkit documentation](https://docs.percona.com/percona-toolkit/)|[Github Percona Toolkit](https://github.com/percona/percona-toolkit)|
+| Nomad | v2.0.0 | [Nomad documentation](https://developer.hashicorp.com/nomad/docs) | [GitHub](https://github.com/hashicorp/nomad) |
+| MongoDB exporter  | 0.45.0   | |[Github MongoDB Exporter](https://github.com/percona/mongodb_exporter)|
+| MySQL exporter| v0.17.2* | [MySQL Server Exporter Documentation](https://grafana.com/oss/prometheus/exporters/mysql-exporter/)|[Github MySQL Server Exporter](https://github.com/percona/mysqld_exporter)    |
+| PostgreSQL exporter| v0.14.0* |            |[Github PostgreSQL Server Exporter](https://github.com/percona/postgres_exporter)    |
+| RDS exporter  | 0.7.2    | |[Github RDS Exporter](https://github.com/percona/rds_exporter)|
+| Node exporter | v1.8.2*  | [Node Exporter Documentation](https://prometheus.io/docs/guides/node-exporter/)|[Github Node Exporter](https://github.com/percona/node_exporter)    |
+| Azure exporter| 2.30.0*  |            | [Github Azure Metrics Exporter](https://github.com/percona/azure_metrics_exporter)    |
+\* - Original upstream version along with some changes authored by Percona
+
+

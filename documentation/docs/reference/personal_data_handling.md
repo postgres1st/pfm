@@ -1,29 +1,29 @@
-# Data handling in Postgres1st WatchTower
+# Data handling in PGF WatchTower
 
-The following questions are being answered related to personal and confidential data handling in Postgres1st WatchTower:
+The following questions are being answered related to personal and confidential data handling in PGF WatchTower:
 {.power-number}
 
 1. Which type of data is transmitted?
 
       |**Data collection source**                                       | **Data collected** |
       | --------------------------------------------------------------- | ------------------------------------------------------
-      | DB host to Postgres1st WatchTower                                                  | Database performance metrics <br/> SQL query examples for query analytics (optional - can be disabled via UI checkbox or CLI flag).
-      | Postgres1st WatchTower to DB Host                                                  | DSN and credentials for database access. A separate DB user is used (limited access) to retrieve metrics from the database.
-      | DB Host to S3 compatible storage location                       | Database backup - optional if PMM Administrator configures it with Public Cloud (AWS, GCP, etc) as a possible storage location.
-      | PMM Server to Percona Cloud                                     | Telemetry data is collected. </br/> PMM Server collects varying amounts of data from version to version, and no personal or confidential information is collected. See [Telemetry](../configure-pmm/advanced_settings.md#telemetry) for details on the data being transmitted.
+      | DB host to PGF WatchTower                                                  | Database performance metrics <br/> SQL query examples for query analytics (optional - can be disabled via UI checkbox or CLI flag).
+      | PGF WatchTower to DB Host                                                  | DSN and credentials for database access. A separate DB user is used (limited access) to retrieve metrics from the database.
+      | DB Host to S3 compatible storage location                       | Database backup - optional if PGF WatchTower Administrator configures it with Public Cloud (AWS, GCP, etc) as a possible storage location.
+      | PGF WatchTower Server to Percona Cloud                                     | Telemetry data is collected. </br/> PGF WatchTower Server collects varying amounts of data from version to version, and no personal or confidential information is collected. See [Telemetry](../configure-pfw/advanced_settings.md#telemetry) for details on the data being transmitted.
 
 
 2. Where is the data obtained from the DB host transmitted?
 
-    All data gathered from the DB Host is transmitted to the PMM Server. It is possible to transmit DB backups to Cloud S3 storage (optional). 
+    All data gathered from the DB Host is transmitted to the PGF WatchTower Server. It is possible to transmit DB backups to Cloud S3 storage (optional). 
 
     Telemetry data is sent to Percona Cloud. This does not contain any sensitive or personally identifiable information.
 
 3. What is the purpose and nature of data processing?
 
-    As described in our [Privacy Policy](https://www.percona.com/privacy-policy), data is collected to provide Percona services and improve our products.
+    As described in our [Privacy Policy](https://www.postgresfirst.com/privacy-policy), data is collected to provide our services and improve our products.
 
-    Postgres1st WatchTower does not explicitly collect or transfer personal data. However, if Query Analytics (QAN) is enabled and query example collection is not disabled, SQL query examples with actual data values may be gathered. This means personal data could appear in query text if it exists within your database.
+    PGF WatchTower does not explicitly collect or transfer personal data. However, if Query Analytics (QAN) is enabled and query example collection is not disabled, SQL query examples with actual data values may be gathered. This means personal data could appear in query text if it exists within your database.
 
     To prevent query example collection:
 
@@ -31,36 +31,36 @@ The following questions are being answered related to personal and confidential 
 
     - From the command line: use the `--disable-queryexamples` flag when adding MySQL or PostgreSQL (with pgstatmonitor) services via CLI.
 
-    All QAN data always remains within the PMM Server, and is never transmitted anywhere else.
+    All QAN data always remains within the PGF WatchTower Server, and is never transmitted anywhere else.
 
 4. What is the frequency and volume of processed data?
 
-    By default, metrics data is gathered every 5, 10 or 60 minutes. In case Query Analytics is enabled and SQL query examples are gathered every minute, we don't use any special processing for personal or confidential data. PMM Server has no clue about the meaning of the data inside the SQL query.
+    By default, metrics data is gathered every 5, 10 or 60 minutes. In case Query Analytics is enabled and SQL query examples are gathered every minute, we don't use any special processing for personal or confidential data. PGF WatchTower Server has no clue about the meaning of the data inside the SQL query.
     
-    So it is processed as usual, which is to store inside the PMM Server and present on the Postgres1st WatchTower UI by request.
+    So it is processed as usual, which is to store inside the PGF WatchTower Server and present on the PGF WatchTower UI by request.
 
-    Other than email addresses for Grafana users, Postgres1st WatchTower does not directly ask or collect any other personal data. For more information about the telemetry data that is collected, please refer to the [Percona Privacy Policy](http://www.percona.com/privacy-policy/). 
+    Other than email addresses for Grafana users, PGF WatchTower does not directly ask or collect any other personal data. For more information about the telemetry data that is collected, please refer to the [Privacy Policy](https://www.postgresfirst.com/privacy-policy). 
 
 5. What applications or third parties can access the data created and processed by the cloud service?
 
-    Third parties or other applications are not able to access the data gathered by the PMM Server.
+    Third parties or other applications are not able to access the data gathered by the PGF WatchTower Server.
 
 
 6. Is Personal Data processed for other applications or parties, and should the data that is processed in the cloud service be available to other applications or 3rd parties?
 
-    PMM Server doesn't pass any gathered, personal or confidential data to any third party or other applications nor to Percona Cloud.
+    PGF WatchTower Server doesn't pass any gathered, personal or confidential data to any third party or other applications nor to Percona Cloud.
 
 7. How safe is the encryption? 
 
-    It's a must to encrypt all connections to and from the cloud including the data in the cloud storage and Postgres1st WatchTower does so by default. 
+    It's a must to encrypt all connections to and from the cloud including the data in the cloud storage and PGF WatchTower does so by default. 
 
     We use TLS (v1.2 at least) for connections between:
 
-    - Database host to PMM Server (optionally, depending on user configuration)
+    - Database host to PGF WatchTower Server (optionally, depending on user configuration)
 
-    - PMM Server to Percona Cloud
-    - PMM Server to remote database (optionally, depending on user configuration)
-    - End-user to PMM Server web interface/api (self-signed by default)
+    - PGF WatchTower Server to Percona Cloud
+    - PGF WatchTower Server to remote database (optionally, depending on user configuration)
+    - End-user to PGF WatchTower Server web interface/api (self-signed by default)
 
     For more information about our security posture, [contact us](https://www.postgresfirst.com/about/contact).
 

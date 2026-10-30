@@ -1,17 +1,17 @@
-# About Percona Alerting
+# About Alerting
     
-Alerting notifies of important or unusual activity in your database environments so that you can identify and resolve problems quickly. When something needs your attention, Percona Alerting can be configured to automatically send you a notification through your specified contact points.
+Alerting notifies of important or unusual activity in your database environments so that you can identify and resolve problems quickly. When something needs your attention, Alerting can be configured to automatically send you a notification through your specified contact points.
 
-Percona Alerting is enabled by default in the Postgres1st WatchTower Settings. This feature adds the **Alert templates** option on the main menu and alert template options on the **Alerts** page.
+Alerting is enabled by default in the PGF WatchTower Settings. This feature adds the **Alert templates** option on the main menu and alert template options on the **Alerts** page.
 
-These options enable you to create alerts based on a set of Percona-supplied templates with common events and expressions for alerting. 
+These options enable you to create alerts based on a set of built-in templates with common events and expressions for alerting. 
 
 ## Alert types
 
-Percona Alerting is powered by Grafana infrastructure. It leverages Grafana's advanced alerting capabilities and provides pre-configured Alert templates that simplify creating powerful alerting rules.
+Alerting is powered by Grafana infrastructure. It leverages Grafana's advanced alerting capabilities and provides pre-configured Alert templates that simplify creating powerful alerting rules.
 
-Depending on the datasources that you want to query, and the complexity of your required evaluation criteria, Percona Alerting enables you to create the following types of alerts:
+Depending on the datasources that you want to query, and the complexity of your required evaluation criteria, Alerting enables you to create the following types of alerts:
 
-- **Percona templated alerts**: alerts based on a set of Percona-supplied templates with common events and expressions for alerting.
+- **templated alerts**: alerts based on a set of built-in templates with common events and expressions for alerting.
 If you want to use custom expressions in alert rules, you can create your own alert rule templates.
 - **Grafana managed alerts**: alerts that handle complex conditions and can span multiple different data sources like SQL, Prometheus, InfluxDB, etc. These alerts are stored and executed by Grafana.

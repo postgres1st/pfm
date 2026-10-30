@@ -1,0 +1,248 @@
+# Manage inventory with pfw-admin inventory
+
+Use `pfw-admin inventory` from the command line to list registered services and agents, and modify agent configurations without removing and re-adding services.
+
+To manage inventory in the UI, go to **Configuration > Inventory**. For programmatic access, see the [PGF WatchTower API](../../../api/index.md).
+
+## Commands
+
+- [`pfw-admin inventory list agents|nodes|services`](#pfw-admin-inventory-list)
+:   Shows registered agents, nodes, or services
+
+- [`pfw-admin inventory change agent`](#pfw-admin-inventory-change-agent)
+:   Modifies agent configuration without removing the service
+
+## pfw-admin inventory list
+
+View agents, nodes, or services registered with PGF WatchTower Server. You must specify which type to list:
+
+```bash
+pfw-admin inventory list agents
+pfw-admin inventory list nodes
+pfw-admin inventory list services
+```
+
+### Examples
+
+- List all agents:
+
+    ```bash
+    pfw-admin inventory list agents
+    ```
+
+- List all nodes:
+
+    ```bash
+    pfw-admin inventory list nodes
+    ```
+
+- List all services:
+
+    ```bash
+    pfw-admin inventory list services
+    ```
+
+## pfw-admin inventory change agent
+
+Modify agent configuration without removing and re-adding the service. Use this to update collector settings, enable or disable features, or change connection parameters.
+
+!!! note "PGF WatchTower 3.7.0+"
+    This command is available starting with PGF WatchTower 3.7.0.
+
+### Syntax
+
+```bash
+pfw-admin inventory change agent <AGENT_TYPE> <AGENT_ID> [FLAGS]
+```
+
+### How `inventory change agent` works
+
+Upstream supports this subcommand for MongoDB agent types only. This product refuses MongoDB services, so there is currently no agent type it can change here.
+
+### When to use `change agent` vs `remove/add`
+
+**Use `change agent` for:**
+
+- Update database credentials
+- Add or update custom labels
+- Enable/disable a collector
+- Update collection limits
+- Change TLS settings
+- Enable or disable an agent
+- Change log level
+
+**Use `remove` then `add` for:**
+
+- Change service name
+- Switch to a different database instance
+
+### Finding the agent ID
+
+Get the agent ID from the inventory list:
+
+```bash
+pfw-admin inventory list agents
+```
+
+Look for the agent ID in the output:
+
+```
+Agent type                  Status      Metrics Mode      Agent ID                              Service ID
+mongodb_exporter            Running     push             12345-67890                 abc123
+```
+
+You can also use `pfw-admin list` to see agents alongside their services.
+
+### Available flags for MongoDB agents
+
+#### Connection and authentication
+
+- `--username`
+:   MongoDB username
+
+- `--password`
+:   MongoDB password
+
+- `--tls`
+:   Enable TLS
+
+- `--tls-skip-verify`
+:   Skip TLS certificate validation
+
+- `--tls-ca-file`
+:   Path to CA certificate
+
+- `--tls-certificate-key-file`
+:   Path to combined cert/key file
+
+- `--skip-connection-check`
+:   Save the new settings without verifying the database connection first
+
+!!! note "When to use `--skip-connection-check`"
+    By default, PGF WatchTower verifies connection-affecting changes against the database before saving them.
+    Skip this check when the agent cannot reach the database at the moment you make the change, for example:
+
+    - The database is temporarily **down or in a maintenance window**.
+    - You are rotating a **password that PGF WatchTower does not yet have** (the current stored credentials
+      are already invalid, so the check would fail).
+    - The target instance is otherwise **temporarily unreachable**.
+
+    PGF WatchTower saves the new settings as-is. If the values are wrong,
+    metric collection stays broken until you correct them.
+
+#### Collectors
+
+- `--enable-all-collectors`
+:   Enable all collectors
+
+- `--disable-collectors`
+:   Comma-separated list of collectors to disable
+
+- `--max-collections-limit`
+:   Max collections to monitor (-1=PGF WatchTower decides, 0=unlimited)
+
+- `--stats-collections`
+:   Limit stats to specific databases/collections
+
+#### Agent management
+
+- `--custom-labels`
+:   Custom user-assigned labels in `key=value,key=value` format
+
+- `--enable`
+:   Re-enable a disabled agent
+
+- `--disable`
+:   Disable the agent (stops metric collection)
+
+- `--log-level`
+:   Set agent log level (e.g., `info`, `debug`, `warn`, `error`)
+
+### Examples
+
+- Update the MongoDB password for a running agent:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --password=new_secret_pass
+    ```
+
+- Update the password while the database is unreachable (skip the connection check):
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --password=new_secret_pass \
+      --skip-connection-check
+    ```
+
+- Add custom labels to an agent:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --custom-labels=env=production,team=backend
+    ```
+
+- Update credentials and labels together:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --password=new_secret_pass \
+      --custom-labels=env=production
+    ```
+
+- Enable all MongoDB collectors:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --enable-all-collectors
+    ```
+
+- Disable a specific collector:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --disable-collectors=topmetrics
+    ```
+
+- Change collection limit:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --max-collections-limit=500
+    ```
+
+- Update stats collections:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --stats-collections=db1,db2.collection1
+    ```
+
+- Disable an agent (stops metric collection without removing it):
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --disable
+    ```
+
+- Re-enable a disabled agent:
+
+    ```bash
+    pfw-admin inventory change agent mongodb-exporter 12345-67890 \
+      --enable
+    ```
+
+### Error handling
+
+The command returns a clear error message in these cases:
+
+- **Non-existent agent ID**: The specified agent ID does not exist in PGF WatchTower inventory.
+- **Mismatched agent type**: The agent ID exists but belongs to a different agent type (e.g., using a `mysqld-exporter` ID with the `mongodb-exporter` subcommand).
+- **Invalid flag value**: A flag receives a value outside its allowed range (e.g., an invalid log level).
+- **Connection check failure**: PGF WatchTower could not validate the new connection-affecting settings (credentials, TLS) against the database. No changes are saved. If the database is intentionally unreachable (down, in maintenance, or you are setting a password PGF WatchTower does not yet have), re-run the command with `--skip-connection-check`.
+
+## See also
+
+- [pfw-admin add](../pfw-admin/add.md)
+- [Configuration commands](../pfw-admin/config.md)
+- [Status and diagnostics](../pfw-admin/status.md)
