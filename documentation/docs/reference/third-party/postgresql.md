@@ -1,30 +1,30 @@
-# Configure Postgres1st WatchTower with external PostgreSQL
+# Configure PGF WatchTower with external PostgreSQL
 
-Postgres1st (Postgres1st WatchTower) can be configured to use an external PostgreSQL database instead of its built-in instance. This provides several advantages, including:
+Postgres1st (PGF WatchTower) can be configured to use an external PostgreSQL database instead of its built-in instance. This provides several advantages, including:
 
 - enhanced high availability (HA) capabilities
 - improved performance with dedicated database servers
 - integration with existing database infrastructure
 - better control over data retention and backups
 
-To configure PMM Server to connect to an external PostgreSQL database running on the same host or a remote server, set up the required environment variables, configure SSL for secure connections, and ensure proper permissions for both Postgres1st WatchTower components and Grafana.
+To configure PGF WatchTower Server to connect to an external PostgreSQL database running on the same host or a remote server, set up the required environment variables, configure SSL for secure connections, and ensure proper permissions for both PGF WatchTower components and Grafana.
 
 ## Prerequisites
-Before configuring Postgres1st WatchTower with an external PostgreSQL database, ensure you have a PostgreSQL 14+ server accessible from your PMM Server.
+Before configuring PGF WatchTower with an external PostgreSQL database, ensure you have a PostgreSQL 14+ server accessible from your PGF WatchTower Server.
 
 ## Configuration overview
-To configure PMM Server to connect to an external PostgreSQL database:
+To configure PGF WatchTower Server to connect to an external PostgreSQL database:
 
 - set up the external PostgreSQL server with required databases and permissions
-- configure required environment variables for both Postgres1st WatchTower components and Grafana
+- configure required environment variables for both PGF WatchTower components and Grafana
 - disable the built-in PostgreSQL server
-- start PMM Server with the appropriate configuration
+- start PGF WatchTower Server with the appropriate configuration
 
 ## Environment variables
-!!! caution alert alert-warning "Important for Postgres1st WatchTower 3.2.0 and later"
-    Due to a regression in Grafana 11.6 (included in Postgres1st WatchTower 3.2.0+), the `GF_DATABASE_URL` environment variable is no longer sufficient for configuring Grafana's connection to an external PostgreSQL database. When using Postgres1st WatchTower 3.2.0 or later with an external PostgreSQL, you must use the individual `GF_DATABASE_*` environment variables.
+!!! caution alert alert-warning "Important for PGF WatchTower 3.2.0 and later"
+    Due to a regression in Grafana 11.6 (included in PGF WatchTower 3.2.0+), the `GF_DATABASE_URL` environment variable is no longer sufficient for configuring Grafana's connection to an external PostgreSQL database. When using PGF WatchTower 3.2.0 or later with an external PostgreSQL, you must use the individual `GF_DATABASE_*` environment variables.
 
-### Postgres1st WatchTower PostgreSQL variables
+### PGF WatchTower PostgreSQL variables
 To use PostgreSQL as an external database instance, use the following environment variables:
 
 | Environment variable         | Flag                                                                                                    | Description                                                                                                                                                                                      |
@@ -37,15 +37,15 @@ To use PostgreSQL as an external database instance, use the following environmen
 | PMM_POSTGRES_SSL_CA_PATH         | [postgres-ssl-ca-path](https://www.postgresql.org/docs/14/libpq-connect.html#LIBPQ-CONNECT-SSLROOTCERT) | This parameter specifies the name of a file containing SSL certificate authority (CA) certificate(s).                                                                                            |
 | PMM_POSTGRES_SSL_KEY_PATH        | [postgres-ssl-key-path](https://www.postgresql.org/docs/14/libpq-connect.html#LIBPQ-CONNECT-SSLKEY)     | This parameter specifies the location for the secret key used for the client certificate.                                                                                                        |
 | PMM_POSTGRES_SSL_CERT_PATH       | [postgres-ssl-cert-path](https://www.postgresql.org/docs/14/libpq-connect.html#LIBPQ-CONNECT-SSLCERT)   | This parameter specifies the file name of the client SSL certificate.                                                                                                                            |
-| PMM_DISABLE_BUILTIN_POSTGRES |                                                                                                         | Environment variable to disable built-in PMM Server database. Note that Grafana depends on built-in PostgreSQL. And if the value of this variable is "true", then it is necessary to pass all the parameters associated with Grafana to use external PostgreSQL.                                                                                                                                    |
+| PMM_DISABLE_BUILTIN_POSTGRES |                                                                                                         | Environment variable to disable built-in PGF WatchTower Server database. Note that Grafana depends on built-in PostgreSQL. And if the value of this variable is "true", then it is necessary to pass all the parameters associated with Grafana to use external PostgreSQL.                                                                                                                                    |
 
-By default, communication between the PMM Server and the database is not encrypted. To secure a connection, follow [PostgreSQL SSL instructions](https://www.postgresql.org/docs/14/ssl-tcp.html) and provide `POSTGRES_SSL_*` variables.
+By default, communication between the PGF WatchTower Server and the database is not encrypted. To secure a connection, follow [PostgreSQL SSL instructions](https://www.postgresql.org/docs/14/ssl-tcp.html) and provide `POSTGRES_SSL_*` variables.
 
 ## Grafana database configuration
-When using an external PostgreSQL database with Postgres1st WatchTower, configure both Postgres1st WatchTower's components and Grafana to use the external database.
+When using an external PostgreSQL database with PGF WatchTower, configure both PGF WatchTower's components and Grafana to use the external database.
 
-- For Postgres1st WatchTower versions prior to 3.2.0, use a single `GF_DATABASE_URL` in the format `postgres://USER:PASSWORD@HOST:PORT/DATABASE_NAME`.
-- For Postgres1st WatchTower 3.2.0 and later, Grafana requires individual database parameters instead of a single connection URL. Use the following environment variables:
+- For PGF WatchTower versions prior to 3.2.0, use a single `GF_DATABASE_URL` in the format `postgres://USER:PASSWORD@HOST:PORT/DATABASE_NAME`.
+- For PGF WatchTower 3.2.0 and later, Grafana requires individual database parameters instead of a single connection URL. Use the following environment variables:
 
 | Environment variable     | Description                                                      |
 |--------------------------|------------------------------------------------------------------|
@@ -59,17 +59,17 @@ When using an external PostgreSQL database with Postgres1st WatchTower, configur
 | GF_DATABASE_CLIENT_CERT_PATH | Path to client certificate file                              |
 
 ### Configuration requirements
-To successfully use an external PostgreSQL database with Postgres1st WatchTower:
+To successfully use an external PostgreSQL database with PGF WatchTower:
 
-- Ensure both PMM Server and Grafana database connections are configured. This means providing the appropriate `PMM_POSTGRES_*` environment variables for Postgres1st WatchTower's internal operations and the `GF_DATABASE_*` variables (or `GF_DATABASE_URL` for Postgres1st WatchTower versions prior to 3.2.0) for Grafana's data source.
-- Enable the `pg_stat_statements` extension in the PostgreSQL database that Postgres1st WatchTower will connect to. This extension enables Postgres1st WatchTower to collect performance statistics.
-- Do not specify `GF_DATABASE_TYPE`as Postgres1st WatchTower uses PostgreSQL for external database connection
+- Ensure both PGF WatchTower Server and Grafana database connections are configured. This means providing the appropriate `PMM_POSTGRES_*` environment variables for PGF WatchTower's internal operations and the `GF_DATABASE_*` variables (or `GF_DATABASE_URL` for PGF WatchTower versions prior to 3.2.0) for Grafana's data source.
+- Enable the `pg_stat_statements` extension in the PostgreSQL database that PGF WatchTower will connect to. This extension enables PGF WatchTower to collect performance statistics.
+- Do not specify `GF_DATABASE_TYPE`as PGF WatchTower uses PostgreSQL for external database connection
 
-## Set up PostgreSQL for Postgres1st WatchTower 
+## Set up PostgreSQL for PGF WatchTower 
 
 ### 1. Prepare the PostgreSQL Server
 
-To use PostgreSQL as an external database with Postgres1st WatchTower:
+To use PostgreSQL as an external database with PGF WatchTower:
 {.power-number}
 
 1.  Pull the PostgreSQL Docker image:
@@ -171,11 +171,11 @@ If you need to secure the connection with SSL:
    hostnossl all         example_user all                       reject
    hostssl   all         example_user all                       cert
    ```
-### 3. Run PMM Server with external PostgreSQL
+### 3. Run PGF WatchTower Server with external PostgreSQL
 
-Now that PostgreSQL is set up, configure PMM Server to use it:
+Now that PostgreSQL is set up, configure PGF WatchTower Server to use it:
 
-=== "Postgres1st WatchTower 3.1.x and 3.0.0"
+=== "PGF WatchTower 3.1.x and 3.0.0"
     ```sh
     docker run -d \
     -p 443:443 \
@@ -193,7 +193,7 @@ Now that PostgreSQL is set up, configure PMM Server to use it:
     --name pmm-server \
     percona/pmm-server:3
     ```
-=== "Postgres1st WatchTower 3.2.0 and later"
+=== "PGF WatchTower 3.2.0 and later"
     ```sh
     docker run -d \
     -p 443:443 \
@@ -215,8 +215,8 @@ Now that PostgreSQL is set up, configure PMM Server to use it:
     percona/pmm-server:3
     ```
 ## Docker Compose example
-When using Docker Compose to run Postgres1st WatchTower with an external PostgreSQL database, make sure to configure both Postgres1st WatchTower and Grafana database parameters.
-Create a `docker-compose.yml` file with the following content (adjust values as needed), then restart the PMM Server: 
+When using Docker Compose to run PGF WatchTower with an external PostgreSQL database, make sure to configure both PGF WatchTower and Grafana database parameters.
+Create a `docker-compose.yml` file with the following content (adjust values as needed), then restart the PGF WatchTower Server: 
 
    ```yaml
    services:
@@ -227,12 +227,12 @@ Create a `docker-compose.yml` file with the following content (adjust values as 
        volumes:
          - pmm-data:/srv
        environment:
-         # Postgres1st WatchTower PostgreSQL connection variables
+         # PGF WatchTower PostgreSQL connection variables
          - PMM_POSTGRES_ADDR=your_host:your_port
          - PMM_POSTGRES_DBNAME=pmm-managed
          - PMM_POSTGRES_USERNAME=your_pmm_user
          - PMM_POSTGRES_DBPASSWORD=your_pmm_password
-         # Grafana PostgreSQL connection variables (for Postgres1st WatchTower 3.2.0+)
+         # Grafana PostgreSQL connection variables (for PGF WatchTower 3.2.0+)
          - GF_DATABASE_USER=your_grafana_user
          - GF_DATABASE_PASSWORD=your_grafana_password
          - GF_DATABASE_HOST=your_host:your_port
@@ -246,11 +246,11 @@ Create a `docker-compose.yml` file with the following content (adjust values as 
    ```
   
 ## Troubleshooting
-If you encounter issues when configuring Postgres1st WatchTower with an external PostgreSQL database, check the following:
+If you encounter issues when configuring PGF WatchTower with an external PostgreSQL database, check the following:
 
-- make sure all required environment variables are set (both Postgres1st WatchTower and Grafana variables)
-- verify that PostgreSQL is running and accessible from the PMM Server container
+- make sure all required environment variables are set (both PGF WatchTower and Grafana variables)
+- verify that PostgreSQL is running and accessible from the PGF WatchTower Server container
 - check that the correct database names and credentials are used
-- for Postgres1st WatchTower 3.2.0+, make sure you're using the individual Grafana database parameters instead of `GF_DATABASE_URL`
+- for PGF WatchTower 3.2.0+, make sure you're using the individual Grafana database parameters instead of `GF_DATABASE_URL`
 - confirm that `pg_stat_statements` extension is enabled in the PostgreSQL database
 - check the Grafana logs for database connection issues

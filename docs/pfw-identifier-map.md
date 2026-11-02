@@ -3,6 +3,25 @@
 Authority for the mechanical rename in tasks 1.3–1.7. Compiled 29 Aug 2026 against `main`
 at `830777e39`, by inspecting the tree — not by transcribing report §15.
 
+## Rebrand decisions of 27 Oct 2026 (GA Priority 1) -- read first
+
+These **supersede** anything below that says otherwise, including every use of "Postgres1st
+WatchTower" as the display name. Tracking: issue #115, tasks #105-#114.
+
+1. **Display name: `PGF WatchTower`.** "Postgres1st WatchTower" is now a *legacy* name that the
+   branding scanner flags (#106) and the name flip removes (#109, #111). `Postgres1st` on its own
+   is the organisation (package signer, RPM Vendor, `/opt/postgres1st`) and stays. `pfw-` remains
+   the identifier prefix.
+2. **Exceptions** are listed, with owner and reason, in
+   [`build/branding/exceptions.tsv`](../build/branding/exceptions.tsv). That file is the only
+   place a legacy name may be allowed; the scanner reads it.
+3. **Replacement links:** wherever a Percona link was used, link to `postgresfirst.com` instead,
+   even though the page does not exist yet. Every such URL is listed in
+   [`build/branding/placeholder-urls.txt`](../build/branding/placeholder-urls.txt) so the pages can
+   be created later and the dead-link ignores removed.
+4. **Upstream release notes 3.0.0-3.8.1 are dropped** (#107). This closes the open question under
+   "Still outstanding" below. The current release's notes stay: `build-pfw-airgap` bundles them.
+
 **Status:** decisions taken 29 Aug 2026 (see "Decisions" at the end). This is the authority
 for the rename; work the "Execution order" section at the end, in that order.
 

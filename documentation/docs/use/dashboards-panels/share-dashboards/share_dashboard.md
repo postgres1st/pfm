@@ -18,14 +18,14 @@ To share a panel via direct link:
     - toggle the **Shorten URL** option to generate a simple link with a unique identifier
 
 !!! hint alert alert-success "Tip"
-       If your current domain is different than the one specified in the Grafana .INI configuration file, Postgres1st WatchTower will ask you to correct this mismatch before you can generate a short URL.
+       If your current domain is different than the one specified in the Grafana .INI configuration file, PGF WatchTower will ask you to correct this mismatch before you can generate a short URL.
 
 ## Share a panel as a PNG file
 
 To enable image rendering:
 { .power-number }
 
-1. Deploy the Grafana Image Renderer container alongside PMM Server:
+1. Deploy the Grafana Image Renderer container alongside PGF WatchTower Server:
    
     ```sh
     docker run -d \
@@ -35,14 +35,14 @@ To enable image rendering:
     grafana/grafana-image-renderer:latest
     ```
 
-2. Stop your existing PMM Server container:
+2. Stop your existing PGF WatchTower Server container:
 
     ```sh 
     docker stop pmm-server
     docker rm pmm-server
     ```
 
-3. Start a new PMM Server container with the required environment variables:
+3. Start a new PGF WatchTower Server container with the required environment variables:
 
     ```sh
     docker run -d \

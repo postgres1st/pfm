@@ -1,12 +1,12 @@
 # Contact points
 
-Contact points specify where Percona Alerting should deliver notifications for alerts. Postgres1st WatchTower can be configured via a Notification policy to send a notification to specified contact points whenever an alert is fired.
+Contact points specify where Alerting should deliver notifications for alerts. PGF WatchTower can be configured via a Notification policy to send a notification to specified contact points whenever an alert is fired.
 
 Depending on the severity of an alert, you might want to send different alert notifications to different channels. For example, you can deliver common notifications via a Slack channel, but send an email notification for potentially critical issues.  
 
-Percona Alerting uses email as the default contact point but you can choose from a variety of other contact points, including Slack, Webhooks, PagerDuty, and more.
+Alerting uses email as the default contact point but you can choose from a variety of other contact points, including Slack, Webhooks, PagerDuty, and more.
 
-Before Percona Alerting can send out email notifications via email contact points, you will need to:
+Before Alerting can send out email notifications via email contact points, you will need to:
 {.power-number}
 
 1. Configure Email (SMTP) server settings.
@@ -16,7 +16,7 @@ Contact points with invalid settings show a **No Attempts** status under <i clas
 
 ## Configure Email (SMTP) server settings
 
-To use SMTP with a Postgres1st WatchTower Docker installation:
+To use SMTP with a PGF WatchTower Docker installation:
 {.power-number}
 
 1. Create an `.env` file and populate it with your SMTP credentials (and other environment variables) as follows:
@@ -28,7 +28,7 @@ To use SMTP with a Postgres1st WatchTower Docker installation:
     GF_SMTP_PASSWORD=<YOUR_SMTP_PASSWORD>
     GF_SMTP_SKIP_VERIFY=false
     GF_SMTP_FROM_ADDRESS=email@domain.com
-    GF_SMTP_FROM_NAME=Percona Alerting
+    GF_SMTP_FROM_NAME=Alerting
     ```
     Below is a summary of each environment variable above: 
 
@@ -50,7 +50,7 @@ To use SMTP with a Postgres1st WatchTower Docker installation:
 
 ## Restore SMTP settings following an upgrade
 
-If you configured Postgres1st WatchTower to use SMTP settings via environment variables, you do not need to do anything after an upgrade as your settings will be transferred.
+If you configured PGF WatchTower to use SMTP settings via environment variables, you do not need to do anything after an upgrade as your settings will be transferred.
 
 ## Configure an Email contact point
 
@@ -58,7 +58,7 @@ After configuring the SMTP settings, specify email delivery options for an Email
 {.power-number}
 
 1. Go to **Alerts > Contact points**.
-2. Click the edit button next to the **grafana-default-email** to update Postgres1st WatchTower's default Email contact point, or click **Create contact point** to create a custom one.
+2. Click the edit button next to the **grafana-default-email** to update PGF WatchTower's default Email contact point, or click **Create contact point** to create a custom one.
 3. Enter a contact point name, and add the email addresses for the recipients of the email notifications.
 4. Expand **Optional Email settings** and fill in any other relevant settings:
     - Enable the **Single email** option to send a single email to the recipients containing alerts that are firing. For example, if an alert fires for three nodes, this would send only one email listing all three alerts.
@@ -76,7 +76,7 @@ After configuring the SMTP settings, specify email delivery options for an Email
 
 In addition to Email contact points, you can add a variety of other contact points, including Slack, email, webhooks, PagerDuty, and more.
 
-Follow the steps above to create additional contact points. Different contact points require different configuration information. For example, for Slack, Postgres1st WatchTower requires the recipient information, the API token and the webhook URL, which you can get from your Slack administrator.
+Follow the steps above to create additional contact points. Different contact points require different configuration information. For example, for Slack, PGF WatchTower requires the recipient information, the API token and the webhook URL, which you can get from your Slack administrator.
 
 ## Notification policies
 
@@ -86,7 +86,7 @@ For example, you might specify a limit for the number of times a notification is
 
 ### Root notification policy
 
-Percona Alerting comes pre-configured with a Notification Root Policy, which is the default notification policy. It uses the **grafana-default-email** contact point and is applied to all alerts that don’t have a custom notification policy assigned to them.
+Alerting comes pre-configured with a Notification Root Policy, which is the default notification policy. It uses the **grafana-default-email** contact point and is applied to all alerts that don’t have a custom notification policy assigned to them.
 
 ### How matching works
 
@@ -124,7 +124,7 @@ A policy will match an alert if the alert’s labels match all the matching labe
 5. Enable **Continue matching subsequent sibling nodes** to continue matching subsequent siblings of the policy after an alert matched the parent policy.
 This can be useful, for example, when you want to send notifications to a catch-all contact point as well as to one of more specific contact points handled by subsequent policies.
 6. Toggle **Override grouping** if you do not want to use root policy grouping.
-7. Toggle **Override general timings** to specify how often you want to wait until the initial notification is sent for a new group. When this is disabled, Postgres1st WatchTower uses root policy group timings instead.
+7. Toggle **Override general timings** to specify how often you want to wait until the initial notification is sent for a new group. When this is disabled, PGF WatchTower uses root policy group timings instead.
 8. Add a mute timing if you want to mute notifications or this policy for a specific, regular interval. For example, you can create a mute to suppress trivial notifications during weekends. Mute timings are different from silences in the sense that they are recurring, while silences have a fixed start and end time.
    
     !!! caution alert alert-warning "Important"

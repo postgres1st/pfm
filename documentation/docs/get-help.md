@@ -1,7 +1,7 @@
 # Get help
 
 Our documentation guides are packed with information, but they can't cover everything you
-need to know about Postgres1st WatchTower, and they won't cover every scenario you might come
+need to know about PGF WatchTower, and they won't cover every scenario you might come
 across. Don't be afraid to try things out and ask questions when you get stuck.
 
 ## Contact us
@@ -22,7 +22,7 @@ it before sending — it contains details of your environment.
 
 ## Upstream documentation
 
-Postgres1st WatchTower is derived from Percona Monitoring and Management. Where a component is
+PGF WatchTower is derived from PGF WatchTower. Where a component is
 unmodified from upstream, Percona's documentation for it may still be the most detailed
 reference available, and their community forum may cover questions about it.
 

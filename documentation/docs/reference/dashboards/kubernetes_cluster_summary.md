@@ -34,7 +34,7 @@ Visualizes the percentage of total CPU capacity that has been requested by conta
 Displays the sum of CPU core limits set for all containers in the cluster. This shows the maximum CPU that containers can consume if available, which may exceed actual cluster capacity.
 
 ### Percona Clusters
-Shows the total number of Percona database clusters (Custom Resources) deployed in the cluster, including PXC, Percona Server for MongoDB, and Percona Distribution for PostgreSQL. Use this to monitor your database infrastructure at a glance.
+Shows the total number of Percona database clusters (Custom Resources) deployed in the cluster, including PXC, Percona Server for MongoDB, and PostgreSQL. Use this to monitor your database infrastructure at a glance.
 
 ### Percona Clusters Not Ready
 Displays the number of Percona clusters not in Ready state. The gauge turns yellow when any cluster is unhealthy, alerting you to database availability issues.

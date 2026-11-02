@@ -1,6 +1,6 @@
 # SSL encryption
 
-Securing your Postgres1st WatchTower deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PMM Server and PMM Clients.
+Securing your PGF WatchTower deployment with SSL/TLS encryption protects sensitive database metrics and authentication credentials in transit. This guide walks you through configuring SSL certificates for both PGF WatchTower Server and PGF WatchTower Agents.
 
 You have several certificate options:
 
@@ -10,14 +10,14 @@ You have several certificate options:
 
 ## Configure SSL encryption
 
-Configure both the Server and Client to implement SSL/TLS encryption in your Postgres1st WatchTower environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
+Configure both the Server and Client to implement SSL/TLS encryption in your PGF WatchTower environment. The Server needs proper certificates installed, while Clients must be able to verify those certificates:
 {.power-number}
 
-1. **Prepare your certificates**: Choose one method to provide certificates to PMM Server:
+1. **Prepare your certificates**: Choose one method to provide certificates to PGF WatchTower Server:
     - [Mount certificates](#mount-certificates) from a local directory on the host
-    - [Copy certificates](#copy-certificates) directly into the PMM Server container
-2. **Restart PMM Server** to apply the new certificates
-3. **Configure client trust**: Ensure PMM Clients can verify the server certificate:
+    - [Copy certificates](#copy-certificates) directly into the PGF WatchTower Server container
+2. **Restart PGF WatchTower Server** to apply the new certificates
+3. **Configure client trust**: Ensure PGF WatchTower Agents can verify the server certificate:
     - Add the CA certificate to the system trust store ([Ubuntu guide](https://documentation.ubuntu.com/server/how-to/security/install-a-root-ca-certificate-in-the-trust-store/) | [Red Hat guide](https://www.redhat.com/sysadmin/configure-ca-trust-list))
     - **Or use the `SSL_CERT_FILE` environment variable** for [custom CA certificates](#use-custom-ca-certificates-with-pmm-client)
 
@@ -29,7 +29,7 @@ With Docker, OVF, and AMI deployments, certificates are stored in `/srv/nginx` w
 
 ### Required certificate files
 
-PMM Server requires these certificate files in `/srv/nginx`:
+PGF WatchTower Server requires these certificate files in `/srv/nginx`:
 
 | File | Description |
 |------|-------------|
@@ -57,7 +57,7 @@ docker run -d -p 443:8443 --volumes-from pmm-data \
     - Use port `443` for SSL encryption instead of port `80`
 ### Copy certificates
 
-If PMM Server is already running, copy certificates directly into the container:
+If PGF WatchTower Server is already running, copy certificates directly into the container:
 
 ```sh
 # Copy certificate files
@@ -74,7 +74,7 @@ docker exec -it pmm-server chmod 600 /srv/nginx/*.key
 
 ### Apply certificate changes
 
-Restart PMM Server to load the new certificates:
+Restart PGF WatchTower Server to load the new certificates:
 
 ```sh
 # Full container restart (recommended)
@@ -93,7 +93,7 @@ curl -I https://<server-hostname>:443
 
 === "Basic client connection"
 
-    Register PMM Clients using the HTTPS URL:
+    Register PGF WatchTower Agents using the HTTPS URL:
 
     ```sh
     pfw-admin config --server-url=https://<user>:<password>@<server-hostname>
@@ -128,11 +128,11 @@ curl -I https://<server-hostname>:443
         sudo update-ca-trust check
         ```  
 
-## Use custom CA certificates with PMM Client
+## Use custom CA certificates with PGF WatchTower Agent
 
 The `SSL_CERT_FILE` environment variable specifies the path to a custom certificate chain file that pfw-agent uses for **all** SSL/TLS connections. This approach is ideal when:
 
-- PMM Server uses certificates signed by an internal/custom certificate authority
+- PGF WatchTower Server uses certificates signed by an internal/custom certificate authority
 - You want to avoid modifying system-wide certificate settings  
 - Running in containerized or restricted environments
 - Testing with different CA configurations
@@ -162,7 +162,7 @@ pfw-admin config --server-url=https://<user>:<password>@<server-hostname>
     For pfw-agent running as a systemd service:
     ```ini
     [Unit]
-    Description=PMM Agent
+    Description=PGF WatchTower Agent
     After=network.target
 
     [Service]

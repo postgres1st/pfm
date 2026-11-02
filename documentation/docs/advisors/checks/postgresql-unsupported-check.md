@@ -1,12 +1,12 @@
 # PostgreSQL version compatibility
 
 ## Description
-This check details the currently installed PostgreSQL version, and reports whether Percona supports it.
+This check details the currently installed PostgreSQL version, and reports whether that version is still supported upstream.
 
-Percona supports all versions of Percona Distribution for PostgreSQ, including Community distribution. However, certain updates and services from Percona, such as Managed Services, only support versions 11 and higher. 
+Only PostgreSQL versions that are still supported upstream receive fixes.
 
 This check will advise if the currently installed version meets those requirements, and will also perform an EOL check.
 
 ## Resolution
 
-Make sure to upgrade to a version of PostgreSQL supported by Percona.
+Make sure to upgrade to a version of PostgreSQL that is still supported upstream.

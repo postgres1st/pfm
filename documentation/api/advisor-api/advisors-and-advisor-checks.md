@@ -1,5 +1,5 @@
 ---
-title: Percona Advisors and Advisor Checks
+title: Advisors and Advisor Checks
 slug: advisors-and-advisor-checks
 category:
   uri: advisor-api

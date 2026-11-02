@@ -10,7 +10,7 @@ aliveStatusCodes:
 ignorePatterns:
   - pattern: "^https://www.reddit.com/r/VictoriaMetrics/"
   - pattern: "^https://linux.die.net/man/8/logrotate"
-  - pattern: "^https://pmmdemo.percona.com"
+  - pattern: "^https://www\\.postgresfirst\\.com/(docs|privacy-policy|trademark-policy|support|security|resources|downloads)"
   - pattern: '^https://developer.hashicorp.com/nomad'
   - pattern: '^https://www.nomadproject.io/'
   - pattern: "#os_alerts$"

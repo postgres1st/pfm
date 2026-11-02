@@ -9,7 +9,7 @@ This section focuses on problems with QAN, such as queries not being retrieved.
 There might be multiple places where the problem might come from:
 
 - connection problem between pfw-agent and pmm-managed
-- PMM-agent cannot connect to the database.
+- pfw-agent cannot connect to the database.
 - data source is not properly configured.
 
 ### Why don't I see the whole query?
@@ -40,7 +40,7 @@ After disabling query plan collection, new metrics should show realistic executi
 
 ## QAN service fails after upgrade
 
-After upgrading PMM Server, the QAN service may fail to start with `BACKOFF`, `FATAL`, or `EXITED` status, preventing the QAN dashboard from loading. You'll see the following error in `/srv/logs/qan-api2.log`, where `x` is the migration version number:
+After upgrading PGF WatchTower Server, the QAN service may fail to start with `BACKOFF`, `FATAL`, or `EXITED` status, preventing the QAN dashboard from loading. You'll see the following error in `/srv/logs/qan-api2.log`, where `x` is the migration version number:
 ```
 stdlog: Migrations: Dirty database version x. Fix and force version.
 ```
@@ -49,11 +49,11 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 ### Resolution
 
-- **Postgres1st WatchTower 3.5.0 and later:** The issue is **fixed automatically**. Postgres1st WatchTower detects and completes the interrupted schema migration upon restart.
+- **PGF WatchTower 3.5.0 and later:** The issue is **fixed automatically**. PGF WatchTower detects and completes the interrupted schema migration upon restart.
 - **Earlier versions:** Use the following manual workaround:
     {.power-number}
 
-    1. Access the Postgres1st WatchTower container:
+    1. Access the PGF WatchTower container:
     ```bash
     podman exec -it pmm-server /bin/bash
     ```
@@ -83,9 +83,9 @@ This happens when the ClickHouse schema migration is interrupted during the upgr
 
 ## ClickHouse memory issues in low-memory environments
 
-If you're running PMM Server with less than 16 GB RAM and seeing "memory limit exceeded" errors in ClickHouse logs, switch to the low-memory configuration.
+If you're running PGF WatchTower Server with less than 16 GB RAM and seeing "memory limit exceeded" errors in ClickHouse logs, switch to the low-memory configuration.
 
-Postgres1st WatchTower includes two ClickHouse profiles:
+PGF WatchTower includes two ClickHouse profiles:
 
 - **default**: optimized for performance (16 GB+ RAM)
 - **low-memory**: optimized for constrained environments, based on [ClickHouse recommendations](https://clickhouse.com/docs/operations/tips#using-less-than-16gb-of-ram)
@@ -99,10 +99,10 @@ docker run -e PMM_CLICKHOUSE_CONFIG=low-memory ... percona/pmm-server:3
 ```
 
 !!! note "Configuration details"
-    Both configuration files are located in `/etc/clickhouse-server/` inside the PMM Server container:
+    Both configuration files are located in `/etc/clickhouse-server/` inside the PGF WatchTower Server container:
     
     - `default-config.xml`: default profile
     - `low-memory-config.xml`: low-memory profile
     
 
-The `switch-config.sh` script is deprecated and will be removed in a future PMM release; use `PMM_CLICKHOUSE_CONFIG` instead.
+The `switch-config.sh` script is deprecated and will be removed in a future PGF WatchTower release; use `PMM_CLICKHOUSE_CONFIG` instead.

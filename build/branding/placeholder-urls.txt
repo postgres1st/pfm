@@ -1,0 +1,16 @@
+# postgresfirst.com pages that docs and product text link to BEFORE the pages exist.
+# Decision (#105): where a Percona link used to be, link to postgresfirst.com instead, even
+# if the page has not been published yet. Create these pages, then delete the matching line
+# from the dead-link ignore lists (documentation/.linkspector.yml and build/scripts/test-docs-site).
+#
+# Keep this the single list: add a line here in the same commit that adds a new placeholder link.
+#
+# url <TAB> replaces
+https://www.postgresfirst.com/docs	docs.percona.com for content not yet ported, Percona documentation hub
+https://www.postgresfirst.com/privacy-policy	www.percona.com/privacy-policy
+https://www.postgresfirst.com/trademark-policy	www.percona.com/trademark-policy
+https://www.postgresfirst.com/support	forums.percona.com, percona.service-now.com, services lifecycle policy
+https://www.postgresfirst.com/security	SECURITY.md vulnerability reporting (full policy is GA Priority 4)
+https://www.postgresfirst.com/resources	www.percona.com/resources (docs home 'Additional resources')
+https://www.postgresfirst.com/downloads	www.percona.com/downloads (replaced by the install rewrite, #110)
+https://www.postgresfirst.com/about/contact	already live; used by documentation/docs/get-help.md

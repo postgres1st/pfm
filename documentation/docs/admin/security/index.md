@@ -1,12 +1,12 @@
-# About security in Postgres1st WatchTower
+# About security in PGF WatchTower
 
 
-By default, Postgres1st WatchTower ships with a self-signed certificate to enable usage out of the box. While this does enable users to have encrypted connections between clients (database clients and web/API clients) and the PMM Server, it shouldn't be considered a properly secured connection.  
+By default, PGF WatchTower ships with a self-signed certificate to enable usage out of the box. While this does enable users to have encrypted connections between clients (database clients and web/API clients) and the PGF WatchTower Server, it shouldn't be considered a properly secured connection.  
 
 Taking the following precautions will ensure that you are truly secure:
 
 - [SSL encryption with trusted certificates](../../admin/security/ssl_encryption.md) to secure traffic between clients and server;
 
 - [Grafana HTTPS secure cookies](../../admin/security/grafana_cookies.md)
-- [Encrypt the PMM Client configuration file](client_config_encryption.md) to protect stored credentials on client hosts
+- [Encrypt the PGF WatchTower Agent configuration file](client_config_encryption.md) to protect stored credentials on client hosts
 

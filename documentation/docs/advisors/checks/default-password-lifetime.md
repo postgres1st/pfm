@@ -7,7 +7,7 @@ This makes passwords more vulnerable to force attacks, and increases the likelih
 
 ## Resolution
 
-By default, the **default_password_lifetime** setting is set to **360** (days). Percona strongly recommends keeping a positive integer value, to force users to periodically change their passwords. 
+By default, the **default_password_lifetime** setting is set to **360** (days). We strongly recommend keeping a positive integer value, to force users to periodically change their passwords. 
 This is an online change that you can apply with:
 
 `SET GLOBAL default_password_lifetime=120;`

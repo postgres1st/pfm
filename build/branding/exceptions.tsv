@@ -1,0 +1,33 @@
+# Approved exceptions to the PGF WatchTower branding gate (GA Priority 1 and 2).
+#
+# Read by the branding scanner (#106). A legacy name may appear ONLY where a row here
+# allows it. Every row needs an owner and a reason, and says whether a customer can see it.
+#
+# Columns, tab-separated:
+#   id    scanner regex (extended)    path regex (matched against the repo-relative path)    owner    customer_visible    reason
+#
+# The scanner fails on a row with an empty owner or reason, so this file cannot rot quietly.
+# Lines starting with # are comments.
+E01	github\.com/percona/pmm	.*	ngadakh	no	Go module path and import paths. Renaming forks us from upstream and breaks the rebase; never printed to users.
+E02	PMM_[A-Z0-9_]+	.*	ngadakh	no	Server and agent environment variables. Shared contract with deployed agents and unit files; renaming needs a dual-read deprecation cycle.
+E03	pmm_[a-z0-9_]+	.*	ngadakh	no	Metric and label names (pmm_agent_id and similar). Stored in VictoriaMetrics and referenced by dashboards and alerts.
+E04	pmm-managed	^(managed|build)/.*	ngadakh	no	PostgreSQL database and role name. Stored in the database cluster; renaming needs ALTER DATABASE/ROLE on upgrade.
+E05	pmm-(app|qan-app-panel|compat-app)	^(dashboards|ui|build)/.*	ngadakh	no	Grafana plugin IDs. Referenced by stored dashboard JSON and Grafana's loader.
+E06	pmm-(init|managed|agent)	^(build/ansible/roles/supervisord|managed/services/(supervisord|encryption))/.*	ngadakh	no	supervisord program names. Keys into systemdUnitName(); renaming them yields pfw-pfw-*.service.
+E07	HTTP_AUTH=pmm	.*	ngadakh	no	Exporter basic-auth username agreed between server and every running exporter. Agent-compat break if changed.
+E08	(Percona|PMM|Percona Monitoring and Management)	^(README\.md|LICENSE.*|NOTICE.*|.*/LICENSE.*)$	ngadakh	yes	Attribution to the upstream project. Required by AGPL and accurate: this product is derived from percona/pmm.
+E09	https://docs\.percona\.com	^documentation/.*	ngadakh	yes	Links to upstream reference for components shipped unmodified. Must stay labelled as upstream.
+E10	(percona|Percona)	^(go\.(mod|sum)|.*\.(pb|pb\.gw|pb\.validate)\.go|.*_reform\.go|api/.*/json/client/.*)$	ngadakh	no	Generated code and dependency manifests. Fixed at their source, never edited by hand.
+E11	(Percona|PMM)	^(documentation/docs/release-notes/pfw-3\.9\.0-beta2\.md)$	ngadakh	yes	Release notes for the current build state the fork basis (PMM 3.9.0). Review again when the GA notes are written.
+E12	check\.percona\.com	^(managed|documentation)/.*	ngadakh	yes	PENDING: Advisors check-definition service endpoint. Functional dependency, customer-visible in settings. Needs a replacement or removal decision before GA.
+E13	repo\.percona\.com	^(build|managed)/.*	ngadakh	no	PENDING: functional upstream repo endpoint referenced by tooling. Remove with the install rewrite (#110) or justify.
+E14	Postgres1st(?! WatchTower)	^(build/packages/(rpm|deb)/.*|build/scripts/.*|build/packages/pfw-airgap-INSTALL.*)$	ngadakh	yes	The ORGANISATION, not the product: package signer, RPM Vendor, Maintainer, and /opt/postgres1st. Not 'Postgres1st WatchTower'.
+E15	Copyright.*Percona( LLC)?	.*	ngadakh	no	Copyright headers in inherited source files. AGPL requires keeping them; they are comments, never printed.
+E16	.*	(_test\.go|\.(test|spec)\.tsx?|/testdata/|/__mocks__/)	ngadakh	no	Unit-test sources are not shipped. Tests that pin product text are updated with the code they test (#111).
+E17	.*	^docs/.*	ngadakh	no	Internal engineering records (identifier map, readiness notes) that name legacy strings in order to describe them. Not shipped in the bundle.
+E18	.*	^(build/branding/.*|build/scripts/(check-branding|test-frozen-identifiers|check-release-claims))$	ngadakh	no	The guards themselves must spell the legacy names they search for.
+E19	(Percona|perconalab|pmm-doc-md)	^documentation/Makefile$	ngadakh	no	Docs build tooling pulls the perconalab/pmm-doc-md image. Developer-only, never shipped; replace with a locally built image when the docs toolchain is revisited.
+E20	(Percona|PMM)	^documentation/docs/reference/copyright\.md$	ngadakh	yes	Copyright and licence notice for documentation inherited from Percona (Creative Commons). Legally required.
+E21	(Percona|PMM)	^documentation/docs/get-help\.md$	ngadakh	yes	States that Percona is NOT our support channel and points to upstream docs. Attributed on purpose.
+E22	#.*	^documentation/mkdocs[a-z-]*\.yml$	ngadakh	no	YAML comments in the docs site config that explain which upstream branding was removed. Not rendered. Nav titles and paths are NOT exempt.
+E23	.*	^documentation/overrides/.*\.html$	ngadakh	no	Jinja {# #} comments in theme overrides that record what upstream branding was removed. Not rendered. Re-check if a rendered string is added here.

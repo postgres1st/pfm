@@ -1,24 +1,24 @@
-# Percona Alerting issues
+# Alerting issues
 
 ## No Alert rule templates tab on the Alerting page
 
-Percona Alerting option isn't active.
+Alerting option isn't active.
 {.power-number}
 
 1. Go to **Configuration > Settings > Advanced Settings**.
-2. Enable **Percona Alerting**.
+2. Enable **Alerting**.
 
-## Custom alert rule templates not migrated to Percona Alerting
+## Custom alert rule templates not migrated to Alerting
 
-After upgrading from the latest Postgres1st WatchTower 2 version to Postgres1st WatchTower 3, you will find all your alert templates under **Alerts > Alert templates**.
+After upgrading from the latest PGF WatchTower 2 version to PGF WatchTower 3, you will find all your alert templates under **Alerts > Alert templates**.
 
-If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as Postgres1st WatchTower 3 will look for custom templates in this location.
+If you have any templates available in the `/srv/ia/templates` folder, make sure to transfer them to `/srv/alerting/templates` as PGF WatchTower 3 will look for custom templates in this location.
 
 ## Unreachable external IP addresses
 
 If you get an email or page from your system that the IP is not reachable from outside my organization, do the following:
 
-To configure your PMM Server’s Public Address, select  **Configuration > Settings > Advanced Settings**, and supply an address to use in your alert notifications.
+To configure your PGF WatchTower Server’s Public Address, select  **Configuration > Settings > Advanced Settings**, and supply an address to use in your alert notifications.
 
 ## Alert templates are disabled
 

@@ -1,11 +1,11 @@
 # Enable access control
 
-Access control in Postgres1st WatchTower lets you restrict user access to specific metrics and Query Analytics data based on their roles. 
+Access control in PGF WatchTower lets you restrict user access to specific metrics and Query Analytics data based on their roles. 
 Choose your preferred method to enable this feature:
 
 === "Via Docker"
 
-    When deploying PMM Server with Docker, enable access control by passing an environment variable:
+    When deploying PGF WatchTower Server with Docker, enable access control by passing an environment variable:
     
     ```sh
     docker run -d \
@@ -33,10 +33,10 @@ Choose your preferred method to enable this feature:
 
 === "Via user interface"
 
-    To enable access control from the Postgres1st WatchTower web interface:
+    To enable access control from the PGF WatchTower web interface:
     {.power-number}
     
-    1. Log in to Postgres1st WatchTower with an administrator account.
+    1. Log in to PGF WatchTower with an administrator account.
     2. From the main menu, go to **Configuration > Settings > Advanced Settings**.
     3. Toggle the <i class="uil uil-toggle-off"></i>  **Access Control** toggle.
     4. Click **Apply changes** to save your settings.
@@ -47,5 +47,5 @@ Once access control is enabled:
 
 - All existing users will have full access until you assign specific roles.
 - [Create access roles](../access-control/create_roles.md) for different user types.
-- [Assign the new roles](../index.md) to your Postgres1st WatchTower users.
+- [Assign the new roles](../index.md) to your PGF WatchTower users.
 - Test that restrictions work as expected.

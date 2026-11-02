@@ -4,7 +4,7 @@
 
 ## System Summary
 
-The output from ``pt-summary``, one of the [Percona Toolkit utilities](https://www.percona.com/doc/percona-toolkit/LATEST/pt-summary.html).
+The output from ``pt-summary``, one of the [Percona Toolkit utilities](https://docs.percona.com/percona-toolkit/pt-summary.html).
 
 ## CPU Usage
 

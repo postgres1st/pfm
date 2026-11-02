@@ -32,7 +32,7 @@ curl --insecure -X GET \
      --url https://127.0.0.1/v1/inventory/agents?agent_type=AGENT_TYPE_MYSQLD_EXPORTER
 ```
 
-### Get all agents started by a specific PMM Agent
+### Get all agents started by a specific PGF WatchTower Agent
 
 ```shell
 curl --insecure -X GET \

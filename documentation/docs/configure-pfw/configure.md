@@ -1,0 +1,16 @@
+# Configure PGF WatchTower
+
+This section provides the instructions to configure your PGF WatchTower instance after you have installed PGF WatchTower.
+
+**Configuration > Settings** gives you access to PGF WatchTower setup's settings and inventory options:
+
+* [Metrics resolution](metrics_res.md)
+* [Advanced settings](advanced_settings.md)
+    * [Public address](../configure-pfw/advanced_settings.md#public-address)
+    * [Data retention](advanced_settings.md#data-retention)
+    * [Telemetry](advanced_settings.md#telemetry)
+    * [Check for updates](advanced_settings.md#check-for-updates)
+    * [Alerting](../configure-pfw/advanced_settings.md#percona-alerting)    
+    * [Advisors](advanced_settings.md#advisors)
+    * [Microsoft Azure Monitoring](../configure-pfw/advanced_settings.md#microsoft-azure-monitoring)
+* [SSH key](../install-pmm/install-pmm-server/deployment-options/virtual/ssh.md)

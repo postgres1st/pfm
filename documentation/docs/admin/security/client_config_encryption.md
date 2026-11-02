@@ -1,23 +1,23 @@
-# Encrypt the PMM Client configuration file
+# Encrypt the PGF WatchTower Agent configuration file
 
-The PMM Client configuration file, [`pfw-agent.yaml`](../../use/commands/pmm-agent.md) contains sensitive information like PMM Server credentials and API tokens. By default, this file is stored in plain text, which means that users with read access to the filesystem can see these credentials.
+The PGF WatchTower Agent configuration file, [`pfw-agent.yaml`](../../use/commands/pfw-agent.md) contains sensitive information like PGF WatchTower Server credentials and API tokens. By default, this file is stored in plain text, which means that users with read access to the filesystem can see these credentials.
 
 To protect this data, you can encrypt the configuration file so that its contents are unreadable on disk. 
 
-This involves generating an RSA private key and passing it to PMM Client during setup. Postgres1st WatchTower then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
+This involves generating an RSA private key and passing it to PGF WatchTower Agent during setup. PGF WatchTower then automatically encrypts the file whenever it saves configuration changes and decrypts it at startup.
 
-Encryption is optional. Without an encryption key, PMM Client continues to read and write the configuration file in plain text.
+Encryption is optional. Without an encryption key, PGF WatchTower Agent continues to read and write the configuration file in plain text.
 
 ## Before you start
 
-To encrypt the PMM Client configuration file, you need:
+To encrypt the PGF WatchTower Agent configuration file, you need:
 
-- **PMM Client 3.7.0** or later
+- **PGF WatchTower Agent 3.7.0** or later
 - **[OpenSSL](https://docs.openssl.org/master/man1/openssl-genpkey/)** (or any compatible tool) to generate an RSA private key
 
 ## How it works
 
-PMM Client uses two layers of encryption to protect the configuration file:
+PGF WatchTower Agent uses two layers of encryption to protect the configuration file:
 
 - **AES-256-GCM** encrypts the configuration data and guards against tampering.
 - **RSA-OAEP** wraps the AES key so that only your RSA private key can unlock it.
@@ -25,7 +25,7 @@ PMM Client uses two layers of encryption to protect the configuration file:
 For additional security, you can also protect the RSA private key with a password.
 
 ## Set up encryption
-To encrypt the PMM Client configuration file, generate an RSA private key and pass it to PMM Client during setup and at startup:
+To encrypt the PGF WatchTower Agent configuration file, generate an RSA private key and pass it to PGF WatchTower Agent during setup and at startup:
 {.power-number}
 
 1. Generate an RSA private key:
@@ -65,7 +65,7 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
 
     If your key is not password-protected, omit `--config-file-key-password`.
 
-4. Start PMM Client with the encryption flags:
+4. Start PGF WatchTower Agent with the encryption flags:
 
     ```bash
     pfw-agent --config-file=/opt/postgres1st/watchtower/config/pfw-agent.yaml \
@@ -75,7 +75,7 @@ To encrypt the PMM Client configuration file, generate an RSA private key and pa
 
 ## Encryption settings
 
-PMM Client accepts encryption settings as either command-line flags or environment variables. Use flags when running `pfw-agent` directly, and environment variables when configuring a service manager like systemd, Docker, or Kubernetes.
+PGF WatchTower Agent accepts encryption settings as either command-line flags or environment variables. Use flags when running `pfw-agent` directly, and environment variables when configuring a service manager like systemd, Docker, or Kubernetes.
 
 
 | Flag | Environment variable | Description |
@@ -92,7 +92,7 @@ PMM Client accepts encryption settings as either command-line flags or environme
 
     ```ini
     [Unit]
-    Description=PMM Agent
+    Description=PGF WatchTower Agent
     After=network.target
 
     [Service]
@@ -181,7 +181,7 @@ PMM Client accepts encryption settings as either command-line flags or environme
 
 ## Migrate from an unencrypted configuration
 
-If PMM Client is already set up, you can enable encryption without re-registering the agent:
+If PGF WatchTower Agent is already set up, you can enable encryption without re-registering the agent:
 {.power-number}
 
 1. Generate an encryption key:
@@ -193,7 +193,7 @@ If PMM Client is already set up, you can enable encryption without re-registerin
     chmod 600 /etc/pfw-agent-key.pem
     ```
 
-2. Stop PMM Client:
+2. Stop PGF WatchTower Agent:
 
     ```bash
     systemctl stop pfw-agent
@@ -201,12 +201,12 @@ If PMM Client is already set up, you can enable encryption without re-registerin
 
 3. Add the encryption environment variables to your [systemd, Docker, or Kubernetes configuration](#deployment-examples).
 
-4. Restart PMM Client to apply the new encryption settings:
+4. Restart PGF WatchTower Agent to apply the new encryption settings:
     ```bash
     systemctl start pfw-agent
     ```
 
-PMM Client automatically encrypts the configuration file on the next save.
+PGF WatchTower Agent automatically encrypts the configuration file on the next save.
 
 ## Disable encryption
 
@@ -214,7 +214,7 @@ To remove encryption and store the configuration file in plain text:
 {.power-number}
 
 1. Remove the encryption environment variables (`PFW_AGENT_CONFIG_FILE_KEY_FILE` and `PFW_AGENT_CONFIG_FILE_KEY_PASSWORD`) from your [systemd, Docker, or Kubernetes configuration](#deployment-examples).
-2. Restart PMM Client so it can decrypt the file and rewrite it in plain text while the key is still in memory. If you skip this step, the file remains encrypted and PMM Client won't be able to read it on future restarts.
+2. Restart PGF WatchTower Agent so it can decrypt the file and rewrite it in plain text while the key is still in memory. If you skip this step, the file remains encrypted and PGF WatchTower Agent won't be able to read it on future restarts.
 
 ## Verify encryption status
 
