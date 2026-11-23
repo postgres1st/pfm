@@ -3,7 +3,7 @@ ARG GO_VERSION
 
 FROM golang:$GO_VERSION AS golang
 
-FROM rockylinux:9-minimal
+FROM rockylinux:10-minimal
 
 # Set shell to handle pipe failures
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
